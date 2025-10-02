@@ -6,25 +6,25 @@ fechas_estimacion = [
     datetime(2025, 9, 18),
     datetime(2025, 9, 25),
     datetime(2025, 9, 28),
-    # Agrega más fechas aquí si lo deseas
+    # Agrega más fechas acá a medida que hagan estimaciones
 ]
 caso_probable = [
     2.3,
     2.9,
     2.6
-    # Agrega más valores aquí si lo deseas
+    # Agrega más valores acá a medida que hagan estimaciones
 ]
 optimista_meses = [
     2.0,
     1.9,
     0.8
-    # Agrega más valores aquí si lo deseas
+    # Agrega más valores acá a medida que hagan estimaciones
 ]
 pesimista_meses = [
     2.6,
     4.0,
     3.9
-    # Agrega más valores aquí si lo deseas
+    # Agrega más valores acá a medida que hagan estimaciones
 ]
 dias_por_mes = 30
 
