@@ -22,7 +22,7 @@ optimista_meses = [
 ]
 pesimista_meses = [
     2.6,
-    4.0,
+    4.1,
     3.9
     # Agrega más valores acá a medida que hagan estimaciones
 ]
