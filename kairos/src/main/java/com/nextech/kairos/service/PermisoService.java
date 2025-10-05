@@ -1,5 +1,5 @@
 package com.nextech.kairos.service;
 
-public class AuthService {
+public class PermisoService {
     
 }

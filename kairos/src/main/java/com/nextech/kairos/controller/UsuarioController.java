@@ -2,47 +2,33 @@ package com.nextech.kairos.controller;
 
 import com.nextech.kairos.model.Usuario;
 import com.nextech.kairos.repository.UsuarioRepositorio;
+import com.nextech.kairos.service.UsuarioService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/api/usuarios")
 public class UsuarioController {
-
-    private final UsuarioRepositorio repo;
-
-    public UsuarioController(UsuarioRepositorio repo) {
-        this.repo = repo;
-    }
+    @Autowired
+    private UsuarioService usuarioService;
 
     @GetMapping
-    public List<Usuario> listar() {
-        return repo.findAll();
+    public List<Usuario> getUsuarios() {
+        return usuarioService.getAllUsuarios();
     }
 
     @PostMapping
-    public Usuario crear(@RequestBody Usuario usuario) {
-        return repo.save(usuario);
+    public Usuario createUsuario(@RequestBody Usuario usuario) {
+        return usuarioService.createUsuario(usuario);
     }
 
     @GetMapping("/{id}")
-    public Usuario obtener(@PathVariable Integer id) {
-        return repo.findById(id).orElseThrow();
-    }
-
-    @PutMapping("/{id}")
-    public Usuario actualizar(@PathVariable Integer id, @RequestBody Usuario usuario) {
-        Usuario existente = repo.findById(id).orElseThrow();
-        existente.setNombre(usuario.getNombre());
-        existente.setEmail(usuario.getEmail());
-        existente.setRol(usuario.getRol());
-        return repo.save(existente);
-    }
-
-    @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Integer id) {
-        repo.deleteById(id);
+    public Usuario getUsuario(@PathVariable Integer id) {
+        return usuarioService.getUsuarioById(id);
     }
 }
+
 
