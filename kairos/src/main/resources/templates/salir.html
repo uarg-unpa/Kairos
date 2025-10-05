@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UARGFlow BS - Salir</title>
+    
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+     
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+            <img src="/images/Logo-UNPA-UARG-azul.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            UARGFlow BS
+        </a>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Sesión Finalizada</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Su sesión ha sido finalizada exitosamente.</p>
+                        
+                        <div class="alert alert-info" role="alert">
+                            <span class="oi oi-info"></span>
+                            <strong>Opciones:</strong>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <span class="oi oi-envelope-closed" style="font-size: 2rem;"></span>
+                                        <h5 class="card-title mt-2">Gmail</h5>
+                                        <p class="card-text">Acceder a su cuenta de Gmail</p>
+                                        <a href="https://mail.google.com" class="btn btn-primary" target="_blank">
+                                            <span class="oi oi-external-link"></span> Ir a Gmail
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <span class="oi oi-home" style="font-size: 2rem;"></span>
+                                        <h5 class="card-title mt-2">Portal UARG</h5>
+                                        <p class="card-text">Volver al portal principal</p>
+                                        <a href="https://www.unpa.edu.ar/uarg" class="btn btn-secondary" target="_blank">
+                                            <span class="oi oi-external-link"></span> Portal UARG
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <a href="/" class="btn btn-success">
+                                <span class="oi oi-account-login"></span> Volver a Ingresar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+</body>
+</html>

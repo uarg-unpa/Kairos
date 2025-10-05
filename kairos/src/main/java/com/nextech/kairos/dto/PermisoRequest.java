@@ -1,0 +1,27 @@
+package com.nextech.kairos.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public class PermisoRequest {
+    
+    @NotBlank(message = "El nombre del permiso es obligatorio")
+    @Size(max = 50, message = "El nombre del permiso no puede exceder 50 caracteres")
+    private String nombre;
+    
+    // Constructors
+    public PermisoRequest() {}
+    
+    public PermisoRequest(String nombre) {
+        this.nombre = nombre;
+    }
+    
+    // Getters and Setters
+    public String getNombre() {
+        return nombre;
+    }
+    
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+}

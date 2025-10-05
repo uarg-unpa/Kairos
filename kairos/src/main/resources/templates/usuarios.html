@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head">
+    <title>UARGFlow BS - Usuarios</title>
+</head>
+<body>
+     <!-- Navbar  -->
+    <nav th:replace="fragments/layout :: navbar"></nav>
+ 
+    <div th:replace="fragments/layout :: user-alert"></div>
+
+    <div class="container mt-4 main-content">
+        <div th:replace="fragments/layout :: messages"></div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4><span class="oi oi-person"></span> Usuarios</h4>
+                <a href="/usuario/crear" class="btn btn-success">
+                    <span class="oi oi-plus"></span> Crear Usuario
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Roles</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="usuario : ${usuarios}">
+                                <td th:text="${usuario.id}"></td>
+                                <td th:text="${usuario.nombre}"></td>
+                                <td th:text="${usuario.email}"></td>
+                                <td>
+                                    <span th:each="rol, iterStat : ${usuario.roles}" 
+                                          th:text="${rol.nombre} + (${iterStat.last} ? '' : ', ')"></span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a th:href="@{/usuario/ver/{id}(id=${usuario.id})}" class="btn btn-info btn-sm">
+                                            <span class="oi oi-eye"></span>
+                                        </a>
+                                        <a th:href="@{/usuario/modificar/{id}(id=${usuario.id})}" class="btn btn-warning btn-sm">
+                                            <span class="oi oi-pencil"></span>
+                                        </a>
+                                        <a th:href="@{/usuario/eliminar/{id}(id=${usuario.id})}" class="btn btn-danger btn-sm">
+                                            <span class="oi oi-trash"></span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Footer  -->
+    <footer th:replace="fragments/layout :: footer"></footer>
+
+     <!-- Scripts  -->
+        <div th:replace="fragments/layout :: scripts"></div>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-signin-client_id" content="356408280239-7airslbg59lt2nped9l4dtqm2rf25aii.apps.googleusercontent.com">
+    <title>UARGFlow BS - Login</title>
+    
+     <!-- Bootstrap CSS  -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+     <!-- Open Iconic  -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
+    
+     <!-- Google Sign-In API  -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+</head>
+<body>
+    <style>
+    .google-login-btn {
+  display: inline-flex;
+  align-items: center;
+  background-color: #fff;
+  color: #5f6368;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 16px;
+  text-decoration: none;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.google-login-btn:hover {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1),
+              0 1px 3px rgba(0,0,0,0.2);
+}
+
+.google-login-btn img {
+  height: 18px;
+  width: 18px;
+  margin-right: 8px;
+}
+
+
+    </style>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+            <img src="/images/Logo-UNPA-UARG-azul.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            UARGFlow BS - Login
+        </a>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Bienvenido</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Estimado usuario: Bienvenido a la aplicación UARGFlow BS, una aplicación desarrollada por la UNPA-UARG.</p>
+                        
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span th:text="${error}"></span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="alert alert-info" role="alert">
+                            <span class="oi oi-info"></span>
+                            <strong>Importante:</strong> Para acceder al sistema es necesario disponer de una cuenta de Gmail.
+                        </div>
+
+                        <h5>Ingreso al Sistema</h5>
+                        <p>Ud. puede ingresar al sistema si está conectado a su e-mail. Por favor haga clic en el siguiente botón:</p>
+                        <a href="/oauth2/authorization/google" class="google-login-btn">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
+                        Ingresar con Google
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="googleLoginForm" action="/login/google" method="post" style="display: none;">
+        <input type="hidden" id="email" name="email">
+        <input type="hidden" id="name" name="name">
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+
+     <!-- Google Sign-In JavaScript  -->
+    <script>
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            
+            // Set form values
+            document.getElementById('email').value = profile.getEmail();
+            document.getElementById('name').value = profile.getName();
+            
+            // Submit form
+            document.getElementById('googleLoginForm').submit();
+        }
+    </script>
+</body>
+</html>

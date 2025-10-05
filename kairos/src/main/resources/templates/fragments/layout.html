@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'UARGFlow BS'">UARGFlow BS</title>
+    
+     <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+     <!-- Open Iconic -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
+    
+     <!-- Custom CSS -->
+    <style>
+        .footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            margin-top: auto;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .main-content {
+            flex: 1;
+        }
+    </style>
+</head>
+
+<body>
+     <!-- Navbar Fragment -->
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+            <img src="/images/Logo-UNPA-UARG-azul.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            UARGFlow
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" 
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>   
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item" th:classappend="${#httpServletRequest != null and #strings.contains(#httpServletRequest.requestURI, '/usuarios') ? 'active' : ''}">
+                    <a class="nav-link" href="/usuarios">
+                        <span class="oi oi-person"></span>
+                        Usuarios
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.permisos != null and session.permisos.contains('Roles')}"
+                    th:classappend="${#httpServletRequest != null and #strings.contains(#httpServletRequest.requestURI, '/roles') ? 'active' : ''}">
+                    <a class="nav-link" href="/roles">
+                        <span class="oi oi-graph"></span>
+                        Roles
+                    </a>
+                </li>
+                
+                <li class="nav-item" th:if="${session.permisos != null and session.permisos.contains('Permisos')}"
+                    th:classappend="${#httpServletRequest != null and #strings.contains(#httpServletRequest.requestURI, '/permisos') ? 'active' : ''}">
+                    <a class="nav-link" href="/permisos">
+                        <span class="oi oi-lock-locked"></span>
+                        Permisos
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="/salir">
+                        <span class="oi oi-account-logout"></span> 
+                        Salir
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+     <!-- User Info Alert Fragment -->
+    <div th:fragment="user-alert" class="alert alert-info alert-dismissible fade show" role="alert">
+        Ud. está conectad@ como <strong th:text="${session.usuario != null ? session.usuario.nombre : 'Usuario'}">Usuario</strong>.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+     <!-- Messages Fragment -->
+    <div th:fragment="messages">
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+
+     <!-- Footer Fragment -->
+    <footer th:fragment="footer" class="footer py-3">
+        <div class="container">
+            <span class="oi oi-person"></span> 
+            <span th:text="${session.usuario != null ? session.usuario.nombre : 'Usuario'}">Usuario</span>
+            <a href="/salir" class="ml-3">Salir</a>
+        </div>
+    </footer>
+
+     <!-- Scripts Fragment -->
+    <div th:fragment="scripts">
+         <!-- Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    </div>
+</body>
+</html>
