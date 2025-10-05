@@ -146,8 +146,8 @@ public class UsuarioController {
             usuario.getEmail(),
             roleNames,
             permissions,
-            usuario.getCreatedAt(),
-            usuario.getUpdatedAt()
+            usuario.getfechaCreacion(),
+            usuario.getfechaActualizacion()
         );
     }
 }

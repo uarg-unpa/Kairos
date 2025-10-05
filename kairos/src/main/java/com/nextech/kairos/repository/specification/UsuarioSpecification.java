@@ -1,14 +1,13 @@
 package com.nextech.kairos.repository.specification;
 
-import com.nextech.kairos.model.Usuario;
-import com.nextech.kairos.model.Rol;
-import com.nextech.kairos.model.Permiso;
 import org.springframework.data.jpa.domain.Specification;
-import jakarta.persistence.criteria.*;
 
-/**
- * Specification class for complex Usuario queries (equivalent to PHP's complex WHERE clauses)
- */
+import com.nextech.kairos.model.Permiso;
+import com.nextech.kairos.model.Rol;
+import com.nextech.kairos.model.Usuario;
+
+import jakarta.persistence.criteria.Join;
+
 public class UsuarioSpecification {
     
     public static Specification<Usuario> hasEmail(String email) {

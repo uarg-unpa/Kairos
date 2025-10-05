@@ -1,13 +1,14 @@
 package com.nextech.kairos.service;
 
-import com.nextech.kairos.model.Usuario;
-import com.nextech.kairos.config.Constants;
+import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.Set;
+import com.nextech.kairos.config.Constants;
+import com.nextech.kairos.model.Usuario;
 
 @Service
 @Transactional

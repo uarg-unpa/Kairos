@@ -9,18 +9,18 @@ public class UsuarioResponse {
     private String email;
     private Set<String> roles;
     private Set<String> permissions;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaActualizacion;
     
     public UsuarioResponse(Long id, String nombre, String email, Set<String> roles, 
-                          Set<String> permissions, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                          Set<String> permissions, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
         this.roles = roles;
         this.permissions = permissions;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.fechaCreacion = fechaCreacion;
+        this.fechaActualizacion = fechaActualizacion;
     }
     
     // Getters and Setters
@@ -64,19 +64,19 @@ public class UsuarioResponse {
         this.permissions = permissions;
     }
     
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public LocalDateTime getfechaCreacion() {
+        return fechaCreacion;
     }
     
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setfechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
     }
     
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public LocalDateTime getfechaActualizacion() {
+        return fechaActualizacion;
     }
     
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setfechaActualizacion(LocalDateTime fechaActualizacion) {
+        this.fechaActualizacion = fechaActualizacion;
     }
 }
