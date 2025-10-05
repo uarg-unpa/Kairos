@@ -30,10 +30,10 @@ public class Permiso {
     @Column(name = "nombre", nullable = false, unique = true, length = 50)
     private String nombre;
     
-    @Column(name = "created_at")
+    @Column(name = "fecha_creacion")
     private LocalDateTime createdAt;
     
-    @Column(name = "updated_at")
+    @Column(name = "fecha_actualizacion")
     private LocalDateTime updatedAt;
     
     @ManyToMany(mappedBy = "permisos", fetch = FetchType.LAZY)

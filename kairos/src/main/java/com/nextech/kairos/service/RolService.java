@@ -1,17 +1,18 @@
 package com.nextech.kairos.service;
 
-import com.nextech.kairos.model.Rol;
-import com.nextech.kairos.model.Permiso;
-import com.nextech.kairos.repository.RolRepository;
-import com.nextech.kairos.repository.PermisoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.nextech.kairos.model.Permiso;
+import com.nextech.kairos.model.Rol;
+import com.nextech.kairos.repository.PermisoRepository;
+import com.nextech.kairos.repository.RolRepository;
 
 @Service
 @Transactional
@@ -23,48 +24,30 @@ public class RolService {
     @Autowired
     private PermisoRepository permisoRepository;
     
-    /**
-     * Create or update role (equivalent to PHP's save method)
-     */
     public Rol save(Rol rol) {
         return rolRepository.save(rol);
     }
     
-    /**
-     * Find role by ID (equivalent to PHP's constructor with ID)
-     */
     @Transactional(readOnly = true)
     public Optional<Rol> findById(Long id) {
         return rolRepository.findById(id);
     }
     
-    /**
-     * Find role by name (equivalent to PHP's findByName)
-     */
     @Transactional(readOnly = true)
     public Optional<Rol> findByName(String nombre) {
         return rolRepository.findByNombre(nombre);
     }
     
-    /**
-     * Get all roles (equivalent to PHP's ColeccionRoles)
-     */
     @Transactional(readOnly = true)
     public List<Rol> findAll() {
         return rolRepository.findAll();
     }
     
-    /**
-     * Get all roles with permissions loaded
-     */
     @Transactional(readOnly = true)
     public List<Rol> findAllWithPermisos() {
         return rolRepository.findAllWithPermisos();
     }
     
-    /**
-     * Create new role with name
-     */
     public Rol createRole(String nombre) {
         if (rolRepository.existsByNombre(nombre)) {
             throw new RuntimeException("El rol ya existe: " + nombre);
@@ -74,9 +57,6 @@ public class RolService {
         return save(newRole);
     }
     
-    /**
-     * Assign permission to role (equivalent to PHP's permission assignment)
-     */
     public Rol assignPermission(Long rolId, Long permisoId) {
         Optional<Rol> rol = rolRepository.findById(rolId);
         Optional<Permiso> permiso = permisoRepository.findById(permisoId);
@@ -89,9 +69,6 @@ public class RolService {
         throw new RuntimeException("Rol o Permiso no encontrado");
     }
     
-    /**
-     * Remove permission from role
-     */
     public Rol removePermission(Long rolId, Long permisoId) {
         Optional<Rol> rol = rolRepository.findById(rolId);
         Optional<Permiso> permiso = permisoRepository.findById(permisoId);
@@ -129,9 +106,6 @@ public class RolService {
         return permissions.contains(permisoName);
     }
     
-    /**
-     * Delete role
-     */
     public void deleteRol(Long rolId) {
         rolRepository.deleteById(rolId);
     }
@@ -172,25 +146,15 @@ public Rol updateRol(Long id, String nombre, List<Long> permisoIds) {
     return rolRepository.save(rol);
 }
 
-    /**
-     * Search roles by name
-     */
     @Transactional(readOnly = true)
     public List<Rol> searchByName(String nombre) {
         return rolRepository.findByNombreContainingIgnoreCase(nombre);
     }
-    
-    /**
-     * Get roles with specific permission
-     */
     @Transactional(readOnly = true)
     public List<Rol> getRolesWithPermission(String permisoName) {
         return rolRepository.findByPermisoName(permisoName);
     }
     
-    /**
-     * Get roles for specific user
-     */
     @Transactional(readOnly = true)
     public List<Rol> getRolesByUser(Long usuarioId) {
         return rolRepository.findByUsuarioId(usuarioId);
