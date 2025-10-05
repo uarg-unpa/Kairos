@@ -12,8 +12,8 @@ public class Usuario {
     private String email;
 
     @ManyToOne
+    @JoinColumn(name = "id_rol")
     private Rol rol;
-
     // Getters y Setters
     public Integer getId() {
         return id;
