@@ -1,1 +1,42 @@
-<p>login works!</p>
+<section id="main-content">
+    <article>
+        <div class="card">
+            <div class="card-header">
+                <!-- Título dinámico -->
+                <h3> Kairos - Login</h3>
+            </div>
+            <div class="card-body">
+
+                <h5>Bienvenido</h5>
+                <!-- Usamos 'Aplicación Kairos' para ser genéricos, en lugar de UARGFlow BS -->
+                <p>Estimado usuario: Bienvenido a la aplicación Kairos, una aplicación desarrollada en la UARG - UNPA.</p>
+
+                <div class="row">
+                    <div class="col-12">
+                        <!-- El ALERTA de Importante -->
+                        <div class="alert alert-danger" role="alert">
+                            <div class="row align-items-center">
+                                <div class="col-1 text-center">
+                                    <i class="oi oi-info"></i> 
+                                </div>
+                                <div class="col-11">
+                                    <!-- Utilizamos el icono de Open Iconic 'oi-info' (oi oi-info) -->
+                                    <strong>Importante:</strong> Para acceder al sistema es necesario disponer de un correo de <a href="http://www.gmail.com" target="_blank">GMail</a>.
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                </div> 
+
+                <hr />
+                <h5>Ingreso al Sistema</h5>
+                <p>Ud. puede ingresar el sistema si está conectado a su e-mail. Por favor haga click en el botón a continuación y elija su cuenta o realice el login.</p>
+
+                <!-- El botón de login que llama a la función en el .ts -->
+                <button class="btn btn-danger btn-lg" (click)="loginConGoogle()">
+                    Iniciar sesión con Google
+                </button>
+            </div>
+        </div>
+    </article>
+</section>
