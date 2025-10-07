@@ -1,87 +1,46 @@
-<!-- Barra de Navegación (NAVBAR) - Fija para todas las vistas -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <!-- Logo y Nombre del Sistema -->
+        
         <a class="navbar-brand" href="#">
-            <img src="https://placehold.co/30x30/007bff/ffffff?text=K" width="30" height="30" class="d-inline-block align-top" alt="Logo Kairos">
-            Kairos
+            <img src="/Kairos Logo.png" class="kairos-logo-img" alt="Kairos Logo">
+            <span class="kairos-brand-text">KAIROS</span>
         </a>
-
-        <!-- Botón Toggler para dispositivos móviles -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#fullNavbarContent" 
+                aria-controls="fullNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>   
         </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        
+        <div class="collapse navbar-collapse" id="fullNavbarContent">
             
             <ul class="navbar-nav mr-auto">
-                <!-- Enlace de Usuarios (siempre visible para el ejemplo) -->
                 <li class="nav-item">
-                    <a class="nav-link" [routerLink]="['/usuarios']">
-                        <span class="oi oi-person"></span> Usuarios
-                    </a>
+                    <a class="nav-link" routerLink="/inicio" routerLinkActive="active"><span class="oi oi-home"></span> Inicio</a>
                 </li>
-                
-                <!-- Enlace de Roles (simulando PERMISO_ROLES) -->
-                <!-- Una vez implementado el servicio de Auth/Permisos, reemplazar `true` por una función de verificación: `*ngIf="authService.tienePermiso('PERMISO_ROLES')"` -->
-                <li class="nav-item" *@If="true"> 
-                    <a class="nav-link" [routerLink]="['/roles']">
-                        <span class="oi oi-graph"></span> Roles
-                    </a>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"><span class="oi oi-question-mark"></span> Ayuda</a>
                 </li>
-                
-                <!-- Enlace de Permisos (simulando PERMISO_PERMISOS) -->
-                <!-- Reemplazar `true` por la verificación de permisos: `*ngIf="authService.tienePermiso('PERMISO_PERMISOS')"` -->
-                <li class="nav-item" *@If="true">
-                    <a class="nav-link" [routerLink]="['/permisos']">
-                        <span class="oi oi-lock-locked"></span> Permisos
-                    </a>
-                </li>
+
             </ul>
-            
-            <!-- Elementos a la derecha: Información de Usuario y Salir -->
+
             <ul class="navbar-nav ml-auto">
-                 <!-- NOTA: Mostrar solo si el usuario está logueado, usar `*ngIf="usuarioLogueado"` -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="oi oi-person"></span> Usuario Logueado
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" [routerLink]="['/perfil']">Ver Perfil</a>
-                        <div class="dropdown-divider"></div>
-                        <!-- Enlace de "Salir" llama a una función de logout en el componente principal -->
-                        <a class="dropdown-item" (click)="logout()">
-                             <span class="oi oi-account-logout"></span> Salir
-                        </a>
-                    </div>
+                <li class="nav-item">
+                    <a class="nav-link" (click)="logout()"><span class="oi oi-account-logout"></span> Salir</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
 
-<!-- Mensaje de Conexión (simulando alert-info de PHP) -->
-<!-- Este DIV debería ser controlado por un *ngIf para mostrarse solo después del login -->
-<div class="container mt-2">
-    <div class="alert alert-info alert-dismissible fade show" role="alert" *ngIf="false"> 
-        Ud. está conectad@ como <strong>Nombre del Usuario Aquí</strong>.
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-</div>
+<div class="navbar-separator"></div>
 
-<!-- Contenido de la Ruta Activa (Login, Dashboard, etc.) -->
-<!-- El 'container' envuelve toda la sección principal para centrar el contenido. -->
-<div class="container mt-4 mb-5">
-    <!-- Aquí se inyectará el contenido del LoginComponent, AuthCallbackComponent, etc. -->
+<div *ngIf="showUserAlert && usuarioLogueado" class="alert alert-info alert-dismissible fade show container" role="alert">
+    </div>
+<div class="container mt-4 main-content">
     <router-outlet></router-outlet>
 </div>
 
-
-<!-- Pie de Página (FOOTER) - Fijo para todas las vistas -->
-<footer class="footer bg-dark p-3 text-center fixed-bottom">
-    Kairos BS 
-    <span class="oi oi-globe"></span> 
-    UNPA-UARG
+<footer class="footer py-3">
+    <div class="container">
+        </div>
 </footer>

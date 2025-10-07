@@ -1,49 +1,39 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
-import { CommonModule } from '@angular/common'; // Importamos CommonModule para poder usar *ngIf, *ngFor, etc. en el HTML
+import { Component } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  // 💡 Importamos RouterLink y CommonModule para usar las directivas en el HTML
-  imports: [RouterOutlet, RouterLink, CommonModule], 
+  imports: [RouterOutlet], 
   templateUrl: './app.html', 
   styleUrl: './app.css'
 })
 export class AppComponent {
-  protected readonly title = signal('kairos-frontend');
-  
-  // 🎯 Estado de simulación para mostrar/ocultar elementos de la UI
-  protected usuarioLogueado: boolean = false;
-  protected usuarioNombre: string = "Usuario Simulado UNPA"; 
+  title = 'Kairos Frontend';
+  // 2. Inyectar el Router en el constructor
+  constructor(private router: Router) {}
 
-  // Inyectamos el Router para poder navegar y suscribirnos a eventos
-  constructor(private router: Router) {
-    // 1. Inicializar el estado de login al cargar el componente
-    this.checkLoginStatus();
-    
-    // 2. Escuchar eventos de navegación (como después de un login o logout) para actualizar el estado
-    this.router.events.subscribe(() => {
-        this.checkLoginStatus();
-    });
-  }
-
-  /**
-   * Verifica si hay un token de simulación guardado para determinar el estado de login.
-   * La existencia de 'auth_token' en sessionStorage indica que el usuario está logueado.
-   */
-  checkLoginStatus(): void {
-    this.usuarioLogueado = !!sessionStorage.getItem('auth_token');
-  }
-
-  /**
-   * Implementación de logout simulado.
-   * Limpia el token y redirige a la página de login.
-   */
+  // 3. Implementar la función de logout
   logout(): void {
-    console.log('Usuario deslogueado. Limpiando sesión...');
-    sessionStorage.removeItem('auth_token'); 
-    this.usuarioLogueado = false; // Actualizar el estado
+    console.log('Cerrando sesión y redirigiendo a login...');
+    
+    // Lógica para limpiar el token (Ajusta la clave si usas una diferente)
+    localStorage.removeItem('jwt_token'); 
+    
+    // Redirigir al usuario a la ruta de login
     this.router.navigate(['/login']);
+  }
+
+  // 4. Definir las propiedades necesarias para el HTML (incluso como placeholders)
+  pageTitle: string = 'Kairos App'; 
+  showUserAlert: boolean = false;
+  usuarioLogueado: boolean = false; 
+  usuarioNombre: string = 'Invitado'; 
+  showMessages: boolean = false;
+  successMessage: string = '';
+  errorMessage: string = '';
+
+  dismissAlert(): void {
+    this.showUserAlert = false;
   }
 }

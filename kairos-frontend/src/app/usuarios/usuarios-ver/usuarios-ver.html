@@ -1,0 +1,104 @@
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">
+                        <span class="oi oi-eye"></span> Ver Usuario
+                    </h3>
+                    <button class="btn btn-warning" (click)="editarUsuario()">
+                        <span class="oi oi-pencil"></span> Editar
+                    </button>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Loading State -->
+                    <div *ngIf="loading" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Cargando usuario...</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div *ngIf="error" class="alert alert-danger" role="alert">
+                        <span class="oi oi-warning"></span> {{ error }}
+                    </div>
+
+                    <!-- User Details -->
+                    <div *ngIf="!loading && !error && usuario">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">ID:</label>
+                                    <p class="form-control-plaintext">{{ usuario.id }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">Estado:</label>
+                                    <p class="form-control-plaintext">
+                                        <span class="badge" [ngClass]="getEstadoClass(usuario.activo)">
+                                            {{ getEstadoText(usuario.activo) }}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">Nombre:</label>
+                                    <p class="form-control-plaintext">{{ usuario.nombre }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">Apellido:</label>
+                                    <p class="form-control-plaintext">{{ usuario.apellido }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Email:</label>
+                            <p class="form-control-plaintext">{{ usuario.email }}</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Roles:</label>
+                            <div>
+                                <span *ngFor="let rol of usuario.roles" class="badge badge-info mr-2 mb-2">
+                                    {{ rol }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">Fecha de Creación:</label>
+                                    <p class="form-control-plaintext">{{ formatDate(usuario.fechaCreacion) }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">Última Modificación:</label>
+                                    <p class="form-control-plaintext">{{ formatDate(usuario.fechaModificacion) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-group mt-4">
+                        <button type="button" class="btn btn-secondary" (click)="volver()">
+                            <span class="oi oi-arrow-left"></span> Volver
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,186 @@
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Dashboard</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">
+                        <span class="oi oi-data-transfer-download"></span> Exportar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Usuarios
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" *ngIf="!loading">
+                                {{ stats.usuarios }}
+                            </div>
+                            <div class="spinner-border spinner-border-sm text-primary" *ngIf="loading"></div>
+                        </div>
+                        <div class="col-auto">
+                            <span class="oi oi-person fa-2x text-gray-300"></span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-primary" (click)="navegarAUsuarios()">
+                            <span class="oi oi-eye"></span> Ver Usuarios
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Roles
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" *ngIf="!loading">
+                                {{ stats.roles }}
+                            </div>
+                            <div class="spinner-border spinner-border-sm text-success" *ngIf="loading"></div>
+                        </div>
+                        <div class="col-auto">
+                            <span class="oi oi-graph fa-2x text-gray-300"></span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-success" (click)="navegarARoles()">
+                            <span class="oi oi-eye"></span> Ver Roles
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Permisos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" *ngIf="!loading">
+                                {{ stats.permisos }}
+                            </div>
+                            <div class="spinner-border spinner-border-sm text-info" *ngIf="loading"></div>
+                        </div>
+                        <div class="col-auto">
+                            <span class="oi oi-lock-locked fa-2x text-gray-300"></span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-info" (click)="navegarAPermisos()">
+                            <span class="oi oi-eye"></span> Ver Permisos
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Sistema
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Kairos
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <span class="oi oi-cog fa-2x text-gray-300"></span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <span class="badge badge-success">Activo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <span class="oi oi-lightning"></span> Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <span class="oi oi-person display-4 text-primary mb-3"></span>
+                                <h5>Gestión de Usuarios</h5>
+                                <p class="text-muted">Administrar usuarios del sistema</p>
+                                <div class="btn-group-vertical w-100">
+                                    <button class="btn btn-primary mb-2" (click)="navegarAUsuarios()">
+                                        <span class="oi oi-list"></span> Ver Usuarios
+                                    </button>
+                                    <button class="btn btn-outline-primary" [routerLink]="['/usuarios/crear']">
+                                        <span class="oi oi-plus"></span> Crear Usuario
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-success">
+                            <div class="card-body text-center">
+                                <span class="oi oi-graph display-4 text-success mb-3"></span>
+                                <h5>Gestión de Roles</h5>
+                                <p class="text-muted">Administrar roles del sistema</p>
+                                <div class="btn-group-vertical w-100">
+                                    <button class="btn btn-success mb-2" (click)="navegarARoles()">
+                                        <span class="oi oi-list"></span> Ver Roles
+                                    </button>
+                                    <button class="btn btn-outline-success" [routerLink]="['/roles/crear']">
+                                        <span class="oi oi-plus"></span> Crear Rol
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-info">
+                            <div class="card-body text-center">
+                                <span class="oi oi-lock-locked display-4 text-info mb-3"></span>
+                                <h5>Gestión de Permisos</h5>
+                                <p class="text-muted">Administrar permisos del sistema</p>
+                                <div class="btn-group-vertical w-100">
+                                    <button class="btn btn-info mb-2" (click)="navegarAPermisos()">
+                                        <span class="oi oi-list"></span> Ver Permisos
+                                    </button>
+                                    <button class="btn btn-outline-info" [routerLink]="['/permisos/crear']">
+                                        <span class="oi oi-plus"></span> Crear Permiso
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

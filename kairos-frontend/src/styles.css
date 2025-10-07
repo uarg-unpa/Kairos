@@ -1,1 +1,108 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Bootstrap CSS */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Open Iconic Icons */
+@import 'open-iconic/font/css/open-iconic-bootstrap.css';
+
+/* Wittgenstein Font */
+@import url('https://fonts.googleapis.com/css2?family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap');
+
+/* Global custom styles */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #f8f9fa;
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.btn-group .btn {
+  margin-right: 2px;
+}
+
+.btn-group .btn:last-child {
+  margin-right: 0;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 0.75em;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Custom badge colors */
+.badge-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.badge-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.badge-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.badge-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.badge-info {
+  background-color: #17a2b8;
+  color: white;
+}
+
+/* 1. Estilos para el Logo y la Marca */
+.kairos-logo-img {
+  width: 45px;
+  height: 45px;
+  margin-right: 15px;
+}
+
+.kairos-brand-text {
+  /* **Fuente Wittgenstein** */
+  font-family: 'Wittgenstein', serif; 
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #FFF; 
+}
+
+/* 2. Estilo para la Línea de Degradado */
+.navbar-separator {
+  height: 5px; /* Altura de la línea de color */
+  /* Degradado de Verde a Cian */
+  background: linear-gradient(to right, #61e38b 0%, #00c7f2 100%);
+  /* Opcional: añade margen para separar el contenido */
+  /* margin-bottom: 20px; */ 
+}
