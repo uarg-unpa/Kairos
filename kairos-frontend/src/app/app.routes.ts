@@ -1,8 +1,7 @@
-import { Routes } from '@angular/router';
-import { AppComponent } from './app';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login';
 import { AuthCallbackComponent } from './auth-callback/auth-callback';
-import { DashboardComponent } from './dashboard/dashboard';
 
 // User management components
 import { UsuariosComponent } from './usuarios/usuarios';
@@ -22,69 +21,58 @@ import { PermisosCrearComponent } from './permisos/permisos-crear/permisos-crear
 import { PermisosVerComponent } from './permisos/permisos-ver/permisos-ver';
 import { PermisosEditarComponent } from './permisos/permisos-editar/permisos-editar';
 
+// Dashboard component
+import { DashboardComponent } from './dashboard/dashboard';
+import { AppComponent } from './app';
+
 export const routes: Routes = [
-  // 1. RUTAS PÚBLICAS Y DE AUTENTICACIÓN
-  { path: '', redirectTo: 'login', pathMatch: 'full' }, 
-  { path: 'login', component: LoginComponent },
-  { path: 'login-callback', component: AuthCallbackComponent }, 
-
+  // Ruta principal, redirige al login
+      { path: '', redirectTo: '/login', pathMatch: 'full' }, 
+        // Ruta de la página de login
+        { path: 'login', component: LoginComponent },
+        // RUTA CRÍTICA: Spring Boot debe redirigir a esta URL después del login exitoso
+        { path: 'login-callback', component: AuthCallbackComponent }, 
+  
 // ----------------------------------------------------
-  // 2. RUTAS DE LA APLICACIÓN (LAYOUT GLOBAL)
-// ----------------------------------------------------
+  // 2. RUTAS /APLICACIÓN (Con navbar global)
+  // ----------------------------------------------------
   {
-    path: '', // Ruta padre: Carga el AppComponent
-    component: AppComponent, // <<-- ESTE COMPONENTE ES TU LAYOUT MAESTRO
+    path: '', // Este path vacío actúa como el layout de todas las rutas protegidas
+    component: AppComponent, // El AppComponent se carga primero (Navbar, Separador, <router-outlet>)
     children: [
-      // Dashboard (ruta inicial después del login)
+      // Dashboard route
       { path: 'dashboard', component: DashboardComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, // Redirección si entran solo a /
-
-      // GRUPO DE RUTAS: USUARIOS
-      { 
-        path: 'usuarios', 
-        component: UsuariosComponent, // El componente principal de Usuarios (la tabla)
-        children: [
-          // Estas rutas se cargarán DENTRO del <router-outlet> del UsuariosComponent
-          { path: 'crear', component: UsuariosCrearComponent },
-          { path: 'ver/:id', component: UsuariosVerComponent },
-          { path: 'editar/:id', component: UsuariosEditarComponent },
-          { path: 'eliminar/:id', component: UsuariosEditarComponent }, // Asumo que es un modal en Editar
-        ]
-      },
       
-      // GRUPO DE RUTAS: ROLES
-      { 
-        path: 'roles', 
-        component: RolesComponent, // El componente principal de Roles (la tabla)
-        children: [
-          { path: 'crear', component: RolesCrearComponent },
-          { path: 'ver/:id', component: RolesVerComponent },
-          { path: 'editar/:id', component: RolesEditarComponent },
-          { path: 'eliminar/:id', component: RolesEditarComponent },
-        ]
-      },
+      // User management routes
+      { path: 'usuarios', component: UsuariosComponent },
+      { path: 'usuarios/crear', component: UsuariosCrearComponent },
+      { path: 'usuarios/ver/:id', component: UsuariosVerComponent },
+      { path: 'usuarios/editar/:id', component: UsuariosEditarComponent },
+      { path: 'usuarios/eliminar/:id', component: UsuariosEditarComponent }, 
       
-      // GRUPO DE RUTAS: PERMISOS
-      { 
-        path: 'permisos', 
-        component: PermisosComponent, // El componente principal de Permisos (la tabla)
-        children: [
-          { path: 'crear', component: PermisosCrearComponent },
-          { path: 'ver/:id', component: PermisosVerComponent },
-          { path: 'editar/:id', component: PermisosEditarComponent },
-          { path: 'eliminar/:id', component: PermisosEditarComponent },
-        ]
-      },
+      // Role management routes
+      { path: 'roles', component: RolesComponent },
+      { path: 'roles/crear', component: RolesCrearComponent },
+      { path: 'roles/ver/:id', component: RolesVerComponent },
+      { path: 'roles/editar/:id', component: RolesEditarComponent },
+      { path: 'roles/eliminar/:id', component: RolesEditarComponent }, 
+      
+      // Permission management routes
+      { path: 'permisos', component: PermisosComponent },
+      { path: 'permisos/crear', component: PermisosCrearComponent },
+      { path: 'permisos/ver/:id', component: PermisosVerComponent },
+      { path: 'permisos/editar/:id', component: PermisosEditarComponent },
+      { path: 'permisos/eliminar/:id', component: PermisosEditarComponent },
     ]
   },
   
   // Wildcard route for 404 (redirige al login por defecto)
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: '/login' }
 ];
 
-// Si estás usando Standalone Components, el módulo ya no es necesario aquí:
-// @NgModule({
-//   imports: [RouterModule.forRoot(routes)],
-//   exports: [RouterModule]
-// })
-// export class AppModule { }
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppModule { }

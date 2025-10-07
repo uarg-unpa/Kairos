@@ -1,7 +1,9 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, RouterOutlet } from '@angular/router'; // 1. Importar RouterOutlet
-import { Title } from '@angular/platform-browser'; 
+import { RouterModule } from '@angular/router';
+import { Title } from '@angular/platform-browser'; // Importado para manejar el título de la página
+// La línea de PageWrapperComponent se ha eliminado
 
 interface Rol {
   id: number;
@@ -18,32 +20,17 @@ interface Usuario {
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  // 2. Incluir RouterOutlet en imports
-  imports: [CommonModule, RouterModule, RouterOutlet], 
+  
+  imports: [CommonModule, RouterModule], 
   template: `
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h4><span class="oi oi-person"></span> Usuarios</h4>
-        <!-- El enlace sigue apuntando a la ruta hija -->
-        <a routerLink="crear" class="btn btn-success"> 
+        <a routerLink="/usuarios/crear" class="btn btn-success">
           <span class="oi oi-plus"></span> Crear Usuario
         </a>
       </div>
-
-      <!-- 3. INYECTAR RUTAS HIJAS: Mostrará UsuariosCrearComponent en esta posición. -->
-      <router-outlet></router-outlet> 
-      
       <div class="card-body">
-        <!-- 4. MOSTRAR LA TABLA SOLO SI NO ESTAMOS EN UNA RUTA HIJA -->
-        <!-- Usaremos el RouterOutlet para determinar qué mostrar. 
-             Si no hay ruta hija activa, mostraremos la tabla.
-             PERO, para simplificar, si quieres que la tabla y el formulario se reemplacen completamente, 
-             tendrás que ajustar las rutas para que 'crear' no sea hija de 'usuarios'.
-             
-             Por ahora, si estás usando rutas anidadas, el template debería ser más inteligente: -->
-
-        <!-- Ejemplo de lógica de visibilidad (requiere CurrentRoute URL checking, pero para simplificar, 
-             siempre mostramos la tabla debajo del router-outlet): -->
         <div class="table-responsive">
           <table class="table table-striped">
             <thead>
@@ -91,9 +78,11 @@ interface Usuario {
 export class UsuariosComponent implements OnInit {
   usuarios: Usuario[] = [];
 
+  // 1. Inyectar TitleService
   constructor(private titleService: Title) {}
 
   ngOnInit(): void {
+    // 2. Establecer el título de la página
     this.titleService.setTitle('Kairos - Administración de Usuarios');
     this.cargarUsuarios();
   }
