@@ -1,0 +1,22 @@
+/* Custom styles for roles-crear component */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-check {
+  margin-bottom: 0.5rem;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+}

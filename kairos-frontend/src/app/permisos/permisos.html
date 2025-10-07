@@ -1,0 +1,40 @@
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4><span class="oi oi-lock-locked"></span> Permisos</h4>
+        <a routerLink="/permisos/crear" class="btn btn-success">
+            <span class="oi oi-plus"></span> Crear Permiso
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let permiso of permisos">
+                        <td>{{ permiso.id }}</td>
+                        <td>{{ permiso.nombre }}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a [routerLink]="['/permisos/ver', permiso.id]" class="btn btn-info btn-sm">
+                                    <span class="oi oi-eye"></span>
+                                </a>
+                                <a [routerLink]="['/permisos/editar', permiso.id]" class="btn btn-warning btn-sm">
+                                    <span class="oi oi-pencil"></span>
+                                </a>
+                                <a [routerLink]="['/permisos/eliminar', permiso.id]" class="btn btn-danger btn-sm">
+                                    <span class="oi oi-trash"></span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

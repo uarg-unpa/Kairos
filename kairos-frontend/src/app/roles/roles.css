@@ -1,0 +1,39 @@
+/* Custom styles for roles component */
+.badge-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.badge-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.badge-info {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.btn-group .btn {
+  margin-right: 2px;
+}
+
+.btn-group .btn:last-child {
+  margin-right: 0;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+

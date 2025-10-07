@@ -1,0 +1,107 @@
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <span class="oi oi-pencil"></span> Editar Permiso
+                    </h3>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Loading Data State -->
+                    <div *ngIf="loadingData" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Cargando datos del permiso...</p>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div *ngIf="error" class="alert alert-danger" role="alert">
+                        <span class="oi oi-warning"></span> {{ error }}
+                    </div>
+
+                    <!-- Form -->
+                    <form *ngIf="!loadingData" [formGroup]="permisoForm" (ngSubmit)="onSubmit()">
+                        
+                        <!-- Nombre -->
+                        <div class="form-group">
+                            <label for="nombre">Nombre *</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="nombre" 
+                                   formControlName="nombre"
+                                   placeholder="Ej: PERMISO_USUARIOS, PERMISO_ROLES"
+                                   [class.is-invalid]="permisoForm.get('nombre')?.invalid && permisoForm.get('nombre')?.touched">
+                            <div class="invalid-feedback" *ngIf="getFieldError('nombre')">
+                                {{ getFieldError('nombre') }}
+                            </div>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="form-group">
+                            <label for="descripcion">Descripción *</label>
+                            <textarea class="form-control" 
+                                      id="descripcion" 
+                                      rows="3"
+                                      formControlName="descripcion"
+                                      placeholder="Descripción detallada del permiso y su propósito"
+                                      [class.is-invalid]="permisoForm.get('descripcion')?.invalid && permisoForm.get('descripcion')?.touched"></textarea>
+                            <div class="invalid-feedback" *ngIf="getFieldError('descripcion')">
+                                {{ getFieldError('descripcion') }}
+                            </div>
+                        </div>
+
+                        <!-- Categoría -->
+                        <div class="form-group">
+                            <label for="categoria">Categoría *</label>
+                            <select class="form-control" 
+                                    id="categoria" 
+                                    formControlName="categoria"
+                                    [class.is-invalid]="permisoForm.get('categoria')?.invalid && permisoForm.get('categoria')?.touched">
+                                <option value="">Seleccione una categoría</option>
+                                <option *ngFor="let categoria of categoriasDisponibles" [value]="categoria">
+                                    {{ categoria }}
+                                </option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="getFieldError('categoria')">
+                                {{ getFieldError('categoria') }}
+                            </div>
+                        </div>
+
+                        <!-- Estado Activo -->
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="activo" 
+                                       formControlName="activo">
+                                <label class="form-check-label" for="activo">
+                                    Permiso Activo
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-group d-flex justify-content-between">
+                            <button type="button" 
+                                    class="btn btn-secondary" 
+                                    (click)="onCancel()"
+                                    [disabled]="loading">
+                                <span class="oi oi-x"></span> Cancelar
+                            </button>
+                            <button type="submit" 
+                                    class="btn btn-primary" 
+                                    [disabled]="loading || permisoForm.invalid">
+                                <span *ngIf="!loading" class="oi oi-check"></span>
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status"></span>
+                                {{ loading ? 'Actualizando...' : 'Actualizar Permiso' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
