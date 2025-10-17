@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Kairos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Megrim&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+            background-color: #f8f9fa;
+        }
+
+        .textKairos {
+            font-family: 'Megrim', sans-serif;
+        }
+
+        .dashboard-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card {
+            background: white;
+            color: #333;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .metric-card.success {
+            border-left: 4px solid #28a745;
+        }
+
+        .metric-card.warning {
+            border-left: 4px solid #ffc107;
+        }
+
+        .metric-card.danger {
+            border-left: 4px solid #dc3545;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .card-body-small {
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <img src="Kairos Logo.png" width="40" height="40" alt="">
+                <span class="fw-bold fs-4 textKairos">Kairos</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarKairos"
+                aria-controls="navbarKairos" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarKairos">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="../ProyectoInicio/proyectoLider.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                            href="../ProyectoSecciones/proyectoVistaLider.html">Proyecto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../SeccionMiembros/miembrosLider.html">Miembros</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link"
+                            href="../planificacion/planificacionLider.html">Planificación</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../etapas/etapasLider.html">Etapas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../workspace/workspace.html">Espacio de trabajo</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link active" href="../dashboard/dashboard.html">Reportes</a></li>
+                </ul>
+                <div class="dropdown">
+                    <button class="btn btn-dark d-flex align-items-center gap-2 dropdown-toggle border-0" type="button"
+                        id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://lh3.googleusercontent.com/a/default-user=s96-c" alt="Perfil"
+                            class="rounded-circle" width="40" height="40">
+                        <span class="fw-semibold text-white">Guillermo Escalante</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm" aria-labelledby="userMenu">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Modificar perfil</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-question-circle me-2"></i>Ayuda</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="#"><i
+                                    class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <!-- Header con filtros -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-1">Panel de Control - Kairos</h2>
+                <p class="text-muted mb-0">Resumen integral de productividad y gestión de tareas</p>
+            </div>
+            <div class="d-flex gap-2">
+                <select class="form-select" id="phaseFilter" style="width: auto;">
+                    <option value="today">Inicio</option>
+                    <option value="week" selected>Elaboración</option>
+                    <option value="all">Todo el Tiempo</option>
+                </select>
+
+                <select class="form-select" id="iterationFilter" style="width: auto;">
+                    <option value="week" selected>Iteración 2</option>
+                    <option value="month">Iteración 1</option>
+                    <option value="all">Todo el Tiempo</option>
+                </select>
+
+                <select class="form-select" id="timeFilter" style="width: auto;">
+                    <option value="today">Hoy</option>
+                    <option value="week" selected>Esta Semana</option>
+                    <option value="month">Este Mes</option>
+                    <option value="all">Todo el Tiempo</option>
+                </select>
+
+                <button class="btn btn-outline-primary">
+                    <i class="bi bi-download me-2"></i>Exportar
+                </button>
+                <button class="btn btn-primary">
+                    <i class="bi bi-arrow-clockwise me-2"></i>Actualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Alertas importantes -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-6">
+                <div
+                    class="border-start border-3 border-danger shadow-sm p-3 rounded bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <i class="bi bi-exclamation-triangle me-3 text-danger fs-4"></i>
+                        <div>
+                            <h6 class="mb-1">Tareas atrasadas</h6>
+                            <small class="text-muted">2 tareas con fecha atrasada</small>
+                        </div>
+                        <div class="ms-auto">
+                            <button class="btn btn-sm btn-outline-danger">Ver detalles</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="border-start bg-white border-3 border-warning shadow-sm p-3 rounded">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-lg me-3 text-warning fs-4"></i>
+                            <div>
+                                <h6 class="mb-1">Próximos vencimientos</h6>
+                                <small class="text-muted">3 tareas próximas a vencer</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-warning">Ver detalles</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Contenedor principal -->
+        <div class="row g-4">
+            <!-- Columna izquierda -->
+            <div class="col-lg-8 order-1">
+                <div class="row g-4">
+                    <!-- Horas por Iteración - Equipo A -->
+                    <div class="col-lg-6 col-md-12">
+                        <div class="card rounded-2 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Horas por iteración - Equipo A</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="horasChart1" height="120"></canvas>
+                            </div>
+                            <div class="card-footer text-muted text-center">
+                                <button class="btn btn-sm btn-outline-primary">Ver más</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Horas por Iteración - Equipo B (con modal) -->
+                    <div class="col-lg-6 col-md-12">
+                        <div class="card rounded-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalHoras"
+                            style="cursor: pointer;">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Horas por iteración</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="horasChart2" height="120"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Horas por Miembro -->
+                    <div class="col-lg-6 col-md-12">
+                        <div class="card rounded-2 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Horas por Miembro</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="horasPorMiembroChart" height="120"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Horas por Fase -->
+                    <div class="col-lg-6 col-md-12">
+                        <div class="card rounded-2 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Horas por fase</h5>
+                            </div>
+                            <div class="card-body card-body-small">
+                                <canvas id="horasChart4"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna derecha (Métricas principales) -->
+            <div class="col-lg-4 order-2">
+                <div class="row g-3">
+                    
+                    <div class="col-12">
+                        <div class="card dashboard-card metric-card success">
+                            <div class="card-body text-center">
+                                <i class="bi bi-check-circle fs-1 mb-3 text-success"></i>
+                                <div class="metric-value fs-3" id="completedTasks">16 / 32</div>
+                                <h6 class="mb-0">Completadas</h6>
+                                <small class="text-muted">50% de progreso</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card dashboard-card metric-card warning">
+                            <div class="card-body text-center">
+                                <i class="bi bi-clock fs-1 mb-3 text-warning"></i>
+                                <div class="metric-value fs-3" id="totalHours">156</div>
+                                <h6 class="mb-0">Horas Trabajadas</h6>
+                                <small class="text-muted">Esta semana: 42h</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card dashboard-card metric-card danger">
+                            <div class="card-body text-center">
+                                <i class="bi bi-speedometer fs-1 mb-3 text-danger"></i>
+                                <div class="metric-value fs-3" id="efficiency">87%</div>
+                                <h6 class="mb-0">Eficiencia</h6>
+                                <small class="text-muted">Estimado vs Real</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Horas Equipo B -->
+        <div class="modal fade" id="modalHoras" tabindex="-1" aria-labelledby="modalHorasLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalHorasLabel">Horas por iteración - Detalle</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="position: relative; height:500px;">
+                            <canvas id="horasChartModal"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Datos
+        const horasDataA = { labels: ['Iteración 1', 'Iteración 2', 'Iteración 3', 'Iteración 4'], datasets: [{ label: 'Horas trabajadas', data: [40, 35, 50, 45], backgroundColor: '#0d6efd' }] };
+        const horasDataB = { labels: ['Iteración 1', 'Iteración 2', 'Iteración 3', 'Iteración 4'], datasets: [{ label: 'Horas trabajadas', data: [38, 42, 47, 44], backgroundColor: 'rgba(54,162,235,0.7)' }] };
+        const horasDataMiembros = { labels: ['Guillermo', 'Lucía', 'Martín', 'Ana'], datasets: [{ label: 'Horas trabajadas', data: [12, 15, 10, 8], backgroundColor: '#0d6efd' }] };
+        const horasDataD = { labels: ['Inicio', 'Elaboración', 'Construcción', 'Transición'], datasets: [{ label: 'Horas por fase', data: [45, 33, 60, 48], backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545'] }] };
+
+        // Gráficos principales
+        new Chart(document.getElementById('horasChart1'), { type: 'bar', data: horasDataA, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Horas' } }, x: { title: { display: true, text: 'Iteraciones' } } } } });
+        new Chart(document.getElementById('horasChart2'), { type: 'bar', data: horasDataB, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Horas' } }, x: { title: { display: true, text: 'Iteraciones' } } } } });
+        new Chart(document.getElementById('horasPorMiembroChart'), { type: 'bar', data: horasDataMiembros, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Horas' } }, x: { title: { display: true, text: 'Miembros' } } } } });
+        new Chart(document.getElementById('horasChart4'), { type: 'pie', data: horasDataD, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } });
+
+        // Modal gráfico
+        let modalChart;
+        const modalElement = document.getElementById('modalHoras');
+        modalElement.addEventListener('shown.bs.modal', function () {
+            const ctx = document.getElementById('horasChartModal').getContext('2d');
+            if (modalChart) modalChart.destroy();
+            modalChart = new Chart(ctx, {
+                type: 'bar',
+                data: horasDataB,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Horas' } },
+                        x: { title: { display: true, text: 'Iteraciones' } }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
