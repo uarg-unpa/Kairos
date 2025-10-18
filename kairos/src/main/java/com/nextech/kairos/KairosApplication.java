@@ -8,12 +8,9 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class KairosApplication {
 
     public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.configure()
-                              .ignoreIfMalformed()  // Opcional
-                              .ignoreIfMissing()    // Opcional
-                              .load();
+        Dotenv dotenv = Dotenv.configure().ignoreIfMalformed().ignoreIfMissing().load();
 
-        // Setear como variables del sistema para que Spring pueda usarlas
+        // leer .env
         dotenv.entries().forEach(entry -> {
             System.setProperty(entry.getKey(), entry.getValue());
         });
