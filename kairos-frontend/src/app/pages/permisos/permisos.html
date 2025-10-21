@@ -1,0 +1,36 @@
+<h2>Permisos</h2>
+
+<div class="container mt-4 main-content">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h4><span class="oi oi-key"></span> Permisos</h4>
+    </div>
+    <div class="card-body">
+      @if (permisos().length > 0) {
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Roles</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of permisos(); track p.id) {
+                <tr>
+                  <td>{{ p.id }}</td>
+                  <td>{{ p.nombre }}</td>
+                  <td>{{ (p.roles || []).join(', ') }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p>No hay permisos registrados.</p>
+      }
+    </div>
+  </div>
+  </div>
+

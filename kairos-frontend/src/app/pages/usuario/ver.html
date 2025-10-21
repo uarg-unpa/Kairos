@@ -1,0 +1,19 @@
+<div class="card">
+  <div class="card-header">
+    <h5>Detalle de Usuario</h5>
+  </div>
+  <div class="card-body" *ngIf="usuario">
+    <p><strong>ID:</strong> {{ usuario.id }}</p>
+    <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
+    <p><strong>Email:</strong> {{ usuario.email }}</p>
+    <p><strong>Roles:</strong>
+      @if (usuario.rol?.length) {
+        @for (r of usuario.rol; let i = $index; track r.id) {
+          {{ r.nombre }}@if (i < usuario.rol.length - 1) {, }
+        }
+      } @else { — }
+    </p>
+    <a routerLink="/usuarios" class="btn btn-secondary">Volver</a>
+    <a [routerLink]="['/usuario/modificar', usuario.id]" class="btn btn-primary ml-2">Editar</a>
+  </div>
+</div>

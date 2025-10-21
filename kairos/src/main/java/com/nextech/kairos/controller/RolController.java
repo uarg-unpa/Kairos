@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/roles")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@PreAuthorize("hasAuthority('PERMISSION_ROLES')")
+@PreAuthorize("hasAuthority('Roles')")
 public class RolController {
     
     @Autowired

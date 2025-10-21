@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 import { Usuario } from '../models/usuarios';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ConfigService } from './config.service';
@@ -44,5 +45,26 @@ export class UsuariosService {
 
   eliminarUsuario(id: number) {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  getById(id: number) {
+    return this.http.get<any>(`${this.baseUrl}/${id}`).pipe(
+      map((u: any) => ({
+        id: u.id,
+        nombre: u.nombre,
+        email: u.email,
+        rol: Array.isArray(u.roles)
+          ? (u.roles as string[]).map((name, i) => ({ id: i, nombre: name }))
+          : (u.rol || [])
+      }) as Usuario)
+    );
+  }
+
+  update(id: number, payload: { nombre: string; email: string }) {
+    return this.http.put(`${this.baseUrl}/${id}`, payload);
+  }
+
+  create(payload: { nombre: string; email: string }) {
+    return this.http.post(this.baseUrl, payload);
   }
 }

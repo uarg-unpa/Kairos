@@ -1,0 +1,18 @@
+<div class="card">
+  <div class="card-header">
+    <h5>{{ titulo }}</h5>
+  </div>
+  <div class="card-body">
+    <form (ngSubmit)="guardar()">
+      <div class="form-group">
+        <label>Nombre</label>
+        <input type="text" class="form-control" [(ngModel)]="nombre" name="nombre" required />
+      </div>
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a routerLink="/permisos" class="btn btn-secondary ml-2">Cancelar</a>
+      </div>
+    </form>
+  </div>
+  </div>
+

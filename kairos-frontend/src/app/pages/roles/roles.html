@@ -1,0 +1,36 @@
+<h2>Roles</h2>
+
+<div class="container mt-4 main-content">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h4><span class="oi oi-people"></span> Roles</h4>
+    </div>
+    <div class="card-body">
+      @if (roles().length > 0) {
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Permisos</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (rol of roles(); track rol.id) {
+                <tr>
+                  <td>{{ rol.id }}</td>
+                  <td>{{ rol.nombre }}</td>
+                  <td>{{ (rol.permisos || []).join(', ') }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p>No hay roles registrados.</p>
+      }
+    </div>
+  </div>
+  </div>
+
