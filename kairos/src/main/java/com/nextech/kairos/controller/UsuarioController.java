@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/usuarios")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@PreAuthorize("hasAuthority('PERMISSION_USUARIOS')")
+@PreAuthorize("hasAuthority('Usuarios')")
 public class UsuarioController {
     
     @Autowired

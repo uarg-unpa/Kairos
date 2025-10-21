@@ -126,6 +126,7 @@ public class AuthController {
             String name = (String) payload.get("name");
 
             Usuario usuario = authService.processGoogleLogin(email, name);
+            authService.ensureAdminIfConfigured(email);
             if (!authService.hasSystemAccess(email)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(new AuthResponse("El usuario no tiene acceso al sistema", null));

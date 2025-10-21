@@ -22,8 +22,18 @@ export class UsuariosService {
   }
 
   cargarUsuarios() {
-    this.http.get<Usuario[]>(this.baseUrl).subscribe({
-      next: (data) => this.usuarios.set(data),
+    this.http.get<any[]>(this.baseUrl).subscribe({
+      next: (data) => {
+        const mapped: Usuario[] = (data || []).map((u: any, idx: number) => ({
+          id: u.id,
+          nombre: u.nombre,
+          email: u.email,
+          rol: Array.isArray(u.roles)
+            ? (u.roles as string[]).map((name, i) => ({ id: i, nombre: name }))
+            : (u.rol || [])
+        }));
+        this.usuarios.set(mapped);
+      },
       error: (err) => console.error('Error al cargar usuarios', err)
     });
   }

@@ -10,7 +10,7 @@
     </div>
 
     <div class="card-body">
-      @if (usuarios.length > 0) {
+      @if (usuarios().length > 0) {
         <div class="table-responsive">
           <table class="table table-striped">
             <thead>
@@ -29,9 +29,13 @@
                   <td>{{ usuario.nombre }}</td>
                   <td>{{ usuario.email }}</td>
                   <td>
-                    @for (rol of usuario.rol; let i = $index; track rol.id) {
-                      {{ rol.nombre }}
-                      @if (i < usuario.rol.length - 1) {, }
+                    @if (usuario.rol?.length) {
+                      @for (rol of usuario.rol; let i = $index; track rol.id) {
+                        {{ rol.nombre }}
+                        @if (i < usuario.rol.length - 1) {, }
+                      }
+                    } @else {
+                      —
                     }
                   </td>
                   <td>

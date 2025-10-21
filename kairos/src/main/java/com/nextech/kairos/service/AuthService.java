@@ -4,11 +4,13 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nextech.kairos.config.Constants;
 import com.nextech.kairos.model.Usuario;
+import com.nextech.kairos.service.RolService;
 
 @Service
 @Transactional
@@ -16,6 +18,11 @@ public class AuthService {
     
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private RolService rolService;
+
+    @Value("${ADMIN_EMAILS:}")
+    private String adminEmails;
     
     public Usuario authenticateWithGoogle(String nombre, String email) {
         return usuarioService.createUserFromGoogle(nombre, email);
@@ -38,6 +45,20 @@ public class AuthService {
         } catch (Exception e) {
             throw new Exception("Error processing Google login: " + e.getMessage());
         }
+    }
+
+    public void ensureAdminIfConfigured(String email) {
+        if (adminEmails == null || adminEmails.isBlank()) return;
+        var list = java.util.Arrays.stream(adminEmails.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+        if (!list.contains(email)) return;
+        Optional<Usuario> u = usuarioService.findByEmail(email);
+        if (u.isEmpty()) return;
+        if (isAdmin(email)) return;
+        var adminRole = rolService.findByName(Constants.ROLE_ADMIN);
+        adminRole.ifPresent(rol -> usuarioService.assignRole(u.get().getId(), rol.getId()));
     }
 
     @Transactional(readOnly = true)
