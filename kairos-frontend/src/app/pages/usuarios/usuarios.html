@@ -29,7 +29,7 @@
                   <td>{{ usuario.nombre }}</td>
                   <td>{{ usuario.email }}</td>
                   <td>
-                    @if (usuario.rol?.length) {
+                    @if (usuario.rol.length) {
                       @for (rol of usuario.rol; let i = $index; track rol.id) {
                         {{ rol.nombre }}
                         @if (i < usuario.rol.length - 1) {, }

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nextech.kairos.config.Constants;
 import com.nextech.kairos.model.Usuario;
-import com.nextech.kairos.service.RolService;
+
 
 @Service
 @Transactional

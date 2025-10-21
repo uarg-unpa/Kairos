@@ -1,7 +1,6 @@
 package com.nextech.kairos.util;
 
 import com.nextech.kairos.model.Usuario;
-import com.nextech.kairos.model.Rol;
 import com.nextech.kairos.model.Permiso;
 import org.springframework.stereotype.Component;
 import jakarta.servlet.http.HttpSession;
