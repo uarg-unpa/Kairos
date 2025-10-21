@@ -1,0 +1,49 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        
+        <a class="navbar-brand" href="#">
+            <img src="/Kairos Logo.png" class="kairos-logo-img" alt="Kairos Logo">
+            <span class="kairos-brand-text">KAIROS</span>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#fullNavbarContent" 
+                aria-controls="fullNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>   
+        </button>
+        
+        <div class="collapse navbar-collapse" id="fullNavbarContent">
+            
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/inicio" routerLinkActive="active"><span class="oi oi-home"></span> Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"><span class="oi oi-question-mark"></span> Ayuda</a>
+                </li>
+
+            </ul>
+
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/login" routerLinkActive="active"><span class="oi oi-account-login"></span> Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" (click)="logout()"><span class="oi oi-account-logout"></span> Salir</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="navbar-separator"></div>
+
+<div NgIf="showUserAlert && usuarioLogueado" class="alert alert-info alert-dismissible fade show container" role="alert">
+    </div>
+<div class="container mt-4 main-content">
+    <router-outlet></router-outlet>
+</div>
+
+<footer class="footer py-3">
+    <div class="container">
+        </div>
+</footer>

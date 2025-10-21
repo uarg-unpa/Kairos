@@ -1,25 +1,38 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { Usuario } from '../models/usuarios';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuariosService {
-  private baseUrl = 'http://localhost:8085/api/usuarios'; // ajustá según tu API
+  private http = inject(HttpClient);
+  private config = inject(ConfigService);
+  private baseUrl = (this.config.get('apiBaseUrl') || 'http://localhost:8080') + '/api/usuarios';
 
-  constructor(private http: HttpClient) {}
+  // ✅ Señal editable (WritableSignal)
+  usuarios = signal<Usuario[]>([]);
 
-  obtenerUsuarios(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(this.baseUrl);
+  constructor() {
+    console.log('🟢 UsuariosComponent cargado');
+    this.cargarUsuarios();
+
   }
 
-  crearUsuario(usuario: Usuario): Observable<Usuario> {
-    return this.http.post<Usuario>(this.baseUrl, usuario);
+  cargarUsuarios() {
+    this.http.get<Usuario[]>(this.baseUrl).subscribe({
+      next: (data) => this.usuarios.set(data),
+      error: (err) => console.error('Error al cargar usuarios', err)
+    });
   }
 
-  eliminarUsuario(id: number): Observable<void> {
+  getUsuarios() {
+    return this.usuarios.asReadonly(); // opcional, para evitar mutaciones desde afuera
+  }
+
+  eliminarUsuario(id: number) {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

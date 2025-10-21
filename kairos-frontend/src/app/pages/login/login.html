@@ -1,0 +1,27 @@
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+  <div class="card p-4" style="max-width: 720px; width: 100%;">
+    <div class="d-flex align-items-center mb-3">
+      <img src="/Kairos Logo.ico" alt="Kairos" style="height: 50px;" class="mr-2" />
+      <h4 class="mb-0">Kairos - Login</h4>
+    </div>
+
+    <div class="alert alert-info" role="alert">
+      <span class="oi oi-info"></span>
+      <strong> Importante:</strong> Para acceder al sistema es necesario disponer de una cuenta de Gmail.
+    </div>
+
+    <h5 class="mt-3">Bienvenido</h5>
+    <p>Estimado usuario: Bienvenido a la aplicación Kairos, una aplicación desarrollada por la UNPA-UARG.</p>
+
+    <h6 class="mt-4">Ingreso al Sistema</h6>
+    <p>Ud. puede ingresar al sistema si está conectado a su e-mail. Por favor haga clic en el siguiente botón:</p>
+
+
+    <div class="alert alert-danger" role="alert" *ngIf="configError">{{ configError }}</div>
+
+    <div class="d-flex justify-content-center" *ngIf="!configError">
+      <div id="googleBtn"></div>
+    </div>
+
+  </div>
+</div>

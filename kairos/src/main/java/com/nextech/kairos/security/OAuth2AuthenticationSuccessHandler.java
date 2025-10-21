@@ -61,8 +61,13 @@ public void onAuthenticationSuccess(HttpServletRequest request, HttpServletRespo
 
         response.addCookie(jwtCookie);
 
-        // 5. Redirigir al panel principal
-        getRedirectStrategy().sendRedirect(request, response, "/usuarios");
+        // 5. Redirigir al frontend con el token para que Angular lo guarde
+        String targetUrl = UriComponentsBuilder
+                .fromUriString("http://localhost:4200/login")
+                .queryParam("token", token)
+                .build()
+                .toUriString();
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
     } catch (Exception e) {
         // Manejo de error: por ejemplo, redirigir con mensaje de error o loggear

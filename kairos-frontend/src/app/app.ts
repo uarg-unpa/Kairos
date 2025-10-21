@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
+import { AuthService } from './services/auth.service';
+
 
 @Component({
   selector: 'app-root',
@@ -11,17 +13,11 @@ import { Router, RouterOutlet } from '@angular/router';
 export class AppComponent {
   title = 'Kairos Frontend';
   // 2. Inyectar el Router en el constructor
-  constructor(private router: Router) {}
+  constructor(private router: Router, private auth: AuthService) {}
 
   // 3. Implementar la función de logout
   logout(): void {
-    console.log('Cerrando sesión y redirigiendo a login...');
-    
-    // Lógica para limpiar el token (Ajusta la clave si usas una diferente)
-    localStorage.removeItem('jwt_token'); 
-    
-    // Redirigir al usuario a la ruta de login
-    this.router.navigate(['/login']);
+    this.auth.logout();
   }
 
   // 4. Definir las propiedades necesarias para el HTML (incluso como placeholders)

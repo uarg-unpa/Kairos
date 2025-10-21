@@ -15,21 +15,15 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.nextech.kairos.security.CustomOAuth2UserService;
 import com.nextech.kairos.security.JwtAuthenticationEntryPoint;
 import com.nextech.kairos.security.JwtAuthenticationFilter;
-import com.nextech.kairos.security.OAuth2AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
-
-    @Autowired
-    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    // OAuth2 login deshabilitado: usamos flujo token-exchange en /auth/google
 
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -58,19 +52,13 @@ public class SecurityConfig {
                     "/css/**", "/js/**", "/images/**" //faltan agregar según avance el proyecto
                 ).permitAll()
                 // Endpoints públicos
-                .requestMatchers("/auth/**", "/oauth2/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()
                 // Endpoints protegidos por permisos
                 .requestMatchers("/api/usuarios/**").hasAuthority("PERMISSION_USUARIOS")
                 .requestMatchers("/api/roles/**").hasAuthority("PERMISSION_ROLES")
                 .requestMatchers("/api/permisos/**").hasAuthority("PERMISSION_PERMISOS")
                 // Todo lo demás necesita autenticación
                 .anyRequest().authenticated()
-            )
-            .oauth2Login(oauth2 -> oauth2
-                .userInfoEndpoint(userInfo -> userInfo
-                    .userService(customOAuth2UserService)
-                )
-                .successHandler(oAuth2AuthenticationSuccessHandler)
             );
 
         // Filtro JWT
