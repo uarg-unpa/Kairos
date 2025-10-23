@@ -3,9 +3,9 @@
 <div class="container mt-4 main-content">
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <h4><span class="oi oi-person"></span> Usuarios</h4>
+      <h4><span class="bi bi-person"></span> Usuarios</h4>
       <a routerLink="/usuario/crear" class="btn btn-success">
-        <span class="oi oi-plus"></span> Crear Usuario
+        <span class="bi bi-plus"></span> Crear Usuario
       </a>
     </div>
 
@@ -41,13 +41,13 @@
                   <td>
                     <div class="btn-group" role="group">
                       <a [routerLink]="['/usuario/ver', usuario.id]" class="btn btn-info btn-sm">
-                        <span class="oi oi-eye"></span>
+                        <span class="bi bi-eye"></span>
                       </a>
                       <a [routerLink]="['/usuario/modificar', usuario.id]" class="btn btn-warning btn-sm">
-                        <span class="oi oi-pencil"></span>
+                        <span class="bi bi-pencil"></span>
                       </a>
                       <button (click)="eliminarUsuario(usuario.id)" class="btn btn-danger btn-sm">
-                        <span class="oi oi-trash"></span>
+                        <span class="bi bi-trash"></span>
                       </button>
                     </div>
                   </td>
