@@ -10,29 +10,20 @@ import com.nextech.kairos.model.Tarea;
 @Repository
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
 
-    // --- Métodos de consulta personalizados comunes (Derived Query Methods) ---
-
     // Buscar tareas por su nombre (ignorando mayúsculas/minúsculas)
+    // @Query("SELECT t FROM Tarea t WHERE LOWER(t.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))")
     List<Tarea> findByNombreContainingIgnoreCase(String nombre);
-
-    // Buscar tareas por un estado específico (ej: "PENDIENTE", "EN PROGRESO")
+    // @Query("SELECT t FROM Tarea t WHERE t.estado = :estado") 
     List<Tarea> findByEstado(String estado);
-    
-    // Buscar tareas por una prioridad específica
+    // @Query("SELECT t FROM Tarea t WHERE t.prioridad = :prioridad")
     List<Tarea> findByPrioridad(String prioridad);
-    
-    // Buscar todas las tareas asignadas a un usuario específico (usando la relación ManyToOne)
-    // El 'Usuario' es el objeto, pero Spring Data JPA usa el ID de la relación por defecto.
+    // @Query("SELECT t FROM Tarea t WHERE t.usuarioAsignado.idUsuario = :idUsuario")
     List<Tarea> findByUsuarioAsignadoId(Long idUsuario);
-
-    // Buscar tareas de una iteración específica (usando la relación ManyToOne)
+    // @Query("SELECT t FROM Tarea t WHERE t.iteracion.idIteracion = :idIteracion") 
     List<Tarea> findByIteracionIdIteracion(Long idIteracion);
-
-    // Buscar tareas que contengan una categoría específica
-    // Spring Data JPA puede manejar consultas a través de colecciones ManyToMany
+    // @Query("SELECT t FROM Tarea t JOIN t.categorias c WHERE c.nombre = :nombreCategoria")
     List<Tarea> findByCategorias_Nombre(String nombreCategoria);
-
-    // Contar el número de tareas en un estado específico para un usuario
+    // @Query("SELECT COUNT(t) FROM Tarea t WHERE t.usuarioAsignado.idUsuario = :idUsuario AND t.estado = :estado")
     long countByUsuarioAsignadoIdAndEstado(Long idUsuario, String estado);
     
     // Buscar tareas que dependen de otra tarea específica
