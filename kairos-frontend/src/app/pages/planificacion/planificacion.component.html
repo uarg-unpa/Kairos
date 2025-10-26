@@ -1,0 +1,178 @@
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Planificación de Tareaasds - Kairos</h2>
+
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-primary" (click)="abrirModal()">
+        <i class="bi bi-plus-circle me-2"></i>Crear Tarea
+      </button>
+
+      <button
+        class="btn btn-outline-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#addTaskModal"
+      >
+        <i class="bi bi-list-task me-2"></i>Tareas propuestas
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros principales -->
+ 
+
+  <!-- Contenido principal -->
+  <div class="row g-4">
+    <!-- Panel Principal -->
+    <div class="col-lg-9">
+      <!-- Listado de tareas -->
+      <div class="card planning-card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Lista de Tareas</h5>
+        </div>
+
+        <div class="card-body p-0">
+          <!-- Si no hay tareas -->
+          <div *ngIf="tareas.length === 0" class="p-4 text-center text-muted">
+            No hay tareas que coincidan con los filtros
+          </div>
+
+          <!-- Listado -->
+          <div *ngFor="let task of tareas" class="task-card p-3 border-bottom">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <h6 class="mb-0">{{ task.nombre }}</h6>
+                  <span class="badge bg-{{ getPriorityColor(task.prioridad) }}">
+                    {{ getPriorityText(task.prioridad) }}
+                  </span>
+                  <span class="badge bg-{{ getStatusColor(task.estado) }}">
+                    {{ getStatusText(task.estado) }}
+                  </span>
+                </div>
+
+                <p class="text-muted mb-2 small">{{ task.descripcion }}</p>
+
+                <div class="row g-2 small text-muted">
+                  <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-3">
+                      <span><i class="bi bi-person me-1"></i>{{ task.idUsuario }}</span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-3">
+                      <span>
+                        <i class="bi bi-calendar me-1"></i>
+                        {{ formatDateRange(task.fechaCreacion, task.fechaFin) }}
+                      </span>
+                      <span class="duration-badge">
+                        <i class="bi bi-clock me-1"></i>2 días
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row g-2 small text-muted mt-1">
+                  <div class="col-md-6">
+                    <span>
+                      <i class="bi bi-hourglass me-1"></i>Estimado: 2h
+                    </span>
+                  </div>
+                  <div class="col-md-6" >
+                    <span><i class="bi bi-link me-1"></i>Depende de: 2 </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex flex-column gap-1">
+                <div class="dropdown">
+                  <button
+                    class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                  >
+                    <i class="bi bi-three-dots"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a class="dropdown-item" (click)="changeTaskStatus(task.idTarea!, 'in-progress')">
+                        <i class="bi bi-play me-2"></i>En Progreso
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" (click)="changeTaskStatus(task.idTarea!, 'completed')">
+                        <i class="bi bi-check-circle me-2"></i>Completar
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" (click)="changeTaskStatus(task.idTarea!, 'on-hold')">
+                        <i class="bi bi-pause-circle me-2"></i>En Pausa
+                      </a>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                      <a class="dropdown-item" (click)="editTask(task.idTarea!)">
+                        <i class="bi bi-pencil me-2"></i>Editar
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item text-danger" (click)="deleteTask(task.idTarea!)">
+                        <i class="bi bi-trash me-2"></i>Eliminar
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Lateral -->
+    
+
+<!-- Modal Nueva Tarea -->
+<div class="modal fade" id="addTaskModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form (ngSubmit)="crearTarea()">
+        <div class="modal-header">
+          <h5 class="modal-title">Nueva Tarea</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevaTarea.nombre" name="nombre" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-control" [(ngModel)]="nuevaTarea.descripcion" name="descripcion"></textarea>
+          </div>
+
+          <div class="row g-2">
+            <div class="col-md-6">
+              <label class="form-label">Fecha Fin</label>
+              <input type="date" class="form-control" [(ngModel)]="nuevaTarea.fechaFin" name="fechaFin" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Prioridad</label>
+              <select class="form-select" [(ngModel)]="nuevaTarea.prioridad" name="prioridad">
+                <option value="Baja">Baja</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,96 @@
+
+
+        .textKairos {
+            font-family: 'Megrim', sans-serif;
+        }
+
+        .planning-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .planning-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .task-card {
+            transition: all 0.2s ease;
+            border-left: 4px solid;
+            cursor: pointer;
+        }
+
+        .task-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-development {
+            border-left-color: #007bff;
+        }
+
+        .category-design {
+            border-left-color: #e91e63;
+        }
+
+        .category-testing {
+            border-left-color: #ff9800;
+        }
+
+        .category-documentation {
+            border-left-color: #4caf50;
+        }
+
+        .category-meeting {
+            border-left-color: #9c27b0;
+            background-color: #f3e5f5;
+        }
+
+        .category-research {
+            border-left-color: #607d8b;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: #dee2e6;
+        }
+
+        .calendar-day {
+            background-color: white;
+            min-height: 100px;
+            padding: 8px;
+            position: relative;
+        }
+
+        .calendar-day.other-month {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .calendar-day.today {
+            background-color: #e3f2fd;
+            border: 2px solid #2196f3;
+        }
+
+        .calendar-task {
+            font-size: 0.75rem;
+            padding: 2px 4px;
+            margin: 1px 0;
+            border-radius: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .duration-badge {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
