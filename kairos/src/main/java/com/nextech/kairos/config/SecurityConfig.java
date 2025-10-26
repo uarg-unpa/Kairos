@@ -20,7 +20,7 @@ import com.nextech.kairos.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-//@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     // OAuth2 login deshabilitado: usamos flujo token-exchange en /auth/google
@@ -44,7 +44,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(authz -> authz
                 // Recursos públicos comunes
-                /*  .requestMatchers(
+                .requestMatchers(
                     "/", 
                     "/error", 
                     "/favicon.ico",
@@ -57,9 +57,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/usuarios/**").hasAuthority("Usuarios")
                 .requestMatchers("/api/roles/**").hasAuthority("Roles")
                 .requestMatchers("/api/permisos/**").hasAuthority("Permisos")
-                */
-                // DESACTIVADO PARA DESARROLLO, VOLVER A ACTIVAR ANTES DE PRODUCCIÓN
-                .anyRequest().permitAll()
+                // Todo lo demás necesita autenticación
+                .anyRequest().authenticated()
             );
 
         // Filtro JWT

@@ -1,178 +1,213 @@
-<div class="container py-4">
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">Planificación de Tareaasds - Kairos</h2>
 
-    <div class="d-flex gap-2">
-      <button type="button" class="btn btn-primary" (click)="abrirModal()">
-        <i class="bi bi-plus-circle me-2"></i>Crear Tarea
-      </button>
-
-      <button
-        class="btn btn-outline-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#addTaskModal"
-      >
-        <i class="bi bi-list-task me-2"></i>Tareas propuestas
-      </button>
-    </div>
-  </div>
-
-  <!-- Filtros principales -->
- 
-
-  <!-- Contenido principal -->
-  <div class="row g-4">
-    <!-- Panel Principal -->
-    <div class="col-lg-9">
-      <!-- Listado de tareas -->
-      <div class="card planning-card">
-        <div class="card-header bg-white">
-          <h5 class="mb-0">Lista de Tareas</h5>
-        </div>
-
-        <div class="card-body p-0">
-          <!-- Si no hay tareas -->
-          <div *ngIf="tareas.length === 0" class="p-4 text-center text-muted">
-            No hay tareas que coincidan con los filtros
-          </div>
-
-          <!-- Listado -->
-          <div *ngFor="let task of tareas" class="task-card p-3 border-bottom">
-            <div class="d-flex justify-content-between align-items-start">
-              <div class="flex-grow-1">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                  <h6 class="mb-0">{{ task.nombre }}</h6>
-                  <span class="badge bg-{{ getPriorityColor(task.prioridad) }}">
-                    {{ getPriorityText(task.prioridad) }}
-                  </span>
-                  <span class="badge bg-{{ getStatusColor(task.estado) }}">
-                    {{ getStatusText(task.estado) }}
-                  </span>
-                </div>
-
-                <p class="text-muted mb-2 small">{{ task.descripcion }}</p>
-
-                <div class="row g-2 small text-muted">
-                  <div class="col-md-6">
-                    <div class="d-flex align-items-center gap-3">
-                      <span><i class="bi bi-person me-1"></i>{{ task.idUsuario }}</span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="d-flex align-items-center gap-3">
-                      <span>
-                        <i class="bi bi-calendar me-1"></i>
-                        {{ formatDateRange(task.fechaCreacion, task.fechaFin) }}
-                      </span>
-                      <span class="duration-badge">
-                        <i class="bi bi-clock me-1"></i>2 días
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row g-2 small text-muted mt-1">
-                  <div class="col-md-6">
-                    <span>
-                      <i class="bi bi-hourglass me-1"></i>Estimado: 2h
-                    </span>
-                  </div>
-                  <div class="col-md-6" >
-                    <span><i class="bi bi-link me-1"></i>Depende de: 2 </span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="d-flex flex-column gap-1">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <img src="Kairos Logo.png" width="40" height="40" alt="">
+                <span class="fw-bold fs-4 textKairos">Kairos</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarKairos"
+                aria-controls="navbarKairos" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarKairos">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Proyecto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Miembros</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#">Planificación</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Etapas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Espacio de trabajo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Reportes</a></li>
+                </ul>
                 <div class="dropdown">
-                  <button
-                    class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                  >
-                    <i class="bi bi-three-dots"></i>
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li>
-                      <a class="dropdown-item" (click)="changeTaskStatus(task.idTarea!, 'in-progress')">
-                        <i class="bi bi-play me-2"></i>En Progreso
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" (click)="changeTaskStatus(task.idTarea!, 'completed')">
-                        <i class="bi bi-check-circle me-2"></i>Completar
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" (click)="changeTaskStatus(task.idTarea!, 'on-hold')">
-                        <i class="bi bi-pause-circle me-2"></i>En Pausa
-                      </a>
-                    </li>
-                    <li><hr class="dropdown-divider" /></li>
-                    <li>
-                      <a class="dropdown-item" (click)="editTask(task.idTarea!)">
-                        <i class="bi bi-pencil me-2"></i>Editar
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item text-danger" (click)="deleteTask(task.idTarea!)">
-                        <i class="bi bi-trash me-2"></i>Eliminar
-                      </a>
-                    </li>
-                  </ul>
+                    <button class="btn btn-dark d-flex align-items-center gap-2 dropdown-toggle border-0" type="button">
+                        <img src="https://lh3.googleusercontent.com/a/default-user=s96-c" alt="Perfil"
+                            class="rounded-circle" width="40" height="40">
+                        <span class="fw-semibold text-white">Guillermo Escalante</span>
+                    </button>
                 </div>
-              </div>
             </div>
-
-            
-          </div>
         </div>
-      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Planificación de Tareas - Kairos</h2>
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Nueva Tarea</button>
+                <button class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Tareas propuestas</button>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="row g-4 mb-2">
+            <div class="col-4">
+                <select class="form-select">
+                    <option>Elaboración</option>
+                    <option>Desarrollo</option>
+                    <option>Diseño</option>
+                    <option>Testing</option>
+                    <option>Documentación</option>
+                    <option>Reuniones</option>
+                    <option>Investigación</option>
+                </select>
+            </div>
+            <div class="col-4">
+                <select class="form-select">
+                    <option>Iteración 1</option>
+                    <option>Iteración 2</option>
+                    <option>Iteración 3</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Panel Principal -->
+            <div class="col-lg-9">
+                <div class="card planning-card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-3">
+                                <select class="form-select">
+                                    <option>Todas las categorías</option>
+                                    <option>Desarrollo</option>
+                                    <option>Diseño</option>
+                                    <option>Testing</option>
+                                    <option>Documentación</option>
+                                    <option>Reuniones</option>
+                                    <option>Investigación</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select">
+                                    <option>Todos los responsables</option>
+                                    <option>Guillermo Escalante</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select">
+                                    <option>Todos los estados</option>
+                                    <option>Planificada</option>
+                                    <option>En Progreso</option>
+                                    <option>Completada</option>
+                                    <option>En Pausa</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="date" class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="date" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Tareas -->
+               <div id="tasksList">
+    <div class="task-card p-3 border-bottom category-design">
+        <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <h6 class="mb-0">Realizar prototipo</h6>
+                    <span class="badge bg-danger">Alta</span>
+                    <span class="badge bg-info">En progreso</span>
+                    <span class="badge bg-secondary">Diseño</span>
+                </div>
+                <p class="text-muted mb-2 small">Crear prototipo inicial para revisión</p>
+                <div class="row g-2 small text-muted">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-3">
+                            <span><i class="bi bi-person me-1"></i>Guillermo Escalante</span>
+                            <span><i class="bi bi-briefcase me-1"></i>Diseñador</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-3">
+                            <span><i class="bi bi-calendar me-1"></i>01/11/2025 - 05/11/2025</span>
+                            <span class="duration-badge"><i class="bi bi-clock me-1"></i>5 días</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-2 small text-muted mt-1">
+                    <div class="col-md-6">
+                        <span><i class="bi bi-hourglass me-1"></i>Estimado: 20h</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span><i class="bi bi-link me-1"></i>Dependencias: Ninguna</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-2 p-2 bg-light rounded small">
+            <i class="bi bi-sticky me-2"></i>Revisar con el equipo antes de presentar.
+        </div>
     </div>
 
-    <!-- Panel Lateral -->
-    
-
-<!-- Modal Nueva Tarea -->
-<div class="modal fade" id="addTaskModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <form (ngSubmit)="crearTarea()">
-        <div class="modal-header">
-          <h5 class="modal-title">Nueva Tarea</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" [(ngModel)]="nuevaTarea.nombre" name="nombre" required />
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Descripción</label>
-            <textarea class="form-control" [(ngModel)]="nuevaTarea.descripcion" name="descripcion"></textarea>
-          </div>
-
-          <div class="row g-2">
-            <div class="col-md-6">
-              <label class="form-label">Fecha Fin</label>
-              <input type="date" class="form-control" [(ngModel)]="nuevaTarea.fechaFin" name="fechaFin" required />
+    <div class="task-card p-3 border-bottom category-documentation">
+        <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <h6 class="mb-0">Modelo arquitectónico</h6>
+                    <span class="badge bg-warning">Media</span>
+                    <span class="badge bg-success">Completada</span>
+                    <span class="badge bg-secondary">Documentación</span>
+                </div>
+                <p class="text-muted mb-2 small">Definir y documentar la arquitectura del sistema</p>
+                <div class="row g-2 small text-muted">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-3">
+                            <span><i class="bi bi-person me-1"></i>Guillermo Escalante</span>
+                            <span><i class="bi bi-briefcase me-1"></i>Arquitecto</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-3">
+                            <span><i class="bi bi-calendar me-1"></i>03/11/2025 - 10/11/2025</span>
+                            <span class="duration-badge"><i class="bi bi-clock me-1"></i>8 días</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-2 small text-muted mt-1">
+                    <div class="col-md-6">
+                        <span><i class="bi bi-hourglass me-1"></i>Estimado: 40h</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span><i class="bi bi-link me-1"></i>Dependencias: Prototipo inicial</span>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Prioridad</label>
-              <select class="form-select" [(ngModel)]="nuevaTarea.prioridad" name="prioridad">
-                <option value="Baja">Baja</option>
-                <option value="Media">Media</option>
-                <option value="Alta">Alta</option>
-              </select>
-            </div>
-          </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar</button>
-        </div>
-      </form>
     </div>
-  </div>
 </div>
+
+            </div>
+
+            <!-- Panel Lateral -->
+            <div class="col-lg-3">
+                <div class="card mb-4 text-center p-3 stats-card">
+                    <h6 class="mb-2">Progreso General</h6>
+                    <h3 class="mb-0">0% Completado</h3>
+                    <div class="progress my-2" style="height: 8px;">
+                        <div class="progress-bar bg-light" style="width: 0%;"></div>
+                    </div>
+                    <small>Total: 3 | Completadas: 0</small>
+                </div>
+
+                <div class="card planning-card mb-4">
+                    <div class="card-header bg-white"><h6>Tareas por Categoría</h6></div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small">Diseño</span><span class="badge bg-primary">1</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small">Documentación</span><span class="badge bg-primary">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
