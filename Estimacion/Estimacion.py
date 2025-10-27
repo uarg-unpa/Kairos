@@ -8,9 +8,9 @@ fechas_estimacion = [
     datetime(2025, 9, 28),
     datetime(2025, 10, 11)
 ]
-caso_probable = [2.3, 2.9, 6.8, 5.4]
-optimista_meses = [2.0, 1.9, 3.6, 2.8]
-pesimista_meses = [2.6, 4.1, 7.3, 6.2]
+caso_probable = [2.3, 2.9, 6.8, 5.1]
+optimista_meses = [2.0, 1.9, 3.6, 3.2]
+pesimista_meses = [2.6, 4.1, 7.3, 6.9]
 
 dias_por_mes = 30
 
