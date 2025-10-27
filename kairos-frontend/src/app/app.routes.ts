@@ -10,7 +10,7 @@ import { UsuarioVerComponent } from './pages/usuario/ver';
 import { UsuarioModificarComponent } from './pages/usuario/modificar';
 import { UsuarioCrearComponent } from './pages/usuario/crear';
 import { SalirComponent } from './pages/salir/salir';
-import { PlanificacionComponent } from './pages/planificacion/planificacion';
+import { PlanificacionComponent } from './pages/planificacion/planificacion.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },

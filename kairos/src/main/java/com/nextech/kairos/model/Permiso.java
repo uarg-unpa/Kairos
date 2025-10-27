@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,6 +39,7 @@ public class Permiso {
     private LocalDateTime updatedAt;
     
     @ManyToMany(mappedBy = "permisos", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private Set<Rol> roles = new HashSet<>();
     
     public Permiso() {}

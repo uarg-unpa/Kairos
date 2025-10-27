@@ -54,11 +54,11 @@ public class SecurityConfig {
                 // Endpoints públicos
                 .requestMatchers("/auth/**").permitAll()
                 // Endpoints protegidos por permisos
-                .requestMatchers("/api/usuarios/**").hasAuthority("Usuarios")
+                
                 .requestMatchers("/api/roles/**").hasAuthority("Roles")
                 .requestMatchers("/api/permisos/**").hasAuthority("Permisos")
                 // Todo lo demás necesita autenticación
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             );
 
         // Filtro JWT
