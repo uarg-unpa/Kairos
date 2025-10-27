@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espacio de Trabajo - Kairos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Megrim&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+            background-color: #f8f9fa;
+        }
+        
+        .textKairos {
+            font-family: 'Megrim', sans-serif;
+        }
+        
+        .workspace-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .workspace-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .task-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .task-item:hover {
+            background-color: #f8f9fa;
+            border-left-color: #0d6efd;
+        }
+        
+        .task-item.active {
+            background-color: #e3f2fd;
+            border-left-color: #2196f3;
+        }
+        
+        .priority-high { border-left-color: #dc3545 !important; }
+        .priority-medium { border-left-color: #ffc107 !important; }
+        .priority-low { border-left-color: #28a745 !important; }
+        
+        .time-badge {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        
+        .floating-timer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .btn-timer {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+
+            <!-- Logo y nombre Kairos -->
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <img src="Kairos Logo.png" width="40" height="40" alt="">
+                <span class="fw-bold fs-4 textKairos">Kairos</span>
+            </a>
+
+            <!-- Botón del menú colapsable -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarKairos"
+                aria-controls="navbarKairos" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Menú principal + perfil de usuario -->
+            <div class="collapse navbar-collapse" id="navbarKairos">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link"
+                            href="../ProyectoInicio/proyectoLider.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../ProyectoSecciones/proyectoVistaLider.html">Proyecto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../SeccionMiembros/miembrosLider.html">Miembros</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../planificacion/planificacionLider.html">Planificación</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../etapas/etapasLider.html">Etapas</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="../workspace/workspace.html">Espacio de trabajo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../dashboard/dashboard.html">Reportes</a></li>
+                </ul>
+
+                <!-- Dropdown del perfil -->
+                <div class="dropdown">
+                    <button class="btn btn-dark d-flex align-items-center gap-2 dropdown-toggle border-0" type="button"
+                        id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://lh3.googleusercontent.com/a/default-user=s96-c" alt="Perfil"
+                            class="rounded-circle" width="40" height="40">
+                        <span class="fw-semibold text-white">Guillermo Escalante</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end mt-2 shadow-sm" aria-labelledby="userMenu">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Modificar perfil</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-question-circle me-2"></i>Ayuda</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="#"><i
+                                    class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+
+    <!-- Main Content -->
+    <div class="container py-4">
+        <div class="row g-4">
+            <!-- Panel Izquierdo - Gestión de Tareas -->
+            <div class="col-lg-8">
+                <!-- Header con botones de acción -->
+                <div class="d-flex justify-content-between align-items-center mb-0">
+                    <h2 class="mb-0">Mis Tareas - Kairos</h2>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                            <i class="bi bi-plus-circle me-2"></i>Nueva Tarea
+                        </button>
+                        <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#manualTimeModal">
+                            <i class="bi bi-clock-history me-2"></i>Tiempo Manual
+                        </button>
+                    </div>
+                </div>
+                <h3>Elaboración - Iteración 2</h3>
+                
+                <a href="../ProyectoSecciones/proyectoVistaLider.html" class="text-decoration-none text-muted"><i class="bi-chevron-left me-2"></i>Volver</a>
+        <!-- Stats Cards -->
+
+                <!-- Lista de Tareas -->
+                <div class="card mt-1">
+                    <div class="card-header bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Lista de Tareas</h5>
+                            <div class="d-flex gap-2">
+                                <select class="form-select form-select-sm" style="width: auto;" id="filterPriority">
+                                    <option value="">Todas las prioridades</option>
+                                    <option value="high">Alta</option>
+                                    <option value="medium">Media</option>
+                                    <option value="low">Baja</option>
+                                </select>
+                                <select class="form-select form-select-sm" style="width: auto;" id="filterStatus">
+                                    <option value="">Todos los estados</option>
+                                    <option value="pending">Pendiente</option>
+                                    <option value="in-progress">En Progreso</option>
+                                    <option value="completed">Completada</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="tasksList">
+                            <!-- Las tareas se cargarán aquí dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Derecho - Cronómetro y Estadísticas -->
+            <div class="col-lg-4">
+                <!-- Cronómetro -->
+                <div class="card workspace-card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-stopwatch me-2"></i>Cronómetro
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="timer-display text-primary mb-4" id="timerDisplay">00:00:00</div>
+                        
+                        <div class="mb-3">
+                            <select class="form-select" id="timerTaskSelect">
+                                <option value="">Seleccionar tarea...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center gap-2 mb-3">
+                            <button class="btn btn-success btn-timer" id="startTimer" title="Iniciar">
+                                <i class="bi bi-play-fill"></i>
+                            </button>
+                            <button class="btn btn-warning btn-timer" id="pauseTimer" title="Pausar" disabled>
+                                <i class="bi bi-pause-fill"></i>
+                            </button>
+                            <button class="btn btn-danger btn-timer" id="stopTimer" title="Detener" disabled>
+                                <i class="bi bi-stop-fill"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="alert alert-info" id="timerStatus">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Selecciona una tarea para comenzar
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas del día -->
+                <div class="card workspace-card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up me-2"></i>Estadísticas de Hoy
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <h3 class="text-success mb-1" id="totalTimeToday">0h 0m</h3>
+                                    <small class="text-muted">Tiempo Total</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <h3 class="text-info mb-1" id="tasksCompletedToday">0</h3>
+                                    <small class="text-muted">Tareas Completadas</small>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="text-center">
+                            <h4 class="text-primary mb-1" id="activeTasks">0</h4>
+                            <small class="text-muted">Tareas Activas</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actividad Reciente -->
+                <div class="card workspace-card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history me-2"></i>Actividad Reciente
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentActivity">
+                            <p class="text-muted text-center">No hay actividad reciente</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Nueva Tarea -->
+    <div class="modal fade" id="addTaskModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nueva Tarea</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="addTaskForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Título de la tarea</label>
+                            <input type="text" class="form-control" id="taskTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" id="taskDescription" rows="3"></textarea>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Prioridad</label>
+                                <select class="form-select" id="taskPriority">
+                                    <option value="low">Baja</option>
+                                    <option value="medium" selected>Media</option>
+                                    <option value="high">Alta</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tiempo estimado (horas)</label>
+                                <input type="number" class="form-control" id="taskEstimatedTime" min="0.5" step="0.5" value="1">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fecha límite</label>
+                            <input type="date" class="form-control" id="taskDueDate">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        
+                        <button type="button" class="btn btn-success" id="createAndProposeBtn">Crear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Tiempo Manual -->
+    <div class="modal fade" id="manualTimeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Tiempo Manual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="manualTimeForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Seleccionar tarea</label>
+                            <select class="form-select" id="manualTimeTaskSelect" required>
+                                <option value="">Seleccionar tarea...</option>
+                            </select>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Horas</label>
+                                <input type="number" class="form-control" id="manualHours" min="0" max="23" value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Minutos</label>
+                                <input type="number" class="form-control" id="manualMinutes" min="0" max="59" value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Segundos</label>
+                                <input type="number" class="form-control" id="manualSeconds" min="0" max="59" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción del trabajo realizado</label>
+                            <textarea class="form-control" id="workDescription" rows="3" placeholder="Describe brevemente el trabajo realizado..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fecha del trabajo</label>
+                            <input type="date" class="form-control" id="workDate" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Registrar Tiempo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timer Flotante (cuando está activo) -->
+    <div class="floating-timer d-none" id="floatingTimer">
+        <div class="d-flex align-items-center gap-3">
+            <div>
+                <div class="fw-bold" id="floatingTaskName">Tarea Activa</div>
+                <div class="time-badge" id="floatingTime">00:00:00</div>
+            </div>
+            <button class="btn btn-sm btn-light" id="floatingPause">
+                <i class="bi bi-pause-fill"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Estado global de la aplicación
+        let tasks = [];
+        let timer = {
+            isRunning: false,
+            isPaused: false,
+            startTime: null,
+            pausedTime: 0,
+            currentTaskId: null,
+            interval: null
+        };
+        let timeEntries = [];
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSampleTasks();
+            updateTaskSelects();
+            renderTasks();
+            updateStats();
+            setupEventListeners();
+            setTodayDate();
+        });
+
+        // Configurar fecha de hoy por defecto
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('workDate').value = today;
+        }
+
+        // Cargar tareas de ejemplo
+        function loadSampleTasks() {
+            tasks = [
+                {
+                    id: 1,
+                    title: 'Realizar prototipo',
+                    description: 'Crear prototipo inicial para revisión',
+                    priority: 'high',
+                    status: 'in-progress',
+                    estimatedTime: 4,
+                    trackedTime: 2.5,
+                    dueDate: '2025-10-12',
+                    createdAt: new Date(),
+                    proposed: false
+                },
+                {
+                    id: 2,
+                    title: 'Realizar iteración de la etapa Construcción',
+                    description: 'Ejecutar tareas asignadas en la iteración actual',
+                    priority: 'medium',
+                    status: 'pending',
+                    estimatedTime: 6,
+                    trackedTime: 0,
+                    dueDate: '2025-10-14',
+                    createdAt: new Date(),
+                    proposed: true
+                },
+                {
+                    id: 3,
+                    title: 'Modelo arquitectonico',
+                    description: 'Definir y documentar la arquitectura del sistema',
+                    priority: 'low',
+                    status: 'pending',
+                    estimatedTime: 2,
+                    trackedTime: 0.5,
+                    dueDate: '2025-10-12',
+                    createdAt: new Date(),
+                    proposed: false
+                }
+            ];
+        }
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Formulario de nueva tarea
+            document.getElementById('addTaskForm').addEventListener('submit', handleAddTask);
+            document.getElementById('createAndProposeBtn').addEventListener('click', handleCreateAndPropose);
+            
+            // Formulario de tiempo manual
+            document.getElementById('manualTimeForm').addEventListener('submit', handleManualTime);
+            
+            // Controles del cronómetro
+            document.getElementById('startTimer').addEventListener('click', startTimer);
+            document.getElementById('pauseTimer').addEventListener('click', pauseTimer);
+            document.getElementById('stopTimer').addEventListener('click', stopTimer);
+            document.getElementById('floatingPause').addEventListener('click', pauseTimer);
+            
+            // Filtros
+            document.getElementById('filterPriority').addEventListener('change', renderTasks);
+            document.getElementById('filterStatus').addEventListener('change', renderTasks);
+        }
+
+        // Manejar creación de nueva tarea
+        function handleAddTask(e) {
+            e.preventDefault();
+            createTask(false);
+        }
+
+        // Manejar crear y proponer tarea
+        function handleCreateAndPropose(e) {
+            e.preventDefault();
+            createTask(true);
+        }
+
+        // Crear tarea
+        function createTask(propose = false) {
+            const title = document.getElementById('taskTitle').value;
+            const description = document.getElementById('taskDescription').value;
+            const priority = document.getElementById('taskPriority').value;
+            const estimatedTime = parseFloat(document.getElementById('taskEstimatedTime').value);
+            const dueDate = document.getElementById('taskDueDate').value;
+
+            const newTask = {
+                id: Date.now(),
+                title,
+                description,
+                priority,
+                status: 'pending',
+                estimatedTime,
+                trackedTime: 0,
+                dueDate,
+                createdAt: new Date(),
+                proposed: propose
+            };
+
+            tasks.push(newTask);
+            updateTaskSelects();
+            renderTasks();
+            updateStats();
+            
+            // Cerrar modal y limpiar formulario
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addTaskModal'));
+            modal.hide();
+            document.getElementById('addTaskForm').reset();
+            document.getElementById('taskEstimatedTime').value = 1;
+
+            // Mostrar mensaje de éxito
+            showNotification(propose ? 'Tarea creada y propuesta exitosamente' : 'Tarea creada exitosamente', 'success');
+        }
+
+        // Manejar tiempo manual
+        function handleManualTime(e) {
+            e.preventDefault();
+            
+            const taskId = parseInt(document.getElementById('manualTimeTaskSelect').value);
+            const hours = parseInt(document.getElementById('manualHours').value) || 0;
+            const minutes = parseInt(document.getElementById('manualMinutes').value) || 0;
+            const seconds = parseInt(document.getElementById('manualSeconds').value) || 0;
+            const description = document.getElementById('workDescription').value;
+            const date = document.getElementById('workDate').value;
+
+            const totalMinutes = (hours * 60) + minutes + (seconds / 60);
+            const totalHours = totalMinutes / 60;
+
+            if (totalHours === 0) {
+                showNotification('Debe ingresar al menos algún tiempo', 'warning');
+                return;
+            }
+
+            // Encontrar la tarea y agregar tiempo
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.trackedTime += totalHours;
+                
+                // Registrar entrada de tiempo
+                timeEntries.push({
+                    id: Date.now(),
+                    taskId,
+                    taskTitle: task.title,
+                    duration: totalHours,
+                    description,
+                    date: new Date(date),
+                    type: 'manual'
+                });
+
+                updateStats();
+                renderTasks();
+                addRecentActivity(`Tiempo manual registrado: ${formatTime(totalHours * 3600)} en "${task.title}"`);
+                
+                // Cerrar modal y limpiar formulario
+                const modal = bootstrap.Modal.getInstance(document.getElementById('manualTimeModal'));
+                modal.hide();
+                document.getElementById('manualTimeForm').reset();
+                setTodayDate();
+
+                showNotification('Tiempo registrado exitosamente', 'success');
+            }
+        }
+
+        // Actualizar selects de tareas
+        function updateTaskSelects() {
+            const timerSelect = document.getElementById('timerTaskSelect');
+            const manualSelect = document.getElementById('manualTimeTaskSelect');
+            
+            // Limpiar opciones existentes
+            timerSelect.innerHTML = '<option value="">Seleccionar tarea...</option>';
+            manualSelect.innerHTML = '<option value="">Seleccionar tarea...</option>';
+            
+            // Agregar tareas activas
+            tasks.filter(task => task.status !== 'completed').forEach(task => {
+                const option1 = new Option(task.title, task.id);
+                const option2 = new Option(task.title, task.id);
+                timerSelect.add(option1);
+                manualSelect.add(option2);
+            });
+        }
+
+        // Renderizar lista de tareas
+        function renderTasks() {
+            const container = document.getElementById('tasksList');
+            const priorityFilter = document.getElementById('filterPriority').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+            
+            let filteredTasks = tasks;
+            
+            if (priorityFilter) {
+                filteredTasks = filteredTasks.filter(task => task.priority === priorityFilter);
+            }
+            
+            if (statusFilter) {
+                filteredTasks = filteredTasks.filter(task => task.status === statusFilter);
+            }
+
+            if (filteredTasks.length === 0) {
+                container.innerHTML = '<div class="p-4 text-center text-muted">No hay tareas que coincidan con los filtros</div>';
+                return;
+            }
+
+            container.innerHTML = filteredTasks.map(task => `
+                <div class="task-item p-3 border-bottom priority-${task.priority} ${timer.currentTaskId === task.id ? 'active' : ''}" data-task-id="${task.id}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <h6 class="mb-0">${task.title}</h6>
+                                <span class="badge bg-${getPriorityColor(task.priority)}">${getPriorityText(task.priority)}</span>
+                                <span class="badge bg-${getStatusColor(task.status)} ${getStatusText(task.status)}</span>
+                                ${task.proposed ? '<span class="badge bg-info">Propuesta</span>' : ''}
+                            </div>
+                            <p class="text-muted mb-2 small">${task.description}</p>
+                            <div class="d-flex align-items-center gap-3 small text-muted">
+                                <span><i class="bi bi-clock me-1"></i>Estimado: ${task.estimatedTime}h</span>
+                                <span><i class="bi bi-stopwatch me-1"></i>Registrado: <span class="time-badge">${formatHours(task.trackedTime)}</span></span>
+                                ${task.dueDate ? `<span><i class="bi bi-calendar me-1"></i>${formatDate(task.dueDate)}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column gap-1">
+                            <button class="btn btn-sm btn-outline-success" onclick="selectTaskForTimer(${task.id})">
+                                <i class="bi bi-play-circle"></i>
+                            </button>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="changeTaskStatus(${task.id}, 'in-progress')">
+                                        <i class="bi bi-play me-2"></i>En Progreso
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="changeTaskStatus(${task.id}, 'completed')">
+                                        <i class="bi bi-check-circle me-2"></i>Completar
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" onclick="proposeTask(${task.id})">
+                                        <i class="bi bi-send me-2"></i>Proponer
+                                    </a></li>
+                                
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 4px;">
+                        <div class="progress-bar bg-${getStatusColor(task.status)}" style="width: ${Math.min((task.trackedTime / task.estimatedTime) * 100, 100)}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Funciones del cronómetro
+        function startTimer() {
+            const selectedTaskId = parseInt(document.getElementById('timerTaskSelect').value);
+            
+            if (!selectedTaskId) {
+                showNotification('Selecciona una tarea para iniciar el cronómetro', 'warning');
+                return;
+            }
+
+            timer.currentTaskId = selectedTaskId;
+            timer.isRunning = true;
+            timer.isPaused = false;
+            timer.startTime = Date.now() - (timer.pausedTime * 1000);
+            
+            timer.interval = setInterval(updateTimerDisplay, 1000);
+            
+            updateTimerControls();
+            updateTimerStatus();
+            showFloatingTimer();
+            
+            const task = tasks.find(t => t.id === selectedTaskId);
+            addRecentActivity(`Cronómetro iniciado para "${task.title}"`);
+        }
+
+        function pauseTimer() {
+            if (timer.isRunning) {
+                timer.isPaused = true;
+                timer.isRunning = false;
+                clearInterval(timer.interval);
+                
+                updateTimerControls();
+                updateTimerStatus();
+                hideFloatingTimer();
+                
+                const task = tasks.find(t => t.id === timer.currentTaskId);
+                addRecentActivity(`Cronómetro pausado para "${task.title}"`);
+            }
+        }
+
+        function stopTimer() {
+            if (timer.currentTaskId && (timer.isRunning || timer.isPaused)) {
+                const totalSeconds = Math.floor((Date.now() - timer.startTime) / 1000);
+                const totalHours = totalSeconds / 3600;
+                
+                // Agregar tiempo a la tarea
+                const task = tasks.find(t => t.id === timer.currentTaskId);
+                if (task) {
+                    task.trackedTime += totalHours;
+                    
+                    // Registrar entrada de tiempo
+                    timeEntries.push({
+                        id: Date.now(),
+                        taskId: timer.currentTaskId,
+                        taskTitle: task.title,
+                        duration: totalHours,
+                        description: 'Tiempo registrado con cronómetro',
+                        date: new Date(),
+                        type: 'timer'
+                    });
+                    
+                    addRecentActivity(`Tiempo registrado: ${formatTime(totalSeconds)} en "${task.title}"`);
+                }
+            }
+            
+            // Resetear cronómetro
+            timer = {
+                isRunning: false,
+                isPaused: false,
+                startTime: null,
+                pausedTime: 0,
+                currentTaskId: null,
+                interval: null
+            };
+            
+            clearInterval(timer.interval);
+            document.getElementById('timerDisplay').textContent = '00:00:00';
+            document.getElementById('timerTaskSelect').value = '';
+            
+            updateTimerControls();
+            updateTimerStatus();
+            hideFloatingTimer();
+            updateStats();
+            renderTasks();
+        }
+
+        function updateTimerDisplay() {
+            if (timer.isRunning) {
+                const elapsed = Math.floor((Date.now() - timer.startTime) / 1000);
+                const timeString = formatTime(elapsed);
+                document.getElementById('timerDisplay').textContent = timeString;
+                document.getElementById('floatingTime').textContent = timeString;
+            }
+        }
+
+        function updateTimerControls() {
+            const startBtn = document.getElementById('startTimer');
+            const pauseBtn = document.getElementById('pauseTimer');
+            const stopBtn = document.getElementById('stopTimer');
+            
+            startBtn.disabled = timer.isRunning;
+            pauseBtn.disabled = !timer.isRunning;
+            stopBtn.disabled = !timer.isRunning && !timer.isPaused;
+        }
+
+        function updateTimerStatus() {
+            const statusDiv = document.getElementById('timerStatus');
+            const task = timer.currentTaskId ? tasks.find(t => t.id === timer.currentTaskId) : null;
+            
+            if (timer.isRunning && task) {
+                statusDiv.innerHTML = `<i class="bi bi-play-circle text-success me-2"></i>Cronometrando: ${task.title}`;
+                statusDiv.className = 'alert alert-success';
+            } else if (timer.isPaused && task) {
+                statusDiv.innerHTML = `<i class="bi bi-pause-circle text-warning me-2"></i>Pausado: ${task.title}`;
+                statusDiv.className = 'alert alert-warning';
+            } else {
+                statusDiv.innerHTML = `<i class="bi bi-info-circle me-2"></i>Selecciona una tarea para comenzar`;
+                statusDiv.className = 'alert alert-info';
+            }
+        }
+
+        function selectTaskForTimer(taskId) {
+            document.getElementById('timerTaskSelect').value = taskId;
+        }
+
+        function showFloatingTimer() {
+            const floatingTimer = document.getElementById('floatingTimer');
+            const task = tasks.find(t => t.id === timer.currentTaskId);
+            if (task) {
+                document.getElementById('floatingTaskName').textContent = task.title;
+                floatingTimer.classList.remove('d-none');
+            }
+        }
+
+        function hideFloatingTimer() {
+            document.getElementById('floatingTimer').classList.add('d-none');
+        }
+
+        // Funciones auxiliares
+        function changeTaskStatus(taskId, newStatus) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.status = newStatus;
+                renderTasks();
+                updateStats();
+                addRecentActivity(`Tarea "${task.title}" marcada como ${getStatusText2(newStatus)}`);
+            }
+        }
+
+        function proposeTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.proposed = true;
+                renderTasks();
+                showNotification(`Tarea "${task.title}" propuesta exitosamente`, 'success');
+                addRecentActivity(`Tarea "${task.title}" propuesta`);
+            }
+        }
+
+        function deleteTask(taskId) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+                const taskIndex = tasks.findIndex(t => t.id === taskId);
+                if (taskIndex > -1) {
+                    const task = tasks[taskIndex];
+                    tasks.splice(taskIndex, 1);
+                    
+                    // Si es la tarea actual del cronómetro, detenerlo
+                    if (timer.currentTaskId === taskId) {
+                        stopTimer();
+                    }
+                    
+                    updateTaskSelects();
+                    renderTasks();
+                    updateStats();
+                    addRecentActivity(`Tarea "${task.title}" eliminada`);
+                }
+            }
+        }
+
+        function updateStats() {
+            const today = new Date().toDateString();
+            const todayEntries = timeEntries.filter(entry => entry.date.toDateString() === today);
+            const totalTimeToday = todayEntries.reduce((sum, entry) => sum + entry.duration, 0);
+            const completedToday = tasks.filter(task => 
+                task.status === 'completed' && 
+                task.createdAt.toDateString() === today
+            ).length;
+            const activeTasks = tasks.filter(task => task.status !== 'completed').length;
+
+            document.getElementById('totalTimeToday').textContent = formatHours(totalTimeToday);
+            document.getElementById('tasksCompletedToday').textContent = completedToday;
+            document.getElementById('activeTasks').textContent = activeTasks;
+        }
+
+        function addRecentActivity(message) {
+            const container = document.getElementById('recentActivity');
+            const time = new Date().toLocaleTimeString();
+            
+            const activityItem = document.createElement('div');
+            activityItem.className = 'border-bottom pb-2 mb-2';
+            activityItem.innerHTML = `
+                <div class="small text-muted">${time}</div>
+                <div class="small">${message}</div>
+            `;
+            
+            if (container.children.length === 0 || container.children[0].textContent.includes('No hay actividad')) {
+                container.innerHTML = '';
+            }
+            
+            container.insertBefore(activityItem, container.firstChild);
+            
+            // Mantener solo las últimas 5 actividades
+            while (container.children.length > 5) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Crear toast notification
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            toast.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
+        }
+
+        // Funciones de formato
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function formatHours(hours) {
+            const h = Math.floor(hours);
+            const m = Math.floor((hours - h) * 60);
+            return `${h}h ${m}m`;
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('es-ES');
+        }
+
+        function getPriorityColor(priority) {
+            const colors = { high: 'danger', medium: 'warning', low: 'success' };
+            return colors[priority] || 'secondary';
+        }
+
+        function getPriorityText(priority) {
+            const texts = { high: 'Alta', medium: 'Media', low: 'Baja' };
+            return texts[priority] || priority;
+        }
+
+        function getStatusColor(status) {
+            const colors = { pending: 'secondary', 'in-progress': 'warning', completed: 'success' };
+            return colors[status] || 'secondary';
+        }
+
+        function getStatusText(status) {
+            const texts = { pending: 'text-white "> Pendiente', 'in-progress': 'text-dark "> En Progreso', completed: 'text-white ">Completada' };
+            return texts[status] || status;
+        }
+
+        function getStatusText2(status) {
+            const texts = { pending: 'Pendiente', 'in-progress': 'En Progreso', completed: 'Completada' };
+            return texts[status] || status;
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98e3ab86b4f61ea0',t:'MTc2MDQwOTE4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
