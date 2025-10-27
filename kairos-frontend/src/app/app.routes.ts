@@ -10,6 +10,7 @@ import { UsuarioVerComponent } from './pages/usuario/ver';
 import { UsuarioModificarComponent } from './pages/usuario/modificar';
 import { UsuarioCrearComponent } from './pages/usuario/crear';
 import { SalirComponent } from './pages/salir/salir';
+import { WorkspaceTimerComponent } from './pages/workspace/workspace-timer.component'; 
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -23,4 +24,5 @@ export const routes: Routes = [
   { path: 'usuario/modificar/:id', component: UsuarioModificarComponent, canActivate: [authGuard] },
   { path: 'usuario/crear', component: UsuarioCrearComponent, canActivate: [authGuard] },
   { path: 'salir', component: SalirComponent },
+  { path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard] },
 ];
