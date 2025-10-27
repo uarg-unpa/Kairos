@@ -124,6 +124,45 @@ public class TareaController {
         return dtoResponse;
     }
 
+    @PutMapping("/{id}")
+public TareaDTO actualizarTarea(@PathVariable Long id, @RequestBody Map<String, Object> cambios) {
+    Tarea tarea = tareaService.obtenerPorId(id);
+    if (tarea == null) {
+        throw new RuntimeException("Tarea no encontrada con id: " + id);
+    }
+
+    // Actualizamos solo los campos que envía Angular
+    if (cambios.containsKey("estado")) {
+        tarea.setEstado(cambios.get("estado").toString());
+    }
+    if (cambios.containsKey("prioridad")) {
+        tarea.setPrioridad(cambios.get("prioridad").toString());
+    }
+    // Agrega más campos si quieres permitir actualizar
+
+    Tarea tareaActualizada = tareaService.guardarTarea(tarea);
+
+    // Mapeamos a DTO
+    TareaDTO dtoResponse = new TareaDTO();
+    dtoResponse.setIdTarea(tareaActualizada.getIdTarea());
+    dtoResponse.setNombre(tareaActualizada.getNombre());
+    dtoResponse.setDescripcion(tareaActualizada.getDescripcion());
+    dtoResponse.setEstado(tareaActualizada.getEstado());
+    dtoResponse.setPrioridad(tareaActualizada.getPrioridad());
+    dtoResponse.setFechaCreacion(tareaActualizada.getFechaCreacion());
+    dtoResponse.setFechaFin(tareaActualizada.getFechaFin());
+    dtoResponse.setHorasEstimadas(tareaActualizada.getHorasEstimadas());
+    dtoResponse.setUsuarioNombre(tareaActualizada.getUsuario().getNombre());
+    dtoResponse.setIteracionNombre(tareaActualizada.getIteracion().getNumero());
+    dtoResponse.setCategorias(
+        tareaActualizada.getCategorias().stream()
+            .map(c -> new CategoriaDTO(c.getIdCategoria(), c.getNombre(), c.getDescripcion()))
+            .collect(Collectors.toSet())
+    );
+
+    return dtoResponse;
+}
+
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable Long id) {
         tareaService.eliminarTarea(id);

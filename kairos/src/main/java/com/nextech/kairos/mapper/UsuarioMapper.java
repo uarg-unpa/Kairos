@@ -1,7 +1,8 @@
-package com.nextech.kairos.dto;
+package com.nextech.kairos.mapper;
 
 import com.nextech.kairos.model.Usuario;
 import java.util.stream.Collectors;
+import com.nextech.kairos.dto.UsuarioDTO;
 
 public class UsuarioMapper {
 

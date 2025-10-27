@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 
@@ -31,11 +30,11 @@ public class Iteracion {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idEtapa", nullable = false)
-    @JsonIgnore
+
     private Etapa etapa;
 
     @OneToMany(mappedBy = "iteracion", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
+   
     private Set<Tarea> tareas = new HashSet<>();
 
     // 🔹 Getters y Setters

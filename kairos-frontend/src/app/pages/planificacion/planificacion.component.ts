@@ -28,11 +28,11 @@ export class PlanificacionComponent implements OnInit {
     categoria: '',      // nombre para mostrar en el select (opcional)
     categoriaId: null,  // ID real que enviamos al backend
     prioridad: 'Media',
-    estado: 'Planificada',
+    estado: 'En Progreso',
     fechaCreacion: '',
     fechaFin: '',
     horasEstimadas: 0,
-    usuarioId: 1,
+    usuarioId: null,
     iteracionId: 7
   };
 
@@ -51,8 +51,8 @@ export class PlanificacionComponent implements OnInit {
   ngOnInit(): void {
     this.cargarTareas();
     this.cargarCategorias();
-    
-     const modalEl = document.getElementById('addTaskModal');
+
+    const modalEl = document.getElementById('addTaskModal');
     if (modalEl) {
       this.addTaskModal = new bootstrap.Modal(modalEl);
     }
@@ -78,7 +78,7 @@ export class PlanificacionComponent implements OnInit {
 
 
 
-  
+
   abrirModal() {
     this.addTaskModal?.show();
   }
@@ -134,23 +134,105 @@ export class PlanificacionComponent implements OnInit {
       iteracionId: 7
     };
 
-   
+
     this.cerrarModal();
   }
 
   tareasPorCategoria(): { [nombreCategoria: string]: number } {
-  const contador: { [nombreCategoria: string]: number } = {};
+    const contador: { [nombreCategoria: string]: number } = {};
 
-  this.tareas.forEach(tarea => {
-    tarea.categorias.forEach(cat => {
-      if (contador[cat.nombre]) {
-        contador[cat.nombre]++;
-      } else {
-        contador[cat.nombre] = 1;
-      }
+    this.tareas.forEach(tarea => {
+      tarea.categorias.forEach(cat => {
+        if (contador[cat.nombre]) {
+          contador[cat.nombre]++;
+        } else {
+          contador[cat.nombre] = 1;
+        }
+      });
     });
-  });
 
-  return contador;
+    return contador;
+  }
+
+  totalTareas(): number {
+    return this.tareas.length;
+  }
+
+  cambiarEstado(tareaId: number, nuevoEstado: string) {
+    const tarea = this.tareas.find(t => t.idTarea === tareaId);
+    if (tarea) {
+      tarea.estado = nuevoEstado;
+
+      // Opcional: enviar al backend
+      this.taskService.updateTarea(tareaId, { estado: nuevoEstado }).subscribe({
+        next: (res) => console.log('Estado actualizado:', res),
+        error: (err) => console.error('Error al actualizar estado:', err)
+      });
+    }
+  }
+
+  // Filtros
+filtroCategoria: string = 'Todas';
+filtroResponsable: string = 'Todos';
+filtroEstado: string = 'Todos';
+filtroFechaDesde: string = '';
+filtroFechaHasta: string = '';
+
+// Función para obtener tareas filtradas
+tareasFiltradas(): Tarea[] {
+  return this.tareas.filter(t => {
+    const cumpleCategoria =
+      this.filtroCategoria === 'Todas' ||
+      t.categorias.some(c => c.nombre === this.filtroCategoria);
+
+    const cumpleResponsable =
+      this.filtroResponsable === 'Todos' ||
+      t.usuarioNombre === this.filtroResponsable;
+
+    const cumpleEstado =
+      this.filtroEstado === 'Todos' ||
+      t.estado === this.filtroEstado;
+
+    const cumpleFechaDesde =
+  !this.filtroFechaDesde ||
+  (t.fechaCreacion && new Date(t.fechaCreacion) >= new Date(this.filtroFechaDesde));
+
+const cumpleFechaHasta =
+  !this.filtroFechaHasta ||
+  (t.fechaFin && new Date(t.fechaFin) <= new Date(this.filtroFechaHasta));
+
+
+
+    return cumpleCategoria && cumpleResponsable && cumpleEstado && cumpleFechaDesde && cumpleFechaHasta;
+  });
 }
+
+
+  completadas(): number {
+    return this.tareas.filter(t => t.estado === 'Completado').length;
+  }
+
+  porcentajeCompletado(): number {
+  const total = this.tareas.length;
+  if (total === 0) return 0;
+
+  const completadas = this.tareas.filter(t => t.estado.toLowerCase() === 'completado').length;
+  return Math.round((completadas / total) * 100);
+}
+
+  eliminarTarea(tareaId: number) {
+    if (!confirm('¿Estás seguro que quieres eliminar esta tarea?')) return;
+
+    this.taskService.deleteTarea(tareaId).subscribe({
+      next: () => {
+        // Eliminar la tarea localmente para actualizar la UI
+        this.tareas = this.tareas.filter(t => t.idTarea !== tareaId);
+        console.log('Tarea eliminada');
+      },
+      error: (err) => console.error('Error al eliminar tarea:', err)
+    });
+  }
+
+
+
 }

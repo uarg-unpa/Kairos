@@ -34,10 +34,6 @@ public class Tarea {
 
     private LocalDate fechaCreacion;
 
-    @PrePersist
-    protected void onCreate() {
-        this.fechaCreacion = LocalDate.now();
-    }
 
     @Column(length = 50)
     private String prioridad;
