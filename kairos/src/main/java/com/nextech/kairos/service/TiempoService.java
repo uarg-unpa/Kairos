@@ -11,28 +11,27 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nextech.kairos.model.Tarea;
 import com.nextech.kairos.model.Tiempo;
 import com.nextech.kairos.model.Usuario;
-import com.nextech.kairos.repository.TareaRepository;
 import com.nextech.kairos.repository.TiempoRepository;
-import com.nextech.kairos.repository.UsuarioRepository;
 
 @Service
 @Transactional 
 public class TiempoService {
     
     private final TiempoRepository tiempoRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final TareaRepository tareaRepository;
+    private final UsuarioService usuarioService; 
+    private final TareaService tareaService;
 
     @Autowired
     public TiempoService(
         TiempoRepository tiempoRepository,
-        UsuarioRepository usuarioRepository,
-        TareaRepository tareaRepository) {
+        UsuarioService usuarioService,
+        TareaService tareaService) {//inyyeccion de servicios
         
         this.tiempoRepository = tiempoRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.tareaRepository = tareaRepository;
+        this.usuarioService = usuarioService;
+        this.tareaService = tareaService;
     }
+
     @Transactional(readOnly = true)
     public List<Tiempo> findAll() {
         return tiempoRepository.findAll();
@@ -44,32 +43,47 @@ public class TiempoService {
     }
     
     /**
-     * Crea un nuevo registro de tiempo asociado a una tarea
-     * @param tiempo El objeto Tiempo a guardar.
+     * Crea un nuevo registro de tiempo asociado a una tarea y un usuario
+     * Este método está diseñado para ser llamado por el controlador al detener el cronometro
+     * * @param tiempo Entidad Tiempo a persistir.
      * @param idTarea ID de la tarea obligatoria.
-     * @param idUsuario ID del usuario opcional.
+     * @param idUsuario ID del usuario logueado (obligatorio!!).
+     * @param duracionSegundos Duración total del registro en segundos
+     * @param fechaRegistro Fecha del registro
+     * @param descripcion Descripción del trabajo realizado
      * @return El registro de tiempo guardado.
      */
-    public Tiempo registerTime(Tiempo tiempo, Long idTarea, Long idUsuario) {
-        // 1. Validar la Tarea (Obligatoria)
-        Tarea tarea = tareaRepository.findById(idTarea)
+    public Tiempo registerTime(
+        Tiempo tiempo, 
+        Long idTarea, 
+        Long idUsuario, 
+        Integer duracionSegundos, 
+        LocalDate fechaRegistro,
+        String descripcion 
+        ) {
+        
+        Tarea tarea = tareaService.findById(idTarea)
             .orElseThrow(() -> new RuntimeException("Tarea no encontrada con ID: " + idTarea));
-         Usuario usuario = null;
-        if (idUsuario != null) {
-            usuario = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + idUsuario));
-        }
-
-        //la duración debe ser positiva
-        if (tiempo.getDuracion() == null || tiempo.getDuracion() <= 0) {
-            throw new RuntimeException("La duración del tiempo registrado debe ser mayor a cero.");
+        
+        Usuario usuario = usuarioService.findById(idUsuario)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + idUsuario));
+        
+        if (duracionSegundos == null || duracionSegundos < 60) {
+            throw new RuntimeException("La duración registrada debe ser de al menos un minuto (60 segundos).");
         }
         
+        int duracionMinutos = (int) Math.round(duracionSegundos / 60.0);
+
         tiempo.setTarea(tarea);
         tiempo.setUsuario(usuario);
+        tiempo.setDuracion(duracionMinutos);
+        //opcional, pendiente
+        // tiempo.setDescripcion(descripcion); 
         
         if (tiempo.getFechaRegistro() == null) {
             tiempo.setFechaRegistro(LocalDate.now());
+        } else {
+            tiempo.setFechaRegistro(fechaRegistro);
         }
         
         return tiempoRepository.save(tiempo);
@@ -103,8 +117,8 @@ public class TiempoService {
     }
     
     /**
-     * Calcula la suma total de la duración del tiempo registrado para una tarea específica.
-     * @param idTarea ID de la tarea.
+     * Calcula la suma total de la duración del tiempo registrado para una tarea específica
+     * @param idTarea ID de la tarea
      * @return Duración total
      */
     @Transactional(readOnly = true)

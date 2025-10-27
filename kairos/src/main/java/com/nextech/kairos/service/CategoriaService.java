@@ -14,12 +14,13 @@ import com.nextech.kairos.model.Tarea;
 import com.nextech.kairos.repository.CategoriaRepository;
 import com.nextech.kairos.repository.ProyectoRepository;
 
-@Service
+@Service // ¡NECESARIA para que Spring lo registre!
 @Transactional
-public class CategoriaService {
+ 
+public class CategoriaService implements ICategoriaService { 
     
     private final CategoriaRepository categoriaRepository;
-    private final ProyectoRepository proyectoRepository;
+    private final ProyectoRepository proyectoRepository; 
 
     @Autowired
     public CategoriaService(CategoriaRepository categoriaRepository, ProyectoRepository proyectoRepository) {
@@ -27,90 +28,120 @@ public class CategoriaService {
         this.proyectoRepository = proyectoRepository;
     }
 
+    // --- MÉTODOS DE ICategoriaService ---
+    
+    @Override
     @Transactional(readOnly = true)
-    public List<Categoria> findAll() {
+    public List<Categoria> listarCategorias() {
+        // Tu método original se llama findAll
         return categoriaRepository.findAll();
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public Optional<Categoria> findById(Long id) {
+    public Optional<Categoria> obtenerPorId(Long id) {
+        // Tu método original se llama findById
         return categoriaRepository.findById(id);
     }
     
-    public Categoria save(Categoria categoria) {
+    @Override
+    public Categoria guardarCategoria(Categoria categoria) {
+        // Tu método original se llama save
         return categoriaRepository.save(categoria);
     }
-
-    public void delete(Long id) {
-        categoriaRepository.deleteById(id);
-    }
-
-    /**
-     * crea una nueva categoría y la asocia a un proyecto existente
-     * @param categoria categoría a crear
-     * @param idProyecto ID del proyecto al que se asocia
-     * @return categoría guardada
-     */
-    public Categoria createCategoria(Categoria categoria, Long idProyecto) {
-        // verificar si el proyecto existe
+    
+    @Override
+    public Categoria crearCategoria(Categoria categoria, Long idProyecto) {
+        // Lógica de creación robusta de tu código original
         Optional<Proyecto> proyectoOpt = proyectoRepository.findById(idProyecto);
         if (proyectoOpt.isEmpty()) {
             throw new RuntimeException("Proyecto no encontrado con ID: " + idProyecto);
         }
         
         Proyecto proyecto = proyectoOpt.get();
-        
-        // verificar unicidad de nombre de la categoría dentro del proyecto
         List<Categoria> categoriasExistentes = categoriaRepository.findByProyectoIdProyectoAndNombre(idProyecto, categoria.getNombre());
         if (!categoriasExistentes.isEmpty()) {
             throw new RuntimeException("Ya existe una categoría con el nombre '" + categoria.getNombre() + "' en este proyecto.");
         }
         
-        // establecer la relación y guardar
         categoria.setProyecto(proyecto);
         return categoriaRepository.save(categoria);
     }
-
-    /**
-     * actualiza una categoría existente
-     * @param idCategoria ID de la categoría a actualizar.
-     * @param detallesCategoria Datos para actualizar (nombre, descripción)
-     * @return actualizacion
-     */
-    public Categoria updateCategoria(Long idCategoria, Categoria detallesCategoria) {
-        return categoriaRepository.findById(idCategoria).map(categoriaExistente -> {
+    
+    @Override
+    public Categoria actualizarCategoria(Long id, Categoria detallesCategoria) {
+        // Lógica de actualización robusta de tu código original
+        return categoriaRepository.findById(id).map(categoriaExistente -> {
             
-            // si el nombre cambia, volver a validar la unicidad dentro del proyecto
             if (!categoriaExistente.getNombre().equals(detallesCategoria.getNombre())) {
                 Long idProyecto = categoriaExistente.getProyecto().getIdProyecto();
                 List<Categoria> categoriasExistentes = categoriaRepository.findByProyectoIdProyectoAndNombre(idProyecto, detallesCategoria.getNombre());
                 
-                if (!categoriasExistentes.isEmpty()) {
+                boolean nombreDuplicado = categoriasExistentes.stream().anyMatch(c -> !c.getIdCategoria().equals(id));
+                    
+                if (nombreDuplicado) {
                     throw new RuntimeException("Ya existe una categoría con el nombre '" + detallesCategoria.getNombre() + "' en este proyecto.");
                 }
             }
             
-            // actualizar campos
             categoriaExistente.setNombre(detallesCategoria.getNombre());
             categoriaExistente.setDescripcion(detallesCategoria.getDescripcion());
             
             return categoriaRepository.save(categoriaExistente);
             
-        }).orElseThrow(() -> new RuntimeException("Categoría no encontrada con ID: " + idCategoria));
+        }).orElseThrow(() -> new RuntimeException("Categoría no encontrada con ID: " + id));
     }
 
+    @Override
+    public void eliminarCategoria(Long id) {
+        // Tu método original se llama delete
+        categoriaRepository.deleteById(id);
+    }
+
+    @Override
     @Transactional(readOnly = true)
-    public List<Categoria> findCategoriasByProyecto(Long idProyecto) {
+    public Optional<Categoria> buscarPorNombre(String nombre) {
+        // Tu método original se llama findByNombre
+        return categoriaRepository.findByNombre(nombre);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Categoria> buscarPorProyecto(Long idProyecto) {
+        // Tu método original se llama findCategoriasByProyecto
         return categoriaRepository.findByProyectoIdProyecto(idProyecto);
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public List<Categoria> searchCategoriasByNombre(String nombre) {
+    public List<Categoria> buscarPorNombreContiene(String nombre) {
+        // Tu método original se llama searchCategoriasByNombre
         return categoriaRepository.findByNombreContainingIgnoreCase(nombre);
     }
-    
+
+    @Override
     @Transactional(readOnly = true)
-    public Set<Tarea> getTareasByCategoriaId(Long idCategoria) {
+    public List<Categoria> buscarPorProyectoYNombre(Long idProyecto, String nombre) {
+        // Este método viene de tu repositorio, lo mapeamos al List<>
+        return categoriaRepository.findByProyectoIdProyectoAndNombre(idProyecto, nombre).stream().toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Categoria> buscarPorTarea(Long idTarea) {
+        return categoriaRepository.findByTareas_IdTarea(idTarea);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarPorProyecto(Long idProyecto) {
+        return categoriaRepository.countByProyectoIdProyecto(idProyecto);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Set<Tarea> obtenerTareasPorCategoriaId(Long idCategoria) {
+        // Tu método original se llama getTareasByCategoriaId
         Optional<Categoria> categoriaOpt = categoriaRepository.findById(idCategoria);
         if (categoriaOpt.isEmpty()) {
             throw new RuntimeException("Categoría no encontrada con ID: " + idCategoria);

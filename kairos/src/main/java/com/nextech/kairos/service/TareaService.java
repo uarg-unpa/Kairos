@@ -23,6 +23,7 @@ import com.nextech.kairos.repository.UsuarioRepository;
 @Transactional 
 public class TareaService {
     
+    // Inyección de dependencias (Repositorios)
     private final TareaRepository tareaRepository;
     private final UsuarioRepository usuarioRepository;
     private final IteracionRepository iteracionRepository;
@@ -149,6 +150,7 @@ public class TareaService {
         return tareaRepository.findByIteracionIdIteracion(idIteracion);
     }
 
+    // MÉTODO CLAVE PARA EL WORKSPACE: ESTE FALTABA EN TU CÓDIGO
     @Transactional(readOnly = true)
     public List<Tarea> findTareasAsignadasAUsuario(Long idUsuario) {
         return tareaRepository.findByUsuarioAsignadoId(idUsuario);
