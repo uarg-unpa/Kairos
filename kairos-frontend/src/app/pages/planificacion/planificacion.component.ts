@@ -22,6 +22,7 @@ export class PlanificacionComponent implements OnInit {
   usuarios: Usuario[] = [];
   categorias: CategoriaDTO[] = [];
   tareas: Tarea[] = [];
+    tareaEnEdicion: Tarea | null = null;
   nuevaTarea: any = {
     nombre: '',
     descripcion: '',
@@ -232,6 +233,65 @@ const cumpleFechaHasta =
       error: (err) => console.error('Error al eliminar tarea:', err)
     });
   }
+
+  // ----------------------
+// ABRIR MODAL PARA EDITAR
+// ----------------------
+abrirModalEditar(tarea: Tarea) {
+  // Copiamos los datos de la tarea al objeto nuevaTarea
+  this.nuevaTarea = {
+    nombre: tarea.nombre,
+    descripcion: tarea.descripcion,
+    categoriaId: tarea.categorias?.[0]?.idCategoria || null,
+    prioridad: tarea.prioridad,
+    estado: tarea.estado,
+    fechaCreacion: tarea.fechaCreacion?.split('T')[0] || '',
+    fechaFin: tarea.fechaFin?.split('T')[0] || '',
+    horasEstimadas: Number(tarea.horasEstimadas),
+    usuarioId: Number(this.usuarios.find(u => u.nombre === tarea.usuarioNombre)?.id || null),
+    iteracionId:  7
+  };
+
+  // Guardamos la tarea en edición
+  this.tareaEnEdicion = tarea;
+
+  // Abrimos el modal
+  this.abrirModal();
+}
+
+// ----------------------
+// EDITAR TAREA
+// ----------------------
+editarTarea() {
+  if (!this.tareaEnEdicion) return;
+
+  const tareaParaBackend = {
+    nombre: this.nuevaTarea.nombre,
+    descripcion: this.nuevaTarea.descripcion,
+    prioridad: this.nuevaTarea.prioridad,
+    estado: this.nuevaTarea.estado,
+    fechaCreacion: this.nuevaTarea.fechaCreacion + 'T00:00:00',
+    fechaFin: this.nuevaTarea.fechaFin + 'T00:00:00',
+    horasEstimadas: Number(this.nuevaTarea.horasEstimadas),
+    usuarioId: this.nuevaTarea.usuarioId,
+    iteracionId: this.nuevaTarea.iteracionId,
+    categoriaIds: this.nuevaTarea.categoriaId ? [Number(this.nuevaTarea.categoriaId)] : []
+  };
+
+  console.log('Tarea a editar:', tareaParaBackend);
+
+  this.taskService.updateTarea(this.tareaEnEdicion.idTarea!, tareaParaBackend).subscribe({
+    next: (tareaActualizada) => {
+      // Actualizamos la tarea localmente
+      const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
+      if (index !== -1) this.tareas[index] = tareaActualizada;
+
+      this.resetModal();
+      console.log('✅ Tarea editada correctamente');
+    },
+    error: (err) => console.error('❌ Error al editar tarea:', err)
+  });
+}
 
 
 

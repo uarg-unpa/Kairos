@@ -142,7 +142,7 @@
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
-                                        <li><a class="dropdown-item" href="#"><i
+                                        <li><a class="dropdown-item" (click)="abrirModalEditar(tarea)"><i
                                                     class="bi bi-pencil me-2"></i>Editar</a></li>
                                         <li><a class="dropdown-item text-danger"
                                                 (click)="eliminarTarea(tarea.idTarea)"><i
@@ -202,7 +202,8 @@
                 <button type="button" class="btn-close" (click)="cerrarModal()"></button>
             </div>
 
-            <form (ngSubmit)="agregarTarea()">
+            <form (ngSubmit)="tareaEnEdicion ? editarTarea() : agregarTarea()">
+
                 <div class="modal-body">
                     <h6>* Obligatorio</h6>
                     <!-- Título y Prioridad -->
@@ -308,7 +309,10 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Crear Tarea</button>
+                    <button type="submit" class="btn btn-primary">
+  {{ tareaEnEdicion ? 'Guardar cambios' : 'Agregar tarea' }}
+</button>
+
                 </div>
             </form>
         </div>
