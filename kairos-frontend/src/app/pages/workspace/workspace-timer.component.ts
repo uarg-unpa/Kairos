@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { TimerState, TaskTimerInfo } from '../../models/timer.model';
   standalone: true, 
   imports: [
     CommonModule, // Habilita *ngIf, *ngFor
-    FormsModule,    // Habilita [(ngModel)]
+    FormsModule, // Habilita [(ngModel)]
   ], 
   templateUrl: './workspace-timer.component.html'
 // styleUrls: ['./workspace-timer.component.css']
@@ -93,33 +93,47 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Evita mostrar estado residual de otra sesión
+    this.timerService.resetState();
+    // Forzar sincronización con el servidor para el usuario actual
+    this.timerService.refreshFromServer();
+
     // 1. Cargar tareas reales
-    this.loadTasks(); 
+    this.loadTasks();
 
     // 2. Suscripción al estado
     this.subscriptions.add(this.timerService.timerState$.subscribe(state => {
       this.timerState = state;
       if (state.taskId && this.selectedTaskId === null) {
         this.selectedTaskId = state.taskId;
+        // Si ya tenemos las tareas, setear el título en el servicio
+        const t = this.availableTasks.find(x => x.id === state.taskId);
+        if (t && !state.taskTitle) {
+          this.timerService.setActiveTaskTitle(t.title);
+        }
       }
     }));
-    
+
     // 3. Suscripción al display del tiempo
     this.subscriptions.add(this.timerService.elapsedSeconds$.subscribe(seconds => {
-      this.elapsedTimeDisplay = this.formatTime(seconds); 
+      this.elapsedTimeDisplay = this.formatTime(seconds);
     }));
   }
 
   //Manejadores del CU20
 
   handleStart(): void { 
-    const task = this.availableTasks.find(t => t.id === this.selectedTaskId);
-
-    if (!task) {
-        console.error("Error: Por favor, selecciona una tarea antes de iniciar.");
-        return;
+    if (this.timerState.isPaused) {
+      // Reanudar
+      this.timerService.resumeTimer();
+      return;
     }
-    
+
+    const task = this.availableTasks.find(t => t.id === this.selectedTaskId);
+    if (!task) {
+      console.error("Error: Por favor, selecciona una tarea antes de iniciar.");
+      return;
+    }
     this.timerService.startTimer(task.id, task.title); 
   }
 
@@ -143,3 +157,8 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 }
+
+
+
+
+

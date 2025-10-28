@@ -44,13 +44,13 @@ public class TiempoService {
     
     /**
      * Crea un nuevo registro de tiempo asociado a una tarea y un usuario
-     * Este método está diseñado para ser llamado por el controlador al detener el cronometro
+     * Este mǸtodo estǭ dise��ado para ser llamado por el controlador al detener el cronometro
      * * @param tiempo Entidad Tiempo a persistir.
      * @param idTarea ID de la tarea obligatoria.
      * @param idUsuario ID del usuario logueado (obligatorio!!).
-     * @param duracionSegundos Duración total del registro en segundos
+     * @param duracionSegundos Duraci��n total del registro en segundos
      * @param fechaRegistro Fecha del registro
-     * @param descripcion Descripción del trabajo realizado
+     * @param descripcion Descripci��n del trabajo realizado
      * @return El registro de tiempo guardado.
      */
     public Tiempo registerTime(
@@ -68,11 +68,12 @@ public class TiempoService {
         Usuario usuario = usuarioService.findById(idUsuario)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + idUsuario));
         
-        if (duracionSegundos == null || duracionSegundos < 60) {
-            throw new RuntimeException("La duración registrada debe ser de al menos un minuto (60 segundos).");
+        if (duracionSegundos == null || duracionSegundos < 1) {
+            throw new RuntimeException("La duraci��n registrada debe ser de al menos 1 segundo.");
         }
         
-        int duracionMinutos = (int) Math.round(duracionSegundos / 60.0);
+        // Persistimos en minutos, redondeando hacia arriba para no perder registros cortos
+        int duracionMinutos = (int) Math.ceil(duracionSegundos / 60.0);
 
         tiempo.setTarea(tarea);
         tiempo.setUsuario(usuario);
@@ -111,15 +112,15 @@ public class TiempoService {
     @Transactional(readOnly = true)
     public List<Tiempo> findTimeByDateRange(LocalDate fechaInicio, LocalDate fechaFin) {
         if (fechaInicio == null || fechaFin == null || fechaInicio.isAfter(fechaFin)) {
-             throw new IllegalArgumentException("Rango de fechas inválido.");
+             throw new IllegalArgumentException("Rango de fechas invǭlido.");
         }
         return tiempoRepository.findByFechaRegistroBetween(fechaInicio, fechaFin);
     }
     
     /**
-     * Calcula la suma total de la duración del tiempo registrado para una tarea específica
+     * Calcula la suma total de la duraci��n del tiempo registrado para una tarea espec��fica
      * @param idTarea ID de la tarea
-     * @return Duración total
+     * @return Duraci��n total
      */
     @Transactional(readOnly = true)
     public Integer calculateTotalTimeByTask(Long idTarea) {
@@ -128,3 +129,4 @@ public class TiempoService {
             .sum();
     }
 }
+

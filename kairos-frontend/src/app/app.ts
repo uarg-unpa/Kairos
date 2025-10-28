@@ -17,7 +17,7 @@ export class AppComponent {
 
   // 3. Implementar la función de logout
   logout(): void {
-    this.auth.logout();
+    this.router.navigate(['/salir']);
   }
 
   // 4. Definir las propiedades necesarias para el HTML (incluso como placeholders)

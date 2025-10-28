@@ -54,9 +54,9 @@ public class SecurityConfig {
                 // Endpoints públicos
                 .requestMatchers("/auth/**").permitAll()
                 // Endpoints protegidos por permisos
-                .requestMatchers("/api/usuarios/**").hasAuthority("Usuarios")
-                .requestMatchers("/api/roles/**").hasAuthority("Roles")
-                .requestMatchers("/api/permisos/**").hasAuthority("Permisos")
+                .requestMatchers("/api/usuarios/**").hasAnyAuthority("Usuarios", "ROLE_ADMINISTRADOR")
+                .requestMatchers("/api/roles/**").hasAnyAuthority("Roles", "ROLE_ADMINISTRADOR")
+                .requestMatchers("/api/permisos/**").hasAnyAuthority("Permisos", "ROLE_ADMINISTRADOR")
                 // Todo lo demás necesita autenticación
                 .anyRequest().authenticated()
             );
