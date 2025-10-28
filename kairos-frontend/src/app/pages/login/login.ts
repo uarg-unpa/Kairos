@@ -45,7 +45,7 @@ export class LoginComponent implements AfterViewInit {
 
   private getGoogleClientId(): string {
     const fromConfig = this.config.get('googleClientId');
-    const isPlaceholder = (val?: string | null) => !val || /TU_CLIENT_ID_DE_GOOGLE|PON_AQUI_TU_CLIENT_ID_DE_GOOGLE/i.test(val);
+    const isPlaceholder = (val?: string | null) => !val || /876064078895-eq1bfsu3bahejdlej5l47fi0c9evtbgg.apps.googleusercontent.com/i.test(val);
     if (!isPlaceholder(fromConfig)) return String(fromConfig);
     const meta = document.querySelector('meta[name="google-client-id"]') as HTMLMetaElement | null;
     const fromMeta = meta?.content?.trim();

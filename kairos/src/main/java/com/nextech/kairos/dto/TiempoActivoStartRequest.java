@@ -2,6 +2,9 @@ package com.nextech.kairos.dto;
 
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Payload para iniciar un cronómetro: contiene la tarea objetivo.
+ */
 public class TiempoActivoStartRequest {
 
     @NotNull
@@ -10,4 +13,3 @@ public class TiempoActivoStartRequest {
     public Long getIdTarea() { return idTarea; }
     public void setIdTarea(Long idTarea) { this.idTarea = idTarea; }
 }
-

@@ -35,6 +35,10 @@ public class TiempoActivoController {
         this.usuarioService = usuarioService;
     }
 
+    /**
+     * Devuelve el cronómetro activo del usuario autenticado.
+     * 204 No Content si no hay cronómetro activo.
+     */
     @GetMapping
     public ResponseEntity<?> obtenerActivo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -59,6 +63,10 @@ public class TiempoActivoController {
         ));
     }
 
+    /**
+     * Inicia un cronómetro para la tarea indicada.
+     * 201 Created con datos del cronómetro activo; 409 si ya existe uno.
+     */
     @PostMapping("/iniciar")
     public ResponseEntity<?> iniciar(@Valid @RequestBody TiempoActivoStartRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -82,6 +90,10 @@ public class TiempoActivoController {
         }
     }
 
+    /**
+     * Detiene el cronómetro activo del usuario.
+     * Acepta opcionalmente la duración efectiva (segundos) desde el frontend.
+     */
     @PostMapping("/detener")
     public ResponseEntity<?> detener(@RequestBody(required = false) TiempoDetenerRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

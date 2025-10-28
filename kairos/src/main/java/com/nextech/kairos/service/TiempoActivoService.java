@@ -32,11 +32,19 @@ public class TiempoActivoService {
         this.tiempoService = tiempoService;
     }
 
+    /**
+     * Obtiene el cronómetro activo para un usuario, si existe.
+     * Marcado como readOnly porque solo realiza una consulta.
+     */
     @Transactional(readOnly = true)
     public Optional<TiempoActivo> getActiveForUser(Long idUsuario) {
         return tiempoActivoRepository.findByUsuarioId(idUsuario);
     }
+    /**
 
+    Inicia un nuevo cronómetro para el usuario y tarea indicados.
+    Lanza IllegalStateException si ya existe un cronómetro activo para el usuario.
+    */
     public TiempoActivo start(Long idUsuario, Long idTarea, Usuario usuario) {
         Optional<TiempoActivo> existing = tiempoActivoRepository.findByUsuarioId(idUsuario);
         if (existing.isPresent()) {
@@ -52,7 +60,11 @@ public class TiempoActivoService {
         ta.setInicio(LocalDateTime.now());
         return tiempoActivoRepository.save(ta);
     }
+    /**
 
+    Detiene el cronómetro activo del usuario y persiste el tiempo trabajado.
+    Si providedSeconds es nulo/≤0, calcula la duración desde el inicio hasta ahora.
+    */
     public Tiempo stop(Long idUsuario, Integer providedSeconds) {
         TiempoActivo activo = tiempoActivoRepository.findByUsuarioId(idUsuario)
             .orElseThrow(() -> new IllegalStateException("No hay cronómetro activo para este usuario."));

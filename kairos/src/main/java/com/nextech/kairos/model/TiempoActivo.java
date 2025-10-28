@@ -12,6 +12,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+/**
+ * Entidad de cronómetro activo por usuario.
+ * Restricción única asegura un solo cronómetro activo por usuario.
+ */
 @Entity
 @Table(name = "tiempo_activo", uniqueConstraints = {
     @jakarta.persistence.UniqueConstraint(name = "uk_tiempo_activo_usuario", columnNames = {"idUsuario"})
