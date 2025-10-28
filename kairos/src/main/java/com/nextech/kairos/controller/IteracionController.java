@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.nextech.kairos.model.Iteracion;
 import com.nextech.kairos.service.IIteracionService;
+import com.nextech.kairos.dto.IteracionDTO;
+import com.nextech.kairos.mapper.IteracionMapper;
+
 
 @RestController
 @RequestMapping("/api/iteraciones")
@@ -17,8 +20,11 @@ public class IteracionController {
     private IIteracionService iteracionService;
 
     @GetMapping
-    public List<Iteracion> listarIteraciones() {
-        return iteracionService.listarIteraciones();
+    public List<IteracionDTO> listarIteraciones() {
+        return iteracionService.listarIteraciones()
+        .stream()
+        .map(IteracionMapper::toDTO)
+        .toList();
     }
 
     @GetMapping("/{id}")

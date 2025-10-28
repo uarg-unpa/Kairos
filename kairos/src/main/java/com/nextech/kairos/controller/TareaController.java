@@ -14,8 +14,8 @@ import com.nextech.kairos.model.Tarea;
 import com.nextech.kairos.model.Usuario;
 import com.nextech.kairos.service.TareaService;
 import com.nextech.kairos.service.UsuarioService;
-import com.nextech.kairos.service.IteracionService;
-import com.nextech.kairos.service.CategoriaService;
+import com.nextech.kairos.service.IIteracionService;
+import com.nextech.kairos.service.ICategoriaService;
 import java.util.*;
 
 @RestController
@@ -28,9 +28,9 @@ public class TareaController {
     @Autowired
     private UsuarioService usuarioService;
     @Autowired
-    private IteracionService iteracionService;
+    private IIteracionService iteracionService;
     @Autowired
-    private CategoriaService categoriaService;
+    private ICategoriaService categoriaService;
 
     @GetMapping
     public List<TareaDTO> getTareas() {
@@ -131,6 +131,15 @@ public TareaDTO actualizarTarea(@PathVariable Long id, @RequestBody Map<String, 
         throw new RuntimeException("Tarea no encontrada con id: " + id);
     }
 
+    if (cambios.containsKey("nombre")) {
+        tarea.setNombre(cambios.get("nombre").toString());
+        
+    }
+
+    if (cambios.containsKey("descripcion")) {
+        tarea.setDescripcion(cambios.get("descripcion").toString());
+        
+    }
     // Actualizamos solo los campos que envía Angular
     if (cambios.containsKey("estado")) {
         tarea.setEstado(cambios.get("estado").toString());
@@ -138,6 +147,77 @@ public TareaDTO actualizarTarea(@PathVariable Long id, @RequestBody Map<String, 
     if (cambios.containsKey("prioridad")) {
         tarea.setPrioridad(cambios.get("prioridad").toString());
     }
+
+    if (cambios.containsKey("horasEstimadas")) {
+    Object valor = cambios.get("horasEstimadas");
+    if (valor != null) {
+        try {
+            tarea.setHorasEstimadas(Double.valueOf(valor.toString()));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("El valor de horasEstimadas no es numérico: " + valor);
+        }
+    }
+
+}
+    if (cambios.containsKey("usuarioId")) {
+    Object valor2 = cambios.get("usuarioId");
+    if (valor2 != null) {
+        try {
+            Long usuarioId = Long.valueOf(valor2.toString());
+
+            // ✅ si tenés un servicio:
+            Usuario usuario = usuarioService.findById(usuarioId).orElse(null);
+
+            // o si usás el repositorio directamente:
+            // Usuario usuario = usuarioRepository.findById(usuarioId)
+            //     .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + usuarioId));
+
+            tarea.setUsuario(usuario);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("El ID de usuario no es válido: " + valor2);
+        }
+                }
+
+    }
+
+    if (cambios.containsKey("categoriaIds")) {
+    Object valor3 = cambios.get("categoriaIds");
+    if (valor3 != null && valor3 instanceof List) {
+        List<?> listaIds = (List<?>) valor3;
+        Set<Categoria> categorias = new HashSet<>();
+        for (Object idObj : listaIds) {
+            try {
+                Long categoriaId = Long.valueOf(idObj.toString());
+                Categoria categoria = categoriaService.obtenerPorId(categoriaId).orElse(null);
+                if (categoria != null) {
+                    categorias.add(categoria);
+                }
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("El ID de categoría no es válido: " + idObj);
+            }
+        }
+        tarea.setCategorias(categorias);
+        
+    }
+}
+
+
+if (cambios.containsKey("iteracionId")) {
+    Object valor4 = cambios.get("iteracionId");
+    if (valor4 != null) {
+        try {
+            Long iteracionId = Long.valueOf(valor4.toString());
+
+            Iteracion iteracion = iteracionService.obtenerPorId(iteracionId);
+            if (iteracion != null) {
+                tarea.setIteracion(iteracion);
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("El ID de iteración no es válido: " + valor4);
+        }
+                }
+    
+}
     // Agrega más campos si quieres permitir actualizar
 
     Tarea tareaActualizada = tareaService.guardarTarea(tarea);
@@ -160,7 +240,7 @@ public TareaDTO actualizarTarea(@PathVariable Long id, @RequestBody Map<String, 
             .collect(Collectors.toSet())
     );
 
-    return dtoResponse;
+    return dtoResponse; 
 }
 
     @DeleteMapping("/{id}")

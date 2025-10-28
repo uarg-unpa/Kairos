@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TaskService } from '../../services/tarea.service';
 import { CategoriaService, CategoriaDTO } from '../../services/categoria.service';
+import { Iteracion } from '../../models/iteracion.model';
+import { IteracionService } from '../../services/iteracion.service';
 import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
 import { UsuariosService } from '../../services/usuarios';
@@ -21,6 +23,7 @@ export class PlanificacionComponent implements OnInit {
   private addTaskModal: any;
   usuarios: Usuario[] = [];
   categorias: CategoriaDTO[] = [];
+  iteraciones: Iteracion[] = [];
   tareas: Tarea[] = [];
     tareaEnEdicion: Tarea | null = null;
   nuevaTarea: any = {
@@ -34,13 +37,15 @@ export class PlanificacionComponent implements OnInit {
     fechaFin: '',
     horasEstimadas: 0,
     usuarioId: null,
-    iteracionId: 7
+    iteracionId: null
   };
 
   constructor(
     private categoriaService: CategoriaService,
     private taskService: TaskService,
     private usuariosService: UsuariosService,
+    private iteracionService: IteracionService,
+
 
   ) {
     effect(() => {
@@ -52,14 +57,19 @@ export class PlanificacionComponent implements OnInit {
   ngOnInit(): void {
     this.cargarTareas();
     this.cargarCategorias();
-
+    this.cargarIteraciones();
     const modalEl = document.getElementById('addTaskModal');
     if (modalEl) {
       this.addTaskModal = new bootstrap.Modal(modalEl);
     }
   }
 
-
+  cargarIteraciones() {
+    this.iteracionService.getIteraciones().subscribe(data => {
+      this.iteraciones = data;
+    }
+    );
+  }
 
   cargarCategorias() {
     this.categoriaService.getCategorias().subscribe(data => {
@@ -86,6 +96,7 @@ export class PlanificacionComponent implements OnInit {
 
   cerrarModal() {
     this.addTaskModal?.hide();
+    (document.activeElement as HTMLElement)?.blur();
   }
 
 
@@ -109,6 +120,19 @@ export class PlanificacionComponent implements OnInit {
 
 
     };
+
+     if (this.nuevaTarea.horasEstimadas < 0) {
+    alert('⚠️ Las horas estimadas no pueden ser negativas.');
+    return;
+  }
+
+   const fechaInicio = new Date(this.nuevaTarea.fechaCreacion);
+  const fechaFin = new Date(this.nuevaTarea.fechaFin);
+
+  if (fechaInicio > fechaFin) {
+    alert('⚠️ La fecha de inicio no puede ser posterior a la fecha de fin.');
+    return;
+  }
 
     console.log('Tarea a enviar:', tareaParaBackend);
     this.taskService.createTarea(tareaParaBackend).subscribe({
@@ -249,7 +273,7 @@ abrirModalEditar(tarea: Tarea) {
     fechaFin: tarea.fechaFin?.split('T')[0] || '',
     horasEstimadas: Number(tarea.horasEstimadas),
     usuarioId: Number(this.usuarios.find(u => u.nombre === tarea.usuarioNombre)?.id || null),
-    iteracionId:  7
+    iteracionId:  tarea.iteracionId || null
   };
 
   // Guardamos la tarea en edición
