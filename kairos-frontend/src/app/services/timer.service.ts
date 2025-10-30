@@ -1,12 +1,12 @@
 ﻿import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, of, map, catchError } from 'rxjs';
 import { ConfigService } from './config.service';
 import { TimerState, initialTimerState } from '../models/timer.model';
+import { TaskDataService } from './task-data.service';
 
-/**
- * DTO que representa el cronómetro activo devuelto por el backend.
- */
+// Nota: Este tipo se usa solo para comunicar "hay un timer activo" a componentes
+// como SalirComponent. No representa ningÃºn endpoint del backend.
 export interface TiempoActivoDTO {
   idTiempoActivo: number;
   idUsuario: number;
@@ -14,25 +14,15 @@ export interface TiempoActivoDTO {
   inicio: string; // ISO
 }
 
-/**
- * Servicio de cronómetro del Workspace.
- * - Sincroniza con el backend (iniciar/detener y leer activo)
- * - Mantiene un timer local para el display
- * - Calcula segundos efectivos descontando pausas
- */
 @Injectable({ providedIn: 'root' })
 export class TimerService {
   private http = inject(HttpClient);
   private config = inject(ConfigService);
+  private taskData = inject(TaskDataService);
 
-  /** Endpoint base para recursos de tiempo activo */
-  readonly baseUrl = (this.config.get('apiBaseUrl') || 'http://localhost:8080') + '/api/tiempos/activo';
-
-  /** Estado del cronómetro expuesto a la UI */
   private timerStateSubject = new BehaviorSubject<TimerState>({ ...initialTimerState });
   readonly timerState$ = this.timerStateSubject.asObservable();
 
-  /** Segundos transcurridos (descontando pausas) para mostrar */
   private elapsedSecondsSubject = new BehaviorSubject<number>(0);
   readonly elapsedSeconds$ = this.elapsedSecondsSubject.asObservable();
 
@@ -40,69 +30,76 @@ export class TimerService {
   private pausedAccumulatedMs = 0;
   private pausedSinceMs: number | null = null;
 
-constructor() {
-    // Al construir, intenta restaurar estado activo desde el backend
+  constructor() {
     this.refreshFromServer();
+    // Sincroniza entre pestañas/ventanas: si otra pestaña cambia el timer
+    // (p.ej., detiene), este listener recarga el estado del usuario actual.
+    window.addEventListener('storage', (ev: StorageEvent) => {
+      if (!ev.key) return;
+      if (!ev.key.startsWith('kairos.timer.')) return;
+      this.refreshFromServer();
+    });
   }
 
-  // ------------- HTTP helpers -------------
-  /** Obtiene el cronómetro activo del usuario (o null si no hay). */
+  // -------- User resolution --------
+  private get apiBaseUrl(): string { return this.config.get('apiBaseUrl') || 'http://localhost:8080'; }
+  private currentUserId$(): Observable<number | null> {
+    return this.http.get<{ id: number }>(`${this.apiBaseUrl}/auth/me`).pipe(
+      map(r => (r && typeof r.id === 'number') ? r.id : null),
+      catchError(() => of(null))
+    );
+  }
+
+  // -------- LocalStorage helpers --------
+  private storageKey(userId: number) { return `kairos.timer.${userId}`; }
+  private loadFromStorage(userId: number): any | null {
+    try { const raw = localStorage.getItem(this.storageKey(userId)); return raw ? JSON.parse(raw) : null; }
+    catch { return null; }
+  }
+  private saveToStorage(userId: number): void {
+    const st = this.timerStateSubject.getValue();
+    const payload = {
+      userId,
+      taskId: st.taskId,
+      taskTitle: st.taskTitle,
+      startTime: st.startTime,
+      isPaused: st.isPaused,
+      pausedAccumulatedMs: this.pausedAccumulatedMs,
+      pausedSinceMs: this.pausedSinceMs,
+    };
+    localStorage.setItem(this.storageKey(userId), JSON.stringify(payload));
+  }
+  private clearStorage(userId: number): void { localStorage.removeItem(this.storageKey(userId)); }
+
+  // Indica si hay timer activo para el usuario actual leyendo desde localStorage
   getActive(): Observable<TiempoActivoDTO | null> {
-    return this.http
-      .get<TiempoActivoDTO>(this.baseUrl, { observe: 'response' })
-      .pipe(map((res: HttpResponse<TiempoActivoDTO>) => (res.status === 204 ? null : res.body || null)));
+    return this.currentUserId$().pipe(map(uid => {
+      if (!uid) return null;
+      const data = this.loadFromStorage(uid);
+      if (!data || !data.startTime || !data.taskId) return null;
+      return { idTiempoActivo: 1, idUsuario: uid, idTarea: data.taskId, inicio: new Date(data.startTime).toISOString() };
+    }));
   }
 
-  /** Inicia el cronómetro en el servidor para una tarea. */
-  private startOnServer(idTarea: number): Observable<TiempoActivoDTO> {
-    return this.http.post<TiempoActivoDTO>(`${this.baseUrl}/iniciar`, { idTarea });
-  }
-
-  /** Detiene en el servidor; acepta duración efectiva opcional. */
-  private stopOnServer(duracionSegundos?: number): Observable<any> {
-    const body = duracionSegundos && duracionSegundos > 0 ? { duracionSegundos } : {};
-    return this.http.post(`${this.baseUrl}/detener`, body);
-  }
-
-  // Expuesto para logout
-  /** Atajo para detener enviando segundos efectivos durante logout. */
-  stop(): Observable<any> { return this.stopOnServer(this.computeEffectiveSeconds()); }
-
-  // ------------- UI timer logic -------------
-  /** Inicia el intervalo y actualiza el contador visual. */
+  // -------- Local ticking --------
   private startTicking(): void {
     this.stopTicking();
     this.tickHandle = setInterval(() => this.updateElapsed(), 1000);
     this.updateElapsed();
   }
-
-  /** Detiene el intervalo del contador local. */
-  private stopTicking(): void {
-    if (this.tickHandle) {
-      clearInterval(this.tickHandle);
-      this.tickHandle = null;
-    }
-  }
-
-  /** Recalcula y emite los segundos transcurridos (descontando pausas). */
+  private stopTicking(): void { if (this.tickHandle) { clearInterval(this.tickHandle); this.tickHandle = null; } }
   private updateElapsed(): void {
     const state = this.timerStateSubject.getValue();
-    if (!state.startTime) {
-      this.elapsedSecondsSubject.next(0);
-      return;
-    }
+    if (!state.startTime) { this.elapsedSecondsSubject.next(0); return; }
     const now = Date.now();
-    const elapsedMs = now - state.startTime - this.pausedAccumulatedMs;
-    const secs = Math.max(0, Math.floor(elapsedMs / 1000));
+    const paused = this.pausedSinceMs ? this.pausedAccumulatedMs + (now - this.pausedSinceMs) : this.pausedAccumulatedMs;
+    const secs = Math.max(0, Math.floor((now - state.startTime - paused) / 1000));
     this.elapsedSecondsSubject.next(secs);
   }
-
-  /** Aplica cambios al estado y notifica. */
   private setState(patch: Partial<TimerState>): void {
     this.timerStateSubject.next({ ...this.timerStateSubject.getValue(), ...patch });
+    this.currentUserId$().subscribe(uid => { if (uid) this.saveToStorage(uid); });
   }
-
-  /** Restablece el estado local (timer y contadores). */
   private clearState(): void {
     this.stopTicking();
     this.pausedAccumulatedMs = 0;
@@ -110,70 +107,42 @@ constructor() {
     this.timerStateSubject.next({ ...initialTimerState });
     this.elapsedSecondsSubject.next(0);
   }
+  public resetState(): void { this.clearState(); }
 
-  public resetState(): void {
-    this.clearState();
-  }
-
-  /**
-   * Sincroniza con el backend: si hay cronómetro activo,
-   * ajusta startTime a la hora real e inicia el conteo local.
-   */
+  // -------- Init desde storage (para workspace) --------
   public refreshFromServer(): void {
-    this.getActive().subscribe({
-      next: (active) => {
-        if (active) {
-          const startMs = Date.parse(active.inicio);
-          this.pausedAccumulatedMs = 0;
-          this.pausedSinceMs = null;
-          this.setState({
-            id: String(active.idTiempoActivo),
-            taskId: active.idTarea,
-            taskTitle: null, // el tÃ­tulo lo setea el componente tras cargar tareas
-            startTime: startMs,
-            isPaused: false,
-            pausedDuration: 0,
-          });
-          this.startTicking();
-        } else {
-          this.clearState();
-        }
-      },
-      error: () => {
-        // En error, no alterar el estado
-      },
-    });
-  }
-
-  // ------------- Public API used by Workspace -------------
-  /** Inicia el cronómetro para la tarea (o reanuda si estaba en pausa). */
-  startTimer(taskId: number, taskTitle: string): void {
-    // Si ya estÃ¡ corriendo y no estÃ¡ en pausa, no duplicar
-    const state = this.timerStateSubject.getValue();
-    if (state.startTime && !state.isPaused) return;
-
-    this.startOnServer(taskId).subscribe({
-      next: (active) => {
-        const startMs = Date.parse(active.inicio);
-        this.pausedAccumulatedMs = 0;
-        this.pausedSinceMs = null;
+    this.currentUserId$().subscribe(uid => {
+      if (!uid) { this.clearState(); return; }
+      const data = this.loadFromStorage(uid);
+      if (data && data.startTime && data.taskId) {
+        this.pausedAccumulatedMs = Number(data.pausedAccumulatedMs) || 0;
+        this.pausedSinceMs = (typeof data.pausedSinceMs === 'number') ? data.pausedSinceMs : null;
         this.timerStateSubject.next({
-          id: String(active.idTiempoActivo),
-          taskId,
-          taskTitle,
-          startTime: startMs,
-          isPaused: false,
+          id: '',
+          taskId: data.taskId,
+          taskTitle: data.taskTitle ?? null,
+          startTime: data.startTime,
+          isPaused: !!data.isPaused,
           pausedDuration: 0,
         });
         this.startTicking();
-      },
-      error: (err) => {
-        console.error('No se pudo iniciar el cronómetro en el servidor', err);
-      },
+      } else {
+        this.clearState();
+      }
     });
   }
 
-  /** Pausa el cronómetro local y detiene el ticking. */
+  // -------- API pÃºblica usada por Workspace --------
+  startTimer(taskId: number, taskTitle: string): void {
+    const state = this.timerStateSubject.getValue();
+    if (state.startTime && !state.isPaused) return;
+    const startMs = Date.now();
+    this.pausedAccumulatedMs = 0;
+    this.pausedSinceMs = null;
+    this.timerStateSubject.next({ id: String(startMs), taskId, taskTitle, startTime: startMs, isPaused: false, pausedDuration: 0 });
+    this.currentUserId$().subscribe(uid => { if (uid) this.saveToStorage(uid); });
+    this.startTicking();
+  }
   pauseTimer(): void {
     const state = this.timerStateSubject.getValue();
     if (!state.startTime || state.isPaused) return;
@@ -181,35 +150,22 @@ constructor() {
     this.setState({ isPaused: true });
     this.stopTicking();
   }
-
-  /** Reanuda desde pausa acumulando el tiempo pausado. */
   resumeTimer(): void {
     const state = this.timerStateSubject.getValue();
     if (!state.startTime || !state.isPaused) return;
-    if (this.pausedSinceMs) {
-      this.pausedAccumulatedMs += Date.now() - this.pausedSinceMs;
-      this.pausedSinceMs = null;
-    }
+    if (this.pausedSinceMs) { this.pausedAccumulatedMs += Date.now() - this.pausedSinceMs; this.pausedSinceMs = null; }
     this.setState({ isPaused: false });
     this.startTicking();
   }
-
-  /** Detiene y envía al backend los segundos efectivos calculados. */
   stopTimer(): void {
     const secs = this.computeEffectiveSeconds();
-    this.stopOnServer(secs).subscribe({
-      next: () => {
-        this.clearState();
-      },
-      error: (err) => {
-        console.error('Error al detener cronómetro en el servidor', err);
-        // Aún si falla, liberamos estado local para evitar inconsistencias visuales
-        this.clearState();
-      },
+    const st = this.timerStateSubject.getValue();
+    if (!st.taskId) { this.clearState(); return; }
+    this.taskData.registrarTiempo({ idTarea: st.taskId, durationSeconds: secs, taskTitle: st.taskTitle || '' }).subscribe({
+      next: () => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); },
+      error: () => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); }
     });
   }
-
-  /** Calcula now - startTime - totalPausado, en segundos. */
   private computeEffectiveSeconds(): number {
     const state = this.timerStateSubject.getValue();
     if (!state.startTime) return 0;
@@ -219,12 +175,17 @@ constructor() {
     const effectiveMs = now - state.startTime - pausedMs;
     return Math.max(0, Math.floor(effectiveMs / 1000));
   }
+  setActiveTaskTitle(title: string | null): void { this.setState({ taskTitle: title ?? null }); }
 
-  // Permite al componente actualizar el tÃ­tulo una vez que carga las tareas
-  /** Permite al componente establecer el título de la tarea activa. */
-  setActiveTaskTitle(title: string | null): void {
-    this.setState({ taskTitle: title ?? null });
+  // Expuesto para logout (misma firma que antes)
+  stop(): Observable<any> {
+    const st = this.timerStateSubject.getValue();
+    if (!st.taskId) return of(null);
+    const secs = this.computeEffectiveSeconds();
+    return this.taskData.registrarTiempo({ idTarea: st.taskId, durationSeconds: secs, taskTitle: st.taskTitle || '' }).pipe(
+      map(res => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); return res; }),
+      catchError(() => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); return of(null); })
+    );
   }
 }
-
 
