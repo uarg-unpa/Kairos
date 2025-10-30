@@ -1,0 +1,318 @@
+<!-- Main Content -->
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Planificación de Tareas - Kairos</h2>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-primary" (click)="abrirModal()">
+                Nueva Tarea
+            </button>
+
+            <button class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Tareas propuestas</button>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row g-4 mb-2">
+        <div class="col-4">
+            <select class="form-select">
+                <option>Elaboración</option>
+                <option>Desarrollo</option>
+                <option>Diseño</option>
+                <option>Testing</option>
+                <option>Documentación</option>
+                <option>Reuniones</option>
+                <option>Investigación</option>
+            </select>
+        </div>
+        <div class="col-4">
+            <select class="form-select">
+                <option>Iteración 1</option>
+                <option>Iteración 2</option>
+                <option>Iteración 3</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Panel Principal -->
+        <div class="col-lg-9">
+            <div class="card planning-card mb-4">
+                <div class="card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-3">
+                            <select class="form-select" [(ngModel)]="filtroCategoria">
+                                <option value="Todas">Todas las categorías</option>
+                                <option *ngFor="let cat of categorias" [value]="cat.nombre">{{ cat.nombre }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" [(ngModel)]="filtroResponsable">
+                                <option value="Todos">Todos los responsables</option>
+                                <option *ngFor="let u of usuarios" [value]="u.nombre">{{ u.nombre }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" [(ngModel)]="filtroEstado">
+                                <option value="Todos">Todos los estados</option>
+                                <option>En Progreso</option>
+                                <option>Completado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" class="form-control" [(ngModel)]="filtroFechaDesde">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" class="form-control" [(ngModel)]="filtroFechaHasta">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ejemplo Estático de Tareas -->
+            <div class="card planning-card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Lista de Tareas</h5>
+                </div>
+
+                <!-- tu card aquí -->
+
+                <div class="card-body p-0">
+                    <div *ngFor="let tarea of tareasFiltradas()" class="task-card p-3 border-bottom bg-white"
+                        [ngClass]="'category-' + (tarea.categorias[0]?.nombre?.toLowerCase() || '')" [ngClass]="{
+       'card-prioridad-baja': tarea.prioridad === 'Baja',
+       'card-prioridad-media': tarea.prioridad === 'Media',
+       'card-prioridad-alta': tarea.prioridad === 'Alta',
+     }">
+
+                        <!-- Tarea 1 -->
+
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <h6 class="mb-0">{{ tarea.nombre }}</h6>
+                                    <span class="badge bg-danger" *ngIf="tarea.prioridad === 'Alta'">Alta</span>
+                                    <span class="badge bg-warning" *ngIf="tarea.prioridad === 'Media'">Media</span>
+                                    <span class="badge bg-info">{{tarea.estado}}</span>
+                                    <span class="badge bg-primary" *ngIf="tarea.prioridad === 'Baja'">Baja</span>
+                                    <span class="badge bg-secondary">{{ tarea.categorias[0]?.nombre || 'Sin
+                                        categoría'
+                                        }}</span>
+
+                                </div>
+                                <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
+                                <div class="row g-2 small text-muted">
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
+                                            <span><i class="bi bi-briefcase me-1"></i>{{ tarea.usuarioRol }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span><i class="bi bi-calendar me-1"></i>{{ tarea.fechaCreacion }} / {{
+                                                tarea.fechaFin }}</span>
+                                            <!--<span class="duration-badge"><i class="bi bi-clock me-1"></i>4
+                                                días</span>-->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row g-2 small text-muted mt-1">
+                                    <div class="col-md-6">
+                                        <span><i class="bi bi-hourglass me-1"></i>Estimado: {{ tarea.horasEstimadas
+                                            }}h</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span><i class="bi bi-link me-1"></i>Dependencias: Ninguna</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column gap-1">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-light dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown">
+                                        Acciones
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item"
+                                                (click)="cambiarEstado(tarea.idTarea, 'En Progreso')"><i
+                                                    class="bi bi-play me-2"></i>En Progreso</a></li>
+                                        <li><a class="dropdown-item"
+                                                (click)="cambiarEstado(tarea.idTarea, 'Completado')"><i
+                                                    class="bi bi-check-circle me-2"></i>Completar</a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item" (click)="abrirModalEditar(tarea)"><i
+                                                    class="bi bi-pencil me-2"></i>Editar</a></li>
+                                        <li><a class="dropdown-item text-danger"
+                                                (click)="eliminarTarea(tarea.idTarea)"><i
+                                                    class="bi bi-trash me-2"></i>Eliminar</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 p-2 bg-light rounded small"><i class="bi bi-sticky me-2"></i></div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Panel Lateral -->
+        <div class="col-lg-3">
+            <div class="card mb-4 text-center p-3">
+                <h6 class="mb-2">Progreso General</h6>
+                <h3 class="mb-0">{{ porcentajeCompletado() }}% Completado</h3>
+                <div class="progress my-2" style="height: 8px;">
+                    <div class="progress-bar bg-success" role="progressbar" [style.width.%]="porcentajeCompletado()">
+                    </div>
+                </div>
+
+                <small>Total: {{ totalTareas() }} | Completadas: {{completadas()}}</small>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h6>Tareas por Categoría</h6>
+                </div>
+                <div class="card-body">
+                    <div *ngFor="let cat of tareasPorCategoria() | keyvalue"
+                        class="d-flex justify-content-between mb-2">
+                        <span class="small">{{ cat.key }}: </span>
+                        <span class="badge bg-primary">{{ cat.value }}</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title">Nueva Tarea de Planificación</h5>
+                <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+            </div>
+
+            <form (ngSubmit)="tareaEnEdicion ? editarTarea() : agregarTarea()">
+
+                <div class="modal-body">
+                    <h6>* Obligatorio</h6>
+                    <!-- Título y Prioridad -->
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label">Título *</label>
+                            <input type="text" class="form-control" [(ngModel)]="nuevaTarea.nombre" name="nombre"
+                                required maxlength="50" #nombre="ngModel">
+                            <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="text-danger mt-1">
+                                ⚠️ El título es obligatorio.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Prioridad</label>
+                            <select class="form-select" [(ngModel)]="nuevaTarea.prioridad" name="prioridad">
+                                <option value="Baja">Baja</option>
+                                <option value="Media" selected>Media</option>
+                                <option value="Alta">Alta</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" [(ngModel)]="nuevaTarea.descripcion" name="descripcion"
+                            rows="3"></textarea>
+                    </div>
+
+                    <!-- Categoría y Responsable -->
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Categoría *</label>
+                            <select class="form-select" [(ngModel)]="nuevaTarea.categoriaId" name="categoriaId" required
+                                #categoriaId="ngModel">
+                                <option value="">Seleccionar categoría...</option>
+                                <option *ngFor="let cat of categorias" [value]="cat.idCategoria">{{ cat.nombre }}
+                                </option>
+                            </select>
+                            <div *ngIf="categoriaId.invalid && (categoriaId.dirty || categoriaId.touched)"
+                                class="text-danger mt-1">
+                                ⚠️ La categoría es obligatoria.
+                            </div>
+
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Responsable *</label>
+                            <select class="form-select" [(ngModel)]="nuevaTarea.usuarioId" name="usuarioId" required
+                                #usuarioId="ngModel">
+                                <option value="">Seleccionar responsable...</option>
+                                <option *ngFor="let u of usuarios" [value]="u.id">{{ u.nombre }}</option>
+                            </select>
+                            <div *ngIf="!nuevaTarea.usuarioId && (usuarioId.dirty || usuarioId.touched)"
+                                class="text-danger mt-1">
+                                ⚠️ El responsable es obligatorio.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Fechas y Horas -->
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha de Inicio *</label>
+                            <input type="date" class="form-control" [(ngModel)]="nuevaTarea.fechaCreacion"
+                                name="fechaCreacion" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha de Fin *</label>
+                            <input type="date" class="form-control" [(ngModel)]="nuevaTarea.fechaFin" name="fechaFin"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Horas Estimadas</label>
+                            <input type="number" class="form-control" [(ngModel)]="nuevaTarea.horasEstimadas"
+                                name="horasEstimadas" min="0" step="0.5">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Iteración *</label>
+                            <select class="form-select" [(ngModel)]="nuevaTarea.iteracionId" name="iteracionId"
+                                required>
+                                <option *ngFor="let i of iteraciones" [ngValue]="i.idIteracion">Iteración: {{ i.numero}}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Dependencias y Notas -->
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">Dependencias</label>
+                        <input type="text" class="form-control" [(ngModel)]="nuevaTarea.dependencias"
+                            name="dependencias" placeholder="Tareas previas (opcional)">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notas adicionales</label>
+                        <textarea class="form-control" [(ngModel)]="nuevaTarea.notas" name="notas" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+  {{ tareaEnEdicion ? 'Guardar cambios' : 'Agregar tarea' }}
+</button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
