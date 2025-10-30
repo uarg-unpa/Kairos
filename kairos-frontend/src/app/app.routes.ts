@@ -25,6 +25,6 @@ export const routes: Routes = [
   { path: 'usuario/modificar/:id', component: UsuarioModificarComponent, canActivate: [authGuard] },
   { path: 'usuario/crear', component: UsuarioCrearComponent, canActivate: [authGuard] },
   { path: 'salir', component: SalirComponent },
-  {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]}
-  { path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard] },
+  {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
+  {path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard] },
 ];
