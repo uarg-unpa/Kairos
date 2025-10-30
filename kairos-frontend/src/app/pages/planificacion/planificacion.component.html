@@ -211,7 +211,7 @@
                         <div class="col-md-8">
                             <label class="form-label">Título *</label>
                             <input type="text" class="form-control" [(ngModel)]="nuevaTarea.nombre" name="nombre"
-                                required #nombre="ngModel">
+                                required maxlength="50" #nombre="ngModel">
                             <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="text-danger mt-1">
                                 ⚠️ El título es obligatorio.
                             </div>
