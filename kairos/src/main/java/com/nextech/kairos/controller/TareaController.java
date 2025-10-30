@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.nextech.kairos.dto.CategoriaDTO;
-import com.nextech.kairos.dto.TareaDTO;
 import com.nextech.kairos.dto.TareaRequestDTO;
 import com.nextech.kairos.model.Categoria;
 import com.nextech.kairos.model.Iteracion;
@@ -33,12 +32,12 @@ public class TareaController {
     private ICategoriaService categoriaService;
 
     @GetMapping
-    public List<TareaDTO> getTareas() {
+    public List<TareaRequestDTO> getTareas() {
         List<Tarea> tareas = tareaService.listarTareas();
 
         // Mapear cada Tarea a TareaDTO
         return tareas.stream().map(t -> {
-            TareaDTO dto = new TareaDTO();
+            TareaRequestDTO dto = new TareaRequestDTO();
             dto.setIdTarea(t.getIdTarea());
             dto.setNombre(t.getNombre());
             dto.setDescripcion(t.getDescripcion());
@@ -66,7 +65,7 @@ public class TareaController {
     }
 
     @PostMapping
-    public TareaDTO guardar(@RequestBody TareaRequestDTO dto) {
+    public TareaRequestDTO guardar(@RequestBody TareaRequestDTO dto) {
         // 1️⃣ Crear la entidad Tarea
         Tarea tarea = new Tarea();
         tarea.setNombre(dto.getNombre());
@@ -105,7 +104,7 @@ public class TareaController {
 
         Tarea tareaGuardada = tareaService.guardarTarea(tarea);
 
-        TareaDTO dtoResponse = new TareaDTO();
+        TareaRequestDTO dtoResponse = new TareaRequestDTO();
         dtoResponse.setIdTarea(tareaGuardada.getIdTarea());
         dtoResponse.setNombre(tareaGuardada.getNombre());
         dtoResponse.setDescripcion(tareaGuardada.getDescripcion());
@@ -125,7 +124,7 @@ public class TareaController {
     }
 
     @PutMapping("/{id}")
-public TareaDTO actualizarTarea(@PathVariable Long id, @RequestBody Map<String, Object> cambios) {
+public TareaRequestDTO actualizarTarea(@PathVariable Long id, @RequestBody Map<String, Object> cambios) {
     Tarea tarea = tareaService.obtenerPorId(id);
     if (tarea == null) {
         throw new RuntimeException("Tarea no encontrada con id: " + id);
@@ -223,7 +222,7 @@ if (cambios.containsKey("iteracionId")) {
     Tarea tareaActualizada = tareaService.guardarTarea(tarea);
 
     // Mapeamos a DTO
-    TareaDTO dtoResponse = new TareaDTO();
+    TareaRequestDTO dtoResponse = new TareaRequestDTO();
     dtoResponse.setIdTarea(tareaActualizada.getIdTarea());
     dtoResponse.setNombre(tareaActualizada.getNombre());
     dtoResponse.setDescripcion(tareaActualizada.getDescripcion());

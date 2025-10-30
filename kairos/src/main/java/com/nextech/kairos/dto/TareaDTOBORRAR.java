@@ -59,4 +59,7 @@ public class TareaDTO {
 
     public Set<CategoriaDTO> getCategorias() { return categorias; }
     public void setCategorias(Set<CategoriaDTO> categorias) { this.categorias = categorias; }
+
+
+    
 }
