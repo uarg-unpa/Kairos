@@ -16,6 +16,7 @@ import com.nextech.kairos.service.UsuarioService;
 import com.nextech.kairos.service.IIteracionService;
 import com.nextech.kairos.service.ICategoriaService;
 import java.util.*;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/tareas")
@@ -46,7 +47,7 @@ public class TareaController {
             dto.setFechaCreacion(t.getFechaCreacion());
             dto.setFechaFin(t.getFechaFin());
             dto.setHorasEstimadas(t.getHorasEstimadas());
-
+            dto.setUsuarioId(t.getUsuario().getId());
             dto.setUsuarioNombre(t.getUsuario().getNombre());
             dto.setIteracionNombre(t.getIteracion().getNumero());
 
@@ -246,4 +247,37 @@ if (cambios.containsKey("iteracionId")) {
     public void eliminar(@PathVariable Long id) {
         tareaService.eliminarTarea(id);
     }
+
+    @GetMapping("/mis-tareas")
+public List<TareaRequestDTO> getTareasAsignadas(Authentication authentication) {
+    // 🔐 El objeto Authentication lo llena Spring a partir del JWT
+    String username = authentication.getName(); // normalmente el email o nombre de usuario
+
+    Usuario usuario = usuarioService.findByEmail(username)
+        .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
+
+    List<Tarea> tareas = tareaService.obtenerTareasPorUsuarioId(usuario.getId());
+
+    return tareas.stream().map(t -> {
+        TareaRequestDTO dto = new TareaRequestDTO();
+        dto.setIdTarea(t.getIdTarea());
+        dto.setNombre(t.getNombre());
+        dto.setDescripcion(t.getDescripcion());
+        dto.setEstado(t.getEstado());
+        dto.setPrioridad(t.getPrioridad());
+        dto.setFechaCreacion(t.getFechaCreacion());
+        dto.setFechaFin(t.getFechaFin());
+        dto.setHorasEstimadas(t.getHorasEstimadas());
+        dto.setUsuarioNombre(t.getUsuario().getNombre());
+        dto.setIteracionNombre(t.getIteracion().getNumero());
+        dto.setCategorias(
+            t.getCategorias().stream()
+                .map(c -> new CategoriaDTO(c.getIdCategoria(), c.getNombre(), c.getDescripcion()))
+                .collect(Collectors.toSet())
+        );
+        return dto;
+    }).collect(Collectors.toList());
+}
+
+
 }

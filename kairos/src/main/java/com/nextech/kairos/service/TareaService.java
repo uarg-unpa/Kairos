@@ -44,4 +44,9 @@ public class TareaService implements ITareaService {
     public List<Tarea> listarPorHorasEstimadasMenorQue(Double horas) {
         return tareaRepository.findByHorasEstimadasLessThan(horas);
     }
+
+    public List<Tarea> obtenerTareasPorUsuarioId(Long usuarioId) {
+    return tareaRepository.findByUsuario_Id(usuarioId);
+}
+
 }

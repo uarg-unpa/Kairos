@@ -18,6 +18,7 @@ export interface Tarea {
   usuarioRol: string;
   iteracionNumero: number;
   iteracionId: number;
+  usuarioId: number;
   categorias: Categoria[];
   dependencias?: string[];
   notas?: string;

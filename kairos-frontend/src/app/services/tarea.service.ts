@@ -2,12 +2,22 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tarea } from '../models/tarea.model';
+import { map } from 'rxjs/operators'; 
+import { TaskTimerInfo } from '../models/timer.model'; 
+
+interface TiempoRegistroRequest {
+    idTarea: number;
+    duracionSegundos: number;
+    fechaRegistro: string;
+    descripcion?: string; 
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
   private baseUrl = 'http://localhost:8080/api/tareas';
+  private tiempoUrl = 'http://localhost:8080/api/tiempos';
 
   constructor(private http: HttpClient) {}
 
@@ -34,5 +44,34 @@ export class TaskService {
   deleteTarea(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+
+  getTareasAsignadas(): Observable<TaskTimerInfo[]> {
+      // Llama al endpoint seguro
+      return this.http.get<Tarea[]>(`${this.baseUrl}/mis-tareas`).pipe(
+        map(tareas => tareas.map(t => ({
+          id: t.idTarea,
+          title: t.nombre,
+          status: t.estado,
+          priority: t.prioridad,
+          description: t.descripcion
+        })))
+      );
+    }
+  
+    /**
+     * Envía el tiempo registrado por el cronómetro al servidor (POST /api/tiempos).
+     */
+    registrarTiempo(data: { idTarea: number, durationSeconds: number, taskTitle: string }): Observable<any> {
+        
+        const payload: TiempoRegistroRequest = {
+            idTarea: data.idTarea,
+            duracionSegundos: data.durationSeconds,
+            fechaRegistro: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
+            descripcion: `Tiempo cronometrado para: ${data.taskTitle}`
+        };
+  
+        return this.http.post(this.tiempoUrl, payload);
+    }
+
 }
 

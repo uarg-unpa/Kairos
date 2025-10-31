@@ -2,9 +2,8 @@
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-
 import { TimerService } from '../../services/timer.service';
-import { TaskDataService } from '../../services/task-data.service'; 
+import { TaskService } from '../../services/tarea.service'; 
 import { TimerState, TaskTimerInfo } from '../../models/timer.model'; 
 
 @Component({
@@ -29,7 +28,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   constructor(
     private timerService: TimerService,
-    private taskDataService: TaskDataService // <-- Servicio para la carga HTTP
+    private TaskService: TaskService // <-- Servicio para la carga HTTP
   ) {}
 
   // --- FUNCIÓN RESTAURADA ---
@@ -73,7 +72,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   loadTasks(): void {
     // LLAMADA HTTP REAL
     this.subscriptions.add(
-        this.taskDataService.getTareasAsignadas().subscribe({
+        this.TaskService.getTareasAsignadas().subscribe({
             next: (tasks) => {
                 this.availableTasks = tasks;
                 console.log("Tareas cargadas del backend:", tasks);
