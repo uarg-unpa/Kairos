@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, map, catchError } from 'rxjs';
 import { ConfigService } from './config.service';
 import { TimerState, initialTimerState } from '../models/timer.model';
-import { TaskDataService } from './task-data.service';
+import { TaskService } from './tarea.service';
 
 // Nota: Este tipo se usa solo para comunicar "hay un timer activo" a componentes
 // como SalirComponent. No representa ningÃºn endpoint del backend.
@@ -18,7 +18,7 @@ export interface TiempoActivoDTO {
 export class TimerService {
   private http = inject(HttpClient);
   private config = inject(ConfigService);
-  private taskData = inject(TaskDataService);
+  private taskData = inject(TaskService);
 
   private timerStateSubject = new BehaviorSubject<TimerState>({ ...initialTimerState });
   readonly timerState$ = this.timerStateSubject.asObservable();
