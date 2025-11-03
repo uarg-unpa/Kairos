@@ -38,6 +38,15 @@ public class Proyecto {
     @Column(name = "equipo", length = 255)
     private String equipo;
 
+    @Column(name = "descripcion", columnDefinition = "TEXT")
+    private String descripcion;
+
+    @Column(name = "fecha_inicio")
+    private LocalDate fechaInicio;
+
+    @Column(name = "fecha_fin")
+    private LocalDate fechaFin;
+
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDate fechaCreacion;
 
@@ -84,6 +93,12 @@ public class Proyecto {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getEquipo() { return equipo; }
     public void setEquipo(String equipo) { this.equipo = equipo; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public LocalDate getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
+    public LocalDate getFechaFin() { return fechaFin; }
+    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
     public LocalDate getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDate fechaCreacion) { this.fechaCreacion = fechaCreacion; }
     public String getEstado() { return estado; }
@@ -98,4 +113,11 @@ public class Proyecto {
     public void setUsuariosProyecto(Set<UsuarioProyecto> usuariosProyecto) { this.usuariosProyecto = usuariosProyecto; }
     public LocalDateTime getFechaActualizacion() { return fechaActualizacion; }
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) { this.fechaActualizacion = fechaActualizacion; }
+
+    public Etapa crearEtapa(Etapa etapa) {
+        if (etapa == null) return null;
+        etapa.setProyecto(this);
+        this.etapas.add(etapa);
+        return etapa;
+    }
 }

@@ -1,0 +1,68 @@
+<a routerLink="/etapas" class="text-decoration-none text-muted fw-bold"><i class="bi-chevron-left me-2"></i>Volver</a>
+
+<div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+  <h3 class="mb-0">Iteraciones de la etapa {{ etapaId }}</h3>
+  <button class="btn btn-primary" (click)="abrirModal()"><i class="bi bi-plus-circle"></i> Nueva Iteración</button>
+ </div>
+
+<div *ngIf="loading" class="text-muted">Cargando iteraciones...</div>
+
+<div class="row g-4 mt-2" *ngIf="!loading">
+  <div *ngIf="iteraciones.length === 0" class="text-muted">Sin iteraciones</div>
+
+  <div class="col-lg-4 col-md-6" *ngFor="let it of iteraciones; let i = index">
+    <div class="card stage-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <h5 class="card-title mb-0">Iteración {{ it.numero || i + 1 }}</h5>
+            </div>
+            <p class="text-muted mb-2 small">{{ it.descripcion || 'Sin descripción' }}</p>
+            <div class="mb-2">
+              <small class="text-muted">
+                <i class="bi bi-calendar"></i> {{ it.fechaInicio || '-' }} - {{ it.fechaFin || '-' }}
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear Iteración -->
+<div class="modal fade" id="addIterModal" tabindex="-1" aria-labelledby="addIterLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addIterLabel">Crear Iteración</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Número</label>
+          <input [(ngModel)]="nuevaIter.numero" type="number" class="form-control" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Descripción</label>
+          <textarea [(ngModel)]="nuevaIter.descripcion" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="row g-2">
+          <div class="col">
+            <label class="form-label">Fecha Inicio</label>
+            <input [(ngModel)]="nuevaIter.fechaInicio" type="date" class="form-control" />
+          </div>
+          <div class="col">
+            <label class="form-label">Fecha Fin</label>
+            <input [(ngModel)]="nuevaIter.fechaFin" type="date" class="form-control" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="crearIteracion()">Crear</button>
+      </div>
+    </div>
+  </div>
+ </div>

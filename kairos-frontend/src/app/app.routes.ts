@@ -11,6 +11,8 @@ import { UsuarioModificarComponent } from './pages/usuario/modificar';
 import { UsuarioCrearComponent } from './pages/usuario/crear';
 import { SalirComponent } from './pages/salir/salir';
 import { PlanificacionComponent } from './pages/planificacion/planificacion.component';
+import { EtapasComponent } from './pages/etapas/etapas.component';
+import { IteracionesComponent } from './pages/iteraciones/iteraciones.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -25,4 +27,6 @@ export const routes: Routes = [
   { path: 'usuario/crear', component: UsuarioCrearComponent, canActivate: [authGuard] },
   { path: 'salir', component: SalirComponent },
   {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]}
+  ,{ path: 'etapas', component: EtapasComponent, canActivate: [authGuard] }
+  ,{ path: 'etapas/:etapaId/iteraciones', component: IteracionesComponent, canActivate: [authGuard] }
 ];

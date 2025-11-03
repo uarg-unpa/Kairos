@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,6 +32,10 @@ public class Etapa {
     @Column(name = "nombre", nullable = false, length = 255)
     private String nombre;
 
+    @Basic
+    @Column(name = "descripcion", columnDefinition = "TEXT")
+    private String descripcion;
+
     @Column(name = "fecha_inicio")
     private LocalDate fechaInicio;
 
@@ -48,6 +53,8 @@ public class Etapa {
     public void setIdEtapa(Long idEtapa) { this.idEtapa = idEtapa; }
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public LocalDate getFechaInicio() { return fechaInicio; }
     public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
     public LocalDate getFechaFin() { return fechaFin; }
@@ -56,4 +63,11 @@ public class Etapa {
     public void setProyecto(Proyecto proyecto) { this.proyecto = proyecto; }
     public Set<Iteracion> getIteraciones() { return iteraciones; }
     public void setIteraciones(Set<Iteracion> iteraciones) { this.iteraciones = iteraciones; }
+
+    public Iteracion crearIteracion(Iteracion iteracion) {
+        if (iteracion == null) return null;
+        iteracion.setEtapa(this);
+        this.iteraciones.add(iteracion);
+        return iteracion;
+    }
 }
