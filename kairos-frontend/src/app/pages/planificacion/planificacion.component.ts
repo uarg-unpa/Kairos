@@ -9,6 +9,8 @@ import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
 import { UsuariosService } from '../../services/usuarios';
 import { effect } from '@angular/core';
+import { Comentario } from '../../models/comentario.model';
+import { ComentarioService } from '../../services/comentario.service';
 
 declare var bootstrap: any;
 
@@ -22,10 +24,13 @@ declare var bootstrap: any;
 export class PlanificacionComponent implements OnInit {
   private addTaskModal: any;
   usuarios: Usuario[] = [];
+  comentariosPorTarea: { [idTarea: number]: Comentario[] } = {};
+  nuevoComentario: { [idTarea: number]: string } = {};
+
   categorias: CategoriaDTO[] = [];
   iteraciones: Iteracion[] = [];
   tareas: Tarea[] = [];
-    tareaEnEdicion: Tarea | null = null;
+  tareaEnEdicion: Tarea | null = null;
   nuevaTarea: any = {
     nombre: '',
     descripcion: '',
@@ -45,6 +50,7 @@ export class PlanificacionComponent implements OnInit {
     private taskService: TaskService,
     private usuariosService: UsuariosService,
     private iteracionService: IteracionService,
+    private comentarioService: ComentarioService
 
 
   ) {
@@ -82,10 +88,44 @@ export class PlanificacionComponent implements OnInit {
       next: (data) => {
         this.tareas = data; // No mapees a string[], mantené Categoria[]
         console.log(this.tareas); // Verifica que todas las tareas llegaron
+        this.cargarComentarios();
       },
       error: (err) => console.error(err)
     });
   }
+
+  cargarComentarios() {
+  this.tareas.forEach(tarea => {
+    this.comentarioService.getComentariosByTarea(tarea.idTarea).subscribe(data => {
+      this.comentariosPorTarea[tarea.idTarea] = data || []; // <- nunca undefined
+    });
+  });
+}
+
+agregarComentario(tareaId: number) {
+  const contenido = this.nuevoComentario[tareaId];
+  if (!contenido || contenido.trim() === '') return;
+
+  const comentarioParaBackend = {
+    contenido,
+    idTarea: tareaId,
+    idUsuario: 1 // o el usuario logueado
+  };
+
+  this.comentarioService.createComentario(comentarioParaBackend).subscribe({
+    next: (comentarioCreado) => {
+      if (!this.comentariosPorTarea[tareaId]) {
+        this.comentariosPorTarea[tareaId] = [];
+      }
+      this.comentariosPorTarea[tareaId].push(comentarioCreado);
+      this.nuevoComentario[tareaId] = ''; // limpia input
+    },
+    error: (err) => console.error(err)
+  });
+}
+
+
+
 
 
 
@@ -121,18 +161,18 @@ export class PlanificacionComponent implements OnInit {
 
     };
 
-     if (this.nuevaTarea.horasEstimadas < 0) {
-    alert('⚠️ Las horas estimadas no pueden ser negativas.');
-    return;
-  }
+    if (this.nuevaTarea.horasEstimadas < 0) {
+      alert('⚠️ Las horas estimadas no pueden ser negativas.');
+      return;
+    }
 
-   const fechaInicio = new Date(this.nuevaTarea.fechaCreacion);
-  const fechaFin = new Date(this.nuevaTarea.fechaFin);
+    const fechaInicio = new Date(this.nuevaTarea.fechaCreacion);
+    const fechaFin = new Date(this.nuevaTarea.fechaFin);
 
-  if (fechaInicio > fechaFin) {
-    alert('⚠️ La fecha de inicio no puede ser posterior a la fecha de fin.');
-    return;
-  }
+    if (fechaInicio > fechaFin) {
+      alert('⚠️ La fecha de inicio no puede ser posterior a la fecha de fin.');
+      return;
+    }
 
     console.log('Tarea a enviar:', tareaParaBackend);
     this.taskService.createTarea(tareaParaBackend).subscribe({
@@ -197,40 +237,40 @@ export class PlanificacionComponent implements OnInit {
   }
 
   // Filtros
-filtroCategoria: string = 'Todas';
-filtroResponsable: string = 'Todos';
-filtroEstado: string = 'Todos';
-filtroFechaDesde: string = '';
-filtroFechaHasta: string = '';
+  filtroCategoria: string = 'Todas';
+  filtroResponsable: string = 'Todos';
+  filtroEstado: string = 'Todos';
+  filtroFechaDesde: string = '';
+  filtroFechaHasta: string = '';
 
-// Función para obtener tareas filtradas
-tareasFiltradas(): Tarea[] {
-  return this.tareas.filter(t => {
-    const cumpleCategoria =
-      this.filtroCategoria === 'Todas' ||
-      t.categorias.some(c => c.nombre === this.filtroCategoria);
+  // Función para obtener tareas filtradas
+  tareasFiltradas(): Tarea[] {
+    return this.tareas.filter(t => {
+      const cumpleCategoria =
+        this.filtroCategoria === 'Todas' ||
+        t.categorias.some(c => c.nombre === this.filtroCategoria);
 
-    const cumpleResponsable =
-      this.filtroResponsable === 'Todos' ||
-      t.usuarioNombre === this.filtroResponsable;
+      const cumpleResponsable =
+        this.filtroResponsable === 'Todos' ||
+        t.usuarioNombre === this.filtroResponsable;
 
-    const cumpleEstado =
-      this.filtroEstado === 'Todos' ||
-      t.estado === this.filtroEstado;
+      const cumpleEstado =
+        this.filtroEstado === 'Todos' ||
+        t.estado === this.filtroEstado;
 
-    const cumpleFechaDesde =
-  !this.filtroFechaDesde ||
-  (t.fechaCreacion && new Date(t.fechaCreacion) >= new Date(this.filtroFechaDesde));
+      const cumpleFechaDesde =
+        !this.filtroFechaDesde ||
+        (t.fechaCreacion && new Date(t.fechaCreacion) >= new Date(this.filtroFechaDesde));
 
-const cumpleFechaHasta =
-  !this.filtroFechaHasta ||
-  (t.fechaFin && new Date(t.fechaFin) <= new Date(this.filtroFechaHasta));
+      const cumpleFechaHasta =
+        !this.filtroFechaHasta ||
+        (t.fechaFin && new Date(t.fechaFin) <= new Date(this.filtroFechaHasta));
 
 
 
-    return cumpleCategoria && cumpleResponsable && cumpleEstado && cumpleFechaDesde && cumpleFechaHasta;
-  });
-}
+      return cumpleCategoria && cumpleResponsable && cumpleEstado && cumpleFechaDesde && cumpleFechaHasta;
+    });
+  }
 
 
   completadas(): number {
@@ -238,12 +278,12 @@ const cumpleFechaHasta =
   }
 
   porcentajeCompletado(): number {
-  const total = this.tareas.length;
-  if (total === 0) return 0;
+    const total = this.tareas.length;
+    if (total === 0) return 0;
 
-  const completadas = this.tareas.filter(t => t.estado.toLowerCase() === 'completado').length;
-  return Math.round((completadas / total) * 100);
-}
+    const completadas = this.tareas.filter(t => t.estado.toLowerCase() === 'completado').length;
+    return Math.round((completadas / total) * 100);
+  }
 
   eliminarTarea(tareaId: number) {
     if (!confirm('¿Estás seguro que quieres eliminar esta tarea?')) return;
@@ -259,63 +299,63 @@ const cumpleFechaHasta =
   }
 
   // ----------------------
-// ABRIR MODAL PARA EDITAR
-// ----------------------
-abrirModalEditar(tarea: Tarea) {
-  // Copiamos los datos de la tarea al objeto nuevaTarea
-  this.nuevaTarea = {
-    nombre: tarea.nombre,
-    descripcion: tarea.descripcion,
-    categoriaId: tarea.categorias?.[0]?.idCategoria || null,
-    prioridad: tarea.prioridad,
-    estado: tarea.estado,
-    fechaCreacion: tarea.fechaCreacion?.split('T')[0] || '',
-    fechaFin: tarea.fechaFin?.split('T')[0] || '',
-    horasEstimadas: Number(tarea.horasEstimadas),
-    usuarioId: Number(this.usuarios.find(u => u.nombre === tarea.usuarioNombre)?.id || null),
-    iteracionId:  tarea.iteracionId || null
-  };
+  // ABRIR MODAL PARA EDITAR
+  // ----------------------
+  abrirModalEditar(tarea: Tarea) {
+    // Copiamos los datos de la tarea al objeto nuevaTarea
+    this.nuevaTarea = {
+      nombre: tarea.nombre,
+      descripcion: tarea.descripcion,
+      categoriaId: tarea.categorias?.[0]?.idCategoria || null,
+      prioridad: tarea.prioridad,
+      estado: tarea.estado,
+      fechaCreacion: tarea.fechaCreacion?.split('T')[0] || '',
+      fechaFin: tarea.fechaFin?.split('T')[0] || '',
+      horasEstimadas: Number(tarea.horasEstimadas),
+      usuarioId: Number(this.usuarios.find(u => u.nombre === tarea.usuarioNombre)?.id || null),
+      iteracionId: tarea.iteracionId || null
+    };
 
-  // Guardamos la tarea en edición
-  this.tareaEnEdicion = tarea;
+    // Guardamos la tarea en edición
+    this.tareaEnEdicion = tarea;
 
-  // Abrimos el modal
-  this.abrirModal();
-}
+    // Abrimos el modal
+    this.abrirModal();
+  }
 
-// ----------------------
-// EDITAR TAREA
-// ----------------------
-editarTarea() {
-  if (!this.tareaEnEdicion) return;
+  // ----------------------
+  // EDITAR TAREA
+  // ----------------------
+  editarTarea() {
+    if (!this.tareaEnEdicion) return;
 
-  const tareaParaBackend = {
-    nombre: this.nuevaTarea.nombre,
-    descripcion: this.nuevaTarea.descripcion,
-    prioridad: this.nuevaTarea.prioridad,
-    estado: this.nuevaTarea.estado,
-    fechaCreacion: this.nuevaTarea.fechaCreacion + 'T00:00:00',
-    fechaFin: this.nuevaTarea.fechaFin + 'T00:00:00',
-    horasEstimadas: Number(this.nuevaTarea.horasEstimadas),
-    usuarioId: this.nuevaTarea.usuarioId,
-    iteracionId: this.nuevaTarea.iteracionId,
-    categoriaIds: this.nuevaTarea.categoriaId ? [Number(this.nuevaTarea.categoriaId)] : []
-  };
+    const tareaParaBackend = {
+      nombre: this.nuevaTarea.nombre,
+      descripcion: this.nuevaTarea.descripcion,
+      prioridad: this.nuevaTarea.prioridad,
+      estado: this.nuevaTarea.estado,
+      fechaCreacion: this.nuevaTarea.fechaCreacion + 'T00:00:00',
+      fechaFin: this.nuevaTarea.fechaFin + 'T00:00:00',
+      horasEstimadas: Number(this.nuevaTarea.horasEstimadas),
+      usuarioId: this.nuevaTarea.usuarioId,
+      iteracionId: this.nuevaTarea.iteracionId,
+      categoriaIds: this.nuevaTarea.categoriaId ? [Number(this.nuevaTarea.categoriaId)] : []
+    };
 
-  console.log('Tarea a editar:', tareaParaBackend);
+    console.log('Tarea a editar:', tareaParaBackend);
 
-  this.taskService.updateTarea(this.tareaEnEdicion.idTarea!, tareaParaBackend).subscribe({
-    next: (tareaActualizada) => {
-      // Actualizamos la tarea localmente
-      const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
-      if (index !== -1) this.tareas[index] = tareaActualizada;
+    this.taskService.updateTarea(this.tareaEnEdicion.idTarea!, tareaParaBackend).subscribe({
+      next: (tareaActualizada) => {
+        // Actualizamos la tarea localmente
+        const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
+        if (index !== -1) this.tareas[index] = tareaActualizada;
 
-      this.resetModal();
-      console.log('✅ Tarea editada correctamente');
-    },
-    error: (err) => console.error('❌ Error al editar tarea:', err)
-  });
-}
+        this.resetModal();
+        console.log('✅ Tarea editada correctamente');
+      },
+      error: (err) => console.error('❌ Error al editar tarea:', err)
+    });
+  }
 
 
 

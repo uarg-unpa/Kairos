@@ -17,7 +17,7 @@ import com.nextech.kairos.repository.UsuarioRepository;
 
 @Service
 @Transactional 
-public class ComentarioService {
+public class ComentarioService implements IComentarioService {
     
     private final ComentarioRepository comentarioRepository;
     private final TareaRepository tareaRepository;

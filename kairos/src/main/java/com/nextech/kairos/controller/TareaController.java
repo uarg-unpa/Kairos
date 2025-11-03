@@ -36,7 +36,7 @@ public class TareaController {
     public List<TareaRequestDTO> getTareas() {
         List<Tarea> tareas = tareaService.listarTareas();
 
-        // Mapear cada Tarea a TareaDTO
+        // Mapear cada Tarea a TareaDTO - REALIZAR EN OTRO ARCHIVO CUDNO PUEDAN
         return tareas.stream().map(t -> {
             TareaRequestDTO dto = new TareaRequestDTO();
             dto.setIdTarea(t.getIdTarea());
