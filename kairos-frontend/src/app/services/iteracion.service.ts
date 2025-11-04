@@ -22,12 +22,12 @@ export class IteracionService {
     // Intenta obtener iteraciones filtradas por etapa vía query string.
     // Si tu backend usa otra ruta (por ejemplo /api/etapas/{id}/iteraciones), avísame y lo adapto.
     getIteracionesPorEtapa(etapaSlug: string): Observable<Iteracion[]> {
-        const url = `${this.baseUrl}?etapa=${encodeURIComponent(etapaSlug)}`;
+        const url = `${this.baseUrl()}?etapa=${encodeURIComponent(etapaSlug)}`;
         return this.http.get<Iteracion[]>(url);
     }
 
     getIteracionesPorEtapaId(etapaId: number): Observable<Iteracion[]> {
-        return this.http.get<Iteracion[]>(`${this.baseUrl}/por-etapa/${etapaId}`);
+        return this.http.get<Iteracion[]>(`${this.baseUrl()}/por-etapa/${etapaId}`);
     }
 
     // Eliminado: entregables por iteración
@@ -44,7 +44,7 @@ export class IteracionService {
     }
 
     deleteIteracion(id: number): Observable<void> {
-        return this.http.delete<void>(`${this.baseUrl}/${id}`);
+        return this.http.delete<void>(`${this.baseUrl()}/${id}`);
     }
 }
 
