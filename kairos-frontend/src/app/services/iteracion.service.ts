@@ -40,7 +40,7 @@ export class IteracionService {
             fechaFin: payload.fechaFin,
             etapaId: payload.etapaId
         };
-        return this.http.post<Iteracion>(this.baseUrl, body);
+        return this.http.post<Iteracion>(this.baseUrl(), body);
     }
 
     deleteIteracion(id: number): Observable<void> {
