@@ -40,7 +40,7 @@ export class EtapasComponent implements OnInit {
   cargar(): void {
     this.loading = true;
     const pid = this.proyectoId;
-    this.etapaService.getEtapas(pid).subscribe({
+    this.etapaService.getEtapas().subscribe({
       next: (data) => { this.etapas = data; },
       error: () => { this.etapas = []; },
       complete: () => { this.loading = false; }
@@ -61,7 +61,7 @@ export class EtapasComponent implements OnInit {
       fechaFin: this.nuevaEtapa.fechaFin || null
     };
 
-    this.etapaService.crearEtapa(this.proyectoId!, body).subscribe({
+    this.etapaService.crearEtapa(body).subscribe({
       next: () => {
         this.cerrarModal();
         this.nuevaEtapa = { nombre: '', descripcion: '', fechaInicio: '', fechaFin: '' };

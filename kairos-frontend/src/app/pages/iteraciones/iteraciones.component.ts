@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { Iteracion } from '../../models/iteracion.model';
 import { IteracionService } from '../../services/iteracion.service';
 
@@ -9,7 +10,7 @@ import { IteracionService } from '../../services/iteracion.service';
   standalone: true,
   templateUrl: './iteraciones.component.html',
   styleUrls: ['./iteraciones.component.css'],
-  imports: [CommonModule, RouterModule]
+  imports: [CommonModule, RouterModule, FormsModule]
 })
 export class IteracionesComponent implements OnInit {
   etapaId!: number;
@@ -45,7 +46,7 @@ export class IteracionesComponent implements OnInit {
 
   cargar(): void {
     this.loading = true;
-    this.iteracionService.getIteracionesPorEtapa(this.etapaId).subscribe({
+    this.iteracionService.getIteracionesPorEtapa(String(this.etapaId)).subscribe({
       next: (data) => { this.iteraciones = data; },
       error: () => { this.iteraciones = []; },
       complete: () => { this.loading = false; }
@@ -60,14 +61,15 @@ export class IteracionesComponent implements OnInit {
       alert('Ingresá el número de iteración');
       return;
     }
-    const body = {
+    const payload = {
       numero: Number(this.nuevaIter.numero),
       descripcion: this.nuevaIter.descripcion,
-      fechaInicio: this.nuevaIter.fechaInicio || null,
-      fechaFin: this.nuevaIter.fechaFin || null
-    } as Partial<Iteracion>;
+      fechaInicio: this.nuevaIter.fechaInicio || '',
+      fechaFin: this.nuevaIter.fechaFin || '',
+      etapaId: this.etapaId
+    };
 
-    this.iteracionService.crearIteracion(this.etapaId, body).subscribe({
+    this.iteracionService.crearIteracion(payload).subscribe({
       next: () => {
         this.cerrarModal();
         this.nuevaIter = { numero: null, descripcion: '', fechaInicio: '', fechaFin: '' };
