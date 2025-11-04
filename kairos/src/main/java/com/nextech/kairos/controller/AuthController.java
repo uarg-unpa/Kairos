@@ -95,7 +95,7 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<AuthResponse> logout() {
-        return ResponseEntity.ok(new AuthResponse("Logout successful", null));
+        return ResponseEntity.ok(new AuthResponse("Logout successful", null, null));
     }
 
     /**
@@ -106,7 +106,7 @@ public class AuthController {
         try {
             if (body == null || body.getIdToken() == null || body.getIdToken().isBlank()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new AuthResponse("idToken es requerido", null));
+                        .body(new AuthResponse("idToken es requerido", null, null));
             }
 
             var transport = new NetHttpTransport();
@@ -118,7 +118,7 @@ public class AuthController {
             GoogleIdToken idToken = verifier.verify(body.getIdToken());
             if (idToken == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new AuthResponse("idToken inválido", null));
+                        .body(new AuthResponse("idToken inválido", null, null));
             }
 
             Payload payload = idToken.getPayload();
@@ -129,7 +129,7 @@ public class AuthController {
             authService.ensureAdminIfConfigured(email);
             if (!authService.hasSystemAccess(email)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new AuthResponse("El usuario no tiene acceso al sistema", null));
+                        .body(new AuthResponse("El usuario no tiene acceso al sistema", null, null));
             }
 
             Set<String> permissions = authService.getUserPermissionsForSession(email);
@@ -141,11 +141,12 @@ public class AuthController {
             );
 
             String token = jwtUtil.generateToken(email, authorities);
-            return ResponseEntity.ok(new AuthResponse("OK", token));
+return ResponseEntity.ok(new AuthResponse("OK", token, usuario));
+
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new AuthResponse("Error procesando login de Google", null));
+                    .body(new AuthResponse("Error procesando login de Google", null, null));
         }
     }
 }

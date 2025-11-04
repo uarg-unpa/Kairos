@@ -151,12 +151,36 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-2 p-2 bg-light rounded small"
-                        *ngFor="let c of comentariosPorTarea[tarea.idTarea]"><i class="bi bi-sticky me-2"></i>
-                        
-                        <strong>Notas:</strong> {{ c.contenido || 'Sin notas adicionales.' }}
-                        
+                        <div class="mt-3 p-3 bg-light rounded border">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong><i class="bi bi-sticky me-2"></i>Comentarios</strong>
+                                <button class="btn btn-sm btn-outline-primary"
+                                    (click)="abrirModalComentarios(tarea.idTarea)">
+                                    <i class="bi bi-plus-circle me-1"></i>Agregar comentario
+                                </button>
+                            </div>
+
+                            <!-- Lista de comentarios -->
+                            <div *ngIf="(comentariosPorTarea?.[tarea.idTarea]?.length || 0) > 0; else sinNotas">
+                                <div *ngFor="let c of comentariosPorTarea?.[tarea.idTarea]"
+                                    class="p-2 border-bottom small text-muted d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-chat-left-text me-1"></i>
+                                        {{ c.contenido }}
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar comentario"
+                                        (click)="eliminarComentario(c.idComentario, tarea.idTarea)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Placeholder si no hay comentarios -->
+                            <ng-template #sinNotas>
+                                <p class="text-muted small fst-italic m-0">Sin notas adicionales.</p>
+                            </ng-template>
                         </div>
+
 
                     </div>
 
@@ -198,7 +222,7 @@
 </div>
 
 
-<!-- Modal -->
+
 <div class="modal fade" id="addTaskModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -282,42 +306,66 @@
                                 required>
                         </div>
                     </div>
-
                     <div class="row g-3 mt-2">
                         <div class="col-md-6">
                             <label class="form-label">Horas Estimadas</label>
                             <input type="number" class="form-control" [(ngModel)]="nuevaTarea.horasEstimadas"
-                                name="horasEstimadas" min="0" step="0.5">
+                                name="horasEstimadas" min="0" max="1000" step="0.5">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Iteración *</label>
                             <select class="form-select" [(ngModel)]="nuevaTarea.iteracionId" name="iteracionId"
                                 required>
-                                <option *ngFor="let i of iteraciones" [ngValue]="i.idIteracion">Iteración: {{ i.numero}}</option>
+                                <option *ngFor="let i of iteraciones" [ngValue]="i.idIteracion">Iteración: {{ i.numero}}
+                                </option>
                             </select>
                         </div>
                     </div>
-
                     <!-- Dependencias y Notas -->
                     <div class="mb-3 mt-3">
                         <label class="form-label">Dependencias</label>
                         <input type="text" class="form-control" [(ngModel)]="nuevaTarea.dependencias"
                             name="dependencias" placeholder="Tareas previas (opcional)">
                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        {{ tareaEnEdicion ? 'Guardar cambios' : 'Agregar tarea' }}
+                    </button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Agregar Comentario -->
+<div class="modal fade" id="addComentarioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Encabezado -->
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title">Agregar Comentario</h5>
+                <button type="button" class="btn-close" (click)="cerrarModalComentario()" aria-label="Close"></button>
+            </div>
+
+            <!-- Formulario -->
+            <form (ngSubmit)="agregarComentarioModal()">
+                <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Notas adicionales</label>
-                        <textarea class="form-control" [(ngModel)]="nuevaTarea.notas" name="notas" rows="2"></textarea>
+                        <label class="form-label">Comentario *</label>
+                        <textarea class="form-control" [(ngModel)]="nuevoComentarioModal.contenido" name="contenido"
+                            rows="3" required maxlength="90" #contenido="ngModel"></textarea>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">
-  {{ tareaEnEdicion ? 'Guardar cambios' : 'Agregar tarea' }}
-</button>
-
+                    <button type="button" class="btn btn-secondary" (click)="cerrarModalComentario()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
+
         </div>
     </div>
 </div>

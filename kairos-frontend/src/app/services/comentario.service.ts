@@ -21,4 +21,9 @@ export class ComentarioService {
     createComentario(comentario: Partial<Comentario>): Observable<Comentario> {
         return this.http.post<Comentario>(this.baseUrl, comentario);
     }
+
+    deleteComentario(idComentario: number): Observable<void> {
+  return this.http.delete<void>(`${this.baseUrl}/${idComentario}`);
+}
+
 }
