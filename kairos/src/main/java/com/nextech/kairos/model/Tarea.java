@@ -1,7 +1,7 @@
 package com.nextech.kairos.model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,10 +17,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "tarea")
@@ -39,6 +36,9 @@ public class Tarea {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
+
+    @OneToMany(mappedBy = "tarea", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Tiempo> tiempos = new HashSet<>();
 
     @Column(length = 50)
     private String estado;
