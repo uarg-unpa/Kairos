@@ -29,7 +29,7 @@ public class Iteracion {
     private LocalDate fechaFin;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idEtapa", nullable = false)
+    @JoinColumn(name = "id_etapa", nullable = false)
 
     private Etapa etapa;
 
