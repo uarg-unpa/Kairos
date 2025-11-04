@@ -285,7 +285,7 @@
                                 <option value="">Seleccionar responsable...</option>
                                 <option *ngFor="let u of usuarios" [value]="u.id">{{ u.nombre }}</option>
                             </select>
-                            <div *ngIf="!nuevaTarea.usuarioId && (usuarioId.dirty || usuarioId.touched)"
+                            <div *ngIf="usuarioId.invalid && (usuarioId.dirty || usuarioId.touched)"
                                 class="text-danger mt-1">
                                 ⚠️ El responsable es obligatorio.
                             </div>
@@ -298,12 +298,18 @@
                         <div class="col-md-6">
                             <label class="form-label">Fecha de Inicio *</label>
                             <input type="date" class="form-control" [(ngModel)]="nuevaTarea.fechaCreacion"
-                                name="fechaCreacion" required>
+                                name="fechaCreacion" required #fechaCreacion="ngModel">
+                            <div *ngIf="fechaCreacion.invalid && (fechaCreacion.dirty || fechaCreacion.touched)" class="text-danger mt-1">
+                                ⚠️ La fecha es obligatoria.
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Fecha de Fin *</label>
                             <input type="date" class="form-control" [(ngModel)]="nuevaTarea.fechaFin" name="fechaFin"
-                                required>
+                                required #fechaFin="ngModel">
+                            <div *ngIf="fechaFin.invalid && (fechaFin.dirty || fechaFin.touched)" class="text-danger mt-1">
+                                ⚠️ La fecha es obligatoria.
+                            </div>
                         </div>
                     </div>
                     <div class="row g-3 mt-2">
