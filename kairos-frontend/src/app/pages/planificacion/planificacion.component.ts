@@ -36,6 +36,15 @@ export class PlanificacionComponent implements OnInit {
   tareas: Tarea[] = [];
 
   // -----------------------
+  // Paginación
+  // -----------------------
+  // Número de tareas por página
+  tareasPorPagina = 5;
+
+  // Página actual
+  paginaActual = 1;
+
+  // -----------------------
   // Usuarios
   // -----------------------
   usuarios: Usuario[] = [];
@@ -49,7 +58,7 @@ export class PlanificacionComponent implements OnInit {
   nuevoComentario: { [idTarea: number]: string } = {};
   tareaSeleccionada: number | null = null;
   nuevoComentarioModal = { contenido: '' };
-  
+
 
   // -----------------------
   // Objeto para crear/editar tareas desde el modal
@@ -118,13 +127,35 @@ export class PlanificacionComponent implements OnInit {
       // bootstrap está declarado globalmente en index.html
       this.addTaskModal = new (window as any).bootstrap.Modal(modalEl);
     }
-     const comentarioModalEl = document.getElementById('addComentarioModal');
-  if (comentarioModalEl) {
-    this.comentarioModal = new (window as any).bootstrap.Modal(comentarioModalEl);
-  }
-    
+    const comentarioModalEl = document.getElementById('addComentarioModal');
+    if (comentarioModalEl) {
+      this.comentarioModal = new (window as any).bootstrap.Modal(comentarioModalEl);
+    }
+
   }
 
+  // -----------------------
+  // Metodos de paginación 
+  // -----------------------
+
+  // Método para obtener las tareas visibles en la página actual
+  tareasPaginadas() {
+    const inicio = (this.paginaActual - 1) * this.tareasPorPagina;
+    const fin = inicio + this.tareasPorPagina;
+    return this.tareasFiltradas().slice(inicio, fin);
+  }
+
+  // Total de páginas
+  totalPaginas() {
+    return Math.ceil(this.tareasFiltradas().length / this.tareasPorPagina);
+  }
+
+  // Cambiar de página
+  cambiarPagina(pagina: number) {
+    if (pagina >= 1 && pagina <= this.totalPaginas()) {
+      this.paginaActual = pagina;
+    }
+  }
   // -----------------------
   // Cargas (fetch)
   // -----------------------
@@ -206,29 +237,29 @@ export class PlanificacionComponent implements OnInit {
    * Usa this.tareaEnEdicion y this.usuarioActual.
    */
   agregarComentarioModal(): void {
-  if (!this.tareaSeleccionada) return;
+    if (!this.tareaSeleccionada) return;
 
-  const contenido = this.nuevoComentarioModal.contenido.trim();
-  if (!contenido) return;
+    const contenido = this.nuevoComentarioModal.contenido.trim();
+    if (!contenido) return;
 
-  const comentario = {
-    idTarea: this.tareaSeleccionada,
-    idUsuario: this.usuarioActual?.id ?? 1,
-    contenido
-  };
+    const comentario = {
+      idTarea: this.tareaSeleccionada,
+      idUsuario: this.usuarioActual?.id ?? 1,
+      contenido
+    };
 
-  this.comentarioService.createComentario(comentario).subscribe({
-    next: (comentarioCreado) => {
-      if (!this.comentariosPorTarea[this.tareaSeleccionada!]) {
-        this.comentariosPorTarea[this.tareaSeleccionada!] = [];
-      }
-      this.comentariosPorTarea[this.tareaSeleccionada!].push(comentarioCreado);
-      this.nuevoComentarioModal.contenido = ''; // limpia campo
-      this.cerrarModalComentario();
-    },
-    error: (err) => console.error('Error al agregar comentario:', err)
-  });
-}
+    this.comentarioService.createComentario(comentario).subscribe({
+      next: (comentarioCreado) => {
+        if (!this.comentariosPorTarea[this.tareaSeleccionada!]) {
+          this.comentariosPorTarea[this.tareaSeleccionada!] = [];
+        }
+        this.comentariosPorTarea[this.tareaSeleccionada!].push(comentarioCreado);
+        this.nuevoComentarioModal.contenido = ''; // limpia campo
+        this.cerrarModalComentario();
+      },
+      error: (err) => console.error('Error al agregar comentario:', err)
+    });
+  }
 
 
   /** Elimina un comentario y actualiza la UI local */
@@ -261,15 +292,15 @@ export class PlanificacionComponent implements OnInit {
   }
 
   abrirModalComentarios(tareaId: number): void {
-  this.tareaSeleccionada = tareaId;
-  this.nuevoComentarioModal.contenido = ''; // limpia texto anterior
-  this.comentarioModal?.show();
-}
+    this.tareaSeleccionada = tareaId;
+    this.nuevoComentarioModal.contenido = ''; // limpia texto anterior
+    this.comentarioModal?.show();
+  }
 
-   cerrarModalComentario(): void {
-  this.comentarioModal?.hide();
-}
-  
+  cerrarModalComentario(): void {
+    this.comentarioModal?.hide();
+  }
+
 
   /** Reinicia el formulario del modal a valores por defecto */
   resetModal(): void {
@@ -305,7 +336,7 @@ export class PlanificacionComponent implements OnInit {
       return;
     }
 
-     if (this.nuevaTarea.horasEstimadas > 1000) {
+    if (this.nuevaTarea.horasEstimadas > 1000) {
       alert('⚠️ Las horas estimadas no pueden ser mayores a 1000.');
       return;
     }
@@ -351,7 +382,7 @@ export class PlanificacionComponent implements OnInit {
     this.tareaEnEdicion = tarea;
 
     // Cargar comentarios si no están en memoria
-    
+
 
     this.abrirModal();
   }
