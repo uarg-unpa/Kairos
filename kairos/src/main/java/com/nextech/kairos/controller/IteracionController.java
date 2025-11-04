@@ -6,9 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.nextech.kairos.model.Iteracion;
+import com.nextech.kairos.model.Etapa;
 import com.nextech.kairos.service.IIteracionService;
+import com.nextech.kairos.service.IEtapaService;
 import com.nextech.kairos.dto.IteracionDTO;
+import com.nextech.kairos.dto.IteracionCreateDTO;
 import com.nextech.kairos.mapper.IteracionMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @RestController
@@ -19,6 +24,9 @@ public class IteracionController {
     @Autowired
     private IIteracionService iteracionService;
 
+    @Autowired
+    private IEtapaService etapaService;
+
     @GetMapping
     public List<IteracionDTO> listarIteraciones() {
         return iteracionService.listarIteraciones()
@@ -27,14 +35,36 @@ public class IteracionController {
         .toList();
     }
 
+    @GetMapping("/por-etapa/{idEtapa}")
+    public List<IteracionDTO> listarPorEtapa(@PathVariable Long idEtapa) {
+        return iteracionService.listarPorEtapa(idEtapa)
+            .stream()
+            .map(IteracionMapper::toDTO)
+            .toList();
+    }
+
     @GetMapping("/{id}")
     public Iteracion obtener(@PathVariable Long id) {
         return iteracionService.obtenerPorId(id);
     }
 
     @PostMapping
-    public Iteracion guardar(@RequestBody Iteracion iteracion) {
-        return iteracionService.guardarIteracion(iteracion);
+    public IteracionDTO guardar(@RequestBody IteracionCreateDTO dto) {
+        if (dto.getEtapaId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Falta etapaId para asociar la iteración");
+        }
+        Etapa etapa = etapaService.obtener(dto.getEtapaId());
+        if (etapa == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Etapa no encontrada con id: " + dto.getEtapaId());
+        }
+        Iteracion iter = new Iteracion();
+        iter.setNumero(dto.getNumero());
+        iter.setDescripcion(dto.getDescripcion());
+        iter.setFechaInicio(dto.getFechaInicio() != null && !dto.getFechaInicio().isBlank() ? java.time.LocalDate.parse(dto.getFechaInicio()) : null);
+        iter.setFechaFin(dto.getFechaFin() != null && !dto.getFechaFin().isBlank() ? java.time.LocalDate.parse(dto.getFechaFin()) : null);
+        iter.setEtapa(etapa);
+        Iteracion saved = iteracionService.guardarIteracion(iter);
+        return IteracionMapper.toDTO(saved);
     }
 
     @DeleteMapping("/{id}")

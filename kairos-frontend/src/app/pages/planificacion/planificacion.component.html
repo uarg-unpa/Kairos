@@ -286,11 +286,11 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Iteración *</label>
-                            <select class="form-select" [(ngModel)]="nuevaTarea.iteracionId" name="iteracionId"
-                                required>
-                                <option *ngFor="let i of iteraciones" [ngValue]="i.idIteracion">Iteración: {{ i.numero}}</option>
+                            <select class="form-select" [(ngModel)]="nuevaTarea.iteracionId" name="iteracionId" required (change)="onIteracionChange()">
+                                <option *ngFor="let i of iteraciones" [ngValue]="i.idIteracion">Iteración: {{ i.numero }}</option> 
                             </select>
                         </div>
+
                     </div>
 
                     <!-- Dependencias y Notas -->

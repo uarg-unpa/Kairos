@@ -10,7 +10,8 @@ public class IteracionMapper {
             iteracion.getNumero(),
             iteracion.getFechaInicio() != null ? iteracion.getFechaInicio().toString() : null,
             iteracion.getFechaFin() != null ? iteracion.getFechaFin().toString() : null,
-            iteracion.getDescripcion()
+            iteracion.getDescripcion(),
+            iteracion.getEtapa() != null ? iteracion.getEtapa().getNombre() : null
         );
     }
 }

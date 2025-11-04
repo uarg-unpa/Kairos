@@ -8,5 +8,5 @@ import com.nextech.kairos.model.Iteracion;
 
 @Repository
 public interface IteracionRepository extends JpaRepository<Iteracion, Long> {
-    List<Iteracion> findByEtapa_IdEtapa(Long idEtapa);
+    java.util.List<Iteracion> findByEtapa_IdEtapa(Long idEtapa);
 }

@@ -1,34 +1,44 @@
 package com.nextech.kairos.dto;
 
 public class EtapaDTO {
-    private long idEtapa;
+    private Long idEtapa;
     private String nombre;
     private String descripcion;
+    private String estado;
     private String fechaInicio;
     private String fechaFin;
-    private int iteraciones;
+    private Integer progreso; // 0-100
+    private Integer iteraciones; // cantidad
 
     public EtapaDTO() {}
 
-    public EtapaDTO(long idEtapa, String nombre, String descripcion, String fechaInicio, String fechaFin, int iteraciones) {
+    public EtapaDTO(Long idEtapa, String nombre, String descripcion, String estado,
+                    String fechaInicio, String fechaFin,
+                    Integer progreso, Integer iteraciones) {
         this.idEtapa = idEtapa;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.estado = estado;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
+        this.progreso = progreso;
         this.iteraciones = iteraciones;
     }
 
-    public long getIdEtapa() { return idEtapa; }
-    public void setIdEtapa(long idEtapa) { this.idEtapa = idEtapa; }
+    public Long getIdEtapa() { return idEtapa; }
+    public void setIdEtapa(Long idEtapa) { this.idEtapa = idEtapa; }
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
     public String getFechaInicio() { return fechaInicio; }
     public void setFechaInicio(String fechaInicio) { this.fechaInicio = fechaInicio; }
     public String getFechaFin() { return fechaFin; }
     public void setFechaFin(String fechaFin) { this.fechaFin = fechaFin; }
-    public int getIteraciones() { return iteraciones; }
-    public void setIteraciones(int iteraciones) { this.iteraciones = iteraciones; }
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public Integer getProgreso() { return progreso; }
+    public void setProgreso(Integer progreso) { this.progreso = progreso; }
+    public Integer getIteraciones() { return iteraciones; }
+    public void setIteraciones(Integer iteraciones) { this.iteraciones = iteraciones; }
 }

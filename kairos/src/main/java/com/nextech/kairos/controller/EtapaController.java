@@ -1,63 +1,65 @@
 package com.nextech.kairos.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.nextech.kairos.dto.EtapaDTO;
-import com.nextech.kairos.dto.IteracionDTO;
 import com.nextech.kairos.mapper.EtapaMapper;
-import com.nextech.kairos.mapper.IteracionMapper;
 import com.nextech.kairos.model.Etapa;
-import com.nextech.kairos.model.Iteracion;
-import com.nextech.kairos.service.EtapaService;
+import com.nextech.kairos.service.IEtapaService;
+import com.nextech.kairos.repository.ProyectoRepository;
+import com.nextech.kairos.model.Proyecto;
+import com.nextech.kairos.model.EstadoEtapa;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/etapas")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class EtapaController {
-
-    @Autowired
-    private EtapaService etapaService;
+    private final IEtapaService etapaService;
+    private final ProyectoRepository proyectoRepository;
+    public EtapaController(IEtapaService etapaService, ProyectoRepository proyectoRepository) {
+        this.etapaService = etapaService;
+        this.proyectoRepository = proyectoRepository;
+    }
 
     @GetMapping
-    public List<EtapaDTO> listar(@RequestParam(value = "proyectoId", required = false) Long proyectoId) {
-        List<Etapa> etapas = (proyectoId != null)
-                ? etapaService.listarPorProyecto(proyectoId)
-                : etapaService.listarEtapas();
-        return etapas.stream().map(EtapaMapper::toDTO).collect(Collectors.toList());
+    public List<EtapaDTO> listar() {
+        return etapaService.listar().stream().map(EtapaMapper::toDTO).toList();
     }
 
     @GetMapping("/{id}")
     public EtapaDTO obtener(@PathVariable Long id) {
-        return EtapaMapper.toDTO(etapaService.obtenerPorId(id));
+        Etapa e = etapaService.obtener(id);
+        return EtapaMapper.toDTO(e);
     }
 
-    @PostMapping("/proyecto/{proyectoId}")
-    public EtapaDTO crearEtapa(@PathVariable Long proyectoId, @RequestBody Etapa etapa) {
-        Etapa creada = etapaService.crearEtapaEnProyecto(proyectoId, etapa);
-        return EtapaMapper.toDTO(creada);
+    @PostMapping
+    public EtapaDTO crear(@RequestBody EtapaDTO dto) {
+        Etapa e = new Etapa();
+        e.setNombre(dto.getNombre());
+        e.setDescripcion(dto.getDescripcion());
+        e.setEstado(EstadoEtapa.PENDIENTE);
+        if (dto.getFechaInicio() != null && !dto.getFechaInicio().isBlank()) {
+            e.setFechaInicio(LocalDate.parse(dto.getFechaInicio()));
+        }
+        if (dto.getFechaFin() != null && !dto.getFechaFin().isBlank()) {
+            e.setFechaFin(LocalDate.parse(dto.getFechaFin()));
+        }
+        // Asociar a un proyecto existente por defecto (primero encontrado)
+        Proyecto proyecto = proyectoRepository.findAll().stream().findFirst().orElse(null);
+        if (proyecto != null) {
+            e.setProyecto(proyecto);
+        }
+        Etapa saved = etapaService.guardar(e);
+        return EtapaMapper.toDTO(saved);
     }
 
-    @GetMapping("/{etapaId}/iteraciones")
-    public List<IteracionDTO> listarIteraciones(@PathVariable Long etapaId) {
-        return etapaService.listarIteracionesPorEtapa(etapaId)
-                .stream().map(IteracionMapper::toDTO).collect(Collectors.toList());
+    @DeleteMapping("/{id}")
+    public void eliminar(@PathVariable Long id) {
+        etapaService.eliminar(id);
     }
 
-    @PostMapping("/{etapaId}/iteraciones")
-    public IteracionDTO crearIteracion(@PathVariable Long etapaId, @RequestBody Iteracion iteracion) {
-        Iteracion creada = etapaService.crearIteracionEnEtapa(etapaId, iteracion);
-        return IteracionMapper.toDTO(creada);
-    }
 }
-

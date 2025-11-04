@@ -1,0 +1,119 @@
+<main class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Etapas</h2>
+  </div>
+
+  
+
+  <div class="card mb-4 mt-3">
+    <div class="card-body">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-8">
+          <div class="d-flex align-items-center gap-3">
+            <label class="form-label mb-0 fw-medium">Filtrar por etapa:</label>
+            <select class="form-select" style="width: auto;" [(ngModel)]="filtroEstado" name="filtroEstado">
+              <option [ngValue]="'TODAS'">Todas</option>
+              <option [ngValue]="'PENDIENTE'">Pendiente</option>
+              <option [ngValue]="'EN_PROGRESO'">En progreso</option>
+              <option [ngValue]="'FINALIZADA'">Finalizada</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4 text-end ms-auto">
+          <button class="btn btn-success" (click)="abrirModalEtapa()">
+            <i class="bi bi-plus-circle me-2"></i>Crear etapa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    @for (e of etapasFiltradas(); track e.idEtapa) {
+      <div class="col-lg-6 col-md-12">
+        <div role="button" (click)="goToEtapaId(e.idEtapa)" class="text-decoration-none text-dark">
+          <div class="card stage-card h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                  <h5 class="card-title mb-2">{{ e.nombre }}</h5>
+                  <p class="text-muted mb-2" *ngIf="e.descripcion">{{ e.descripcion }}</p>
+                  <div class="d-flex align-items-center gap-3 mb-2">
+                    <span class="badge"
+                          [ngClass]="{
+                            'bg-success': estadoVisible(e)==='FINALIZADA',
+                            'bg-warning bg-opacity-50 text-dark': estadoVisible(e)==='EN_PROGRESO',
+                            'bg-secondary': estadoVisible(e)==='PENDIENTE'
+                          }">{{ estadoVisible(e) | titlecase }}</span>
+                    <small class="text-muted"><i class="bi bi-calendar"></i> {{ e.fechaInicio || '-' }} - {{ e.fechaFin || '-' }}</small>
+                    
+                  </div>
+                </div>
+                <div class="text-end">
+                  <h4 class="text-success mb-0">{{ e.progreso ?? 0 }}%</h4>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="progress stage-progress mb-2">
+                  <div class="progress-bar bg-success" [style.width]="(e.progreso ?? 0) + '%' "></div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <h6 class="mb-2">Iteraciones: {{ e.iteraciones ?? 0 }}</h6>
+                <div class="d-flex flex-wrap gap-1" *ngIf="(e.iteraciones ?? 0) > 0">
+                  <span class="badge bg-light text-dark border">Iteración 1</span>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-end mt-2">
+                <button class="btn btn-outline-danger btn-sm" title="Eliminar etapa" (click)="eliminarEtapa(e, $event)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</main>
+
+<!-- Modal Crear Etapa -->
+<div class="modal fade" id="addStageModal" tabindex="-1" aria-labelledby="addStageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addStageModalLabel">Crear etapa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cerrarModalEtapa()"></button>
+      </div>
+      <div class="modal-body">
+        <form #formEtapa="ngForm">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nombre *</label>
+              <input class="form-control" [(ngModel)]="nuevaEtapa.nombre" name="nombre" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Descripción</label>
+              <input class="form-control" [(ngModel)]="nuevaEtapa.descripcion" name="descripcion" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Fecha de inicio *</label>
+              <input type="date" class="form-control" [(ngModel)]="nuevaEtapa.fechaInicio" name="fechaInicio" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Fecha de fin *</label>
+              <input type="date" class="form-control" [(ngModel)]="nuevaEtapa.fechaFin" name="fechaFin" required />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalEtapa()">Cancelar</button>
+        <button type="button" class="btn btn-success" [disabled]="!nuevaEtapaValida()" (click)="crearEtapa()">Crear etapa</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -71,6 +71,8 @@ export class PlanificacionComponent implements OnInit {
     );
   }
 
+  onIteracionChange() { /* sin entregables: no hace nada */ }
+
   cargarCategorias() {
     this.categoriaService.getCategorias().subscribe(data => {
       this.categorias = data;

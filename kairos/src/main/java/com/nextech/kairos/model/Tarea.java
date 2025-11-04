@@ -46,6 +46,7 @@ public class Tarea {
     @Column(name = "horas_estimadas")
 private Double horasEstimadas;
 
+
     @ManyToMany
     @JoinTable(
         name = "tarea_categoria",
@@ -105,4 +106,6 @@ private Double horasEstimadas;
 
     public Double getHorasEstimadas() { return horasEstimadas; }
 public void setHorasEstimadas(Double horasEstimadas) { this.horasEstimadas = horasEstimadas; }
+
+    
 }

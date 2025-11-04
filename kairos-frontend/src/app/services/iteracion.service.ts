@@ -19,11 +19,34 @@ export class IteracionService {
         return this.http.get<Iteracion[]>(this.baseUrl());
     }
 
-    getIteracionesPorEtapa(etapaId: number): Observable<Iteracion[]> {
-        return this.http.get<Iteracion[]>(`${this.baseUrl().replace('/api/iteraciones','/api/etapas')}/${etapaId}/iteraciones`);
+    // Intenta obtener iteraciones filtradas por etapa vía query string.
+    // Si tu backend usa otra ruta (por ejemplo /api/etapas/{id}/iteraciones), avísame y lo adapto.
+    getIteracionesPorEtapa(etapaSlug: string): Observable<Iteracion[]> {
+        const url = `${this.baseUrl}?etapa=${encodeURIComponent(etapaSlug)}`;
+        return this.http.get<Iteracion[]>(url);
     }
 
-    crearIteracion(etapaId: number, body: Partial<Iteracion>): Observable<Iteracion> {
-        return this.http.post<Iteracion>(`${this.baseUrl().replace('/api/iteraciones','/api/etapas')}/${etapaId}/iteraciones`, body);
+    getIteracionesPorEtapaId(etapaId: number): Observable<Iteracion[]> {
+        return this.http.get<Iteracion[]>(`${this.baseUrl}/por-etapa/${etapaId}`);
+    }
+
+    // Eliminado: entregables por iteración
+
+    crearIteracion(payload: { numero: number; descripcion?: string; fechaInicio: string; fechaFin: string; etapaId: number }): Observable<Iteracion> {
+        const body = {
+            numero: payload.numero,
+            descripcion: payload.descripcion ?? '',
+            fechaInicio: payload.fechaInicio,
+            fechaFin: payload.fechaFin,
+            etapaId: payload.etapaId
+        };
+        return this.http.post<Iteracion>(this.baseUrl, body);
+    }
+
+    deleteIteracion(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/${id}`);
     }
 }
+
+
+

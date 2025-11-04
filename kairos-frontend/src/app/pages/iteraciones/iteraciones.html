@@ -1,0 +1,110 @@
+<main class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Iteraciones <small class="text-muted" *ngIf="etapaId">— Etapa #{{ etapaId }}</small></h2>
+  </div>
+
+  <a routerLink="/etapas" class="text-decoration-none text-muted fw-bold">
+    <i class="bi-chevron-left me-2"></i>Volver
+  </a>
+
+  <div class="card mb-4 mt-3">
+    <div class="card-body">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-8">
+          <div class="d-flex align-items-center gap-3">
+            <label class="form-label mb-0 fw-medium">Filtrar por:</label>
+            <select class="form-select" style="width: auto;" [(ngModel)]="filtroProgreso" name="filtroProgreso">
+              <option [ngValue]="'TODAS'">Todas</option>
+              <option [ngValue]="'SIN_INICIAR'">Sin iniciar (0%)</option>
+              <option [ngValue]="'EN_PROCESO'">En proceso (0%-99%)</option>
+              <option [ngValue]="'FINALIZADA'">Finalizada (100%)</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4 text-end ms-auto">
+          <button class="btn btn-success" (click)="abrirModalIteracion()">
+            <i class="bi bi-plus-circle me-2"></i>Crear iteración
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    @for (it of iteracionesFiltradas(); track it.idIteracion) {
+      <div class="col-lg-4 col-md-6">
+        <div class="card stage-card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <h5 class="card-title mb-0">Iteración {{ it.numero }}</h5>
+                </div>
+                <div class="mb-2">
+                  <small class="text-muted">
+                    <i class="bi bi-calendar"></i>
+                    {{ it.fechaInicio || '-' }} - {{ it.fechaFin || '-' }}
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <small class="text-muted">Progreso</small>
+                <small class="fw-semibold">{{ progresoIteracion(it) }}%</small>
+              </div>
+              <div class="progress stage-progress mb-2">
+                <div class="progress-bar bg-info" [style.width]="progresoIteracion(it) + '%'">
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-2">
+              <button class="btn btn-outline-danger btn-sm" title="Eliminar iteración" (click)="eliminarIteracion(it)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</main>
+
+<!-- Modal Crear Iteración -->
+<div class="modal fade" id="addIterationModal" tabindex="-1" aria-labelledby="addIterationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addIterationModalLabel">Crear iteración</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cerrarModalIteracion()"></button>
+      </div>
+      <div class="modal-body">
+        <form #formIter="ngForm">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Número *</label>
+              <input type="number" min="1" class="form-control" [(ngModel)]="nuevaIteracion.numero" name="numero" required />
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Descripción</label>
+              <input class="form-control" [(ngModel)]="nuevaIteracion.descripcion" name="descripcion" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Fecha de inicio *</label>
+              <input type="date" class="form-control" [(ngModel)]="nuevaIteracion.fechaInicio" name="fechaInicio" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Fecha de fin *</label>
+              <input type="date" class="form-control" [(ngModel)]="nuevaIteracion.fechaFin" name="fechaFin" required />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalIteracion()">Cancelar</button>
+        <button type="button" class="btn btn-success" [disabled]="!nuevaIteracionValida()" (click)="crearIteracion()">Crear iteración</button>
+      </div>
+    </div>
+  </div>
+</div>

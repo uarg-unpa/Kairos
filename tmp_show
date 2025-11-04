@@ -17,8 +17,5 @@ export class EtapaService {
   }
 
   // Sin actualización manual de estado: derivado por fechas en UI
-  deleteEtapa(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
-  }
 }
 
