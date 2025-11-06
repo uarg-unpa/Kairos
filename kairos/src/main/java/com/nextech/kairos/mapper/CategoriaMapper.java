@@ -1,6 +1,6 @@
 package com.nextech.kairos.mapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
 import com.nextech.kairos.model.Categoria;
 import com.nextech.kairos.dto.CategoriaResponse;
@@ -12,7 +12,6 @@ public class CategoriaMapper {
 
     private final IProyectoService proyectoService;
 
-    @Autowired
     public CategoriaMapper(IProyectoService proyectoService) {
         this.proyectoService = proyectoService;
     }

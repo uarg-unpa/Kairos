@@ -29,9 +29,8 @@ public class TareaRequest {
     private LocalDate fechaCreacion;
     private LocalDate fechaFin;
     private Double horasEstimadas;
-    private Integer idTarea;
+    private Long idTarea;
     private String usuarioNombre;
-    private int iteracionNumero;
     private Set<CategoriaResponse> categorias;
     private Set<TareaResponse> dependencias; 
     // private Double horasEstimadas; // Descomentar si añades este campo a tu
@@ -66,13 +65,6 @@ public class TareaRequest {
 
     public void setDependenciasIds(Set<Long> DependenciasIds){
         this.dependenciasIds = DependenciasIds;
-    }
-    public int getIteracionNumero() {
-        return iteracionNumero;
-    }
-
-    public void setIteracionNombre(int iteracionNumero) {
-        this.iteracionNumero = iteracionNumero;
     }
 
     public Set<CategoriaResponse> getCategorias() {
@@ -155,11 +147,11 @@ public class TareaRequest {
         this.categoriaIds = categoriaIds;
     }
 
-    public Integer getIdTarea() {
+    public Long getIdTarea() {
         return idTarea;
     }
 
-    public void setIdTarea(Integer idTarea) {
+    public void setIdTarea(Long idTarea) {
         this.idTarea = idTarea;
     }
 

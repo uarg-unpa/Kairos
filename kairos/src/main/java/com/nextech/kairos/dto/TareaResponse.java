@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class TareaResponse {
 
-    private Integer idTarea;
+    private Long idTarea;
     private String nombre;
     private String descripcion;
     private String estado;
@@ -19,18 +19,17 @@ public class TareaResponse {
     private Long usuarioId;
     private String usuarioNombre;
     private Long iteracionId;
-    private int iteracionNumero;
 
     private Set<CategoriaResponse> categorias;
-    private Set<Integer> dependenciasIds; // solo devolvemos los ids de las dependencias
+    private Set<Long> dependenciasIds; // solo devolvemos los ids de las dependencias
 
     // --- Getters y Setters ---
 
-    public Integer getIdTarea() {
+    public Long getIdTarea() {
         return idTarea;
     }
 
-    public void setIdTarea(Integer idTarea) {
+    public void setIdTarea(Long idTarea) {
         this.idTarea = idTarea;
     }
 
@@ -114,14 +113,6 @@ public class TareaResponse {
         this.iteracionId = iteracionId;
     }
 
-    public int getIteracionNumero() {
-        return iteracionNumero;
-    }
-
-    public void setIteracionNumero(int iteracionNumero) {
-        this.iteracionNumero = iteracionNumero;
-    }
-
     public Set<CategoriaResponse> getCategorias() {
         return categorias;
     }
@@ -130,11 +121,11 @@ public class TareaResponse {
         this.categorias = categorias;
     }
 
-    public Set<Integer> getDependenciasIds() {
+    public Set<Long> getDependenciasIds() {
         return dependenciasIds;
     }
 
-    public void setDependenciasIds(Set<Integer> dependenciasIds) {
+    public void setDependenciasIds(Set<Long> dependenciasIds) {
         this.dependenciasIds = dependenciasIds;
     }
 }

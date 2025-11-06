@@ -16,7 +16,6 @@ export interface Tarea {
   horasEstimadas?: number;
   usuarioNombre: string;
   usuarioRol: string;
-  iteracionNumero: number;
   iteracionId: number;
   usuarioId: number;
   categorias: Categoria[];

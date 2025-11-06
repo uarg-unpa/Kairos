@@ -441,7 +441,8 @@ eliminarCategoria(categoriaId: number): void {
       fechaFin: tarea.fechaFin?.split('T')[0] || '',
       horasEstimadas: Number(tarea.horasEstimadas),
       usuarioId: Number(this.usuarios.find(u => u.nombre === tarea.usuarioNombre)?.id || null),
-      iteracionId: tarea.iteracionId || null
+      iteracionId: tarea.iteracionId ?? null,
+      dependenciaId: tarea.dependenciasIds?.[0] || null,
     };
 
     this.tareaEnEdicion = tarea;
@@ -466,7 +467,8 @@ eliminarCategoria(categoriaId: number): void {
       horasEstimadas: Number(this.nuevaTarea.horasEstimadas),
       usuarioId: this.nuevaTarea.usuarioId,
       iteracionId: this.nuevaTarea.iteracionId,
-      categoriaIds: this.nuevaTarea.categoriaId ? [Number(this.nuevaTarea.categoriaId)] : []
+      categoriaIds: this.nuevaTarea.categoriaId ? [Number(this.nuevaTarea.categoriaId)] : [],
+      dependenciasIds: this.nuevaTarea.dependenciaId ? [Number(this.nuevaTarea.dependenciaId)] : []
     };
 
     console.log('Tarea a editar:', tareaParaBackend);

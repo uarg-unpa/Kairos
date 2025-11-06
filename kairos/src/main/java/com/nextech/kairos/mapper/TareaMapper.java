@@ -8,9 +8,7 @@ import com.nextech.kairos.dto.CategoriaResponse;
 import com.nextech.kairos.dto.TareaRequest;
 import com.nextech.kairos.dto.TareaResponse;
 import com.nextech.kairos.model.Categoria;
-import com.nextech.kairos.model.Iteracion;
 import com.nextech.kairos.model.Tarea;
-import com.nextech.kairos.model.Usuario;
 import com.nextech.kairos.service.ICategoriaService;
 import com.nextech.kairos.service.IIteracionService;
 import com.nextech.kairos.service.ITareaService;
@@ -30,7 +28,6 @@ public class TareaMapper {
     @Autowired
     private final ITareaService tareaService;
 
-    @Autowired
     public TareaMapper(UsuarioService usuarioService, IIteracionService iteracionService, 
                       ICategoriaService categoriaService, ITareaService tareaService) {
         this.usuarioService = usuarioService;
@@ -59,7 +56,6 @@ public class TareaMapper {
 
         if (tarea.getIteracion() != null) {
             dto.setIteracionId(tarea.getIteracion().getIdIteracion());
-            dto.setIteracionNumero(tarea.getIteracion().getNumero());
         }
 
         if (tarea.getCategorias() != null) {

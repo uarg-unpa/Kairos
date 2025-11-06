@@ -15,8 +15,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
 
 @Entity
 @Table(name = "iteracion")
@@ -44,7 +42,6 @@ public class Iteracion {
     private Etapa etapa;
 
     @OneToMany(mappedBy = "iteracion", cascade = CascadeType.ALL, orphanRemoval = true)
-   
     private Set<Tarea> tareas = new HashSet<>();
 
     // 🔹 Getters y Setters

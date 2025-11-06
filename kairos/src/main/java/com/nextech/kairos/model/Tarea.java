@@ -25,7 +25,7 @@ public class Tarea {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idTarea;
+    private Long idTarea;
 
     // 🔹 Relación con Iteracion
     @ManyToOne(fetch = FetchType.EAGER)
@@ -58,6 +58,10 @@ public class Tarea {
 
     @Column(name = "horas_estimadas")
     private Double horasEstimadas;
+
+    @OneToMany(mappedBy = "tarea", cascade = CascadeType.ALL, orphanRemoval = true)
+private Set<Comentario> comentarios = new HashSet<>();
+
 
     @ManyToMany
     @JoinTable(name = "tarea_categoria", joinColumns = @JoinColumn(name = "idTarea"), inverseJoinColumns = @JoinColumn(name = "idCategoria"))
@@ -106,11 +110,11 @@ public class Tarea {
         this.dependientes = dependientes;
     }
     
-    public Integer getIdTarea() {
+    public Long getIdTarea() {
         return idTarea;
     }
 
-    public void setIdTarea(Integer idTarea) {
+    public void setIdTarea(Long idTarea) {
         this.idTarea = idTarea;
     }
 

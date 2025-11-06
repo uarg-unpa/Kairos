@@ -50,7 +50,7 @@ public class TareaController {
             dto.setHorasEstimadas(t.getHorasEstimadas());
             dto.setUsuarioId(t.getUsuario().getId());
             dto.setUsuarioNombre(t.getUsuario().getNombre());
-            dto.setIteracionNumero(t.getIteracion().getNumero());
+             dto.setIteracionId(t.getIteracion() != null ? t.getIteracion().getIdIteracion() : null);
 
             Set<CategoriaResponse> categoriasDTO = t.getCategorias().stream()
                     .map(c -> new CategoriaResponse(c.getIdCategoria(), c.getNombre(), c.getDescripcion(),
@@ -136,7 +136,6 @@ public class TareaController {
         dtoResponse.setFechaFin(tareaGuardada.getFechaFin());
         dtoResponse.setHorasEstimadas(tareaGuardada.getHorasEstimadas());
         dtoResponse.setUsuarioNombre(tareaGuardada.getUsuario().getNombre());
-        dtoResponse.setIteracionNombre(tareaGuardada.getIteracion().getNumero());
         dtoResponse.setCategorias(
                 tareaGuardada.getCategorias().stream()
                         .map(c -> new CategoriaResponse(c.getIdCategoria(), c.getNombre(), c.getDescripcion(),
@@ -240,6 +239,27 @@ public class TareaController {
             }
 
         }
+
+        if(cambios.containsKey("dependenciasIds")) {
+            Object valor5 = cambios.get("dependenciasIds");
+            if (valor5 != null && valor5 instanceof List) {
+                List<?> listaIds = (List<?>) valor5;
+                Set<Tarea> dependencias = new HashSet<>();
+                for (Object idObj : listaIds) {
+                    try {
+                        Long dependenciaId = Long.valueOf(idObj.toString());
+                        Tarea dependencia = tareaService.obtenerPorId(dependenciaId);
+                        if (dependencia != null) {
+                            dependencias.add(dependencia);
+                        }
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException("El ID de dependencia no es válido: " + idObj);
+                    }
+                }
+                tarea.setDependencias(dependencias);
+
+            }
+        }
         // Agrega más campos si quieres permitir actualizar
 
         Tarea tareaActualizada = tareaService.guardarTarea(tarea);
@@ -255,12 +275,15 @@ public class TareaController {
         dtoResponse.setFechaFin(tareaActualizada.getFechaFin());
         dtoResponse.setHorasEstimadas(tareaActualizada.getHorasEstimadas());
         dtoResponse.setUsuarioNombre(tareaActualizada.getUsuario().getNombre());
-        dtoResponse.setIteracionNombre(tareaActualizada.getIteracion().getNumero());
         dtoResponse.setCategorias(
                 tareaActualizada.getCategorias().stream()
                         .map(c -> new CategoriaResponse(c.getIdCategoria(), c.getNombre(), c.getDescripcion(),
                                 c.getProyecto().getIdProyecto()))
                         .collect(Collectors.toSet()));
+        dtoResponse.setDependenciasIds(
+            tareaActualizada.getDependencias().stream()
+                    .map(Tarea::getIdTarea)
+                    .collect(Collectors.toSet()));
 
         return dtoResponse;
     }
@@ -291,12 +314,16 @@ public class TareaController {
             dto.setFechaFin(t.getFechaFin());
             dto.setHorasEstimadas(t.getHorasEstimadas());
             dto.setUsuarioNombre(t.getUsuario().getNombre());
-            dto.setIteracionNombre(t.getIteracion().getNumero());
             dto.setCategorias(
                     t.getCategorias().stream()
                             .map(c -> new CategoriaResponse(c.getIdCategoria(), c.getNombre(), c.getDescripcion(),
                                     c.getProyecto().getIdProyecto()))
                             .collect(Collectors.toSet()));
+            dto.setDependenciasIds(
+                t.getDependencias().stream()
+                        .map(Tarea::getIdTarea)
+                        .collect(Collectors.toSet())
+            );
             return dto;
         }).collect(Collectors.toList());
     }
