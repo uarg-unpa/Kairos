@@ -334,6 +334,13 @@ eliminarCategoria(categoriaId: number): void {
     this.addTaskModal?.show();
   }
 
+  abrirModalCrear(): void {
+  this.tareaEnEdicion = null; // ← ahora sí, explícitamente
+  this.resetModal();
+  this.addTaskModal?.show();
+}
+
+
   /** Cierra el modal y quita foco */
   cerrarModal(): void {
     this.addTaskModal?.hide();
@@ -368,21 +375,21 @@ eliminarCategoria(categoriaId: number): void {
 
   /** Reinicia el formulario del modal a valores por defecto */
   resetModal(): void {
-    this.nuevaTarea = {
-      nombre: '',
-      descripcion: '',
-      categoria: '',
-      categoriaId: null,
-      prioridad: 'Media',
-      estado: 'Planificada',
-      fechaCreacion: '',
-      fechaFin: '',
-      horasEstimadas: 0,
-      usuarioId: 1,
-      iteracionId: 7
-    };
-    this.cerrarModal();
-  }
+  this.nuevaTarea = {
+    nombre: '',
+    descripcion: '',
+    categoria: '',
+    categoriaId: null,
+    prioridad: 'Media',
+    estado: 'Planificada',
+    fechaCreacion: '',
+    fechaFin: '',
+    horasEstimadas: 0,
+    usuarioId: 1,
+    iteracionId: 7
+  };
+}
+
 
   /** Agrega una tarea nueva validando campos básicos */
   agregarTarea(): void {
@@ -425,6 +432,7 @@ eliminarCategoria(categoriaId: number): void {
         this.tareas.push(tareaCreada);
         this.cargarTareas();
         this.resetModal();
+        this.cerrarModal();
       },
       error: (err) => console.error('Error al crear tarea:', err)
     });
@@ -493,8 +501,11 @@ eliminarCategoria(categoriaId: number): void {
       next: (tareaActualizada) => {
         const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
         if (index !== -1) this.tareas[index] = tareaActualizada;
+        this.tareaEnEdicion = null;
         this.cargarTareas;
         this.resetModal();
+        this.cerrarModal();
+
         console.log('✅ Tarea editada correctamente');
       },
       error: (err) => console.error('❌ Error al editar tarea:', err)
