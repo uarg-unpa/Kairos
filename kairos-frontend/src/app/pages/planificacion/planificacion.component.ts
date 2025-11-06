@@ -423,6 +423,7 @@ eliminarCategoria(categoriaId: number): void {
     this.taskService.createTarea(tareaParaBackend).subscribe({
       next: (tareaCreada) => {
         this.tareas.push(tareaCreada);
+        this.cargarTareas();
         this.resetModal();
       },
       error: (err) => console.error('Error al crear tarea:', err)
@@ -492,6 +493,7 @@ eliminarCategoria(categoriaId: number): void {
       next: (tareaActualizada) => {
         const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
         if (index !== -1) this.tareas[index] = tareaActualizada;
+        this.cargarTareas;
         this.resetModal();
         console.log('✅ Tarea editada correctamente');
       },
