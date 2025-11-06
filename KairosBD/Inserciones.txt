@@ -9,135 +9,82 @@ Cierre Cursada 15/11/2025 al 28/11/2025 (esta ultima etapa podrias dejármela pa
 
 USE kairos;
 
--- 🧱 1) Crear el proyecto si no existe
+-- 1) Crear proyecto si no existe
 INSERT INTO proyecto (nombre, equipo, fecha_creacion, estado, fecha_actualizacion)
 SELECT 'Proyecto RUP Demo', 'Equipo Kairos', CURDATE(), 'Activo', NOW()
 WHERE NOT EXISTS (
   SELECT 1 FROM proyecto WHERE nombre = 'Proyecto RUP Demo'
 );
 
--- Obtener el ID del proyecto
+-- Obtener ID del proyecto
 SELECT id_proyecto INTO @proy
 FROM proyecto
 WHERE nombre = 'Proyecto RUP Demo'
 ORDER BY id_proyecto DESC
 LIMIT 1;
 
--- 🧩 2) Crear Etapas solo si no existen
-
--- Etapa Inicio
+-- 2) Crear Etapas si no existen
 INSERT INTO etapa (nombre, fecha_inicio, fecha_fin, id_proyecto)
 SELECT 'Inicio', '2025-08-19', '2025-09-09', @proy
-WHERE NOT EXISTS (
-  SELECT 1 FROM etapa WHERE nombre = 'Inicio' AND id_proyecto = @proy
-);
+WHERE NOT EXISTS (SELECT 1 FROM etapa WHERE nombre = 'Inicio' AND id_proyecto = @proy);
+ALTER TABLE etapa
+  ADD COLUMN IF NOT EXISTS estado
+    ENUM('PENDIENTE','EN_PROGRESO','COMPLETADA') NULL;
 
--- Etapa Elaboración
+ALTER TABLE etapa
+  MODIFY estado ENUM('PENDIENTE','EN_PROGRESO','COMPLETADA') NULL DEFAULT 'PENDIENTE';
+
+UPDATE etapa SET estado='PENDIENTE' WHERE estado IS NULL;
+
 INSERT INTO etapa (nombre, fecha_inicio, fecha_fin, id_proyecto)
 SELECT 'Elaboración', '2025-09-10', '2025-10-10', @proy
-WHERE NOT EXISTS (
-  SELECT 1 FROM etapa WHERE nombre = 'Elaboración' AND id_proyecto = @proy
-);
+WHERE NOT EXISTS (SELECT 1 FROM etapa WHERE nombre = 'Elaboración' AND id_proyecto = @proy);
 
--- Etapa Construcción
 INSERT INTO etapa (nombre, fecha_inicio, fecha_fin, id_proyecto)
 SELECT 'Construcción', '2025-10-11', '2025-11-14', @proy
-WHERE NOT EXISTS (
-  SELECT 1 FROM etapa WHERE nombre = 'Construcción' AND id_proyecto = @proy
-);
+WHERE NOT EXISTS (SELECT 1 FROM etapa WHERE nombre = 'Construcción' AND id_proyecto = @proy);
 
--- Obtener IDs de cada etapa
-SELECT id_etapa INTO @etapa_inicio
-FROM etapa WHERE nombre = 'Inicio' AND id_proyecto = @proy LIMIT 1;
+-- Obtener IDs de etapas
+SELECT id_etapa INTO @etapa_inicio FROM etapa WHERE nombre = 'Inicio' AND id_proyecto = @proy LIMIT 1;
+SELECT id_etapa INTO @etapa_elab   FROM etapa WHERE nombre = 'Elaboración' AND id_proyecto = @proy LIMIT 1;
+SELECT id_etapa INTO @etapa_cons   FROM etapa WHERE nombre = 'Construcción' AND id_proyecto = @proy LIMIT 1;
 
-SELECT id_etapa INTO @etapa_elab
-FROM etapa WHERE nombre = 'Elaboración' AND id_proyecto = @proy LIMIT 1;
-
-SELECT id_etapa INTO @etapa_cons
-FROM etapa WHERE nombre = 'Construcción' AND id_proyecto = @proy LIMIT 1;
-
--- 🧩 3) Iteraciones (solo si no existen)
-
--- Elaboración - Iteración 1
+-- 3) Iteraciones (FK: id_etapa)
 INSERT INTO iteracion (numero, descripcion, fecha_inicio, fecha_fin, id_etapa)
 SELECT 1, 'Elaboración - Iteración 1', '2025-09-10', '2025-09-23', @etapa_elab
-WHERE NOT EXISTS (
-  SELECT 1 FROM iteracion WHERE numero = 1 AND id_etapa = @etapa_elab
-);
+WHERE NOT EXISTS (SELECT 1 FROM iteracion WHERE numero = 1 AND id_etapa = @etapa_elab);
 
--- Elaboración - Iteración 2
 INSERT INTO iteracion (numero, descripcion, fecha_inicio, fecha_fin, id_etapa)
 SELECT 2, 'Elaboración - Iteración 2', '2025-09-24', '2025-10-10', @etapa_elab
-WHERE NOT EXISTS (
-  SELECT 1 FROM iteracion WHERE numero = 2 AND id_etapa = @etapa_elab
-);
+WHERE NOT EXISTS (SELECT 1 FROM iteracion WHERE numero = 2 AND id_etapa = @etapa_elab);
 
--- Construcción - Iteración 1
 INSERT INTO iteracion (numero, descripcion, fecha_inicio, fecha_fin, id_etapa)
 SELECT 1, 'Construcción - Iteración 1', '2025-10-11', '2025-10-29', @etapa_cons
-WHERE NOT EXISTS (
-  SELECT 1 FROM iteracion WHERE numero = 1 AND id_etapa = @etapa_cons
-);
+WHERE NOT EXISTS (SELECT 1 FROM iteracion WHERE numero = 1 AND id_etapa = @etapa_cons);
 
--- Construcción - Iteración 2
 INSERT INTO iteracion (numero, descripcion, fecha_inicio, fecha_fin, id_etapa)
 SELECT 2, 'Construcción - Iteración 2', '2025-10-29', '2025-11-07', @etapa_cons
-WHERE NOT EXISTS (
-  SELECT 1 FROM iteracion WHERE numero = 2 AND id_etapa = @etapa_cons
-);
+WHERE NOT EXISTS (SELECT 1 FROM iteracion WHERE numero = 2 AND id_etapa = @etapa_cons);
 
--- Construcción - Iteración 3
 INSERT INTO iteracion (numero, descripcion, fecha_inicio, fecha_fin, id_etapa)
 SELECT 3, 'Construcción - Iteración 3', '2025-11-08', '2025-11-14', @etapa_cons
-WHERE NOT EXISTS (
-  SELECT 1 FROM iteracion WHERE numero = 3 AND id_etapa = @etapa_cons
-);
+WHERE NOT EXISTS (SELECT 1 FROM iteracion WHERE numero = 3 AND id_etapa = @etapa_cons);
 
--- ✨ Etapa “Cierre Cursada” se deja para agregar manualmente desde la app.
-
-
-
-
-
-
-
-USE kairos;
-
--- 1️⃣ Completar campos de las etapas (por nombre)
+-- 4) Completar descripciones y estados (enum: PENDIENTE | EN_PROGRESO | COMPLETADA)
 UPDATE etapa
 SET descripcion = 'Definición de la visión del proyecto, análisis de viabilidad y establecimiento del alcance inicial',
-    estado = 'COMPLETADA',
-    responsable_nombre = 'Gonzalo Ulloa'
+    estado = 'COMPLETADA'
 WHERE nombre = 'Inicio';
 
 UPDATE etapa
 SET descripcion = 'Análisis detallado de requisitos, diseño de arquitectura y mitigación de riesgos principales',
-    estado = 'EN_PROGRESO',
-    responsable_nombre = 'Gonzalo Ulloa'
+    estado = 'COMPLETADA'
 WHERE nombre = 'Elaboración';
 
 UPDATE etapa
 SET descripcion = 'Implementación y pruebas incrementales del producto',
-    estado = 'PENDIENTE',
-    responsable_nombre = 'Gonzalo Ulloa'
-WHERE nombre = 'Construcción';
+    estado = 'EN_PROGRESO'
+WHERE nombre = 'Construcción';
 
--- 2️⃣ Cargar objetivos para la etapa Inicio
 
--- ✅ Obtener el ID de la etapa “Inicio”
-SELECT id_etapa INTO @id_inicio
-FROM etapa
-WHERE nombre = 'Inicio'
-LIMIT 1;
 
--- (Opcional) limpiar objetivos previos para evitar duplicados
-DELETE FROM etapa_objetivos WHERE id_etapa = @id_inicio;
-
--- ✅ Insertar objetivos
-INSERT INTO etapa_objetivos (nombre, id_etapa) VALUES
-('Identificar riesgos', @id_inicio),
-('Identificar stakeholders', @id_inicio),
-('Definir alcance inicial', @id_inicio),
-('Evaluar viabilidad', @id_inicio);
-
-INSERT INTO iteracion_entregable (nombre, id_iteracion) VALUES ('Plan de proyecto', 412);

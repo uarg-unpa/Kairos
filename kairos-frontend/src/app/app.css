@@ -26,3 +26,10 @@
 .stage-card .badge {
   pointer-events: none;
 }
+
+/* Textarea that auto-grows for Descripción in Etapas */
+.descripcion-textarea {
+  overflow: hidden;
+  resize: none;
+  min-height: 96px;
+}

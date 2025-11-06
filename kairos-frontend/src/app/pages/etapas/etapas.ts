@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuariosService } from '../../services/usuarios';
@@ -14,7 +14,7 @@ declare const bootstrap: any;
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './etapas.html'
 })
-export class EtapasComponent implements OnInit {
+export class EtapasComponent implements OnInit, AfterViewInit {
   private addStageModal: any;
 
   private usuariosService = inject(UsuariosService);
@@ -36,7 +36,14 @@ export class EtapasComponent implements OnInit {
     const el = document.getElementById('addStageModal');
     if (el) this.addStageModal = new bootstrap.Modal(el);
 
-    this.etapaService.getEtapas().subscribe((data) => this.etapas = data);
+    this.etapaService.getEtapas().subscribe((data) => {
+      this.etapas = data;
+      setTimeout(() => this.enableTooltips(), 0);
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.enableTooltips();
   }
 
   abrirModalEtapa() {
@@ -61,6 +68,7 @@ export class EtapasComponent implements OnInit {
         this.etapas = [nueva, ...this.etapas];
         this.resetForm();
         this.cerrarModalEtapa();
+        setTimeout(() => this.enableTooltips(), 0);
       },
       error: (err) => {
         console.error('Error creando etapa', err);
@@ -87,6 +95,47 @@ export class EtapasComponent implements OnInit {
     return 'EN_PROGRESO';
   }
 
+  // Color lógico del estado para UI (incluye caso finalizada con pendientes)
+  colorEstado(e: Etapa): 'success' | 'warning' | 'secondary' | 'danger' {
+    const estado = this.estadoVisible(e);
+    if (estado === 'FINALIZADA') {
+      return this.progressValue(e) < 100 ? 'danger' : 'success';
+    }
+    if (estado === 'EN_PROGRESO') return 'warning';
+    return 'secondary';
+  }
+
+  // Progreso mostrado: si está finalizada y tiene 0 iteraciones, forzar 100%
+  progressValue(e: Etapa): number {
+    const iters = e.iteraciones ?? 0;
+    const estado = this.estadoVisible(e);
+    if (estado === 'FINALIZADA' && iters === 0) return 100;
+    const p = e.progreso ?? 0;
+    return Math.max(0, Math.min(100, p));
+  }
+
+  // Tooltip cuando está en rojo
+  tooltipFinalizadaPendiente(e: Etapa): string | null {
+    return this.colorEstado(e) === 'danger' ? 'Finalizada con pendientes' : null;
+  }
+
+  private enableTooltips() {
+    try {
+      const list = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]')) as any[];
+      list.forEach((el: any) => {
+        try { new bootstrap.Tooltip(el); } catch {}
+      });
+    } catch {}
+  }
+
+  // Etiqueta legible para estado
+  estadoLabel(e: Etapa): string {
+    const estado = this.estadoVisible(e);
+    if (estado === 'EN_PROGRESO') return 'En progreso';
+    if (estado === 'PENDIENTE') return 'Pendiente';
+    return 'Finalizada';
+  }
+
   etapasFiltradas(): Etapa[] {
     if (this.filtroEstado === 'TODAS') return this.etapas;
     return this.etapas.filter(e => this.estadoVisible(e) === this.filtroEstado);
@@ -98,11 +147,38 @@ export class EtapasComponent implements OnInit {
     this.etapaService.deleteEtapa(e.idEtapa).subscribe({
       next: () => {
         this.etapas = this.etapas.filter(x => x.idEtapa !== e.idEtapa);
+        setTimeout(() => this.enableTooltips(), 0);
       },
       error: (err) => {
         console.error('Error eliminando etapa', err);
         alert('No se pudo eliminar la etapa');
       }
     });
+  }
+
+  // Resumen de Etapas
+  totalEtapas(): number {
+    return this.etapas.length;
+  }
+
+  completadas(): number {
+    return this.etapas.filter(e => this.estadoVisible(e) === 'FINALIZADA').length;
+  }
+
+  enProgreso(): number {
+    return this.etapas.filter(e => this.estadoVisible(e) === 'EN_PROGRESO').length;
+  }
+
+  progresoTotal(): number {
+    if (!this.etapas.length) return 0;
+    const sum = this.etapas.reduce((acc, e) => acc + this.progressValue(e), 0);
+    return Math.round(sum / this.etapas.length);
+  }
+
+  autoGrow(event: Event) {
+    const el = event.target as HTMLTextAreaElement;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
   }
 }
