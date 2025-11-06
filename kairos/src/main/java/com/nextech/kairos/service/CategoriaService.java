@@ -4,25 +4,23 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.nextech.kairos.model.Categoria;
 import com.nextech.kairos.model.Proyecto;
 import com.nextech.kairos.model.Tarea;
+
+import com.nextech.kairos.model.Categoria;
 import com.nextech.kairos.repository.CategoriaRepository;
 import com.nextech.kairos.repository.ProyectoRepository;
 
+import org.springframework.transaction.annotation.Transactional;
+
+
 @Service // ¡NECESARIA para que Spring lo registre!
 @Transactional
- 
 public class CategoriaService implements ICategoriaService { 
     
     private final CategoriaRepository categoriaRepository;
     private final ProyectoRepository proyectoRepository; 
-
-    @Autowired
     public CategoriaService(CategoriaRepository categoriaRepository, ProyectoRepository proyectoRepository) {
         this.categoriaRepository = categoriaRepository;
         this.proyectoRepository = proyectoRepository;

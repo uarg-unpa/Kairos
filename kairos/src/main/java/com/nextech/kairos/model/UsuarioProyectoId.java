@@ -1,3 +1,4 @@
+
 package com.nextech.kairos.model;
 
 import java.io.Serializable;
@@ -8,6 +9,7 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class UsuarioProyectoId implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Column(name = "idUsuario")

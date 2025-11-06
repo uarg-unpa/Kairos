@@ -8,6 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -50,5 +51,4 @@ public class UsuarioProyecto {
     public void setProyecto(Proyecto proyecto) { this.proyecto = proyecto; }
     public String getRolProyecto() { return rolProyecto; }
     public void setRolProyecto(String rolProyecto) { this.rolProyecto = rolProyecto; }
-
 }

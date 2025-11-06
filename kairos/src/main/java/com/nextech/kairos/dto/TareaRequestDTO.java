@@ -2,6 +2,7 @@ package com.nextech.kairos.dto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,7 +29,13 @@ public class TareaRequestDTO {
 
     private LocalDate fechaCreacion;
     private LocalDate fechaFin;
-    // private Double horasEstimadas; // Descomentar si añades este campo a tu entidad Tarea
+    private Double horasEstimadas;
+    private Integer idTarea;
+    private String usuarioNombre;
+    private int iteracionNumero;
+    private Set<CategoriaDTO> categorias;
+    // private Double horasEstimadas; // Descomentar si añades este campo a tu
+    // entidad Tarea
 
     // --- RELACIONES NECESARIAS ---
 
@@ -39,39 +46,120 @@ public class TareaRequestDTO {
     private Long iteracionId;
 
     // Lista de IDs para asociar categorías (relación N:M)
-    private List<Long> categoriaIds;
+    private Set<Long> categoriaIds;
 
     // --- Getters y Setters ---
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public int getIteracionNumero() {
+        return iteracionNumero;
+    }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public void setIteracionNombre(int iteracionNumero) {
+        this.iteracionNumero = iteracionNumero;
+    }
 
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public Set<CategoriaDTO> getCategorias() {
+        return categorias;
+    }
 
-    public String getPrioridad() { return prioridad; }
-    public void setPrioridad(String prioridad) { this.prioridad = prioridad; }
+    public void setCategorias(Set<CategoriaDTO> categorias) {
+        this.categorias = categorias;
+    }
 
-    public LocalDate getFechaCreacion() { return fechaCreacion; }
-    public void setFechaCreacion(LocalDate fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public LocalDate getFechaFin() { return fechaFin; }
-    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public Long getUsuarioId() { return usuarioId; }
-    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-    public Long getIteracionId() { return iteracionId; }
-    public void setIteracionId(Long iteracionId) { this.iteracionId = iteracionId; }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-    public List<Long> getCategoriaIds() { return categoriaIds; }
-    public void setCategoriaIds(List<Long> categoriaIds) { this.categoriaIds = categoriaIds; }
+    public String getEstado() {
+        return estado;
+    }
 
-    /*
-    public Double getHorasEstimadas() { return horasEstimadas; }
-    public void setHorasEstimadas(Double horasEstimadas) { this.horasEstimadas = horasEstimadas; }
-    */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(String prioridad) {
+        this.prioridad = prioridad;
+    }
+
+    public LocalDate getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDate fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    public Long getIteracionId() {
+        return iteracionId;
+    }
+
+    public void setIteracionId(Long iteracionId) {
+        this.iteracionId = iteracionId;
+    }
+
+    public Set<Long> getCategoriaIds() {
+        return categoriaIds;
+    }
+
+    public void setCategoriaIds(Set<Long> categoriaIds) {
+        this.categoriaIds = categoriaIds;
+    }
+
+    public Integer getIdTarea() {
+        return idTarea;
+    }
+
+    public void setIdTarea(Integer idTarea) {
+        this.idTarea = idTarea;
+    }
+
+    public Double getHorasEstimadas() {
+        return horasEstimadas;
+    }
+
+    public void setHorasEstimadas(Double horasEstimadas) {
+        this.horasEstimadas = horasEstimadas;
+    }
+
+    public String getUsuarioNombre() {
+        return usuarioNombre;
+    }
+
+    public void setUsuarioNombre(String usuarioNombre) {
+        this.usuarioNombre = usuarioNombre;
+    }
+
 }

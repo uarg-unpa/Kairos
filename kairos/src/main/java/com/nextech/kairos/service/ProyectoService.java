@@ -126,7 +126,7 @@ public class ProyectoService {
      * Eliminar la asignación de un miembro a un proyecto
      */
     public void removeUserFromProject(Long idProyecto, Long idUsuario) {
-        UsuarioProyecto asignacion = usuarioProyectoRepository.findByIdUsuarioIdUsuario(idUsuario).stream()
+        UsuarioProyecto asignacion = usuarioProyectoRepository.findByUsuario_Id(idUsuario).stream()
             .filter(up -> up.getProyecto().getIdProyecto().equals(idProyecto))
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Asignación de usuario no encontrada para este proyecto."));

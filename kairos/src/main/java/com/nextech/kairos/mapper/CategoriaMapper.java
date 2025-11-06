@@ -1,7 +1,7 @@
 package com.nextech.kairos.mapper;
 
-import com.nextech.kairos.dto.CategoriaDTO;
 import com.nextech.kairos.model.Categoria;
+import com.nextech.kairos.dto.CategoriaDTO;
 
 public class CategoriaMapper {
 

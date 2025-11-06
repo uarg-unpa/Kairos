@@ -1,56 +1,251 @@
-<div class="card workspace-card mb-4">
-    <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">
-            <i class="bi bi-stopwatch me-2"></i>Cronómetro
-        </h5>
+<div class="row g-4 py-4">
+    
+    <div class="col-lg-8">
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Mis Tareas Asignadas</h2>
+            <button 
+                class="btn btn-outline-success" 
+                (click)="openManualTimeModal()"
+            >
+                <i class="bi bi-clock-history me-2"></i>Tiempo Manual
+            </button>
+        </div>
+
+        <div class="card planning-card mb-3">
+            <div class="card-body py-2">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        <select class="form-select" [(ngModel)]="filtroEstado" aria-label="Filtrar por estado">
+                            <option value="Todos">Todos los estados</option>
+                            <option>En Progreso</option>
+                            <option>Planificada</option>
+                            <option>Completado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card planning-card">
+            <div class="card-body p-0">
+                <div *ngIf="tareas.length === 0" class="p-4 text-center text-muted">
+                    No tienes tareas asignadas.
+                </div>
+                
+                <div *ngFor="let tarea of tareasPaginadas()" class="task-card p-3 border-bottom bg-white">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <h6 class="mb-0">{{ tarea.nombre }}</h6>
+
+                                <span class="badge bg-danger" *ngIf="tarea.prioridad === 'Alta'">Alta</span>
+                                <span class="badge bg-warning" *ngIf="tarea.prioridad === 'Media'">Media</span>
+                                <span class="badge bg-primary" *ngIf="tarea.prioridad === 'Baja'">Baja</span>
+
+                                <span class="badge bg-info ms-1">{{ tarea.estado }}</span>
+                                <span class="badge bg-secondary ms-1">{{ tarea.categorias[0]?.nombre || 'Sin categoría' }}</span>
+                            </div>
+
+                            <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
+
+                            <div class="row g-2 small text-muted">
+                                <div class="col-md-6">
+                                    <span><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
+                                    <span><i class="bi bi-briefcase me-1"></i>{{ tarea.usuarioRol || 'Miembro' }}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <span><i class="bi bi-hourglass me-1"></i>Estimado: {{ tarea.horasEstimadas }}h</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column gap-1">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Acciones
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" (click)="cambiarEstado(tarea.idTarea, 'En Progreso')"><i class="bi bi-play me-2"></i>En Progreso</a></li>
+                                    <li><a class="dropdown-item" (click)="cambiarEstado(tarea.idTarea, 'Completado')"><i class="bi bi-check-circle me-2"></i>Completar</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="mt-3 mb-2" *ngIf="totalPaginas() > 1">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item" [class.disabled]="paginaActual === 1">
+                            <a class="page-link" (click)="cambiarPagina(paginaActual - 1)" aria-label="Anterior">Anterior</a>
+                        </li>
+                        <li class="page-item"
+                            *ngFor="let num of [].constructor(totalPaginas()); let i = index"
+                            [class.active]="paginaActual === i + 1">
+                            <a class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</a>
+                        </li>
+                        <li class="page-item" [class.disabled]="paginaActual === totalPaginas()">
+                            <a class="page-link" (click)="cambiarPagina(paginaActual + 1)" aria-label="Siguiente">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+
+            </div>
+        </div>
     </div>
-    <div class="card-body text-center">
-        <div class="timer-display text-primary mb-4" id="timerDisplay">{{ elapsedTimeDisplay }}</div>
-        
-        <div class="mb-3">
-            <select class="form-select" [(ngModel)]="selectedTaskId" [disabled]="timerState.startTime !== null">
-                <option [ngValue]="null">Seleccionar tarea...</option>
-                <option *ngFor="let task of availableTasks" [ngValue]="task.id">
-                    {{ task.title }}
-                </option>
-            </select>
+
+    <div class="col-lg-4">
+        <div class="card workspace-card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-stopwatch me-2"></i>Cronómetro
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="timer-display text-primary mb-4" id="timerDisplay">{{ elapsedTimeDisplay }}</div>
+                
+                <div class="mb-3">
+                    <select class="form-select" [(ngModel)]="selectedTaskId" [disabled]="timerState.startTime !== null">
+                        <option [ngValue]="null">Seleccionar tarea...</option>
+                        <option *ngFor="let task of availableTasks" [ngValue]="task.id">
+                            {{ task.title }}
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    <button 
+                        class="btn btn-success btn-timer" 
+                        id="startTimer" 
+                        title="{{ timerState.isPaused ? 'Reanudar' : 'Iniciar' }}"
+                        (click)="handleStart()"
+                        [disabled]="timerState.startTime !== null && !timerState.isPaused"
+                    >
+                        <i class="bi bi-play-fill"></i>
+                    </button>
+                    
+                    <button 
+                        class="btn btn-warning btn-timer" 
+                        id="pauseTimer" 
+                        title="Pausar"
+                        (click)="handlePause()"
+                        [disabled]="!timerState.startTime || timerState.isPaused"
+                    >
+                        <i class="bi bi-pause-fill"></i>
+                    </button>
+                    
+                    <button 
+                        class="btn btn-danger btn-timer" 
+                        id="stopTimer" 
+                        title="Detener"
+                        (click)="handleStop()"
+                        [disabled]="timerState.startTime === null"
+                    >
+                        <i class="bi bi-stop-fill"></i>
+                    </button>
+                </div>
+                
+                <div class="alert" [ngClass]="getTimerStatusClass()">
+                    <i class="bi bi-info-circle me-2"></i>
+                    {{ getTimerStatusText() }}
+                </div>
+            </div>
         </div>
         
-        <div class="d-flex justify-content-center gap-2 mb-3">
-            <button 
-                class="btn btn-success btn-timer" 
-                id="startTimer" 
-                title="{{ timerState.isPaused ? 'Reanudar' : 'Iniciar' }}"
-                (click)="handleStart()"
-                [disabled]="timerState.startTime !== null && !timerState.isPaused"
-            >
-                <i class="bi bi-play-fill"></i>
-            </button>
-            
-            <button 
-                class="btn btn-warning btn-timer" 
-                id="pauseTimer" 
-                title="Pausar"
-                (click)="handlePause()"
-                [disabled]="!timerState.startTime || timerState.isPaused"
-            >
-                <i class="bi bi-pause-fill"></i>
-            </button>
-            
-            <button 
-                class="btn btn-danger btn-timer" 
-                id="stopTimer" 
-                title="Detener"
-                (click)="handleStop()"
-                [disabled]="timerState.startTime === null"
-            >
-                <i class="bi bi-stop-fill"></i>
-            </button>
         </div>
-        
-        <div class="alert" [ngClass]="getTimerStatusClass()">
-            <i class="bi bi-info-circle me-2"></i>
-            {{ getTimerStatusText() }}
+</div>
+
+<div class="modal fade" id="manualTimeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Registrar Tiempo Manual</h5>
+                <button type="button" class="btn-close" (click)="closeManualTimeModal()" aria-label="Cerrar"></button>
+            </div>
+            
+            <form (ngSubmit)="handleManualTimeSubmission()">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Seleccionar tarea *</label>
+                        <select 
+                            class="form-select" 
+                            [(ngModel)]="manualTimeEntry.idTarea" 
+                            name="manualTimeTaskSelect" 
+                            required
+                        >
+                            <option [ngValue]="null">Seleccionar tarea...</option>
+                            <option *ngFor="let task of availableTasks" [ngValue]="task.id">
+                                {{ task.title }} ({{ task.status }})
+                            </option>
+                        </select>
+                        <small class="form-text text-muted">Solo se muestran tareas no completadas.</small>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Horas *</label>
+                            <input 
+                                type="number" 
+                                class="form-control" 
+                                [(ngModel)]="manualTimeEntry.hours" 
+                                name="manualHours" 
+                                min="0" 
+                                max="23" 
+                                required
+                            >
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Minutos *</label>
+                            <input 
+                                type="number" 
+                                class="form-control" 
+                                [(ngModel)]="manualTimeEntry.minutes" 
+                                name="manualMinutes" 
+                                min="0" 
+                                max="59" 
+                                required
+                            >
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Segundos</label>
+                            <input 
+                                type="number" 
+                                class="form-control" 
+                                [(ngModel)]="manualTimeEntry.seconds" 
+                                name="manualSeconds" 
+                                min="0" 
+                                max="59" 
+                            >
+                        </div>
+                    </div>
+                    <small class="form-text text-muted mb-3">Duración mínima: 1 segundo.</small>
+
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">Descripción del trabajo realizado</label>
+                        <textarea 
+                            class="form-control" 
+                            [(ngModel)]="manualTimeEntry.descripcion" 
+                            name="workDescription" 
+                            rows="3" 
+                            placeholder="Describe brevemente el trabajo realizado..."
+                        ></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha del trabajo *</label>
+                        <input 
+                            type="date" 
+                            class="form-control" 
+                            [(ngModel)]="manualTimeEntry.fechaRegistro" 
+                            name="workDate" 
+                            required
+                        >
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="closeManualTimeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Registrar Tiempo</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
