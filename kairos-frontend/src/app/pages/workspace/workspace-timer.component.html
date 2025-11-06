@@ -44,7 +44,8 @@
                                 <span class="badge bg-primary" *ngIf="tarea.prioridad === 'Baja'">Baja</span>
 
                                 <span class="badge bg-info ms-1">{{ tarea.estado }}</span>
-                                <span class="badge bg-secondary ms-1">{{ tarea.categorias[0]?.nombre || 'Sin categoría' }}</span>
+                                <span class="badge bg-secondary ms-1">{{ tarea.categorias && tarea.categorias.length > 0 ? tarea.categorias[0].nombre : 'Sin categoría' }}</span>
+
                             </div>
 
                             <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
@@ -243,7 +244,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" (click)="closeManualTimeModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-success">Registrar Tiempo</button>
+                    <button type="submit" class="btn btn-success" (click)="loadTasks()">Registrar Tiempo</button>
                 </div>
             </form>
         </div>
