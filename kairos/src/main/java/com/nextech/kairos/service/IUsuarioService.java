@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import com.nextech.kairos.model.Usuario;
 
+
 public interface IUsuarioService {
 
     List<Usuario> getAllUsuarios();

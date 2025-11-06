@@ -1,7 +1,6 @@
 package com.nextech.kairos.dto;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +10,7 @@ import jakarta.validation.constraints.Size;
 /**
  * DTO utilizado para recibir datos del cliente al CREAR o ACTUALIZAR una Tarea.
  */
-public class TareaRequestDTO {
+public class TareaRequest {
 
     @NotBlank(message = "El nombre de la tarea es obligatorio")
     @Size(max = 255)
@@ -33,7 +32,8 @@ public class TareaRequestDTO {
     private Integer idTarea;
     private String usuarioNombre;
     private int iteracionNumero;
-    private Set<CategoriaDTO> categorias;
+    private Set<CategoriaResponse> categorias;
+    private Set<TareaResponse> dependencias; 
     // private Double horasEstimadas; // Descomentar si añades este campo a tu
     // entidad Tarea
 
@@ -47,9 +47,26 @@ public class TareaRequestDTO {
 
     // Lista de IDs para asociar categorías (relación N:M)
     private Set<Long> categoriaIds;
+    private Set<Long> dependenciasIds;
 
     // --- Getters y Setters ---
 
+    public Set<TareaResponse> getDependencias() {
+        return dependencias;
+    }
+
+    public void setDependencias(Set<TareaResponse> dependencias) {
+        this.dependencias = dependencias;
+
+    }
+
+    public Set<Long> getDependenciasIds(){
+        return this.dependenciasIds;
+    }
+
+    public void setDependenciasIds(Set<Long> DependenciasIds){
+        this.dependenciasIds = DependenciasIds;
+    }
     public int getIteracionNumero() {
         return iteracionNumero;
     }
@@ -58,11 +75,11 @@ public class TareaRequestDTO {
         this.iteracionNumero = iteracionNumero;
     }
 
-    public Set<CategoriaDTO> getCategorias() {
+    public Set<CategoriaResponse> getCategorias() {
         return categorias;
     }
 
-    public void setCategorias(Set<CategoriaDTO> categorias) {
+    public void setCategorias(Set<CategoriaResponse> categorias) {
         this.categorias = categorias;
     }
 

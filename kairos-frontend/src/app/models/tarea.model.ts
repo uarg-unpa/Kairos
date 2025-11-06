@@ -20,6 +20,6 @@ export interface Tarea {
   iteracionId: number;
   usuarioId: number;
   categorias: Categoria[];
-  dependencias?: string[];
+  dependenciasIds?: number[];
   notas?: string;
 }

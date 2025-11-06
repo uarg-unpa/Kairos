@@ -48,7 +48,6 @@ public class Tarea {
 
     private LocalDate fechaCreacion;
 
-
     @Column(length = 50)
     private String prioridad;
 
@@ -58,64 +57,140 @@ public class Tarea {
     private String nombre;
 
     @Column(name = "horas_estimadas")
-private Double horasEstimadas;
+    private Double horasEstimadas;
 
     @ManyToMany
-    @JoinTable(
-        name = "tarea_categoria",
-        joinColumns = @JoinColumn(name = "idTarea"),
-        inverseJoinColumns = @JoinColumn(name = "idCategoria")
-    )
+    @JoinTable(name = "tarea_categoria", joinColumns = @JoinColumn(name = "idTarea"), inverseJoinColumns = @JoinColumn(name = "idCategoria"))
     private Set<Categoria> categorias = new HashSet<>();
 
-    // 🔹 Constructores
-    public Tarea() {}
+    @ManyToMany
+    @JoinTable(name = "dependencias_tareas", joinColumns = @JoinColumn(name = "id_tarea"), inverseJoinColumns = @JoinColumn(name = "id_tarea_dependencia"))
+    private Set<Tarea> dependencias = new HashSet<>();
 
-   public Tarea(Iteracion iteracion, Usuario usuario, String estado, String descripcion,
-             LocalDate fechaCreacion, String prioridad, LocalDate fechaFin, String nombre,
-             Double horasEstimadas) {
-    this.iteracion = iteracion;
-    this.usuario = usuario;
-    this.estado = estado;
-    this.descripcion = descripcion;
-    this.fechaCreacion = fechaCreacion;
-    this.prioridad = prioridad;
-    this.fechaFin = fechaFin;
-    this.nombre = nombre;
-    this.horasEstimadas = horasEstimadas;
-}
+    @ManyToMany(mappedBy = "dependencias")
+    private Set<Tarea> dependientes = new HashSet<>();
+
+    // 🔹 Constructores
+    public Tarea() {
+    }
+
+    public Tarea(Iteracion iteracion, Usuario usuario, String estado, String descripcion,
+            LocalDate fechaCreacion, String prioridad, LocalDate fechaFin, String nombre,
+            Double horasEstimadas) {
+        this.iteracion = iteracion;
+        this.usuario = usuario;
+        this.estado = estado;
+        this.descripcion = descripcion;
+        this.fechaCreacion = fechaCreacion;
+        this.prioridad = prioridad;
+        this.fechaFin = fechaFin;
+        this.nombre = nombre;
+        this.horasEstimadas = horasEstimadas;
+    }
 
     // 🔹 Getters y Setters
-    public Integer getIdTarea() { return idTarea; }
-    public void setIdTarea(Integer idTarea) { this.idTarea = idTarea; }
 
-    public Iteracion getIteracion() { return iteracion; }
-    public void setIteracion(Iteracion iteracion) { this.iteracion = iteracion; }
+    public Set<Tarea> getDependencias() {
+        return dependencias;
+    }
 
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public void setDependencias(Set<Tarea> dependencias) {
+        this.dependencias = dependencias;
+    }
 
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public Set<Tarea> getDependientes() {
+        return dependientes;
+    }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public void setDependientes(Set<Tarea> dependientes) {
+        this.dependientes = dependientes;
+    }
+    
+    public Integer getIdTarea() {
+        return idTarea;
+    }
 
-    public LocalDate getFechaCreacion() { return fechaCreacion; }
-    public void setFechaCreacion(LocalDate fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+    public void setIdTarea(Integer idTarea) {
+        this.idTarea = idTarea;
+    }
 
-    public String getPrioridad() { return prioridad; }
-    public void setPrioridad(String prioridad) { this.prioridad = prioridad; }
+    public Iteracion getIteracion() {
+        return iteracion;
+    }
 
-    public LocalDate getFechaFin() { return fechaFin; }
-    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
+    public void setIteracion(Iteracion iteracion) {
+        this.iteracion = iteracion;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
-    public Set<Categoria> getCategorias() { return categorias; }
-    public void setCategorias(Set<Categoria> categorias) { this.categorias = categorias; }
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
-    public Double getHorasEstimadas() { return horasEstimadas; }
-public void setHorasEstimadas(Double horasEstimadas) { this.horasEstimadas = horasEstimadas; }
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public LocalDate getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDate fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public String getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(String prioridad) {
+        this.prioridad = prioridad;
+    }
+
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public Set<Categoria> getCategorias() {
+        return categorias;
+    }
+
+    public void setCategorias(Set<Categoria> categorias) {
+        this.categorias = categorias;
+    }
+
+    public Double getHorasEstimadas() {
+        return horasEstimadas;
+    }
+
+    public void setHorasEstimadas(Double horasEstimadas) {
+        this.horasEstimadas = horasEstimadas;
+    }
 }

@@ -6,6 +6,8 @@ import { Observable } from 'rxjs';
 export interface CategoriaDTO {
   idCategoria: number;
   nombre: string;
+  descripcion?: string;
+  proyectoId?: number;
 }
 
 @Injectable({
@@ -18,5 +20,13 @@ export class CategoriaService {
 
   getCategorias(): Observable<CategoriaDTO[]> {
     return this.http.get<CategoriaDTO[]>(this.baseUrl);
+  }
+
+  createCategoria(categoria: any): Observable<CategoriaDTO> {
+    return this.http.post<CategoriaDTO>(this.baseUrl, categoria);
+  }
+
+  deleteCategoria(id: number): Observable<void>{
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

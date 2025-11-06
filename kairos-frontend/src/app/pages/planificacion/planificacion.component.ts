@@ -28,6 +28,7 @@ export class PlanificacionComponent implements OnInit {
   // -----------------------
   private addTaskModal: any;
   private comentarioModal: any;
+  private categoriaModal: any;
   // -----------------------
   // Datos estáticos / listas
   // -----------------------
@@ -75,9 +76,18 @@ export class PlanificacionComponent implements OnInit {
     fechaFin: '',
     horasEstimadas: 0,
     usuarioId: null,
-    iteracionId: null
+    iteracionId: null,
+    dependenciaId: null,
   };
 
+    // -----------------------
+  // Objeto para crear/editar categorias desde el modal
+  // -----------------------
+  nuevaCategoria: any = {
+    nombre: '',
+    descripcion: '',
+    idProyecto: 1,
+  }
   // -----------------------
   // Filtros para la vista
   // -----------------------
@@ -130,6 +140,10 @@ export class PlanificacionComponent implements OnInit {
     const comentarioModalEl = document.getElementById('addComentarioModal');
     if (comentarioModalEl) {
       this.comentarioModal = new (window as any).bootstrap.Modal(comentarioModalEl);
+    }
+    const categoriaModalEl = document.getElementById('categoriasModal');
+    if (categoriaModalEl) {
+      this.categoriaModal = new (window as any).bootstrap.Modal(categoriaModalEl);
     }
 
   }
@@ -276,6 +290,41 @@ export class PlanificacionComponent implements OnInit {
     });
   }
 
+
+  /**
+   * Agrega un comentario rápido desde la vista de lista.
+   * @param proyectoId id del proyecto a la que se agrega el comentario
+   */
+  agregarCategorias(): void {
+    const categoriaBackend = {
+      nombre: this.nuevaCategoria.nombre,
+      descripcion: this.nuevaCategoria.descripcion,
+      idProyecto: this.nuevaCategoria.idProyecto,
+    }
+
+    console.log('Categoria a enviar', categoriaBackend)
+
+    this.categoriaService.createCategoria(categoriaBackend).subscribe({
+      next:  (categoriaCreada) =>{
+        this.categorias.push(categoriaCreada);
+      this.resetModalCategorias();
+      }, 
+      error: (err) => console.error('Error al crear tarea:', err)
+  })
+}
+
+eliminarCategoria(categoriaId: number): void {
+  if (!confirm('¿Estás seguro que quieres eliminar esta tarea?')) return;
+
+  this.categoriaService.deleteCategoria(categoriaId).subscribe({
+    next: () => {
+      this.cargarCategorias();
+      console.log('Tarea eliminada');
+    },
+    error: (err) => console.error('Error al eliminar tarea:', err)
+  })
+}
+
   // -----------------------
   // Operaciones con tareas
   // -----------------------
@@ -301,6 +350,21 @@ export class PlanificacionComponent implements OnInit {
     this.comentarioModal?.hide();
   }
 
+  resetModalCategorias(): void {
+    this.nuevaCategoria = {
+      nombre: '',
+      descripcion: '',
+    }
+
+  }
+
+  abrirCategorias(){
+    this.categoriaModal?.show();
+  }
+
+  cerrarModalCategorias(){
+    this.categoriaModal?.hide();
+  }
 
   /** Reinicia el formulario del modal a valores por defecto */
   resetModal(): void {
@@ -351,7 +415,8 @@ export class PlanificacionComponent implements OnInit {
       horasEstimadas: this.nuevaTarea.horasEstimadas,
       usuarioId: this.nuevaTarea.usuarioId,
       iteracionId: this.nuevaTarea.iteracionId,
-      categoriaIds: this.nuevaTarea.categoriaId ? [Number(this.nuevaTarea.categoriaId)] : []
+      categoriaIds: this.nuevaTarea.categoriaId ? [Number(this.nuevaTarea.categoriaId)] : [],
+      dependenciasIds: this.nuevaTarea.dependenciaId ? [Number(this.nuevaTarea.dependenciaId)] : []
     };
 
     console.log('Tarea a enviar:', tareaParaBackend);
@@ -525,4 +590,24 @@ export class PlanificacionComponent implements OnInit {
       return cumpleCategoria && cumpleResponsable && cumpleEstado && cumpleFechaDesde && cumpleFechaHasta;
     });
   }
+
+
+  categoriaExpandida: string | null = null;
+
+toggleDescripcion(nombreCategoria: string) {
+  if (this.categoriaExpandida === nombreCategoria) {
+    // Si se vuelve a hacer clic, se colapsa
+    this.categoriaExpandida = null;
+  } else {
+    // Si se hace clic en otra, se muestra esa
+    this.categoriaExpandida = nombreCategoria;
+  }
+}
+
+getNombreTareaPorId(id: number): string {
+  const tarea = this.tareas.find(t => t.idTarea === id);
+  return tarea ? tarea.nombre : 'Desconocida';
+}
+
+
 }
