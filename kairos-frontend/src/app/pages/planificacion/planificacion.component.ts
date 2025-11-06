@@ -299,7 +299,7 @@ export class PlanificacionComponent implements OnInit {
     const categoriaBackend = {
       nombre: this.nuevaCategoria.nombre,
       descripcion: this.nuevaCategoria.descripcion,
-      idProyecto: this.nuevaCategoria.idProyecto,
+      idProyecto: 1,
     }
 
     console.log('Categoria a enviar', categoriaBackend)
