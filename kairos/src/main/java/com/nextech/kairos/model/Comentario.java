@@ -27,7 +27,7 @@ public class Comentario {
     @Column(name = "contenido", columnDefinition = "TEXT")
     private String contenido;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idTarea", nullable = false) 
     private Tarea tarea;
 

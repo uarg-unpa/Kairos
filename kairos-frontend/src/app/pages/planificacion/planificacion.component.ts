@@ -381,7 +381,7 @@ eliminarCategoria(categoriaId: number): void {
     categoria: '',
     categoriaId: null,
     prioridad: 'Media',
-    estado: 'Planificada',
+    estado: 'En progreso',
     fechaCreacion: '',
     fechaFin: '',
     horasEstimadas: 0,
