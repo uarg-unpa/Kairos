@@ -55,7 +55,11 @@ temp/
 .cache/
 .parcel-cache/
 .eslintcache
-
+Constants.java
 # === Misc ===
 *.tgz
 *.zip
+
+kairos-frontend/
+.vscode/
+src/
