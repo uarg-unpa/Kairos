@@ -21,6 +21,7 @@ interface ManualTimeEntry {
   fechaRegistro: string; // YYYY-MM-DD
 }
 
+
 // Declaración global para Bootstrap Modal
 declare var bootstrap: any;
 
@@ -68,8 +69,10 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     minutes: 0,
     seconds: 0,
     descripcion: '',
-    fechaRegistro: new Date().toISOString().split('T')[0] // Fecha actual por defecto
+    fechaRegistro: new Date().toISOString().split('T')[0], // Fecha actual por defecto
   };
+  //dia actual
+  today: string = new Date().toISOString().split('T')[0]
   private manualTimeModal: any; // Instancia del modal
   
   private subscriptions = new Subscription();
@@ -315,9 +318,13 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     const entry = this.manualTimeEntry;
 
     // 1. Validaciones básicas
-    if (!entry.idTarea || (entry.hours === 0 && entry.minutes === 0 && entry.seconds === 0)) {
-        alert("Debe seleccionar una tarea e ingresar una duración mayor a cero.");
+    if (!entry.idTarea || (entry.hours === 0 && entry.minutes <= 0 && entry.seconds === 0)) {
+        alert("Debe seleccionar una tarea e ingresar una duración de al menos un minuto.");
         return; 
+    }
+    if (new Date(entry.fechaRegistro) > new Date()) {
+        alert("No puede registrar tiempo en una fecha futura.");
+        return;
     }
     
     // 2. Calcular duración total en segundos
