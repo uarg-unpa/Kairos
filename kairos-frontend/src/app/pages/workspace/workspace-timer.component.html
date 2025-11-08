@@ -32,13 +32,13 @@
                 <div *ngIf="tareas.length === 0" class="p-4 text-center text-muted">
                     No tienes tareas asignadas.
                 </div>
-                
+                <!-- Listar tareas acá -->
                 <div *ngFor="let tarea of tareasPaginadas()" class="task-card p-3 border-bottom bg-white">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 <h6 class="mb-0">{{ tarea.nombre }}</h6>
-
+                                <script>console.log("tarea:" + tarea.nombre)</script>
                                 <span class="badge bg-danger" *ngIf="tarea.prioridad === 'Alta'">Alta</span>
                                 <span class="badge bg-warning" *ngIf="tarea.prioridad === 'Media'">Media</span>
                                 <span class="badge bg-primary" *ngIf="tarea.prioridad === 'Baja'">Baja</span>
@@ -192,7 +192,7 @@
                                 name="manualHours" 
                                 min="0" 
                                 max="23" 
-                                required
+                                required 
                             >
                         </div>
                         <div class="col-md-4">

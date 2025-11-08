@@ -3,7 +3,10 @@ export interface TaskTimerInfo {
   id: number;
   title: string;
   status: string;
+  priority?: string;
+  description?: string;
 }
+
 
 /** entrada de tiempo terminada */
 export interface TimeEntry {

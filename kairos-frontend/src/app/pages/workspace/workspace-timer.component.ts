@@ -119,46 +119,58 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   /**
    * Carga tareas reales desde el Backend (endpoint mis-tareas).
    */
-  loadTasks(): void {
-    this.subscriptions.add(
-        this.TaskService.getTareasAsignadas().subscribe({
-            next: (tasksInfo) => {
-                this.availableTasks = tasksInfo;
-                console.log("Tareas cargadas (TaskTimerInfo):", tasksInfo);
+  // loadTasks(): void {
+  //   this.subscriptions.add(
+  //       this.TaskService.getTareasAsignadas().subscribe({
+  //           next: (tasksInfo) => {
+  //               this.availableTasks = tasksInfo;
+  //               console.log("Tareas cargadas (TaskTimerInfo):", tasksInfo);
                 
-                // 🆕 Necesitamos cargar las Tarea[] completas si quieres usar la lista paginada
-                // Esto es una simplificación, ya que getTareasAsignadas() retorna TaskTimerInfo[]
-                // y el componente requiere Tarea[] para la lista paginada. 
-                // Asumiremos que el getTareasAsignadas del TaskService retorna Tarea[] mapeado.
-                // O mejor, hacemos una segunda llamada para obtener Tarea[] completa (menos eficiente, pero funciona con la estructura actual).
-                this.loadFullTareas();
+  //               this.loadFullTareas();
+  //               console.log("Tareas completas cargadas (Tarea[]):", this.tareas);
 
-                // Si el timer ya estaba activo (recarga), selecciona la tarea
-                if (this.timerState.taskId && this.selectedTaskId === null) {
-                    this.selectedTaskId = this.timerState.taskId;
-                }
-            },
-            error: (err) => {
-                console.error('Error al cargar tareas asignadas (TaskTimerInfo).', err);
-                this.availableTasks = [{ id: 0, title: "Error al cargar tareas", status: "ERROR" } as TaskTimerInfo];
-            }
-        })
-    );
-  }
+  //               // Si el timer ya estaba activo (recarga), selecciona la tarea
+  //               if (this.timerState.taskId && this.selectedTaskId === null) {
+  //                   this.selectedTaskId = this.timerState.taskId;
+  //               }
+  //           },
+  //           error: (err) => {
+  //               console.error('Error al cargar tareas asignadas (TaskTimerInfo).', err);
+  //               this.availableTasks = [{ id: 0, title: "Error al cargar tareas", status: "ERROR" } as TaskTimerInfo];
+  //           }
+  //       })
+  //   );
+  // }
+  loadTasks(): void {
+  this.subscriptions.add(
+    this.TaskService.getTareasAsignadas().subscribe({
+      next: (tasksInfo) => {
+        this.availableTasks = tasksInfo;
+        // 👇 Evitá el cast a Tarea
+        this.tareas = tasksInfo.map(t => ({
+          idTarea: t.id,
+          nombre: t.title,
+          estado: t.status,
+          prioridad: t.priority,
+          descripcion: t.description
+        } as any)); // solo los campos necesarios
+        console.log("Tareas asignadas al usuario:", this.tareas);
+      },
+      error: (err) => {
+        console.error('Error al cargar tareas asignadas.', err);
+        this.availableTasks = [];
+      }
+    })
+  );
+}
+
+
 
   /**
    * 🆕 Carga las tareas completas (Tarea[]) para el listado inferior (Asignadas al usuario).
    * Usamos el mismo endpoint /mis-tareas que ya usamos para el selector.
    */
   loadFullTareas(): void {
-    // Nota: TaskService.getTareasAsignadas() está tipado para devolver TaskTimerInfo[]
-    // por lo que usaremos el método getTareas() (si devuelve solo las del usuario)
-    // o llamaremos al endpoint /mis-tareas y remapearemos si necesitamos Tarea[].
-    
-    // Asumiremos que getTareas() se actualiza para devolver solo las asignadas 
-    // O que getTareasAsignadas() retorna Tarea[] real.
-    
-    // **Ajuste:** Para evitar modificar TaskService, simularemos que la carga inicial nos da la Tarea[]
      this.subscriptions.add(
         this.TaskService.getTareasAsignadas().pipe(
             map(tasks => tasks as unknown as Tarea[])
@@ -214,12 +226,8 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   // -------------------------
 
   tareasFiltradas(): Tarea[] {
-    // ⚠️ Nota: Como el componente solo carga Tareas ASIGNADAS, los filtros
-    // 'filtroResponsable' y 'filtroCategoria' son simplificados/menos relevantes
-    // que en el componente de Planificación.
     return this.tareas.filter(t => {
       const cumpleEstado = this.filtroEstado === 'Todos' || t.estado === this.filtroEstado;
-      // ... puedes añadir el resto de filtros si son necesarios, pero aquí solo se mantiene el estado
       return cumpleEstado;
     });
   }
