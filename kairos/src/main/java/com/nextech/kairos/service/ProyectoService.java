@@ -17,7 +17,7 @@ import com.nextech.kairos.repository.UsuarioProyectoRepository;
 
 @Service
 @Transactional
-public class ProyectoService {
+public class ProyectoService implements IProyectoService {
     
     private final ProyectoRepository proyectoRepository;
     private final UsuarioProyectoRepository usuarioProyectoRepository;

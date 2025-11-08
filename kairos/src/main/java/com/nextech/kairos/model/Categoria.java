@@ -24,11 +24,12 @@ public class Categoria {
     private Long idCategoria;
 
     @NotBlank
-    @Size(max = 255)
+    @Size(max = 50)
     @Column(name = "nombre", nullable = false, length = 255)
     private String nombre;
 
     @Column(name = "descripcion", columnDefinition = "TEXT")
+    @Size(max=50)
     private String descripcion;
 
     @ManyToOne(fetch = FetchType.LAZY)

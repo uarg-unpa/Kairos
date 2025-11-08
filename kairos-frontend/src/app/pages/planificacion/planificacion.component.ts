@@ -28,6 +28,7 @@ export class PlanificacionComponent implements OnInit {
   // -----------------------
   private addTaskModal: any;
   private comentarioModal: any;
+  private categoriaModal: any;
   // -----------------------
   // Datos estáticos / listas
   // -----------------------
@@ -75,9 +76,18 @@ export class PlanificacionComponent implements OnInit {
     fechaFin: '',
     horasEstimadas: 0,
     usuarioId: null,
-    iteracionId: null
+    iteracionId: null,
+    dependenciaId: null,
   };
 
+    // -----------------------
+  // Objeto para crear/editar categorias desde el modal
+  // -----------------------
+  nuevaCategoria: any = {
+    nombre: '',
+    descripcion: '',
+    idProyecto: 1,
+  }
   // -----------------------
   // Filtros para la vista
   // -----------------------
@@ -130,6 +140,10 @@ export class PlanificacionComponent implements OnInit {
     const comentarioModalEl = document.getElementById('addComentarioModal');
     if (comentarioModalEl) {
       this.comentarioModal = new (window as any).bootstrap.Modal(comentarioModalEl);
+    }
+    const categoriaModalEl = document.getElementById('categoriasModal');
+    if (categoriaModalEl) {
+      this.categoriaModal = new (window as any).bootstrap.Modal(categoriaModalEl);
     }
 
   }
@@ -276,6 +290,41 @@ export class PlanificacionComponent implements OnInit {
     });
   }
 
+
+  /**
+   * Agrega un comentario rápido desde la vista de lista.
+   * @param proyectoId id del proyecto a la que se agrega el comentario
+   */
+  agregarCategorias(): void {
+    const categoriaBackend = {
+      nombre: this.nuevaCategoria.nombre,
+      descripcion: this.nuevaCategoria.descripcion,
+      idProyecto: 1,
+    }
+
+    console.log('Categoria a enviar', categoriaBackend)
+
+    this.categoriaService.createCategoria(categoriaBackend).subscribe({
+      next:  (categoriaCreada) =>{
+        this.categorias.push(categoriaCreada);
+      this.resetModalCategorias();
+      }, 
+      error: (err) => console.error('Error al crear tarea:', err)
+  })
+}
+
+eliminarCategoria(categoriaId: number): void {
+  if (!confirm('¿Estás seguro que quieres eliminar esta tarea?')) return;
+
+  this.categoriaService.deleteCategoria(categoriaId).subscribe({
+    next: () => {
+      this.cargarCategorias();
+      console.log('Tarea eliminada');
+    },
+    error: (err) => console.error('Error al eliminar tarea:', err)
+  })
+}
+
   // -----------------------
   // Operaciones con tareas
   // -----------------------
@@ -284,6 +333,13 @@ export class PlanificacionComponent implements OnInit {
   abrirModal(): void {
     this.addTaskModal?.show();
   }
+
+  abrirModalCrear(): void {
+  this.tareaEnEdicion = null; // ← ahora sí, explícitamente
+  this.resetModal();
+  this.addTaskModal?.show();
+}
+
 
   /** Cierra el modal y quita foco */
   cerrarModal(): void {
@@ -301,24 +357,39 @@ export class PlanificacionComponent implements OnInit {
     this.comentarioModal?.hide();
   }
 
+  resetModalCategorias(): void {
+    this.nuevaCategoria = {
+      nombre: '',
+      descripcion: '',
+    }
+
+  }
+
+  abrirCategorias(){
+    this.categoriaModal?.show();
+  }
+
+  cerrarModalCategorias(){
+    this.categoriaModal?.hide();
+  }
 
   /** Reinicia el formulario del modal a valores por defecto */
   resetModal(): void {
-    this.nuevaTarea = {
-      nombre: '',
-      descripcion: '',
-      categoria: '',
-      categoriaId: null,
-      prioridad: 'Media',
-      estado: 'Planificada',
-      fechaCreacion: '',
-      fechaFin: '',
-      horasEstimadas: 0,
-      usuarioId: 1,
-      iteracionId: 7
-    };
-    this.cerrarModal();
-  }
+  this.nuevaTarea = {
+    nombre: '',
+    descripcion: '',
+    categoria: '',
+    categoriaId: null,
+    prioridad: 'Media',
+    estado: 'En progreso',
+    fechaCreacion: '',
+    fechaFin: '',
+    horasEstimadas: 0,
+    usuarioId: 1,
+    iteracionId: 7
+  };
+}
+
 
   /** Agrega una tarea nueva validando campos básicos */
   agregarTarea(): void {
@@ -351,14 +422,17 @@ export class PlanificacionComponent implements OnInit {
       horasEstimadas: this.nuevaTarea.horasEstimadas,
       usuarioId: this.nuevaTarea.usuarioId,
       iteracionId: this.nuevaTarea.iteracionId,
-      categoriaIds: this.nuevaTarea.categoriaId ? [Number(this.nuevaTarea.categoriaId)] : []
+      categoriaIds: this.nuevaTarea.categoriaId ? [Number(this.nuevaTarea.categoriaId)] : [],
+      dependenciasIds: this.nuevaTarea.dependenciaId ? [Number(this.nuevaTarea.dependenciaId)] : []
     };
 
     console.log('Tarea a enviar:', tareaParaBackend);
     this.taskService.createTarea(tareaParaBackend).subscribe({
       next: (tareaCreada) => {
         this.tareas.push(tareaCreada);
+        this.cargarTareas();
         this.resetModal();
+        this.cerrarModal();
       },
       error: (err) => console.error('Error al crear tarea:', err)
     });
@@ -376,7 +450,8 @@ export class PlanificacionComponent implements OnInit {
       fechaFin: tarea.fechaFin?.split('T')[0] || '',
       horasEstimadas: Number(tarea.horasEstimadas),
       usuarioId: Number(this.usuarios.find(u => u.nombre === tarea.usuarioNombre)?.id || null),
-      iteracionId: tarea.iteracionId || null
+      iteracionId: tarea.iteracionId ?? null,
+      dependenciaId: tarea.dependenciasIds?.[0] || null,
     };
 
     this.tareaEnEdicion = tarea;
@@ -401,7 +476,8 @@ export class PlanificacionComponent implements OnInit {
       horasEstimadas: Number(this.nuevaTarea.horasEstimadas),
       usuarioId: this.nuevaTarea.usuarioId,
       iteracionId: this.nuevaTarea.iteracionId,
-      categoriaIds: this.nuevaTarea.categoriaId ? [Number(this.nuevaTarea.categoriaId)] : []
+      categoriaIds: this.nuevaTarea.categoriaId ? [Number(this.nuevaTarea.categoriaId)] : [],
+      dependenciasIds: this.nuevaTarea.dependenciaId ? [Number(this.nuevaTarea.dependenciaId)] : []
     };
 
     console.log('Tarea a editar:', tareaParaBackend);
@@ -425,7 +501,11 @@ export class PlanificacionComponent implements OnInit {
       next: (tareaActualizada) => {
         const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
         if (index !== -1) this.tareas[index] = tareaActualizada;
+        this.tareaEnEdicion = null;
+        this.cargarTareas;
         this.resetModal();
+        this.cerrarModal();
+
         console.log('✅ Tarea editada correctamente');
       },
       error: (err) => console.error('❌ Error al editar tarea:', err)
@@ -525,4 +605,24 @@ export class PlanificacionComponent implements OnInit {
       return cumpleCategoria && cumpleResponsable && cumpleEstado && cumpleFechaDesde && cumpleFechaHasta;
     });
   }
+
+
+  categoriaExpandida: string | null = null;
+
+toggleDescripcion(nombreCategoria: string) {
+  if (this.categoriaExpandida === nombreCategoria) {
+    // Si se vuelve a hacer clic, se colapsa
+    this.categoriaExpandida = null;
+  } else {
+    // Si se hace clic en otra, se muestra esa
+    this.categoriaExpandida = nombreCategoria;
+  }
+}
+
+getNombreTareaPorId(id: number): string {
+  const tarea = this.tareas.find(t => t.idTarea === id);
+  return tarea ? tarea.nombre : 'Desconocida';
+}
+
+
 }

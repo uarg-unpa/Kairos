@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nextech.kairos.exception.ResourceNotFoundException;
 import com.nextech.kairos.model.Comentario;
 import com.nextech.kairos.model.Tarea;
 import com.nextech.kairos.model.Usuario;
@@ -89,8 +90,16 @@ public class ComentarioService implements IComentarioService {
     // }
 
     public void delete(Long idComentario) {
-        comentarioRepository.deleteById(idComentario);
+        Comentario comentario = comentarioRepository.findById(idComentario)
+        .orElseThrow(() -> new ResourceNotFoundException("Comentario no encontrado"));
+
+    // Romper relación antes de eliminar
+    if (comentario.getTarea() != null) {
+        comentario.setTarea(null);
     }
+
+    comentarioRepository.delete(comentario);
+}
     @Transactional(readOnly = true)
     public List<Comentario> findComentariosByTarea(Long idTarea) {
         return comentarioRepository.findByTareaIdTarea(idTarea);

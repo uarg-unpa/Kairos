@@ -260,7 +260,7 @@ class CategoriaServiceTest {
         cat.setIdCategoria(1L);
         Set<Tarea> tareas = new HashSet<>();
         Tarea t = new Tarea();
-        t.setIdTarea(55);
+        t.setIdTarea(55L);
         tareas.add(t);
         cat.setTareas(tareas);
 
