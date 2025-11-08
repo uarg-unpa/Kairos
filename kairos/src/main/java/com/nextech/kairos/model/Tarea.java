@@ -69,6 +69,7 @@ public class Tarea {
 private Set<Comentario> comentarios = new HashSet<>();
 
 
+
     @ManyToMany
     @JoinTable(name = "tarea_categoria", joinColumns = @JoinColumn(name = "idTarea"), inverseJoinColumns = @JoinColumn(name = "idCategoria"))
     private Set<Categoria> categorias = new HashSet<>();

@@ -1,0 +1,90 @@
+En nuestro proyecto, tenemos un ejemplo, te paso los datos para que lo hagas en ese esqueleto o pásame el script que debo ingresar en la Bd para verlo reflejado en la app:
+Etapa Inicio 19/08/2025 al 09/09/2025
+Etapa Elaboración - Iteración 1 10/09/2025 al 23/09/2025
+Etapa Elaboración - Iteración 2 24/09/2025 al 10/10/2025
+Etapa Construcción - Iteración 1 11/10/2025 al 29/10/2025
+Etapa Construcción - Iteración 2 29/10/2025 al 07/11/2025
+Etapa Construcción - Iteración 3 08/11/2025 al 14/11/2025
+Cierre Cursada 15/11/2025 al 28/11/2025 (esta ultima etapa podrias dejármela para que yo la agregue manualmente y de paso pruebo todos los botones y que los cambios se agreguen a la BD)
+
+USE kairos;
+
+-- 1) Crear proyecto si no existe
+INSERT INTO proyecto (nombre, equipo, fecha_creacion, estado, fecha_actualizacion)
+SELECT 'Proyecto RUP Demo', 'Equipo Kairos', CURDATE(), 'Activo', NOW()
+WHERE NOT EXISTS (
+  SELECT 1 FROM proyecto WHERE nombre = 'Proyecto RUP Demo'
+);
+
+-- Obtener ID del proyecto
+SELECT id_proyecto INTO @proy
+FROM proyecto
+WHERE nombre = 'Proyecto RUP Demo'
+ORDER BY id_proyecto DESC
+LIMIT 1;
+
+-- 2) Crear Etapas si no existen
+INSERT INTO etapa (nombre, fecha_inicio, fecha_fin, id_proyecto)
+SELECT 'Inicio', '2025-08-19', '2025-09-09', @proy
+WHERE NOT EXISTS (SELECT 1 FROM etapa WHERE nombre = 'Inicio' AND id_proyecto = @proy);
+ALTER TABLE etapa
+  ADD COLUMN IF NOT EXISTS estado
+    ENUM('PENDIENTE','EN_PROGRESO','COMPLETADA') NULL;
+
+ALTER TABLE etapa
+  MODIFY estado ENUM('PENDIENTE','EN_PROGRESO','COMPLETADA') NULL DEFAULT 'PENDIENTE';
+
+UPDATE etapa SET estado='PENDIENTE' WHERE estado IS NULL;
+
+INSERT INTO etapa (nombre, fecha_inicio, fecha_fin, id_proyecto)
+SELECT 'Elaboración', '2025-09-10', '2025-10-10', @proy
+WHERE NOT EXISTS (SELECT 1 FROM etapa WHERE nombre = 'Elaboración' AND id_proyecto = @proy);
+
+INSERT INTO etapa (nombre, fecha_inicio, fecha_fin, id_proyecto)
+SELECT 'Construcción', '2025-10-11', '2025-11-14', @proy
+WHERE NOT EXISTS (SELECT 1 FROM etapa WHERE nombre = 'Construcción' AND id_proyecto = @proy);
+
+-- Obtener IDs de etapas
+SELECT id_etapa INTO @etapa_inicio FROM etapa WHERE nombre = 'Inicio' AND id_proyecto = @proy LIMIT 1;
+SELECT id_etapa INTO @etapa_elab   FROM etapa WHERE nombre = 'Elaboración' AND id_proyecto = @proy LIMIT 1;
+SELECT id_etapa INTO @etapa_cons   FROM etapa WHERE nombre = 'Construcción' AND id_proyecto = @proy LIMIT 1;
+
+-- 3) Iteraciones (FK: id_etapa)
+INSERT INTO iteracion (numero, descripcion, fecha_inicio, fecha_fin, id_etapa)
+SELECT 1, 'Elaboración - Iteración 1', '2025-09-10', '2025-09-23', @etapa_elab
+WHERE NOT EXISTS (SELECT 1 FROM iteracion WHERE numero = 1 AND id_etapa = @etapa_elab);
+
+INSERT INTO iteracion (numero, descripcion, fecha_inicio, fecha_fin, id_etapa)
+SELECT 2, 'Elaboración - Iteración 2', '2025-09-24', '2025-10-10', @etapa_elab
+WHERE NOT EXISTS (SELECT 1 FROM iteracion WHERE numero = 2 AND id_etapa = @etapa_elab);
+
+INSERT INTO iteracion (numero, descripcion, fecha_inicio, fecha_fin, id_etapa)
+SELECT 1, 'Construcción - Iteración 1', '2025-10-11', '2025-10-29', @etapa_cons
+WHERE NOT EXISTS (SELECT 1 FROM iteracion WHERE numero = 1 AND id_etapa = @etapa_cons);
+
+INSERT INTO iteracion (numero, descripcion, fecha_inicio, fecha_fin, id_etapa)
+SELECT 2, 'Construcción - Iteración 2', '2025-10-29', '2025-11-07', @etapa_cons
+WHERE NOT EXISTS (SELECT 1 FROM iteracion WHERE numero = 2 AND id_etapa = @etapa_cons);
+
+INSERT INTO iteracion (numero, descripcion, fecha_inicio, fecha_fin, id_etapa)
+SELECT 3, 'Construcción - Iteración 3', '2025-11-08', '2025-11-14', @etapa_cons
+WHERE NOT EXISTS (SELECT 1 FROM iteracion WHERE numero = 3 AND id_etapa = @etapa_cons);
+
+-- 4) Completar descripciones y estados (enum: PENDIENTE | EN_PROGRESO | COMPLETADA)
+UPDATE etapa
+SET descripcion = 'Definición de la visión del proyecto, análisis de viabilidad y establecimiento del alcance inicial',
+    estado = 'COMPLETADA'
+WHERE nombre = 'Inicio';
+
+UPDATE etapa
+SET descripcion = 'Análisis detallado de requisitos, diseño de arquitectura y mitigación de riesgos principales',
+    estado = 'COMPLETADA'
+WHERE nombre = 'Elaboración';
+
+UPDATE etapa
+SET descripcion = 'Implementación y pruebas incrementales del producto',
+    estado = 'EN_PROGRESO'
+WHERE nombre = 'Construcción';
+
+
+

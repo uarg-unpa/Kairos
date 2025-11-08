@@ -10,7 +10,6 @@ public class KairosApplication {
     public static void main(String[] args) {
         Dotenv dotenv = Dotenv.configure().ignoreIfMalformed().ignoreIfMissing().load();
 
-        // leer .env
         dotenv.entries().forEach(entry -> {
             System.setProperty(entry.getKey(), entry.getValue());
         });

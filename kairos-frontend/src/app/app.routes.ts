@@ -14,6 +14,8 @@ import { PlanificacionComponent } from './pages/planificacion/planificacion.comp
 import { WorkspaceTimerComponent } from './pages/workspace/workspace-timer.component'; 
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { ProyectoDetalleComponent } from './pages/proyecto/detalle/proyecto-detalle.component';
+import { EtapasComponent } from './pages/etapas/etapas';
+import { IteracionesComponent } from './pages/iteraciones/iteraciones';
 
 export const routes: Routes = [
   {
@@ -37,5 +39,10 @@ export const routes: Routes = [
   {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
   {path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard] },
   { path: 'proyecto/:id', component: ProyectoDetalleComponent, canActivate: [authGuard] },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
+  { path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard] },
+  { path: 'etapas', component: EtapasComponent, canActivate: [authGuard] },
+  { path: 'iteraciones/:etapa', component: IteracionesComponent, canActivate: [authGuard] },
+  { path: 'iteraciones/etapa/:id', component: IteracionesComponent, canActivate: [authGuard] },
+  { path: 'iteraciones', component: IteracionesComponent, canActivate: [authGuard] }
 ];

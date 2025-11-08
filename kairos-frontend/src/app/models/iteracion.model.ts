@@ -4,4 +4,5 @@ export interface Iteracion {
     fechaInicio: string;
     fechaFin: string;
     descripcion?: string;
+    etapaNombre?: string;
 }

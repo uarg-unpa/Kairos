@@ -1,0 +1,3 @@
+odel)]="nuevaTarea.iteracionId" name="iteracionId"
+                                required>
+                                <option *ngFor="let i of iteraciones" [ngValue]="i.idIteracion">Iteració

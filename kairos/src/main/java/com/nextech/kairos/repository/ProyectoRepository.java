@@ -15,7 +15,6 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
     
     Optional<Proyecto> findByNombre(String nombre);
     
-    List<Proyecto> findByNombreContainingIgnoreCase(String nombre);
 
     @Query(value = "SELECT p FROM Proyecto p WHERE p.estado = :estado" )
     List<Proyecto> findByEstado(String estado);

@@ -1,3 +1,35 @@
 .textKairos{
     font-family: 'Megrim', sans-serif;
 }
+
+/* Shared styles for Etapas/Iteraciones prototypes */
+.stage-card {
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+.stage-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+.stats-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.stage-progress {
+  height: 8px;
+  border-radius: 4px;
+}
+
+/* Allow full card click when badges are inside links */
+.stage-card .badge {
+  pointer-events: none;
+}
+
+/* Textarea that auto-grows for Descripción in Etapas */
+.descripcion-textarea {
+  overflow: hidden;
+  resize: none;
+  min-height: 96px;
+}

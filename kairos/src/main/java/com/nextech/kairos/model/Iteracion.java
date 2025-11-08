@@ -39,13 +39,13 @@ public class Iteracion {
     private LocalDate fechaFin;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idEtapa", nullable = false)
+    @JoinColumn(name = "id_etapa", nullable = false)
 
     private Etapa etapa;
 
     @OneToMany(mappedBy = "iteracion", cascade = CascadeType.ALL, orphanRemoval = true)
-   
     private Set<Tarea> tareas = new HashSet<>();
+
 
     // 🔹 Getters y Setters
     public Long getIdIteracion() { return idIteracion; }
@@ -68,4 +68,5 @@ public class Iteracion {
 
     public Set<Tarea> getTareas() { return tareas; }
     public void setTareas(Set<Tarea> tareas) { this.tareas = tareas; }
+    
 }

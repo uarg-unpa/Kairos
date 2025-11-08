@@ -32,4 +32,9 @@ public class IteracionService implements IIteracionService {
     public void eliminarIteracion(Long id) {
         iteracionRepository.deleteById(id);
     }
+
+    @Override
+    public List<Iteracion> listarPorEtapa(Long idEtapa) {
+        return iteracionRepository.findByEtapa_IdEtapa(idEtapa);
+    }
 }
