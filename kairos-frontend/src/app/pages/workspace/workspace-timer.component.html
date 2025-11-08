@@ -23,6 +23,14 @@
                             <option>Completado</option>
                         </select>
                     </div>
+                    <div class="col-md-4">
+                    <select class="form-select" [(ngModel)]="filtroPrioridad">
+                        <option value="">Todas las prioridades</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Media">Media</option>
+                        <option value="Baja">Baja</option>
+                    </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -33,47 +41,43 @@
                     No tienes tareas asignadas.
                 </div>
                 <!-- Listar tareas acá -->
-                <div *ngFor="let tarea of tareasPaginadas()" class="task-card p-3 border-bottom bg-white">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center gap-2 mb-2">
-                                <h6 class="mb-0">{{ tarea.nombre }}</h6>
-                                <script>console.log("tarea:" + tarea.nombre)</script>
-                                <span class="badge bg-danger" *ngIf="tarea.prioridad === 'Alta'">Alta</span>
-                                <span class="badge bg-warning" *ngIf="tarea.prioridad === 'Media'">Media</span>
-                                <span class="badge bg-primary" *ngIf="tarea.prioridad === 'Baja'">Baja</span>
+                <!-- En el *ngFor -->
+<div *ngFor="let tarea of tareasPaginadas()" class="task-card p-3 border-bottom bg-white task-item">
 
-                                <span class="badge bg-info ms-1">{{ tarea.estado }}</span>
-                                <span class="badge bg-secondary ms-1">{{ tarea.categorias && tarea.categorias.length > 0 ? tarea.categorias[0].nombre : 'Sin categoría' }}</span>
+  <h6 class="mb-0">{{ tarea.nombre }}</h6>
 
-                            </div>
+  <!-- Prioridad -->
+  <span class="badge" 
+        [ngClass]="{
+          'bg-danger': tarea.prioridad === 'Alta',
+          'bg-warning': tarea.prioridad === 'Media',
+          'bg-primary': tarea.prioridad === 'Baja'
+        }">
+    {{ tarea.prioridad }}
+  </span>
 
-                            <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
+  <!-- Estado -->
+  <span class="badge bg-info ms-1">{{ tarea.estado }}</span>
 
-                            <div class="row g-2 small text-muted">
-                                <div class="col-md-6">
-                                    <span><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
-                                    <span><i class="bi bi-briefcase me-1"></i>{{ tarea.usuarioRol || 'Miembro' }}</span>
-                                </div>
-                                <div class="col-md-6">
-                                    <span><i class="bi bi-hourglass me-1"></i>Estimado: {{ tarea.horasEstimadas }}h</span>
-                                </div>
-                            </div>
-                        </div>
+  <!-- Categoría -->
+  <span class="badge bg-secondary ms-1">
+    {{ tarea.categorias && tarea.categorias.length > 0 ? tarea.categorias[0].nombre : 'Sin categoría' }}
+  </span>
 
-                        <div class="d-flex flex-column gap-1">
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Acciones
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" (click)="cambiarEstado(tarea.idTarea, 'En Progreso')"><i class="bi bi-play me-2"></i>En Progreso</a></li>
-                                    <li><a class="dropdown-item" (click)="cambiarEstado(tarea.idTarea, 'Completado')"><i class="bi bi-check-circle me-2"></i>Completar</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  <!-- Descripción -->
+  <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
+
+  <!-- Miembro y Rol -->
+  <div class="row g-2 small text-muted">
+    <div class="col-md-6">
+      <span><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
+      <span><i class="bi bi-briefcase me-1"></i>{{ tarea.usuarioRol || 'Miembro' }}</span>
+    </div>
+    <div class="col-md-6">
+      <span><i class="bi bi-hourglass me-1"></i>Estimado: {{ tarea.horasEstimadas ?? 0 }}h</span>
+    </div>
+  </div>
+</div>
 
                 <nav class="mt-3 mb-2" *ngIf="totalPaginas() > 1">
                     <ul class="pagination justify-content-center mb-0">
@@ -154,7 +158,23 @@
         </div>
         
         </div>
-</div>
+    </div>
+    <!-- flotante de cronometro -->
+    <!-- <div class="floating-timer" *ngIf="timerState.startTime && !timerState.isPaused">
+        <div class="d-flex align-items-center gap-3 text-white">
+            <div>
+                <div class="small">Cronometrando</div>
+                <div class="fw-bold">{{ timerState.taskTitle }}</div>
+            </div>
+            <div class="timer-display">{{ elapsedTimeDisplay }}</div>
+            <button class="btn btn-light btn-sm" (click)="handlePause()">
+                <i class="bi bi-pause-fill"></i>
+            </button>
+            <button class="btn btn-light btn-sm" (click)="handleStop()">
+                <i class="bi bi-stop-fill"></i>
+            </button>
+        </div>
+    </div> -->
 
 <div class="modal fade" id="manualTimeModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">

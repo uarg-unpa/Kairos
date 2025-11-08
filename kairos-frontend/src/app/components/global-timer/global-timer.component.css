@@ -1,0 +1,17 @@
+.floating-timer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  padding: 15px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  font-family: 'Courier New', monospace;
+}
+
+.timer-display {
+  font-size: 1.8rem;
+  font-weight: bold;
+}

@@ -32,8 +32,8 @@ declare var bootstrap: any;
     CommonModule, 
     FormsModule, 
   ], 
-  templateUrl: './workspace-timer.component.html'
-// styleUrls: ['./workspace-timer.component.css']
+  templateUrl: './workspace-timer.component.html',
+  styleUrls: ['./workspace-timer.component.css']
 })
 export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   
@@ -46,6 +46,11 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   
   // 🆕 Tareas para la lista general (requiere mapeo en loadTasks)
   tareas: Tarea[] = []; 
+  // Propiedades para estadísticas (como en el prototipo)
+totalTimeToday: string = '0h 0m';
+tasksCompletedToday: number = 0;
+activeTasks: number = 0;
+recentActivities: { time: string; message: string }[] = [];
 
   // -----------------------
   // 🆕 Paginación y Filtros (adaptado de PlanificacionComponent)
@@ -142,29 +147,60 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   //   );
   // }
   loadTasks(): void {
-  this.subscriptions.add(
-    this.TaskService.getTareasAsignadas().subscribe({
-      next: (tasksInfo) => {
-        this.availableTasks = tasksInfo;
-        // 👇 Evitá el cast a Tarea
-        this.tareas = tasksInfo.map(t => ({
-          idTarea: t.id,
-          nombre: t.title,
-          estado: t.status,
-          prioridad: t.priority,
-          descripcion: t.description
-        } as any)); // solo los campos necesarios
-        console.log("Tareas asignadas al usuario:", this.tareas);
-      },
-      error: (err) => {
-        console.error('Error al cargar tareas asignadas.', err);
-        this.availableTasks = [];
-      }
-    })
-  );
+    this.subscriptions.add(
+      this.TaskService.getTareasAsignadas().subscribe({
+        next: (tareas: Tarea[]) => {
+          this.tareas = tareas;
+          console.log("Tareas completas cargadas:", this.tareas);
+
+          // Solo para el selector del cronómetro
+          this.availableTasks = tareas.map(t => ({
+            id: t.idTarea,
+            title: t.nombre,
+            status: t.estado,
+            priority: t.prioridad,
+            description: t.descripcion
+          }));
+
+          this.updateStats();
+        },
+        error: (err) => {
+          console.error('Error al cargar tareas.', err);
+          this.tareas = [];
+          this.availableTasks = [];
+        }
+      })
+    );
+  }
+
+// Dentro de la clase WorkspaceTimerComponent
+
+private updateStats(): void {
+  const today = new Date().toDateString();
+
+  // Tareas completadas hoy
+  this.tasksCompletedToday = this.tareas.filter(t =>
+    t.estado === 'Completado' &&
+    new Date(t.fechaCreacion).toDateString() === today
+  ).length;
+
+  // Tareas activas (no completadas)
+  this.activeTasks = this.tareas.filter(t => t.estado !== 'Completado').length;
+
+  // Tiempo total hoy (SIMULADO - reemplaza con backend real si existe)
+  // Por ahora, mostramos 0h 0m o un valor fijo
+  this.totalTimeToday = '0h 0m';
+
+  // Opcional: si tienes un endpoint para tiempos registrados hoy
+  // this.TaskService.getTiempoHoy().subscribe(totalSeconds => {
+  //   this.totalTimeToday = this.formatHours(totalSeconds / 3600);
+  // });
 }
-
-
+addRecentActivity(message: string): void {
+  const time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  this.recentActivities.unshift({ time, message });
+  if (this.recentActivities.length > 5) this.recentActivities.pop();
+}
 
   /**
    * 🆕 Carga las tareas completas (Tarea[]) para el listado inferior (Asignadas al usuario).
@@ -225,12 +261,15 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   // 🆕 Lógica de Paginación y Filtros (adaptada)
   // -------------------------
 
-  tareasFiltradas(): Tarea[] {
-    return this.tareas.filter(t => {
-      const cumpleEstado = this.filtroEstado === 'Todos' || t.estado === this.filtroEstado;
-      return cumpleEstado;
-    });
-  }
+  filtroPrioridad: string = '';
+
+tareasFiltradas(): Tarea[] {
+  return this.tareas.filter(t => {
+    const cumpleEstado = this.filtroEstado === 'Todos' || t.estado === this.filtroEstado;
+    const cumplePrioridad = !this.filtroPrioridad || t.prioridad === this.filtroPrioridad;
+    return cumpleEstado && cumplePrioridad;
+  });
+}
 
   // Método para obtener las tareas visibles en la página actual
   tareasPaginadas(): Tarea[] {

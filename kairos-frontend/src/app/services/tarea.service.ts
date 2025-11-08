@@ -45,18 +45,21 @@ export class TaskService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  getTareasAsignadas(): Observable<TaskTimerInfo[]> {
+  getTareasAsignadas(): Observable<Tarea[]> {
       // Llama al endpoint seguro
-      return this.http.get<Tarea[]>(`${this.baseUrl}/mis-tareas`).pipe(
-        map(tareas => tareas.map(t => ({
-          id: t.idTarea,
-          title: t.nombre,
-          status: t.estado,
-          priority: t.prioridad,
-          description: t.descripcion
-        })))
-      );
+      return this.http.get<Tarea[]>(`${this.baseUrl}/mis-tareas`);
     }
+  getTareasAsignadasParaTimer(): Observable<TaskTimerInfo[]> {
+    return this.getTareasAsignadas().pipe(
+      map(tareas => tareas.map(t => ({
+        id: t.idTarea,
+        title: t.nombre,
+        status: t.estado,
+        priority: t.prioridad,
+        description: t.descripcion
+      })))
+    );
+  }  
   
     /**
      * Envía el tiempo registrado por el cronómetro al servidor (POST /api/tiempos).
