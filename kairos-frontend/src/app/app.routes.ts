@@ -39,10 +39,10 @@ export const routes: Routes = [
   {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
   {path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard] },
   { path: 'proyecto/:id', component: ProyectoDetalleComponent, canActivate: [authGuard] },
-  { path: '**', redirectTo: '' },
   { path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard] },
   { path: 'etapas', component: EtapasComponent, canActivate: [authGuard] },
   { path: 'iteraciones/:etapa', component: IteracionesComponent, canActivate: [authGuard] },
   { path: 'iteraciones/etapa/:id', component: IteracionesComponent, canActivate: [authGuard] },
-  { path: 'iteraciones', component: IteracionesComponent, canActivate: [authGuard] }
+  { path: 'iteraciones', component: IteracionesComponent, canActivate: [authGuard] },
+  { path: '**', redirectTo: '' } // mantener este siempre al final
 ];
