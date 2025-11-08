@@ -12,6 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.CascadeType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "comentario")
@@ -25,6 +27,8 @@ public class Comentario {
     private LocalDate fechaComentario;
 
     @Column(name = "contenido", columnDefinition = "TEXT")
+    @NotBlank(message = "El contenido del comentario es obligatorio")
+    @Size(max=90)
     private String contenido;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,7 +36,7 @@ public class Comentario {
     private Tarea tarea;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUsuario", nullable = true) // idUsuario que comentó
+    @JoinColumn(name = "idUsuario", nullable = false) // idUsuario que comentó
     private Usuario usuario;
 
     public Long getIdComentario() { return idComentario; }
