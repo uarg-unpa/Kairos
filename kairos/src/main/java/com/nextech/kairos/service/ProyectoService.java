@@ -141,12 +141,17 @@ public class ProyectoService implements IProyectoService {
     public List<Proyecto> findProjectsByUser(Long idUsuario) {
         return proyectoRepository.findByUsuariosProyecto_Usuario_Id(idUsuario);
     }
+
+    @Override
+    public List<Proyecto> searchByNombre(String nombre) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
     /**
      * Buscar proyectos
      */
-    @Transactional(readOnly = true)
-    public List<Proyecto> searchByNombre(String nombre) {
-        return proyectoRepository.findByNombreContainingIgnoreCase(nombre);
-    }
+    // @Transactional(readOnly = true)
+    // public List<Proyecto> searchByNombre(String nombre) {
+    //     return proyectoRepository.findByNombreContainingIgnoreCase(nombre);
+    // }
 }
