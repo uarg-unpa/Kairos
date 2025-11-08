@@ -3,15 +3,20 @@ package com.nextech.kairos.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nextech.kairos.dto.TiempoEditRequestDTO;
+import com.nextech.kairos.dto.TiempoResponseDTO;
 import com.nextech.kairos.model.Tarea;
 import com.nextech.kairos.model.Tiempo;
 import com.nextech.kairos.model.Usuario;
 import com.nextech.kairos.repository.TiempoRepository;
+
 
 @Service
 @Transactional
@@ -124,6 +129,39 @@ public class TiempoService {
         }
         return tiempoRepository.findByFechaRegistroBetween(fechaInicio, fechaFin);
     }
+    @Transactional(readOnly = true)
+public List<TiempoResponseDTO> findLast5ByUsuarioId(Long idUsuario) {
+    PageRequest pageable = PageRequest.of(0, 5);
+    return tiempoRepository.findLast5ByUsuarioId(idUsuario, pageable).stream()
+        .map(t -> new TiempoResponseDTO(
+            t.getIdTiempo(),
+            t.getTarea().getNombre(),
+            t.getDuracion(),
+            t.getFechaRegistro(),
+            null // descripcion no existe aún
+        ))
+        .collect(Collectors.toList());
+}
+
+@Transactional
+public Tiempo updateTime(Long idTiempo, TiempoEditRequestDTO request, Long idUsuario) {
+    Tiempo tiempo = tiempoRepository.findById(idTiempo)
+        .orElseThrow(() -> new RuntimeException("Tiempo no encontrado: " + idTiempo));
+
+    if (!tiempo.getUsuario().getId().equals(idUsuario)) {
+        throw new RuntimeException("No tienes permiso para editar este registro.");
+    }
+
+    if (request.getDuracionMinutos() < 1) {
+        throw new IllegalArgumentException("La duración debe ser al menos 1 minuto.");
+    }
+
+    tiempo.setDuracion(request.getDuracionMinutos());
+    tiempo.setFechaRegistro(request.getFechaRegistro());
+    // tiempo.setDescripcion(...) → si agregas el campo después
+
+    return tiempoRepository.save(tiempo);
+}
 
     /**
      * Calcula la suma total de la duración del tiempo registrado para una tarea

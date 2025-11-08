@@ -13,6 +13,19 @@ export interface TiempoActivoDTO {
   idTarea: number;
   inicio: string; // ISO
 }
+interface TiempoResponseDTO {
+  idTiempo: number;
+  nombreTarea: string;
+  duracionMinutos: number;
+  fechaRegistro: string; // ISO date
+  descripcion: string | null;
+}
+
+interface TiempoEditRequestDTO {
+  duracionMinutos: number;
+  fechaRegistro: string;
+  descripcion?: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class TimerService {
@@ -187,5 +200,14 @@ export class TimerService {
       catchError(() => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); return of(null); })
     );
   }
+  // GET: últimos 5 tiempos del usuario
+getLast5Times(): Observable<TiempoResponseDTO[]> {
+  return this.http.get<TiempoResponseDTO[]>(`${this.apiBaseUrl}/api/tiempos/ultimos`);
+}
+
+// PUT: editar un registro de tiempo
+editTime(idTiempo: number, data: TiempoEditRequestDTO): Observable<any> {
+  return this.http.put(`${this.apiBaseUrl}/api/tiempos/${idTiempo}`, data);
+}
 }
 

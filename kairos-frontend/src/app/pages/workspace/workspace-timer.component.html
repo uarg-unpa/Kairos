@@ -157,25 +157,87 @@
             </div>
         </div>
         
+        <!-- Estadísticas -->
+    <div class="row g-3 mb-4">
+      <div class="col">
+        <div class="card text-center workspace-card">
+          <div class="card-body">
+            <h6 class="text-muted">Tiempo Total Hoy</h6>
+            <h4 class="fw-bold text-primary">{{ totalTimeToday }}</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card text-center workspace-card">
+          <div class="card-body">
+            <h6 class="text-muted">Tareas Completadas Hoy</h6>
+            <h4 class="fw-bold text-success">{{ tasksCompletedToday }}</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card text-center workspace-card">
+          <div class="card-body">
+            <h6 class="text-muted">Tareas Activas</h6>
+            <h4 class="fw-bold text-warning">{{ activeTasks }}</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Últimos 5 tiempos -->
+    <div class="card workspace-card mb-4">
+      <div class="card-header bg-light">
+        <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Últimos Registros</h5>
+      </div>
+      <div class="card-body p-0">
+        <div *ngIf="ultimosTiempos.length === 0" class="p-3 text-muted small">
+          No hay registros recientes.
+        </div>
+        <div *ngFor="let t of ultimosTiempos" class="p-3 border-bottom d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-bold">{{ t.nombreTarea }}</div>
+            <div class="small text-muted">
+              {{ t.duracionMinutos }} min • {{ t.fechaRegistro | date:'shortDate' }}
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline-primary" (click)="openEditModal(t)">
+            <i class="bi bi-pencil"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Editar Tiempo -->
+    <div class="modal fade" [ngClass]="{ 'show d-block': showEditModal }" tabindex="-1" *ngIf="showEditModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Editar Registro de Tiempo</h5>
+            <button type="button" class="btn-close" (click)="showEditModal = false"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Duración (minutos)</label>
+              <input type="number" class="form-control" [(ngModel)]="editTimeForm.duracionMinutos" min="1" *ngIf="editTimeForm">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Fecha</label>
+              <input type="date" class="form-control" [(ngModel)]="editTimeForm.fechaRegistro" *ngIf="editTimeForm">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="showEditModal = false">Cancelar</button>
+            <button class="btn btn-success" (click)="saveEditedTime()">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop fade show" *ngIf="showEditModal" (click)="showEditModal = false"></div>
         </div>
     </div>
-    <!-- flotante de cronometro -->
-    <!-- <div class="floating-timer" *ngIf="timerState.startTime && !timerState.isPaused">
-        <div class="d-flex align-items-center gap-3 text-white">
-            <div>
-                <div class="small">Cronometrando</div>
-                <div class="fw-bold">{{ timerState.taskTitle }}</div>
-            </div>
-            <div class="timer-display">{{ elapsedTimeDisplay }}</div>
-            <button class="btn btn-light btn-sm" (click)="handlePause()">
-                <i class="bi bi-pause-fill"></i>
-            </button>
-            <button class="btn btn-light btn-sm" (click)="handleStop()">
-                <i class="bi bi-stop-fill"></i>
-            </button>
-        </div>
-    </div> -->
 
+<!-- registrar tiempo manual modal -->
 <div class="modal fade" id="manualTimeModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

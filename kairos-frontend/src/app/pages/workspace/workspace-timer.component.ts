@@ -11,6 +11,7 @@ import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
 import { catchError, map, of } from 'rxjs';
 
+
 // Definimos la estructura del payload para registro manual
 interface ManualTimeEntry {
   idTarea: number | null;
@@ -19,6 +20,13 @@ interface ManualTimeEntry {
   seconds: number;
   descripcion: string;
   fechaRegistro: string; // YYYY-MM-DD
+}
+interface TiempoResponseDTO {
+  idTiempo: number;
+  nombreTarea: string;
+  duracionMinutos: number;
+  fechaRegistro: string; // formato 'YYYY-MM-DD'
+  descripcion: string | null;
 }
 
 
@@ -81,6 +89,9 @@ recentActivities: { time: string; message: string }[] = [];
   private manualTimeModal: any; // Instancia del modal
   
   private subscriptions = new Subscription();
+  ultimosTiempos: TiempoResponseDTO[] = [];
+  editTimeForm: { idTiempo: any; duracionMinutos: any; fechaRegistro: any; descripcion: any; } | undefined;
+  showEditModal: boolean | undefined;
 
   constructor(
     private timerService: TimerService,
@@ -147,55 +158,51 @@ recentActivities: { time: string; message: string }[] = [];
   //   );
   // }
   loadTasks(): void {
-    this.subscriptions.add(
-      this.TaskService.getTareasAsignadas().subscribe({
-        next: (tareas: Tarea[]) => {
-          this.tareas = tareas;
-          console.log("Tareas completas cargadas:", this.tareas);
-
-          // Solo para el selector del cronómetro
-          this.availableTasks = tareas.map(t => ({
-            id: t.idTarea,
-            title: t.nombre,
-            status: t.estado,
-            priority: t.prioridad,
-            description: t.descripcion
-          }));
-
-          this.updateStats();
-        },
-        error: (err) => {
-          console.error('Error al cargar tareas.', err);
-          this.tareas = [];
-          this.availableTasks = [];
-        }
-      })
-    );
-  }
+  this.subscriptions.add(
+    this.TaskService.getTareasAsignadas().subscribe({
+      next: (tareas) => {
+        this.tareas = tareas;
+        this.availableTasks = tareas.map(t => ({
+          id: t.idTarea,
+          title: t.nombre,
+          status: t.estado,
+          priority: t.prioridad,
+          description: t.descripcion
+        }));
+        this.updateStats(); // ← ahora sí tiene tareas
+      },
+      error: (err) => {
+        console.error('Error al cargar tareas', err);
+        this.tareas = [];
+        this.availableTasks = [];
+      }
+    })
+  );
+}
 
 // Dentro de la clase WorkspaceTimerComponent
 
 private updateStats(): void {
-  const today = new Date().toDateString();
+  // === TIEMPO HOY ===
+  const today = new Date().toISOString().slice(0, 10);
+  const hoyMinutos = (this.ultimosTiempos || [])
+    .filter(t => t.fechaRegistro.startsWith(today))
+    .reduce((sum, t) => sum + t.duracionMinutos, 0);
+  this.totalTimeToday = this.formatHours(hoyMinutos);
 
-  // Tareas completadas hoy
-  this.tasksCompletedToday = this.tareas.filter(t =>
-    t.estado === 'Completado' &&
-    new Date(t.fechaCreacion).toDateString() === today
-  ).length;
+  // === TAREAS COMPLETADAS HOY ===
+  const todayStr = new Date().toDateString();
+  this.tasksCompletedToday = (this.tareas || [])
+    .filter(t => t.estado === 'Completado' && new Date(t.fechaCreacion).toDateString() === todayStr)
+    .length;
 
-  // Tareas activas (no completadas)
-  this.activeTasks = this.tareas.filter(t => t.estado !== 'Completado').length;
-
-  // Tiempo total hoy (SIMULADO - reemplaza con backend real si existe)
-  // Por ahora, mostramos 0h 0m o un valor fijo
-  this.totalTimeToday = '0h 0m';
-
-  // Opcional: si tienes un endpoint para tiempos registrados hoy
-  // this.TaskService.getTiempoHoy().subscribe(totalSeconds => {
-  //   this.totalTimeToday = this.formatHours(totalSeconds / 3600);
-  // });
+  // === TAREAS ACTIVAS ===
+  this.activeTasks = (this.tareas || []).filter(t => t.estado !== 'Completado').length;
 }
+
+  formatHours(hoyMinutos: any): string {
+    throw new Error('Method not implemented.');
+  }
 addRecentActivity(message: string): void {
   const time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   this.recentActivities.unshift({ time, message });
@@ -226,6 +233,7 @@ addRecentActivity(message: string): void {
 
     // 1. Cargar tareas (selector y lista)
     this.loadTasks();
+    this.loadLast5Times();
 
     // Cargar usuario actual (simulando desde localStorage como en PlanificacionComponent)
     const usuarioGuardado = localStorage.getItem('usuario_data');
@@ -359,6 +367,55 @@ tareasFiltradas(): Tarea[] {
   closeManualTimeModal(): void {
     this.manualTimeModal?.hide();
   }
+  // manejadores de tiempos
+  loadLast5Times(): void {
+  this.subscriptions.add(
+    this.timerService.getLast5Times().subscribe({
+      next: (tiempos) => {
+        this.ultimosTiempos = tiempos;
+        this.updateStats(); // actualiza con tiempos reales
+      },
+      error: (err) => {
+        console.error('Error al cargar últimos tiempos', err);
+        this.ultimosTiempos = [];
+      }
+    })
+  );
+}
+openEditModal(tiempo: TiempoResponseDTO): void {
+  this.editTimeForm = {
+    idTiempo: tiempo.idTiempo,
+    duracionMinutos: tiempo.duracionMinutos,
+    fechaRegistro: tiempo.fechaRegistro,
+    descripcion: tiempo.descripcion || ''
+  };
+  this.showEditModal = true;
+}
+
+saveEditedTime(): void {
+  if (!this.editTimeForm || this.editTimeForm.duracionMinutos < 1) {
+    alert('La duración debe ser al menos 1 minuto');
+    return;
+  }
+
+  this.subscriptions.add(
+    this.timerService.editTime(this.editTimeForm.idTiempo, {
+      duracionMinutos: this.editTimeForm.duracionMinutos,
+      fechaRegistro: this.editTimeForm.fechaRegistro,
+      descripcion: this.editTimeForm.descripcion
+    }).subscribe({
+      next: () => {
+        this.showEditModal = false;
+        this.loadLast5Times();
+        this.loadTasks(); // opcional: recarga tareas
+      },
+      error: (err) => {
+        console.error('Error al editar tiempo', err);
+        alert('Error al guardar. Verifica los datos.');
+      }
+    })
+  );
+}
 
   /** Maneja el envío del formulario de registro manual. */
   handleManualTimeSubmission(): void {
