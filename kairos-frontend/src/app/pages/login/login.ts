@@ -57,7 +57,7 @@ export class LoginComponent implements AfterViewInit {
   private handleCredential(idToken: string | undefined): void {
     if (!idToken) return;
     this.auth.exchangeGoogleToken(idToken).subscribe({
-      next: () => this.router.navigate(['/usuarios']),
+      next: () => this.router.navigate(['/inicio']),
       error: (err) => console.error('Error autenticando con backend', err)
     });
   }

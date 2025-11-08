@@ -1,0 +1,70 @@
+<main class="container my-5">
+    <div class="row g-3 mb-4" *ngIf="usuario?.admin">
+    <div class="col-md-4">
+      <div class="card text-center bg-light shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted">Proyectos Totales</h6>
+          <h4 class="fw-bold text-primary">{{ totalProyectos }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center bg-light shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted">En Progreso</h6>
+          <h4 class="fw-bold text-warning">{{ enProgreso }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center bg-light shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted">Completados</h6>
+          <h4 class="fw-bold text-success">{{ completados }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--filtros-->
+  <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm">
+    <div class="d-flex gap-2 flex-wrap">
+      <select class="form-select" style="width: 200px;">
+        <option>Todos</option>
+        <option>En progreso</option>
+        <option>Completados</option>
+      </select>
+      <input type="text" class="form-control" placeholder="Buscar..." style="width: 250px;">
+    </div>
+    <button 
+    *ngIf="usuario?.admin" 
+    class="btn btn-primary">
+    Nuevo Proyecto
+    </button>
+  </div>
+
+  <!--proyectos-->
+  <div class="row g-4">
+    <div class="col-md-3" *ngFor="let p of proyectos">
+      <a [routerLink]="['/proyecto', p.idProyecto]" class="text-decoration-none">
+        <div class="card project-card border">
+          <div class="project-preview d-flex align-items-center justify-content-center">
+            <img [src]="p.logo || 'Kairos Logo.png'" width="60" height="60" alt="">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title mb-1">{{ p.nombre }}</h5>
+            <h6 class="text-muted">{{ p.equipo }}</h6>
+            <p class="card-text small text-muted">{{ p.descripcion }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+                  <span [class]="'badge ' + getEstadoClass(p.estado)">{{ p.estado }}</span>
+                  <small class="text-muted">{{ p.fechaCreacion }}</small>
+                </div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div *ngIf="proyectos.length === 0" class="col-12 text-center text-muted">
+      No hay proyectos para mostrar.
+    </div>
+  </div>
+</main>

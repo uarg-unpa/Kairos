@@ -2,11 +2,20 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ConfigService } from './config.service';
 
 interface AuthResponse {
   token: string;
   usuario?: any; // 👈 nombre correcto
+}
+interface UserInfoResponse {
+  id: number;
+  nombre: string;
+  email: string;
+  permissions: string[];
+  isAdmin: boolean;
+  roles?: string[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -68,4 +77,15 @@ export class AuthService {
       })
     );
   }
+
+
+  // NUEVO: Obtener usuario actual
+  getCurrentUser(): Observable<UserInfoResponse> {
+    return this.http.get<UserInfoResponse>(`${this.backendBaseUrl}/auth/me`).pipe(
+      tap(user => {
+        this.usuario = user; // guarda en localStorage
+      })
+    );
+  }
+
 }

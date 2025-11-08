@@ -12,9 +12,18 @@ import { UsuarioCrearComponent } from './pages/usuario/crear';
 import { SalirComponent } from './pages/salir/salir';
 import { PlanificacionComponent } from './pages/planificacion/planificacion.component';
 import { WorkspaceTimerComponent } from './pages/workspace/workspace-timer.component'; 
+import { InicioComponent } from './pages/inicio/inicio.component';
+import { ProyectoDetalleComponent } from './pages/proyecto/detalle/proyecto-detalle.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  {
+    path: '',
+    canActivate: [authGuard],
+    children: [
+      { path: '', redirectTo: 'inicio', pathMatch: 'full' },
+      { path: 'inicio', component: InicioComponent }
+    ]
+  },
   { path: 'login', component: LoginComponent },
   { path: 'usuarios', component: UsuariosComponent, canActivate: [authGuard] },
   { path: 'roles', component: RolesComponent, canActivate: [authGuard] },
@@ -27,4 +36,6 @@ export const routes: Routes = [
   { path: 'salir', component: SalirComponent },
   {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
   {path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard] },
+  { path: 'proyecto/:id', component: ProyectoDetalleComponent, canActivate: [authGuard] },
+  { path: '**', redirectTo: '' }
 ];

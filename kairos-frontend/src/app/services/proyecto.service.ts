@@ -1,0 +1,37 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Proyecto } from '../models/proyecto.model';
+import { ConfigService } from './config.service';
+import { AuthService } from './auth.service';
+
+@Injectable({ providedIn: 'root' })
+export class ProyectoService {
+  private http = inject(HttpClient);
+  private config = inject(ConfigService);
+  private authService = inject(AuthService);
+  private baseUrl = (this.config.get('apiBaseUrl') || 'http://localhost:8080') + '/api/proyectos';
+
+  private getHeaders(): HttpHeaders {
+    const token = this.authService.token;
+    return new HttpHeaders({
+      'Authorization': token ? `Bearer ${token}` : '',
+      'Content-Type': 'application/json'
+    });
+  }
+
+  // Mis proyectos (para miembro)
+  getMisProyectos(): Observable<Proyecto[]> {
+  return this.http.get<Proyecto[]>(`${this.baseUrl}/mis-proyectos`, { headers: this.getHeaders() });
+}
+
+  // Todos los proyectos (para admin)
+  getAllProyectos(): Observable<Proyecto[]> {
+    return this.http.get<Proyecto[]>(this.baseUrl);
+  }
+
+  // Proyectos liderados (para líder)
+  getProyectosLiderados(): Observable<Proyecto[]> {
+    return this.http.get<Proyecto[]>(`${this.baseUrl}/liderados`);
+  }
+}
