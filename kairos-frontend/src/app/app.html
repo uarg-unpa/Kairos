@@ -24,6 +24,9 @@
                     <a class="nav-link" routerLink="/usuarios" routerLinkActive="active"><span class="bi bi-person"></span> Usuarios</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" routerLink="/workspace" routerLinkActive="active"><i class="oi oi-clock"></i> Workspace</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" routerLink="/roles" routerLinkActive="active"><span class="bi bi-people"></span> Roles</a>
                 </li>
                 <li class="nav-item">
@@ -46,8 +49,6 @@
 
 <div class="navbar-separator"></div>
 
-<div NgIf="showUserAlert && usuarioLogueado" class="alert alert-info alert-dismissible fade show container" role="alert">
-    </div>
 <div class="container mt-4 main-content">
     <router-outlet></router-outlet>
 </div>
@@ -56,3 +57,4 @@
     <div class="container">
         </div>
 </footer>
+<app-global-timer></app-global-timer>

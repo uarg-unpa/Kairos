@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/permisos")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@PreAuthorize("hasAuthority('Permisos')")
+@PreAuthorize("hasAuthority('Permisos') or hasAuthority('ROLE_ADMINISTRADOR')")
 public class PermisoController {
     
     @Autowired

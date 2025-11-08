@@ -1,0 +1,25 @@
+.project-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+
+.project-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, .15);
+}
+
+.project-preview {
+  background: linear-gradient(180deg, #f0f4f8, #ffffff);
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.textKairos {
+  font-family: 'Megrim', sans-serif;
+}

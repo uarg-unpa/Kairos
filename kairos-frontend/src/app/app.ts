@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { Router, RouterOutlet, RouterModule } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { GlobalTimerComponent } from './components/global-timer/global-timer.component';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule], 
+  imports: [RouterOutlet, RouterModule, GlobalTimerComponent], 
   templateUrl: './app.html', 
   styleUrl: './app.css'
 })
@@ -17,7 +18,7 @@ export class AppComponent {
 
   // 3. Implementar la función de logout
   logout(): void {
-    this.auth.logout();
+    this.router.navigate(['/salir']);
   }
 
   // 4. Definir las propiedades necesarias para el HTML (incluso como placeholders)
