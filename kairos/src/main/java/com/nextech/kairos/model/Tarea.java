@@ -1,7 +1,6 @@
 package com.nextech.kairos.model;
 
 import java.time.LocalDate;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,7 +26,7 @@ public class Tarea {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idTarea;
+    private Long idTarea;
 
     // 🔹 Relación con Iteracion
     @ManyToOne(fetch = FetchType.EAGER)
