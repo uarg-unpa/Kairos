@@ -1,36 +1,67 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-Constants.java
+# === Node.js ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# === Environment variables ===
 .env
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# === Logs ===
+logs
+*.log
+.log.
+pids
+*.pid
+*.seed
+*.pid.lock
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+# === Coverage reports ===
+coverage/
+*.lcov
+
+# === Build output ===
+dist/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+out/
+.next/
+.nuxt/
+.svelte-kit/
 
-### VS Code ###
+# === IDEs & editors ===
 .vscode/
+.idea/
+*.suo
+.ntvs
+*.njsproj
+*.sln
+*.sw?
 
+# === OS generated files ===
+.DS_Store
+Thumbs.db
 
+# === Temporary files ===
+tmp/
+temp/
+.cache/
+.parcel-cache/
+.eslintcache
+Constants.java
+# === Misc ===
+*.tgz
+*.zip
+
+kairos-frontend/
+.vscode/
+src/
+.mvn/
+.mvn/wrapper/
