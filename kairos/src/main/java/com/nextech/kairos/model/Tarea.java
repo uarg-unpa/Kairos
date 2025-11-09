@@ -18,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -48,13 +49,14 @@ public class Tarea {
     @Size(max=150)
     private String descripcion;
 
-    @NotBlank(message = "La fecha de creación es obligatoria")
+    @NotNull(message = "La fecha de creación es obligatoria")
     private LocalDate fechaCreacion;
+
 
     @Column(length = 50)
     private String prioridad;
 
-    @NotBlank(message = "La fecha de fin es obligatoria")
+    @NotNull(message = "La fecha de fin es obligatoria")
     private LocalDate fechaFin;
 
     @Column(length = 255)
