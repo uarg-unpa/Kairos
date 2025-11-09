@@ -1,5 +1,7 @@
 package com.nextech.kairos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -8,7 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -20,18 +21,21 @@ public class UsuarioProyecto {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idUsuario")
-    @JoinColumn(name = "idUsuario")
+    @JsonIgnore
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idProyecto")
-    @JoinColumn(name = "idProyecto")
+    @JsonIgnore
+    @JoinColumn(name = "id_proyecto", nullable = false)
     private Proyecto proyecto;
 
     @Size(max = 100)
-    @Column(name = "rol_proyecto", length = 100)
+    @Column(name = "rol_proyecto", length = 100, nullable = false)
     private String rolProyecto;
 
+    // CONSTRUCTORES
     public UsuarioProyecto() {
         this.id = new UsuarioProyectoId();
     }
@@ -43,6 +47,7 @@ public class UsuarioProyecto {
         this.id = new UsuarioProyectoId(usuario.getId(), proyecto.getIdProyecto());
     }
 
+    // GETTERS Y SETTERS
     public UsuarioProyectoId getId() { return id; }
     public void setId(UsuarioProyectoId id) { this.id = id; }
     public Usuario getUsuario() { return usuario; }

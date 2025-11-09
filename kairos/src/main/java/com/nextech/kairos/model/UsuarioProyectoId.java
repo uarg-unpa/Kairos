@@ -1,4 +1,3 @@
-
 package com.nextech.kairos.model;
 
 import java.io.Serializable;
@@ -10,14 +9,13 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class UsuarioProyectoId implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    @Column(name = "idUsuario")
+    @Column(name = "id_usuario")
     private Long idUsuario;
 
-    @Column(name = "idProyecto")
+    @Column(name = "id_proyecto")
     private Long idProyecto;
 
+    // Constructores
     public UsuarioProyectoId() {}
 
     public UsuarioProyectoId(Long idUsuario, Long idProyecto) {
@@ -25,24 +23,24 @@ public class UsuarioProyectoId implements Serializable {
         this.idProyecto = idProyecto;
     }
 
-    // --- Getters y Setters ---
+    // Getters y Setters
     public Long getIdUsuario() { return idUsuario; }
     public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
     public Long getIdProyecto() { return idProyecto; }
     public void setIdProyecto(Long idProyecto) { this.idProyecto = idProyecto; }
 
-    // Implementar equals y hashCode
+    // equals y hashCode (necesarios para IDs embebidos)
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UsuarioProyectoId)) return false;
         UsuarioProyectoId that = (UsuarioProyectoId) o;
-        return Objects.equals(getIdUsuario(), that.getIdUsuario()) &&
-               Objects.equals(getIdProyecto(), that.getIdProyecto());
+        return Objects.equals(idUsuario, that.idUsuario) &&
+               Objects.equals(idProyecto, that.idProyecto);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getIdUsuario(), getIdProyecto());
+        return Objects.hash(idUsuario, idProyecto);
     }
 }

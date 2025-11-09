@@ -14,6 +14,7 @@ import com.nextech.kairos.model.Proyecto;
 public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
     
     Optional<Proyecto> findByNombre(String nombre);
+    boolean existsByNombre(String nombre);
     
 
     @Query(value = "SELECT p FROM Proyecto p WHERE p.estado = :estado" )
@@ -30,4 +31,6 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
 
     @Query(value = "SELECT p FROM Proyecto p WHERE p.estado = :estado ORDER BY p.fechaCreacion DESC" )
     List<Proyecto> findByEstadoOrderByFechaCreacionDesc(String estado);
+
+    
 }

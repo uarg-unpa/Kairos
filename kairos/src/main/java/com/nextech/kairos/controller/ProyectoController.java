@@ -1,6 +1,8 @@
 package com.nextech.kairos.controller;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,13 +10,21 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nextech.kairos.dto.CrearProyectoRequest;
 import com.nextech.kairos.model.Proyecto;
 import com.nextech.kairos.model.Usuario;
+import com.nextech.kairos.model.UsuarioProyecto;
 import com.nextech.kairos.service.AuthService;
 import com.nextech.kairos.service.ProyectoService;
+import com.nextech.kairos.service.UsuarioProyectoService;
+import com.nextech.kairos.service.UsuarioService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/proyectos")
@@ -26,6 +36,10 @@ public class ProyectoController {
 
     @Autowired
     private AuthService authService;
+    @Autowired
+    private UsuarioService usuarioService;
+    @Autowired
+    private UsuarioProyectoService usuarioProyectoService;
 
     private Usuario getCurrentUser(Authentication auth) {
         if (auth == null || auth.getPrincipal() == null) {
@@ -76,4 +90,52 @@ public class ProyectoController {
     public ResponseEntity<List<Proyecto>> getAllProyectos() {
         return ResponseEntity.ok(proyectoService.findAll());
     }
+    @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
+    public ResponseEntity<?> crearProyecto(
+        @Valid @RequestBody CrearProyectoRequest request,
+        Authentication auth) {
+
+        if (proyectoService.existsByNombre(request.getNombre())) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", "Ya existe un proyecto con el nombre: " + request.getNombre()));
+        }
+
+        try {
+            Proyecto proyecto = new Proyecto();
+            proyecto.setNombre(request.getNombre());
+            proyecto.setEquipo(request.getEquipo());
+            proyecto.setDescripcion(request.getDescripcion());
+            proyecto.setFechaInicio(
+                request.getFechaInicio() != null && !request.getFechaInicio().isBlank()
+                    ? LocalDate.parse(request.getFechaInicio())
+                    : null
+            );
+            proyecto.setEstado("En Progreso");
+            proyecto.setLogo(request.getLogo());
+
+            // ✅ guarda el proyecto primero
+            Proyecto guardado = proyectoService.save(proyecto);
+
+            // ✅ asegurate de recargarlo para que esté en contexto persistente
+            guardado = proyectoService.findById(guardado.getIdProyecto())
+                    .orElseThrow(() -> new RuntimeException("Error al recargar el proyecto guardado"));
+
+            // ✅ ahora asigna el líder
+            Usuario lider = usuarioService.findById(request.getLiderId())
+                    .orElseThrow(() -> new RuntimeException("Líder no encontrado"));
+
+            UsuarioProyecto up = new UsuarioProyecto(lider, guardado, "Líder");
+            usuarioProyectoService.save(up);
+
+            return ResponseEntity.ok(guardado);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // 👈 te mostrará el stacktrace real en consola
+            return ResponseEntity.status(500)
+                .body(Map.of("error", "Error interno: " + e.getMessage()));
+        }
+    }
+
+
 }

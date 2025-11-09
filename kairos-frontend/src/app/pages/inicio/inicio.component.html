@@ -37,7 +37,8 @@
     </div>
     <button 
     *ngIf="usuario?.admin" 
-    class="btn btn-primary">
+    class="btn btn-primary"
+    (click)="abrirModal()">
     Nuevo Proyecto
     </button>
   </div>
@@ -68,3 +69,101 @@
     </div>
   </div>
 </main>
+
+<!-- MODAL -->
+<div class="modal fade" [class.show]="mostrarModal" [style.display]="mostrarModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Crear Nuevo Proyecto</h5>
+        <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+      </div>
+      <form (ngSubmit)="crearProyecto()">
+        <div class="modal-body">
+          <div *ngIf="errorMensaje" class="alert alert-danger" role="alert">
+            {{ errorMensaje }}
+          </div>
+          <!-- formulario -->
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nombre del Proyecto *</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="nuevoProyecto.nombre"
+                name="nombre"
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Equipo *</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="nuevoProyecto.equipo"
+                name="equipo"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="mb-3 mt-3">
+            <label class="form-label">Descripción</label>
+            <textarea
+              class="form-control"
+              [(ngModel)]="nuevoProyecto.descripcion"
+              name="descripcion"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Fecha de Inicio</label>
+              <input
+                type="date"
+                class="form-control"
+                [(ngModel)]="nuevoProyecto.fechaInicio"
+                name="fechaInicio"
+              >
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Líder del Proyecto *</label>
+              <select
+                class="form-select"
+                [(ngModel)]="liderId"
+                name="liderId"
+                required
+              >
+                <option [ngValue]="null">Seleccionar líder...</option>
+                <option *ngFor="let u of usuarios" [ngValue]="u.id">
+                  {{ u.nombre }} ({{ u.email }})
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3 mt-3">
+            <label class="form-label">Logo del Proyecto</label>
+            <input
+              type="file"
+              class="form-control"
+              (change)="onFileSelected($event)"
+              accept="image/*"
+            >
+            <div *ngIf="nuevoProyecto.logo" class="mt-2 text-center">
+              <img [src]="nuevoProyecto.logo" class="img-thumbnail" style="max-height: 100px;">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-success">Crear Proyecto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="mostrarModal" (click)="cerrarModal()"></div>

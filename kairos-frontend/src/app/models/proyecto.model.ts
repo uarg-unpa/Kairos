@@ -1,9 +1,10 @@
 export interface Proyecto {
-  idProyecto: number;
+  idProyecto?: number;
   nombre: string;
-  descripcion: string;
-  estado: string;
-  fechaCreacion: string;
   equipo: string;
-  logo?: string; // opcional
+  descripcion: string;
+  fechaInicio?: string; // opcional
+  fechaCreacion: string;
+  estado: string;
+  logo?: string; // base64 o URL
 }

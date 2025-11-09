@@ -72,6 +72,9 @@ public class Proyecto {
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
+    @Column(name = "logo", columnDefinition = "LONGTEXT")
+    private String logo;
+
     public Proyecto() {}
 
     @PrePersist
@@ -113,6 +116,8 @@ public class Proyecto {
     public void setUsuariosProyecto(Set<UsuarioProyecto> usuariosProyecto) { this.usuariosProyecto = usuariosProyecto; }
     public LocalDateTime getFechaActualizacion() { return fechaActualizacion; }
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) { this.fechaActualizacion = fechaActualizacion; }
+    public String getLogo() { return logo; }
+    public void setLogo(String logo) { this.logo = logo; }
 
     public Etapa crearEtapa(Etapa etapa) {
         if (etapa == null) return null;

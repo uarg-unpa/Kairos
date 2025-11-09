@@ -121,6 +121,10 @@ public class ProyectoService implements IProyectoService {
         
         return usuarioProyectoRepository.save(asignacion);
     }
+    @Transactional
+    public Proyecto save(Proyecto proyecto) {
+        return proyectoRepository.save(proyecto);
+    }
     
     /**
      * Eliminar la asignación de un miembro a un proyecto
@@ -146,7 +150,9 @@ public class ProyectoService implements IProyectoService {
     public List<Proyecto> searchByNombre(String nombre) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+    public boolean existsByNombre(String nombre) {
+    return proyectoRepository.existsByNombre(nombre);
+}
     /**
      * Buscar proyectos
      */

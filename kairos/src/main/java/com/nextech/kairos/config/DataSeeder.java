@@ -45,7 +45,7 @@ public class DataSeeder implements CommandLineRunner {
         Proyecto proyecto = new Proyecto();
         proyecto.setNombre("Proyecto RUP Demo");
         proyecto.setEquipo("Equipo Kairos");
-        proyecto.setEstado("Activo");
+        proyecto.setEstado("en progreso");
         proyecto = proyectoRepository.save(proyecto);
 
         // Etapa: Inicio (sin iteraciones)

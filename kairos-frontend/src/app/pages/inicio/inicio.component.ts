@@ -6,12 +6,14 @@ import { Proyecto } from '../../models/proyecto.model';
 import { Observable } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
   imports: [RouterModule,
-    CommonModule],
+    CommonModule,
+    FormsModule],
   templateUrl: './inicio.component.html',
   styleUrls: ['./inicio.component.css']
 })
@@ -22,6 +24,21 @@ export class InicioComponent implements OnInit {
   totalProyectos: number = 0;
   enProgreso: number = 0;
   completados: number = 0;
+  // Modal
+  mostrarModal = false;
+  usuarios: any[] = [];
+  liderId: number | null = null;
+  errorMensaje: string | null = null;
+
+
+  // Formulario
+  nuevoProyecto = {
+    nombre: '',
+    equipo: '',
+    descripcion: '',
+    fechaInicio: '',
+    logo: '' as string | ArrayBuffer | null
+  };
 
   constructor(
     public authService: AuthService,
@@ -32,6 +49,66 @@ export class InicioComponent implements OnInit {
   ngOnInit(): void {
     this.cargarUsuarioYProyectos();
   }
+
+  abrirModal() {
+    this.mostrarModal = true;
+    this.cargarUsuarios();
+  }
+
+  cerrarModal() {
+    this.mostrarModal = false;
+    this.nuevoProyecto = { nombre: '', equipo: '', descripcion: '', fechaInicio: '', logo: '' };
+    this.liderId = null;
+    document.body.classList.remove('modal-open');
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) backdrop.remove();
+  }
+
+  cargarUsuarios() {
+    this.proyectoService.getUsuarios().subscribe({
+      next: (usuarios) => this.usuarios = usuarios,
+      error: () => alert('Error al cargar usuarios')
+    });
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => this.nuevoProyecto.logo = e.target?.result ?? null;
+      reader.readAsDataURL(file);
+    }
+  }
+
+  crearProyecto() {
+  this.errorMensaje = null; // limpia errores previos
+
+  if (!this.nuevoProyecto.nombre?.trim() || !this.nuevoProyecto.equipo?.trim() || !this.liderId) {
+    this.errorMensaje = 'Completa nombre, equipo y líder';
+    return;
+  }
+
+  const payload = {
+    nombre: this.nuevoProyecto.nombre.trim(),
+    equipo: this.nuevoProyecto.equipo.trim(),
+    descripcion: this.nuevoProyecto.descripcion,
+    fechaInicio: this.nuevoProyecto.fechaInicio || null,
+    logo: this.nuevoProyecto.logo,
+    liderId: this.liderId
+  };
+
+  this.proyectoService.crearProyecto(payload).subscribe({
+    next: () => {
+      alert('Proyecto creado con éxito');
+      this.cerrarModal();
+      this.cargarProyectos();
+    },
+    error: (err) => {
+      this.errorMensaje = err.error?.error || 'Error al crear el proyecto';
+      console.error('Error:', err);
+    }
+  });
+}
 
   private cargarUsuarioYProyectos(): void {
     this.authService.getCurrentUser().subscribe({

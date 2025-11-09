@@ -19,6 +19,15 @@ export class ProyectoService {
       'Content-Type': 'application/json'
     });
   }
+  crearProyecto(proyecto: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}`, proyecto, { headers: this.getHeaders() });
+  }
+
+  getUsuarios(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.config.get('apiBaseUrl') || 'http://localhost:8080'}/api/usuarios`, {
+      headers: this.getHeaders()
+    });
+  }
 
   // Mis proyectos (para miembro)
   getMisProyectos(): Observable<Proyecto[]> {
