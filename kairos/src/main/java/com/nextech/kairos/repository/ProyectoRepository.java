@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.nextech.kairos.model.Proyecto;
@@ -31,6 +32,9 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
 
     @Query(value = "SELECT p FROM Proyecto p WHERE p.estado = :estado ORDER BY p.fechaCreacion DESC" )
     List<Proyecto> findByEstadoOrderByFechaCreacionDesc(String estado);
+
+    @Query("SELECT p FROM Proyecto p LEFT JOIN FETCH p.usuariosProyecto WHERE p.idProyecto = :id")
+    Optional<Proyecto> findByIdWithUsuarios(@Param("id") Long id);
 
     
 }

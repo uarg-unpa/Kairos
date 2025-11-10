@@ -10,12 +10,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nextech.kairos.dto.CrearProyectoRequest;
+import com.nextech.kairos.dto.ProyectoDetalleResponse;
+import com.nextech.kairos.dto.UsuarioProyectoResponse;
 import com.nextech.kairos.model.Proyecto;
 import com.nextech.kairos.model.Usuario;
 import com.nextech.kairos.model.UsuarioProyecto;
@@ -132,6 +135,44 @@ public class ProyectoController {
 
         } catch (Exception e) {
             e.printStackTrace(); // 👈 te mostrará el stacktrace real en consola
+            return ResponseEntity.status(500)
+                .body(Map.of("error", "Error interno: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProyectoById(
+            @PathVariable Long id,
+            Authentication auth) {
+
+        try {
+            Usuario usuario = getCurrentUser(auth);
+
+            // Cargar proyecto con usuarios
+            Proyecto proyecto = proyectoService.findByIdWithUsuarios(id)
+                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+
+            // Validar acceso
+            boolean esAdmin = authService.isAdmin(usuario.getEmail());
+            boolean tieneAcceso = proyecto.getUsuariosProyecto().stream()
+                .anyMatch(up -> up.getUsuario().getId().equals(usuario.getId()));
+
+            if (!esAdmin && !tieneAcceso) {
+                return ResponseEntity.status(403)
+                    .body(Map.of("error", "Acceso denegado"));
+            }
+
+            // Crear DTO
+            List<UsuarioProyectoResponse> usuarios = proyecto.getUsuariosProyecto().stream()
+                .map(UsuarioProyectoResponse::new)
+                .toList();
+
+            ProyectoDetalleResponse response = new ProyectoDetalleResponse(proyecto, usuarios);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500)
                 .body(Map.of("error", "Error interno: " + e.getMessage()));
         }

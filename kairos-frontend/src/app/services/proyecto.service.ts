@@ -28,6 +28,9 @@ export class ProyectoService {
       headers: this.getHeaders()
     });
   }
+  getProyectoById(id: number): Observable<Proyecto> {
+    return this.http.get<Proyecto>(`${this.baseUrl}/${id}`, { headers: this.getHeaders() });
+  }
 
   // Mis proyectos (para miembro)
   getMisProyectos(): Observable<Proyecto[]> {
