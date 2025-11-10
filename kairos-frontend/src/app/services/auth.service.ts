@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ConfigService } from './config.service';
 
@@ -16,6 +16,7 @@ interface UserInfoResponse {
   permissions: string[];
   isAdmin: boolean;
   roles?: string[];
+  rol?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -30,6 +31,12 @@ export class AuthService {
   private storageKey = 'jwt_token';
   private storageUserKey = 'usuario_data';
 
+  private isLoggedInSubject = new BehaviorSubject<boolean>(this.isAuthenticated());
+  isLoggedIn$ = this.isLoggedInSubject.asObservable();
+
+  private currentUserSubject = new BehaviorSubject<any>(this.usuario);
+  currentUser$ = this.currentUserSubject.asObservable();
+
   get token(): string | null {
     return localStorage.getItem(this.storageKey);
   }
@@ -40,6 +47,8 @@ export class AuthService {
     } else {
       localStorage.removeItem(this.storageKey);
     }
+    // actualizar estado de logueo
+    this.isLoggedInSubject.next(!!value);
   }
 
   get usuario(): any {
@@ -49,10 +58,17 @@ export class AuthService {
 
   set usuario(value: any) {
     if (value) {
+      if (value.admin === true) {
+      value.rol = 'ADMINISTRADOR'; 
+    } else {
+      value.rol = 'MIEMBRO'; 
+    }
       localStorage.setItem(this.storageUserKey, JSON.stringify(value));
     } else {
       localStorage.removeItem(this.storageUserKey);
     }
+    // actualizar estado del usuario actual
+    this.currentUserSubject.next(value);
   }
 
   isAuthenticated(): boolean {
@@ -86,6 +102,12 @@ export class AuthService {
         this.usuario = user; // guarda en localStorage
       })
     );
+  }
+
+  hasRole(role: string): boolean {
+    if (!this.usuario || !this.usuario.rol) return false;
+    console.log('Comparando roles:', this.usuario.rol.toUpperCase(), 'con', role.toUpperCase());
+    return this.usuario.rol.toUpperCase() === role.toUpperCase();
   }
 
 }
