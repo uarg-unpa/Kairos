@@ -36,10 +36,26 @@ export const routes: Routes = [
   { path: 'usuario/modificar/:id', component: UsuarioModificarComponent, canActivate: [authGuard] },
   { path: 'usuario/crear', component: UsuarioCrearComponent, canActivate: [authGuard] },
   { path: 'salir', component: SalirComponent },
-  {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
   {path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard] },
   { path: 'proyecto/:id', component: ProyectoDetalleComponent, canActivate: [authGuard] },
-  { path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard] },
+  // SUBRUTAS DEL PROYECTO
+  { 
+    path: 'proyecto/:id/planificacion', 
+    component: PlanificacionComponent, 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'proyecto/:id/etapas', 
+    component: EtapasComponent, 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'proyecto/:id/workspace', 
+    component: WorkspaceTimerComponent, 
+    canActivate: [authGuard] 
+  },
+  // { path: 'proyecto/:id/planificacion', component: PlanificacionComponent, canActivate: [authGuard] },
+  // {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
   { path: 'etapas', component: EtapasComponent, canActivate: [authGuard] },
   { path: 'iteraciones/:etapa', component: IteracionesComponent, canActivate: [authGuard] },
   { path: 'iteraciones/etapa/:id', component: IteracionesComponent, canActivate: [authGuard] },
