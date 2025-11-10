@@ -60,7 +60,6 @@ Constants.java
 *.tgz
 *.zip
 
-kairos-frontend/
 .vscode/
 .mvn/
 .mvn/wrapper/
