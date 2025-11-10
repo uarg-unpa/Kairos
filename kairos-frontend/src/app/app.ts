@@ -63,4 +63,8 @@ export class AppComponent implements OnInit {
   dismissAlert(): void {
     this.showUserAlert = false;
   }
+  esRutaProyecto(): boolean {
+    // Comprueba si la URL actual comienza con '/proyecto/'
+    return this.router.url.startsWith('/proyecto/');
+  }
 }

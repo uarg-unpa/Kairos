@@ -18,14 +18,20 @@
                     <a class="nav-link" routerLink="/inicio" routerLinkActive="active"><span class="bi bi-house-door"></span> Inicio</a>
                 </li>
                 
-                <li class="nav-item">
+                <li class="nav-item" *ngIf="esRutaProyecto()">
                     <a class="nav-link" routerLink="/planificacion" routerLinkActive="active"><span class="bi bi-calendar4-week"></span> Planificación</a>
                 </li>
                 
-                <li class="nav-item" *ngIf="rolUsuario === ROL_ADMIN || rolUsuario === ROL_LIDER">
+                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
                     <a class="nav-link" routerLink="/etapas" routerLinkActive="active"><span class="bi bi-diagram-2"></span> Etapas</a>
                 </li>
-
+                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
+                    <a class="nav-link" routerLink="/iteraciones" routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a> 
+                </li>
+                
+                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
+                    <a class="nav-link" routerLink="/workspace" routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a> 
+                </li>
                 <li class="nav-item" *ngIf="rolUsuario === ROL_ADMIN">
                     <a class="nav-link" routerLink="/usuarios" routerLinkActive="active"><span class="bi bi-person"></span> Usuarios</a>
                 </li>
@@ -35,11 +41,7 @@
                 <li class="nav-item" *ngIf="rolUsuario === ROL_ADMIN">
                     <a class="nav-link" routerLink="/permisos" routerLinkActive="active"><span class="bi bi-key"></span> Permisos</a>
                 </li>
-                
-                <li class="nav-item" *ngIf="rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO">
-                    <a class="nav-link" routerLink="/workspace" routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a> 
-                </li>
-                
+
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"><span class="bi bi-question-lg"></span> Ayuda</a>
                 </li>
