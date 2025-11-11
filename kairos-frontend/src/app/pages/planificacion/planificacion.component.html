@@ -282,7 +282,7 @@
         <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
       </div>
 
-      <form (ngSubmit)="tareaEnEdicion ? editarTarea() : agregarTarea()">
+      <form #form="ngForm" (ngSubmit)="tareaEnEdicion ? editarTarea() : agregarTarea()">
         <div class="modal-body">
           <h6 class="text-muted">* Campos obligatorios</h6>
 
@@ -292,7 +292,7 @@
               <label class="form-label">Título *</label>
               <input type="text" class="form-control" [(ngModel)]="nuevaTarea.nombre" name="nombre" required
                 maxlength="50" #nombre="ngModel">
-              <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="text-danger mt-1">
+              <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched || form.submitted)" class="text-danger mt-1">
                 ⚠️ El título es obligatorio.
               </div>
             </div>
@@ -322,7 +322,7 @@
                 <option value="">Seleccionar categoría...</option>
                 <option *ngFor="let cat of categorias" [value]="cat.idCategoria">{{ cat.nombre }}</option>
               </select>
-              <div *ngIf="categoriaId.invalid && (categoriaId.dirty || categoriaId.touched)" class="text-danger mt-1">
+              <div *ngIf="categoriaId.invalid && (categoriaId.dirty || categoriaId.touched || form.submitted)" class="text-danger mt-1">
                 ⚠️ La categoría es obligatoria.
               </div>
             </div>
@@ -334,7 +334,7 @@
                 <option value="">Seleccionar responsable...</option>
                 <option *ngFor="let u of usuarios" [value]="u.id">{{ u.nombre }}</option>
               </select>
-              <div *ngIf="usuarioId.invalid && (usuarioId.dirty || usuarioId.touched)" class="text-danger mt-1">
+              <div *ngIf="usuarioId.invalid && (usuarioId.dirty || usuarioId.touched || form.submitted)" class="text-danger mt-1">
                 ⚠️ El responsable es obligatorio.
               </div>
             </div>
@@ -346,7 +346,7 @@
               <label class="form-label">Fecha de Inicio *</label>
               <input type="date" class="form-control" [(ngModel)]="nuevaTarea.fechaCreacion" name="fechaCreacion"
                 required #fechaCreacion="ngModel">
-              <div *ngIf="fechaCreacion.invalid && (fechaCreacion.dirty || fechaCreacion.touched)"
+              <div *ngIf="fechaCreacion.invalid && (fechaCreacion.dirty || fechaCreacion.touched || form.submitted )"
                 class="text-danger mt-1">
                 ⚠️ La fecha es obligatoria.
               </div>
@@ -356,7 +356,7 @@
               <label class="form-label">Fecha de Fin *</label>
               <input type="date" class="form-control" [(ngModel)]="nuevaTarea.fechaFin" name="fechaFin" required
                 #fechaFin="ngModel">
-              <div *ngIf="fechaFin.invalid && (fechaFin.dirty || fechaFin.touched)" class="text-danger mt-1">
+              <div *ngIf="fechaFin.invalid && (fechaFin.dirty || fechaFin.touched || form.submitted)" class="text-danger mt-1">
                 ⚠️ La fecha es obligatoria.
               </div>
             </div>
