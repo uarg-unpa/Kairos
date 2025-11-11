@@ -321,36 +321,55 @@ export class PlanificacionComponent implements OnInit {
 }
 
 eliminarCategoria(categoriaId: number): void {
-  if (!confirm('¿Estás seguro que quieres eliminar esta tarea?')) return;
+  if (!confirm('¿Estás seguro que quieres eliminar esta categoria?')) return;
 
   this.categoriaService.deleteCategoria(categoriaId).subscribe({
     next: () => {
+      alert("✅ Categoría eliminada correctamente");
       this.cargarCategorias();
       console.log('Tarea eliminada');
     },
-    error: (err) => console.error('Error al eliminar tarea:', err)
+    error: (err) => {console.error('Error al eliminar tarea:', err);
+    alert(err.error || "❌ Error al eliminar la categoría");
+    }
   })
 }
 
-editarCategoria(cat: any): void {
+seleccionarCategoriaParaEditar(cat: CategoriaDTO): void {
+  this.categoriaEnEdicion = cat;
   this.categoriaEdicion = true;
-  this.nuevaCategoria.nombre = cat.nombre;
-  if(!confirm('¿Estás seguro que quieres editar esta categoría?')) return;
+
+  // Precarga los campos del formulario
+  this.nuevaCategoria = {
+    nombre: cat.nombre,
+    descripcion: cat.descripcion,
+    idProyecto: cat.proyectoId || 1
+  };
+}
+
+guardarCategoriaEditada(): void {
+  if (!this.categoriaEnEdicion) return;
 
   const categoriaBackend = {
     nombre: this.nuevaCategoria.nombre,
     descripcion: this.nuevaCategoria.descripcion,
-    idProyecto: 1,
-  }
-  this.categoriaService.updateCategoria(this.categoriaEnEdicion?.idCategoria!, categoriaBackend).subscribe({
-    next: () => {
-      this.cargarCategorias();
-      console.log('Categoría editada');
-    },
-    error: (err) => console.error('Error al editar categoría:', err)
-  })
+    idProyecto: 1
+  };
 
+  this.categoriaService
+    .updateCategoria(this.categoriaEnEdicion.idCategoria!, categoriaBackend)
+    .subscribe({
+      next: () => {
+        this.cargarCategorias();
+        this.resetModalCategorias();
+        this.categoriaEdicion = false;
+        this.categoriaEnEdicion = null;
+        console.log('✅ Categoría editada correctamente');
+      },
+      error: (err) => console.error('❌ Error al editar categoría:', err)
+    });
 }
+
 
   // -----------------------
   // Operaciones con tareas
@@ -362,7 +381,7 @@ editarCategoria(cat: any): void {
   }
 
   abrirModalCrear(): void {
-  this.tareaEnEdicion = null; // ← ahora sí, explícitamente
+  this.tareaEnEdicion = null;
   this.resetModal();
   this.addTaskModal?.show();
 }
@@ -385,18 +404,18 @@ editarCategoria(cat: any): void {
   }
 
   resetModalCategorias(): void {
-    this.nuevaCategoria = {
-      nombre: '',
-      descripcion: '',
-    }
+  this.nuevaCategoria = { nombre: '', descripcion: '', idProyecto: 1 };
+  this.categoriaEdicion = false;
+  this.categoriaEnEdicion = null;
+}
 
-  }
 
   abrirCategorias(){
     this.categoriaModal?.show();
   }
 
   cerrarModalCategorias(){
+    this.resetModalCategorias();
     this.categoriaModal?.hide();
   }
 
@@ -525,18 +544,29 @@ editarCategoria(cat: any): void {
       return;
     }
     this.taskService.updateTarea(this.tareaEnEdicion.idTarea!, tareaParaBackend).subscribe({
-      next: (tareaActualizada) => {
-        const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
-        if (index !== -1) this.tareas[index] = tareaActualizada;
-        this.tareaEnEdicion = null;
-        this.cargarTareas;
-        this.resetModal();
-        this.cerrarModal();
+  next: (tareaActualizada) => {
+    const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
+    if (index !== -1) this.tareas[index] = tareaActualizada;
+    this.tareaEnEdicion = null;
+    this.cargarTareas();
+    this.resetModal();
+    this.cerrarModal();
 
-        console.log('✅ Tarea editada correctamente');
-      },
-      error: (err) => console.error('❌ Error al editar tarea:', err)
-    });
+    console.log('✅ Tarea editada correctamente');
+    alert('✅ Tarea actualizada correctamente.');
+  },
+  error: (err) => {
+    console.error('❌ Error al editar tarea:', err);
+
+    // Capturar mensaje del backend
+    const mensaje =
+      err?.error?.error ||     // caso: { error: "mensaje" }
+      err?.error?.message ||   // caso: { message: "mensaje" }
+      'Ocurrió un error inesperado.';
+
+    alert('⚠️ ' + mensaje);
+  }
+});
   }
 
   /** Elimina tarea tanto en backend como en la lista local */

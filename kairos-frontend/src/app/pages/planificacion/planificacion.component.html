@@ -186,7 +186,8 @@
             <div class="mt-3 p-3 bg-light rounded border">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <strong><i class="bi bi-sticky me-2"></i>Comentarios</strong>
-                <button class="btn btn-sm btn-outline-primary" (click)="abrirModalComentarios(tarea.idTarea); $event.stopPropagation()">
+                <button class="btn btn-sm btn-outline-primary"
+                  (click)="abrirModalComentarios(tarea.idTarea); $event.stopPropagation()">
                   <i class="bi bi-plus-circle me-1"></i>Agregar comentario
                 </button>
               </div>
@@ -458,10 +459,18 @@
                     <div>
                       <i class="bi bi-tag-fill text-primary me-2"></i>{{ cat.nombre }}
                     </div>
-                    <button class="btn btn-sm btn-outline-danger" title="Eliminar categoría"
-                      (click)="eliminarCategoria(cat.idCategoria); $event.stopPropagation()">
-                      <i class="bi bi-trash"></i>
-                    </button>
+
+                    <div class="btn-group">
+                      <button class="btn btn-sm btn-outline-primary" title="Editar categoría"
+                        (click)="seleccionarCategoriaParaEditar(cat); $event.stopPropagation()">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+
+                      <button class="btn btn-sm btn-outline-danger" title="Eliminar categoría"
+                        (click)="eliminarCategoria(cat.idCategoria); $event.stopPropagation()">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
                   </div>
 
                   <!-- Descripción visible solo si está expandida -->
@@ -480,30 +489,47 @@
           </div>
 
           <!-- Formulario para agregar nueva categoría -->
+          <!-- Formulario para agregar o editar categoría -->
           <div class="col-md-5 ps-4">
-            <h6 class="mb-3 text-muted">Agregar nueva categoría</h6>
+            <h6 class="mb-3 text-muted">
+              {{ categoriaEdicion ? 'Editar categoría' : 'Agregar nueva categoría' }}
+            </h6>
 
-            <form (ngSubmit)="agregarCategorias()">
+            <form #form="ngForm" (ngSubmit)="categoriaEdicion ? guardarCategoriaEditada() : agregarCategorias()">
               <div class="mb-3">
                 <label for="nombreCategoria" class="form-label">Nombre *</label>
                 <input type="text" id="nombreCategoria" class="form-control" [(ngModel)]="nuevaCategoria.nombre"
-                  name="nombreCategoria" required maxlength="50" placeholder="Ej: Documentación">
+                  name="nombreCategoria" required #nombre="ngModel" maxlength="14" placeholder="Ej: Documentación" />
+                <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched || form.submitted)"
+                  class="text-danger mt-1">
+                  ⚠️ El nombre es obligatorio.
+                </div>
+
               </div>
+
               <div class="mb-3">
                 <label for="descripcionCategoria" class="form-label">Descripción</label>
-                <input type="text" id="nuevaCategoria.descripción" class="form-control"
-                  [(ngModel)]="nuevaCategoria.descripcion" name="descripcionCategoria" required maxlength="50"
-                  placeholder="Descripción de la categoria">
-
+                <input type="text" id="descripcionCategoria" class="form-control"
+                  [(ngModel)]="nuevaCategoria.descripcion" name="descripcionCategoria" maxlength="50"
+                  placeholder="Descripción de la categoría" />
               </div>
 
-              <div class="d-flex justify-content-end">
+              <div class="d-flex justify-content-end gap-2">
+                <!-- Botón de cancelar edición -->
+                <button *ngIf="categoriaEdicion" type="button" class="btn btn-secondary"
+                  (click)="resetModalCategorias()">
+                  Cancelar
+                </button>
+
+                <!-- Botón de acción principal -->
                 <button type="submit" class="btn btn-primary">
-                  <i class="bi bi-plus-circle me-1"></i>Agregar
+                  <i class="bi" [ngClass]="categoriaEdicion ? 'bi-save' : 'bi-plus-circle'"></i>
+                  {{ categoriaEdicion ? 'Guardar cambios' : 'Agregar' }}
                 </button>
               </div>
             </form>
           </div>
+
         </div>
       </div>
 

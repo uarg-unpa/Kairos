@@ -32,37 +32,35 @@ public class TareaService implements ITareaService {
         return tareaRepository.save(tarea);
     }
 
-   @Override
-@Transactional
-public void eliminarTarea(Long id) {
-    Tarea tarea = tareaRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Tarea con ID " + id + " no encontrada."));
+    @Override
+    @Transactional
+    public void eliminarTarea(Long id) {
+        Tarea tarea = tareaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tarea con ID " + id + " no encontrada."));
 
-    // 🔹 Limpiar categorías
-    tarea.getCategorias().clear();
+        // 🔹 Limpiar categorías
+        tarea.getCategorias().clear();
 
-    // 🔹 Quitar esta tarea de las dependencias de otras tareas
-    for (Tarea dependiente : new HashSet<>(tarea.getDependientes())) {
-        dependiente.getDependencias().remove(tarea);
+        // 🔹 Quitar esta tarea de las dependencias de otras tareas
+        for (Tarea dependiente : new HashSet<>(tarea.getDependientes())) {
+            dependiente.getDependencias().remove(tarea);
+        }
+
+        // 🔹 Quitar dependencias propias
+        for (Tarea dependencia : new HashSet<>(tarea.getDependencias())) {
+            dependencia.getDependientes().remove(tarea);
+        }
+
+        tarea.getDependencias().clear();
+        tarea.getDependientes().clear();
+
+        // 🔹 Guardar y forzar sincronización antes de eliminar
+        tareaRepository.save(tarea);
+        tareaRepository.flush(); // 🔸 fuerza UPDATEs antes del DELETE
+
+        // 🔹 Ahora sí eliminar
+        tareaRepository.delete(tarea);
     }
-
-    // 🔹 Quitar dependencias propias
-    for (Tarea dependencia : new HashSet<>(tarea.getDependencias())) {
-        dependencia.getDependientes().remove(tarea);
-    }
-
-    tarea.getDependencias().clear();
-    tarea.getDependientes().clear();
-
-    // 🔹 Guardar y forzar sincronización antes de eliminar
-    tareaRepository.save(tarea);
-    tareaRepository.flush(); // 🔸 fuerza UPDATEs antes del DELETE
-
-    // 🔹 Ahora sí eliminar
-    tareaRepository.delete(tarea);
-}
-
-
 
     // 🔹 Métodos para horas estimadas
     public List<Tarea> listarPorHorasEstimadas(Double horas) {
@@ -79,6 +77,37 @@ public void eliminarTarea(Long id) {
 
     public List<Tarea> obtenerTareasPorUsuarioId(Long usuarioId) {
         return tareaRepository.findByUsuario_Id(usuarioId);
+    }
+
+    public void validarDependenciasCirculares(Long tareaId, List<Long> dependenciasIds) {
+    if (dependenciasIds == null || dependenciasIds.isEmpty())
+        return;
+
+    for (Long depId : dependenciasIds) {
+        if (depId.equals(tareaId)) {
+            System.out.println("⚠️ VALIDACIÓN: la tarea " + tareaId + " intenta depender de sí misma");
+            throw new IllegalArgumentException("Una tarea no puede depender de sí misma");
+        }
+
+        if (tieneDependenciaRecursiva(depId, tareaId)) {
+            System.out.println("⚠️ VALIDACIÓN: dependencia circular detectada entre " + tareaId + " y " + depId);
+            throw new IllegalArgumentException("Dependencia circular detectada entre tareas");
+        }
+    }
+}
+
+    private boolean tieneDependenciaRecursiva(Long idOrigen, Long idBuscado) {
+        Tarea tarea = tareaRepository.findById(idOrigen)
+                .orElse(null);
+        if (tarea == null || tarea.getDependencias().isEmpty())
+            return false;
+
+        for (Tarea dep : tarea.getDependencias()) {
+            if (dep.getIdTarea().equals(idBuscado) || tieneDependenciaRecursiva(dep.getIdTarea(), idBuscado)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
