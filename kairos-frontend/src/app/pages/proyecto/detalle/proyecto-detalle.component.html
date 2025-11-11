@@ -1,7 +1,7 @@
 <div class="container my-5" *ngIf="proyecto; else loading">
   <div class="d-flex align-items-center justify-content-between bg-white p-3 rounded shadow-sm mb-4">
   <div class="d-flex align-items-center gap-3">
-    <img [src]="proyecto.logo" class="rounded" width="48" height="48">
+    <img [src]="proyecto.logo || 'UNPA-UARG.png'" class="rounded" width="48" height="48">
     <div>
       <h4 class="mb-0">{{ proyecto.nombre }}
         <small class="text-muted">{{ proyecto.equipo }}</small>
@@ -137,12 +137,14 @@
         <h5 class="modal-title">Editar Proyecto</h5>
         <button type="button" class="btn-close" (click)="cerrarModalEditar()"></button>
       </div>
+
       <form (ngSubmit)="actualizarProyecto()">
         <div class="modal-body">
           <div *ngIf="errorMensaje" class="alert alert-danger" role="alert">
             {{ errorMensaje }}
           </div>
 
+          <!-- NOMBRE Y EQUIPO -->
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Nombre del Proyecto *</label>
@@ -151,9 +153,18 @@
                 class="form-control"
                 [(ngModel)]="proyectoEdit.nombre"
                 name="nombre"
+                [class.is-invalid]="validarNombre()"
+                maxlength="20"
                 required
               >
+              <div class="invalid-feedback" *ngIf="validarNombre()">
+                {{ validarNombre() }}
+              </div>
+              <small class="text-muted">
+                {{ proyectoEdit.nombre?.length || 0 }} / {{ maxNombre }}
+              </small>
             </div>
+
             <div class="col-md-6">
               <label class="form-label">Equipo *</label>
               <input
@@ -161,11 +172,20 @@
                 class="form-control"
                 [(ngModel)]="proyectoEdit.equipo"
                 name="equipo"
+                [class.is-invalid]="validarEquipo()"
+                maxlength="20"
                 required
               >
+              <div class="invalid-feedback" *ngIf="validarEquipo()">
+                {{ validarEquipo() }}
+              </div>
+              <small class="text-muted">
+                {{ proyectoEdit.equipo?.length || 0 }} / {{ maxEquipo }}
+              </small>
             </div>
           </div>
 
+          <!-- DESCRIPCIÓN -->
           <div class="mb-3 mt-3">
             <label class="form-label">Descripción</label>
             <textarea
@@ -173,9 +193,18 @@
               [(ngModel)]="proyectoEdit.descripcion"
               name="descripcion"
               rows="3"
+              [class.is-invalid]="validarDescripcion()"
+              maxlength="140"
             ></textarea>
+            <div class="invalid-feedback" *ngIf="validarDescripcion()">
+              {{ validarDescripcion() }}
+            </div>
+            <small class="text-muted">
+              {{ proyectoEdit.descripcion?.length || 0 }} / {{ maxDescripcion }}
+            </small>
           </div>
 
+          <!-- FECHA Y ESTADO -->
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Fecha de Inicio</label>
@@ -184,8 +213,14 @@
                 class="form-control"
                 [(ngModel)]="proyectoEdit.fechaInicio"
                 name="fechaInicio"
+                [class.is-invalid]="validarFecha()"
+                [min]="anioActual + '01-01-'"
               >
+              <div class="invalid-feedback" *ngIf="validarFecha()">
+                {{ validarFecha() }}
+              </div>
             </div>
+
             <div class="col-md-6">
               <label class="form-label">Estado</label>
               <select class="form-select" [(ngModel)]="proyectoEdit.estado" name="estado">
@@ -197,9 +232,15 @@
             </div>
           </div>
 
+          <!-- LOGO -->
           <div class="mb-3 mt-3">
-            <label class="form-label">Logo del Proyecto</label>
-            <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
+            <label class="form-label">Logo del Proyecto (máx. 2MB)</label>
+            <input
+              type="file"
+              class="form-control"
+              (change)="onFileSelected($event)"
+              accept="image/*"
+            >
             <div *ngIf="proyectoEdit.logo" class="mt-2 text-center">
               <img [src]="proyectoEdit.logo" class="img-thumbnail" style="max-height: 100px;">
             </div>

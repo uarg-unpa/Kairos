@@ -45,20 +45,37 @@
 
   <!--proyectos-->
   <div class="row g-4">
-    <div class="col-md-3" *ngFor="let p of proyectos">
-      <a [routerLink]="['/proyecto', p.idProyecto]" class="text-decoration-none">
-        <div class="card project-card border">
-          <div class="project-preview d-flex align-items-center justify-content-center">
-            <img [src]="p.logo || 'Kairos Logo.png'" width="60" height="60" alt="">
+    <div class="col-md-3 mb-4" *ngFor="let p of proyectos">
+      <a [routerLink]="['/proyecto', p.idProyecto]" class="text-decoration-none d-block h-100">
+        <div class="card project-card border-0 shadow-sm h-100">
+          
+          <!-- LOGO -->
+          <div class="project-preview d-flex align-items-center justify-content-center p-3">
+            <img 
+              [src]="p.logo || 'UNPA-UARG.png'" 
+              width="70" 
+              height="70" 
+              [alt]="p.nombre"
+              class="img-fluid"
+              style="object-fit: contain;"
+            >
           </div>
+
+          <!-- CONTENIDO -->
           <div class="card-body">
-            <h5 class="card-title mb-1">{{ p.nombre }}</h5>
-            <h6 class="text-muted">{{ p.equipo }}</h6>
-            <p class="card-text small text-muted">{{ p.descripcion }}</p>
-            <div class="d-flex justify-content-between align-items-center">
-                  <span [class]="'badge ' + getEstadoClass(p.estado)">{{ p.estado }}</span>
-                  <small class="text-muted">{{ p.fechaCreacion }}</small>
-                </div>
+            <h5 class="card-title">{{ p.nombre }}</h5>
+            <h6 class="text-muted mb-2">{{ p.equipo }}</h6>
+            <p class="card-text">{{ p.descripcion }}</p>
+
+            <!-- FOOTER -->
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span [class]="'badge rounded-pill ' + getEstadoClass(p.estado)">
+                {{ p.estado }}
+              </span>
+              <small class="text-muted">
+                {{ p.fechaCreacion | date:'dd-MM-yyyy' }}
+              </small>
+            </div>
           </div>
         </div>
       </a>
@@ -78,12 +95,15 @@
         <h5 class="modal-title">Crear Nuevo Proyecto</h5>
         <button type="button" class="btn-close" (click)="cerrarModal()"></button>
       </div>
+
+      <!-- FORMULARIO -->
       <form (ngSubmit)="crearProyecto()">
         <div class="modal-body">
           <div *ngIf="errorMensaje" class="alert alert-danger" role="alert">
             {{ errorMensaje }}
           </div>
-          <!-- formulario -->
+
+          <!-- NOMBRE Y EQUIPO -->
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Nombre del Proyecto *</label>
@@ -92,9 +112,18 @@
                 class="form-control"
                 [(ngModel)]="nuevoProyecto.nombre"
                 name="nombre"
+                [class.is-invalid]="validarNombre()"
+                maxlength="20"
                 required
               >
+              <div class="invalid-feedback" *ngIf="validarNombre()">
+                {{ validarNombre() }}
+              </div>
+              <small class="text-muted">
+                {{ nuevoProyecto.nombre.length }} / {{ maxNombre }}
+              </small>
             </div>
+
             <div class="col-md-6">
               <label class="form-label">Equipo *</label>
               <input
@@ -102,11 +131,20 @@
                 class="form-control"
                 [(ngModel)]="nuevoProyecto.equipo"
                 name="equipo"
+                [class.is-invalid]="validarEquipo()"
+                maxlength="20"
                 required
               >
+              <div class="invalid-feedback" *ngIf="validarEquipo()">
+                {{ validarEquipo() }}
+              </div>
+              <small class="text-muted">
+                {{ nuevoProyecto.equipo.length }} / {{ maxEquipo }}
+              </small>
             </div>
           </div>
 
+          <!-- DESCRIPCIÓN -->
           <div class="mb-3 mt-3">
             <label class="form-label">Descripción</label>
             <textarea
@@ -114,9 +152,18 @@
               [(ngModel)]="nuevoProyecto.descripcion"
               name="descripcion"
               rows="3"
+              [class.is-invalid]="validarDescripcion()"
+              maxlength="140"
             ></textarea>
+            <div class="invalid-feedback" *ngIf="validarDescripcion()">
+              {{ validarDescripcion() }}
+            </div>
+            <small class="text-muted">
+              {{ nuevoProyecto.descripcion.length }} / {{ maxDescripcion }}
+            </small>
           </div>
 
+          <!-- FECHA Y LÍDER -->
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Fecha de Inicio</label>
@@ -125,8 +172,14 @@
                 class="form-control"
                 [(ngModel)]="nuevoProyecto.fechaInicio"
                 name="fechaInicio"
+                [class.is-invalid]="validarFecha()"
+                [min]="hoyISO"
               >
+              <div class="invalid-feedback" *ngIf="validarFecha()">
+                {{ validarFecha() }}
+              </div>
             </div>
+
             <div class="col-md-6">
               <label class="form-label">Líder del Proyecto *</label>
               <select
@@ -143,8 +196,9 @@
             </div>
           </div>
 
+          <!-- LOGO -->
           <div class="mb-3 mt-3">
-            <label class="form-label">Logo del Proyecto</label>
+            <label class="form-label">Logo del Proyecto (máx. 2MB)</label>
             <input
               type="file"
               class="form-control"
@@ -156,11 +210,15 @@
             </div>
           </div>
         </div>
+        <!-- CIERRA modal-body -->
+
+        <!-- BOTONES -->
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
           <button type="submit" class="btn btn-success">Crear Proyecto</button>
         </div>
       </form>
+      <!-- CIERRA form -->
     </div>
   </div>
 </div>
