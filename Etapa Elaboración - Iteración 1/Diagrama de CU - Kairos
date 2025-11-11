@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0" version="28.2.8" pages="9">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0" version="28.2.9" pages="9">
   <diagram name="Diagrama de Casos de Uso" id="wDqG7o4cyL8eWiVpJwFh">
     <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="0" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -22,7 +22,7 @@
         <mxCell id="oAPAb9H4p4rU7i-ehNY--6" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;CU01: Iniciar&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;sesión&lt;/font&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="470" y="160" width="170" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="aOznLJDHFNNtGrVLaBDj-4" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU##: Gestionar&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;proyectos&lt;/font&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="aOznLJDHFNNtGrVLaBDj-4" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU##: Gestionar&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;proyectos&lt;/font&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
           <mxGeometry x="410" y="430" width="160" height="80" as="geometry" />
         </mxCell>
         <mxCell id="aOznLJDHFNNtGrVLaBDj-5" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="oAPAb9H4p4rU7i-ehNY--1" target="aOznLJDHFNNtGrVLaBDj-4">
@@ -31,7 +31,7 @@
             <mxPoint x="200" y="210" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="rrayJbxr1qQ-jcvaUbOW-2" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU21: Registrar tiempo manual&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+        <mxCell id="rrayJbxr1qQ-jcvaUbOW-2" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU21: Registrar tiempo manual&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="316.5" y="60" width="163.5" height="80" as="geometry" />
         </mxCell>
         <mxCell id="rrayJbxr1qQ-jcvaUbOW-4" value="&lt;font style=&quot;font-size: 19px;&quot;&gt;CU22: Ver&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 19px;&quot;&gt;reporte&lt;/font&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
@@ -117,7 +117,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0sKCnPxqZJJ758ltEupo-17" value="&lt;span id=&quot;docs-internal-guid-7cf6eaa7-7fff-4be0-0376-15e443f0c31c&quot;&gt;&lt;span style=&quot;background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;&lt;font face=&quot;Helvetica&quot; style=&quot;color: rgb(0, 0, 0); font-size: 18px;&quot;&gt;CU##: Gestionar tareas&lt;/font&gt;&lt;/span&gt;&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+        <mxCell id="0sKCnPxqZJJ758ltEupo-17" value="&lt;span id=&quot;docs-internal-guid-7cf6eaa7-7fff-4be0-0376-15e443f0c31c&quot;&gt;&lt;span style=&quot;background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;&lt;font face=&quot;Helvetica&quot; style=&quot;color: rgb(0, 0, 0); font-size: 18px;&quot;&gt;CU##: Gestionar tareas&lt;/font&gt;&lt;/span&gt;&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="150" y="290" width="120" height="90" as="geometry" />
         </mxCell>
         <mxCell id="wV4zqd-Mi2lm-lXPiVaO-1" value="&lt;span style=&quot;background-color: rgb(255, 255, 0);&quot;&gt;&lt;b style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Administrador&lt;/font&gt;&lt;/b&gt;&lt;/span&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
@@ -150,7 +150,7 @@
             <mxPoint x="330.00000000000136" y="15" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="Z-Lus_f7oWDaNLMH4I5f-3" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU07: Crear etapa&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+        <mxCell id="Z-Lus_f7oWDaNLMH4I5f-3" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU07: Crear etapa&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="400" y="350" width="140" height="70" as="geometry" />
         </mxCell>
         <mxCell id="Z-Lus_f7oWDaNLMH4I5f-4" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" target="Z-Lus_f7oWDaNLMH4I5f-3">
@@ -158,13 +158,13 @@
             <mxPoint x="30" y="450" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="Z-Lus_f7oWDaNLMH4I5f-5" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU08: Crear&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;iteración&lt;/font&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+        <mxCell id="Z-Lus_f7oWDaNLMH4I5f-5" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU08: Crear&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;iteración&lt;/font&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="370" y="520" width="136" height="60" as="geometry" />
         </mxCell>
         <mxCell id="Z-Lus_f7oWDaNLMH4I5f-6" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="oAPAb9H4p4rU7i-ehNY--1" target="Z-Lus_f7oWDaNLMH4I5f-5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="qPdtSYOkimsWm99lmadO-1" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU04: Modificar&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;perfil&lt;/font&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="qPdtSYOkimsWm99lmadO-1" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU04: Modificar&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;perfil&lt;/font&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
           <mxGeometry x="335" y="-15" width="145" height="70" as="geometry" />
         </mxCell>
       </root>
@@ -205,7 +205,7 @@
         <mxCell id="PWh4vzpNQeeZBqMWBRC--9" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU21: Registrar tiempo manual&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="PWh4vzpNQeeZBqMWBRC--1">
           <mxGeometry x="316.5" y="60" width="163.5" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="PWh4vzpNQeeZBqMWBRC--10" value="&lt;font style=&quot;font-size: 19px;&quot;&gt;CU22: Ver&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 19px;&quot;&gt;reporte&lt;/font&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="PWh4vzpNQeeZBqMWBRC--1">
+        <mxCell id="PWh4vzpNQeeZBqMWBRC--10" value="&lt;font style=&quot;font-size: 19px;&quot;&gt;CU22: Ver&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 19px;&quot;&gt;reporte&lt;/font&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="PWh4vzpNQeeZBqMWBRC--1">
           <mxGeometry x="210" y="550" width="140" height="80" as="geometry" />
         </mxCell>
         <mxCell id="PWh4vzpNQeeZBqMWBRC--11" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU02: Exportar información&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="PWh4vzpNQeeZBqMWBRC--1">
@@ -321,7 +321,7 @@
             <mxPoint x="330.00000000000136" y="15" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="PWh4vzpNQeeZBqMWBRC--30" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU07: Crear etapa&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="PWh4vzpNQeeZBqMWBRC--1">
+        <mxCell id="PWh4vzpNQeeZBqMWBRC--30" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CU07: Crear etapa&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="PWh4vzpNQeeZBqMWBRC--1">
           <mxGeometry x="400" y="350" width="140" height="70" as="geometry" />
         </mxCell>
         <mxCell id="PWh4vzpNQeeZBqMWBRC--31" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="PWh4vzpNQeeZBqMWBRC--1" target="PWh4vzpNQeeZBqMWBRC--30">
