@@ -1,0 +1,14 @@
+-------------------------------------------------------------------------------
+Test set: com.nextech.kairos.service.TareaServiceTest
+-------------------------------------------------------------------------------
+Tests run: 9, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.081 s <<< FAILURE! -- in com.nextech.kairos.service.TareaServiceTest
+com.nextech.kairos.service.TareaServiceTest.eliminarTarea_callsDeleteById -- Time elapsed: 0.001 s <<< ERROR!
+java.lang.IllegalArgumentException: Tarea con ID 3 no encontrada.
+	at com.nextech.kairos.service.TareaService.lambda$eliminarTarea$0(TareaService.java:39)
+	at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+	at com.nextech.kairos.service.TareaService.eliminarTarea(TareaService.java:39)
+	at com.nextech.kairos.service.TareaServiceTest.eliminarTarea_callsDeleteById(TareaServiceTest.java:83)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+

@@ -15,6 +15,7 @@ import { Comentario } from '../../models/comentario.model';
 
 declare var bootstrap: any;
 
+
 @Component({
   selector: 'app-planificacion',
   templateUrl: './planificacion.component.html',
@@ -23,6 +24,7 @@ declare var bootstrap: any;
   imports: [CommonModule, FormsModule]
 })
 export class PlanificacionComponent implements OnInit {
+  
   // -----------------------
   // Modal bootstrap
   // -----------------------
@@ -82,13 +84,16 @@ export class PlanificacionComponent implements OnInit {
 
     // -----------------------
   // Objeto para crear/editar categorias desde el modal
+  categoriaEnEdicion: CategoriaDTO | null = null;
+  categoriaEdicion: boolean = false;
+
   // -----------------------
   nuevaCategoria: any = {
     nombre: '',
     descripcion: '',
     idProyecto: 1,
   }
-  // -----------------------
+    // -----------------------
   // Filtros para la vista
   // -----------------------
   filtroCategoria: string = 'Todas';
@@ -107,12 +112,14 @@ export class PlanificacionComponent implements OnInit {
     private usuariosService: UsuariosService,
     private iteracionService: IteracionService,
     private comentarioService: ComentarioService
+    
   ) {
     // sincroniza la lista de usuarios cada vez que cambia el servicio
     effect(() => {
       this.usuarios = this.usuariosService.usuarios();
       console.log('Usuarios actualizados:', this.usuarios);
     });
+  
   }
 
   /**
@@ -148,7 +155,7 @@ export class PlanificacionComponent implements OnInit {
 
   }
 
-  // -----------------------
+  // -----------------------p
   // Metodos de paginación 
   // -----------------------
 
@@ -323,6 +330,26 @@ eliminarCategoria(categoriaId: number): void {
     },
     error: (err) => console.error('Error al eliminar tarea:', err)
   })
+}
+
+editarCategoria(cat: any): void {
+  this.categoriaEdicion = true;
+  this.nuevaCategoria.nombre = cat.nombre;
+  if(!confirm('¿Estás seguro que quieres editar esta categoría?')) return;
+
+  const categoriaBackend = {
+    nombre: this.nuevaCategoria.nombre,
+    descripcion: this.nuevaCategoria.descripcion,
+    idProyecto: 1,
+  }
+  this.categoriaService.updateCategoria(this.categoriaEnEdicion?.idCategoria!, categoriaBackend).subscribe({
+    next: () => {
+      this.cargarCategorias();
+      console.log('Categoría editada');
+    },
+    error: (err) => console.error('Error al editar categoría:', err)
+  })
+
 }
 
   // -----------------------
