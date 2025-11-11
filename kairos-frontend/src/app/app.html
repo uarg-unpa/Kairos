@@ -22,23 +22,23 @@
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'planificacion']" routerLinkActive="active"><span class="bi bi-calendar4-week"></span> Planificación</a>
                 </li>
                 
-                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
+                <li class="nav-item" *ngIf="('Líder' === rolEnProyecto || 'Miembro' === rolEnProyecto) && esRutaProyecto()">
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'etapas']" routerLinkActive="active"><span class="bi bi-diagram-2"></span> Etapas</a>
                 </li>
-                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
+                <li class="nav-item" *ngIf="('Líder' === rolEnProyecto || 'Miembro' === rolEnProyecto) && esRutaProyecto()">
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'iteraciones']" routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a> 
                 </li>
                 
-                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
+                <li class="nav-item" *ngIf="('Líder' === rolEnProyecto || 'Miembro' === rolEnProyecto) && esRutaProyecto()">
                     <a class="nav-link" routerLink="/workspace" routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a> 
                 </li>
-                <li class="nav-item" *ngIf="esAdmin()">
+                <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
                     <a class="nav-link" routerLink="/usuarios">Usuarios</a>
                 </li>
-                <li class="nav-item" *ngIf="esAdmin()">
+                <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
                     <a class="nav-link" routerLink="/roles" routerLinkActive="active"><span class="bi bi-people"></span> Roles</a>
                 </li>
-                <li class="nav-item" *ngIf="esAdmin()">
+                <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
                     <a class="nav-link" routerLink="/permisos" routerLinkActive="active"><span class="bi bi-key"></span> Permisos</a>
                 </li>
 

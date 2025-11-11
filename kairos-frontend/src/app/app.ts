@@ -4,6 +4,8 @@ import { AuthService } from './services/auth.service';
 import { GlobalTimerComponent } from './components/global-timer/global-timer.component';
 import { CommonModule } from '@angular/common';
 import { LoadingService } from './services/loading.service';
+import { Proyecto } from '././models/proyecto.model';
+
 
 
 @Component({
@@ -15,10 +17,9 @@ import { LoadingService } from './services/loading.service';
 })
 export class AppComponent implements OnInit {
   title = 'Kairos Frontend'; 
-
-  readonly ROL_ADMIN = 'ADMINISTRADOR';
-  readonly ROL_LIDER = 'LIDER';
-  readonly ROL_MIEMBRO = 'MIEMBRO';
+  proyecto: Proyecto | null = null;
+  usuarioId: number | null = null;
+  rolEnProyecto: 'Admin' | 'Líder' | 'Miembro' = 'Miembro';
   proyectoId: number | null = null;
   loadingService = inject(LoadingService);
   
@@ -54,6 +55,25 @@ export class AppComponent implements OnInit {
     const url = this.router.url;
     const match = url.match(/\/proyecto\/(\d+)/);
     this.proyectoId = match ? +match[1] : null;
+  }
+  private determinarRolEnProyecto(): void {
+    if (!this.proyecto || !this.usuarioId) {
+      this.rolEnProyecto = 'Miembro';
+      return;
+    }
+
+    // 1. ¿Es admin global?
+    if (this.auth.esAdmin()) {
+      this.rolEnProyecto = 'Admin';
+      return;
+    }
+
+    // 2. ¿Es líder del proyecto?
+    const esLider = this.proyecto.usuariosProyecto?.some(up =>
+      up.idUsuario === this.usuarioId && up.rolProyecto === 'Líder'
+    ) || false;
+
+    this.rolEnProyecto = esLider ? 'Líder' : 'Miembro';
   }
 
   esAdmin(): boolean {
