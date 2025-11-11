@@ -152,7 +152,11 @@ public class ProyectoService implements IProyectoService {
     }
     public boolean existsByNombre(String nombre) {
     return proyectoRepository.existsByNombre(nombre);
-}
+    }
+
+    public Optional<Proyecto> findByIdWithUsuarios(Long id) {
+        return proyectoRepository.findByIdWithUsuarios(id);
+    }
     /**
      * Buscar proyectos
      */

@@ -60,6 +60,7 @@ Constants.java
 *.tgz
 *.zip
 
+/target/
 kairos/target/
 .vscode/
 .mvn/

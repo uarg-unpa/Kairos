@@ -28,6 +28,9 @@ export class ProyectoService {
       headers: this.getHeaders()
     });
   }
+  getProyectoById(id: number): Observable<Proyecto> {
+    return this.http.get<Proyecto>(`${this.baseUrl}/${id}`, { headers: this.getHeaders() });
+  }
 
   // Mis proyectos (para miembro)
   getMisProyectos(): Observable<Proyecto[]> {
@@ -43,4 +46,8 @@ export class ProyectoService {
   getProyectosLiderados(): Observable<Proyecto[]> {
     return this.http.get<Proyecto[]>(`${this.baseUrl}/liderados`);
   }
+
+  actualizarProyecto(id: number, datos: any): Observable<Proyecto> {
+  return this.http.put<Proyecto>(`${this.baseUrl}/${id}`, datos, { headers: this.getHeaders() });
+}
 }

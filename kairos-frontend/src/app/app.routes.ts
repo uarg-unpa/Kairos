@@ -16,6 +16,10 @@ import { InicioComponent } from './pages/inicio/inicio.component';
 import { ProyectoDetalleComponent } from './pages/proyecto/detalle/proyecto-detalle.component';
 import { EtapasComponent } from './pages/etapas/etapas';
 import { IteracionesComponent } from './pages/iteraciones/iteraciones';
+import { RolVerComponent } from './pages/roles/rol-ver';
+import { RolModificarComponent } from './pages/roles/rol-modificar';
+// import { PermisoVerComponent } from './pages/roles/permiso-ver';
+
 
 export const routes: Routes = [
   {
@@ -31,17 +35,42 @@ export const routes: Routes = [
   { path: 'roles', component: RolesComponent, canActivate: [authGuard] },
   { path: 'permisos', component: PermisosComponent, canActivate: [authGuard] },
   { path: 'roles/crear', component: RolFormComponent, canActivate: [authGuard] },
+  { path: 'rol/ver/:id', component: RolVerComponent, canActivate: [authGuard] },
+  { path: 'rol/modificar/:id', component: RolModificarComponent, canActivate: [authGuard] },
   { path: 'permisos/crear', component: PermisoFormComponent, canActivate: [authGuard] },
+  { path: 'permiso/ver/:id', component: PermisosComponent, canActivate: [authGuard] },
+  { path: 'permiso/modificar/:id', component: PermisosComponent, canActivate: [authGuard] },
   { path: 'usuario/ver/:id', component: UsuarioVerComponent, canActivate: [authGuard] },
   { path: 'usuario/modificar/:id', component: UsuarioModificarComponent, canActivate: [authGuard] },
   { path: 'usuario/crear', component: UsuarioCrearComponent, canActivate: [authGuard] },
   { path: 'salir', component: SalirComponent },
-  {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
   {path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard] },
   { path: 'proyecto/:id', component: ProyectoDetalleComponent, canActivate: [authGuard] },
-  { path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard] },
-  { path: 'etapas', component: EtapasComponent, canActivate: [authGuard] },
-  { path: 'iteraciones/:etapa', component: IteracionesComponent, canActivate: [authGuard] },
+  // SUBRUTAS DEL PROYECTO
+  { 
+    path: 'proyecto/:id/planificacion', 
+    component: PlanificacionComponent, 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'proyecto/:id/etapas', 
+    component: EtapasComponent, 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'proyecto/:id/workspace', 
+    component: WorkspaceTimerComponent, 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'proyecto/:id/iteraciones/:etapa', 
+    component: IteracionesComponent, 
+    canActivate: [authGuard] 
+  },
+  // { path: 'proyecto/:id/planificacion', component: PlanificacionComponent, canActivate: [authGuard] },
+  // {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
+  // { path: 'etapas', component: EtapasComponent, canActivate: [authGuard] },
+  // { path: 'iteraciones/:etapa', component: IteracionesComponent, canActivate: [authGuard] },
   { path: 'iteraciones/etapa/:id', component: IteracionesComponent, canActivate: [authGuard] },
   { path: 'iteraciones', component: IteracionesComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' } // mantener este siempre al final

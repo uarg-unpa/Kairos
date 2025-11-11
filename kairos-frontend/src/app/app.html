@@ -19,14 +19,14 @@
                 </li>
                 
                 <li class="nav-item" *ngIf="esRutaProyecto()">
-                    <a class="nav-link" routerLink="/planificacion" routerLinkActive="active"><span class="bi bi-calendar4-week"></span> Planificación</a>
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'planificacion']" routerLinkActive="active"><span class="bi bi-calendar4-week"></span> Planificación</a>
                 </li>
                 
                 <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
-                    <a class="nav-link" routerLink="/etapas" routerLinkActive="active"><span class="bi bi-diagram-2"></span> Etapas</a>
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'etapas']" routerLinkActive="active"><span class="bi bi-diagram-2"></span> Etapas</a>
                 </li>
                 <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
-                    <a class="nav-link" routerLink="/iteraciones" routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a> 
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'iteraciones']" routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a> 
                 </li>
                 
                 <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">

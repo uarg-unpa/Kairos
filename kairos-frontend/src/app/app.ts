@@ -18,6 +18,7 @@ export class AppComponent implements OnInit {
   readonly ROL_ADMIN = 'ADMINISTRADOR';
   readonly ROL_LIDER = 'LIDER';
   readonly ROL_MIEMBRO = 'MIEMBRO';
+  proyectoId: number | null = null;
   // 2. Inyectar el Router en el constructor
   constructor(public router: Router, private auth: AuthService) {}
 
@@ -43,7 +44,17 @@ export class AppComponent implements OnInit {
             this.rolUsuario = null;
         }
     });
+    this.router.events.subscribe(() => {
+      this.actualizarProyectoId();
+    });
+    this.actualizarProyectoId();
   }
+  private actualizarProyectoId(): void {
+    const url = this.router.url;
+    const match = url.match(/\/proyecto\/(\d+)/);
+    this.proyectoId = match ? +match[1] : null;
+  }
+  
 
   // 3. Implementar la función de logout
   logout(): void {

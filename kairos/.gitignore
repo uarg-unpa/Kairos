@@ -62,7 +62,6 @@ Constants.java
 
 kairos-frontend/
 .vscode/
-src/
 .mvn/
 .mvn/wrapper/
 /target/

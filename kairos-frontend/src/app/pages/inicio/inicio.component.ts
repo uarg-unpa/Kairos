@@ -29,6 +29,11 @@ export class InicioComponent implements OnInit {
   usuarios: any[] = [];
   liderId: number | null = null;
   errorMensaje: string | null = null;
+// validaciones
+  maxNombre = 20;
+  maxEquipo = 20;
+  maxDescripcion = 140;
+  maxImagenMB = 2;
 
 
   // Formulario
@@ -71,20 +76,36 @@ export class InicioComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: ProgressEvent<FileReader>) => this.nuevoProyecto.logo = e.target?.result ?? null;
-      reader.readAsDataURL(file);
-    }
+  onFileSelected(event: any): void {
+  const file = event.target.files[0];
+  const error = this.validarImagen(file);
+  if (error) {
+    this.errorMensaje = error;
+    event.target.value = '';
+    return;
   }
 
-  crearProyecto() {
-  this.errorMensaje = null; // limpia errores previos
+  const reader = new FileReader();
+  reader.onload = (e: any) => {
+    this.nuevoProyecto.logo = e.target.result;
+    this.errorMensaje = null;
+  };
+  reader.readAsDataURL(file);
+}
 
-  if (!this.nuevoProyecto.nombre?.trim() || !this.nuevoProyecto.equipo?.trim() || !this.liderId) {
-    this.errorMensaje = 'Completa nombre, equipo y líder';
+  crearProyecto(): void {
+  this.errorMensaje = null;
+
+  const errores = [
+    this.validarNombre(),
+    this.validarEquipo(),
+    this.validarDescripcion(),
+    this.validarFecha(),
+    this.liderId ? null : 'Selecciona un líder'
+  ].filter(e => e);
+
+  if (errores.length > 0) {
+    this.errorMensaje = errores[0];
     return;
   }
 
@@ -92,22 +113,24 @@ export class InicioComponent implements OnInit {
     nombre: this.nuevoProyecto.nombre.trim(),
     equipo: this.nuevoProyecto.equipo.trim(),
     descripcion: this.nuevoProyecto.descripcion,
-    fechaInicio: this.nuevoProyecto.fechaInicio || null,
-    logo: this.nuevoProyecto.logo,
-    liderId: this.liderId
+    fechaInicio: this.nuevoProyecto.fechaInicio,
+    liderId: this.liderId!,
+    logo: this.nuevoProyecto.logo
   };
 
   this.proyectoService.crearProyecto(payload).subscribe({
-    next: () => {
-      alert('Proyecto creado con éxito');
+    next: (nuevo) => {
+      this.proyectos.push(nuevo);
       this.cerrarModal();
-      this.cargarProyectos();
+      alert('Proyecto creado');
     },
     error: (err) => {
-      this.errorMensaje = err.error?.error || 'Error al crear el proyecto';
-      console.error('Error:', err);
+      this.errorMensaje = err.error?.error || 'Error al crear';
     }
   });
+}
+get hoyISO(): string {
+  return new Date().toISOString().split('T')[0];
 }
 
   private cargarUsuarioYProyectos(): void {
@@ -122,7 +145,6 @@ export class InicioComponent implements OnInit {
   }
 
   private determinarRol(): void {
-      console.log(this.usuario.isAdmin);
     if (this.usuario.admin) {
       this.rolPrincipal = 'Administrador';
     } else if (this.usuario.roles?.includes('Líder')) {
@@ -136,7 +158,6 @@ export class InicioComponent implements OnInit {
   this.proyectoService.getMisProyectos().subscribe({
     next: (proyectos) => {
       this.proyectos = proyectos;
-      console.log('Proyectos cargados:', proyectos);
       this.calcularStats();
     },
     error: (err) => {
@@ -155,7 +176,58 @@ private calcularStats(): void {
     const e = estado.toLowerCase();
     if (e.includes('progreso')) return 'text-dark bg-warning bg-opacity-25';
     if (e.includes('completado')) return 'bg-success text-white';
-    if (e.includes('pendiente')) return 'bg-secondary text-white';
+    if (e.includes('pausado')) return 'bg-secondary text-white';
+    if (e.includes('cancelado')) return 'bg-danger text-white';
     return 'bg-info text-white';
   }
+
+  // metodos de validaciones
+  validarNombre(): string | null {
+  if (!this.nuevoProyecto.nombre.trim()) return 'El nombre es obligatorio';
+  if (this.nuevoProyecto.nombre.length > this.maxNombre) 
+    return `Máximo ${this.maxNombre} caracteres`;
+  return null;
+}
+
+validarEquipo(): string | null {
+  if (!this.nuevoProyecto.equipo.trim()) return 'El equipo es obligatorio';
+  if (this.nuevoProyecto.equipo.length > this.maxEquipo) 
+    return `Máximo ${this.maxEquipo} caracteres`;
+  return null;
+}
+
+validarDescripcion(): string | null {
+  if (this.nuevoProyecto.descripcion.length > this.maxDescripcion) 
+    return `Máximo ${this.maxDescripcion} caracteres`;
+  return null;
+}
+  get anioActual(): number {
+    return new Date().getFullYear();
+  }
+
+  validarFecha(): string | null {
+    const fecha = this.nuevoProyecto?.fechaInicio;
+    if (!fecha) return null;
+
+    const match = fecha.match(/^(\d{4})-\d{2}-\d{2}$/);
+    if (!match) return 'Formato inválido';
+
+    const anio = parseInt(match[1], 10);
+    if (anio < this.anioActual) {
+      return `El año debe ser ${this.anioActual} o posterior`;
+    }
+    if (fecha < this.hoyISO) {
+      return 'La fecha debe ser posterior a hoy';
+    }
+    return null;
+  }
+  validarImagen(file: File): string | null {
+    if (!file) return null;
+    if (!file.type.startsWith('image/')) return 'Solo se permiten imágenes';
+    if (file.size > this.maxImagenMB * 1024 * 1024) 
+      return `Máximo ${this.maxImagenMB} MB`;
+    return null;
+  }
+
+
 }

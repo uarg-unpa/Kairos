@@ -1,10 +1,16 @@
 export interface Proyecto {
-  idProyecto?: number;
+  idProyecto: number;
   nombre: string;
   equipo: string;
   descripcion: string;
-  fechaInicio?: string; // opcional
+  fechaInicio?: string;
   fechaCreacion: string;
   estado: string;
-  logo?: string; // base64 o URL
+  logo?: string;
+  usuariosProyecto?: Array<{
+    idUsuario: number;
+    nombre: string;
+    email: string;
+    rolProyecto: string;
+  }>;
 }

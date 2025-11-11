@@ -60,9 +60,13 @@ export class AuthService {
     if (value) {
       if (value.admin === true) {
       value.rol = 'ADMINISTRADOR'; 
-    } else {
+    } else if (value.rol && value.rol.toUpperCase().includes('LIDER')) {
+      value.rol = 'LÍDER'; 
+    }
+    else {
       value.rol = 'MIEMBRO'; 
     }
+
       localStorage.setItem(this.storageUserKey, JSON.stringify(value));
     } else {
       localStorage.removeItem(this.storageUserKey);
