@@ -65,3 +65,4 @@ kairos-frontend/
 src/
 .mvn/
 .mvn/wrapper/
+/target/
