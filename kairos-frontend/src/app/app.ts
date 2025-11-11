@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
   proyectoId: number | null = null;
   loadingService = inject(LoadingService);
   
-  constructor(public router: Router, private auth: AuthService) {}
+  constructor(public router: Router, public auth: AuthService) {}
 
   ngOnInit(): void {
     this.auth.isLoggedIn$.subscribe(isLoggedIn => {

@@ -32,13 +32,13 @@
                 <li class="nav-item" *ngIf="('Líder' === rolEnProyecto || 'Miembro' === rolEnProyecto) && esRutaProyecto()">
                     <a class="nav-link" routerLink="/workspace" routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a> 
                 </li>
-                <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
+                <li class="nav-item" *ngIf="((auth.currentUser$ | async)?.admin) && !esRutaProyecto()">
                     <a class="nav-link" routerLink="/usuarios">Usuarios</a>
                 </li>
-                <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
+                <li class="nav-item" *ngIf="((auth.currentUser$ | async)?.admin) && !esRutaProyecto()">
                     <a class="nav-link" routerLink="/roles" routerLinkActive="active"><span class="bi bi-people"></span> Roles</a>
                 </li>
-                <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
+                <li class="nav-item" *ngIf="((auth.currentUser$ | async)?.admin) && !esRutaProyecto()">
                     <a class="nav-link" routerLink="/permisos" routerLinkActive="active"><span class="bi bi-key"></span> Permisos</a>
                 </li>
 

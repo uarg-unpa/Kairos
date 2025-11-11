@@ -101,7 +101,6 @@ export class AuthService {
   }
   
   esAdmin(): boolean {
-    console.log('Verificando si el usuario es admin:', this.usuario); 
     return this.usuario?.admin === true;
   }
 
