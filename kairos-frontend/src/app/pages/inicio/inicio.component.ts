@@ -145,7 +145,6 @@ get hoyISO(): string {
   }
 
   private determinarRol(): void {
-      console.log(this.usuario.isAdmin);
     if (this.usuario.admin) {
       this.rolPrincipal = 'Administrador';
     } else if (this.usuario.roles?.includes('Líder')) {
@@ -159,7 +158,6 @@ get hoyISO(): string {
   this.proyectoService.getMisProyectos().subscribe({
     next: (proyectos) => {
       this.proyectos = proyectos;
-      console.log('Proyectos cargados:', proyectos);
       this.calcularStats();
     },
     error: (err) => {
@@ -178,7 +176,8 @@ private calcularStats(): void {
     const e = estado.toLowerCase();
     if (e.includes('progreso')) return 'text-dark bg-warning bg-opacity-25';
     if (e.includes('completado')) return 'bg-success text-white';
-    if (e.includes('pendiente')) return 'bg-secondary text-white';
+    if (e.includes('pausado')) return 'bg-secondary text-white';
+    if (e.includes('cancelado')) return 'bg-danger text-white';
     return 'bg-info text-white';
   }
 
