@@ -81,7 +81,6 @@ actualizarProyecto(): void {
     estado: this.proyectoEdit.estado || 'En Progreso',
     logo: this.proyectoEdit.logo || null
   };
-  console.log('Payload enviado:', payload);
 
   this.proyectoService.actualizarProyecto(this.proyecto!.idProyecto, payload).subscribe({
     next: (actualizado) => {
@@ -98,7 +97,6 @@ actualizarProyecto(): void {
   private cargarRol(): void {
   this.authService.currentUser$.subscribe(user => {
     const rolRaw = user?.rol || 'Miembro';
-    console.log('ROL CRUDO:', rolRaw);
 
     // NORMALIZA: mayúsculas + sin acentos
     const rolNormalizado = rolRaw
@@ -113,8 +111,6 @@ actualizarProyecto(): void {
     } else {
       this.rol = 'Miembro';
     }
-
-    console.log('ROL NORMALIZADO:', this.rol);
   });
 }
   
