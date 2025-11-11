@@ -23,58 +23,152 @@
     </div>
   </div>
 
-  <div class="row g-4">
-    <div class="col-lg-8">
-      <div class="row g-4">
-        <div class="col-lg-6 col-md-12">
-          <div class="card rounded-2 shadow-sm">
-            <div class="card-header bg-white"><h5 class="mb-0">Horas por iteración</h5></div>
-            <div class="card-body"><canvas id="chartHorasIter" height="120"></canvas></div>
+  <!-- Alertas importantes -->
+  <div class="row mb-5 g-4 justify-content-between">
+
+    <div class="col-md-6">
+      <div class="bg-danger border-start border-5 border-warning shadow-lg p-4 rounded-4 d-flex justify-content-between align-items-center" style="min-height: 180px;">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-exclamation-triangle me-4 text-white fs-1"></i>
+          <div class="text-white fw-bold">
+            <h4 class="mb-2">Tareas atrasadas</h4>
+            <span class="fs-5">2 tareas con fecha atrasada</span>
           </div>
         </div>
-        <div class="col-lg-6 col-md-12">
-          <div class="card rounded-2 shadow-sm">
-            <div class="card-header bg-white"><h5 class="mb-0">Horas por miembro</h5></div>
-            <div class="card-body"><canvas id="chartHorasUser" height="120"></canvas></div>
-          </div>
-        </div>
-        <div class="col-lg-6 col-md-12">
-          <div class="card rounded-2 shadow-sm">
-            <div class="card-header bg-white"><h5 class="mb-0">Tareas por estado</h5></div>
-            <div class="card-body"><canvas id="chartTareasEstado" height="120"></canvas></div>
-          </div>
-        </div>
-        <div class="col-lg-6 col-md-12">
-          <div class="card rounded-2 shadow-sm">
-            <div class="card-header bg-white"><h5 class="mb-0">Tareas por miembro</h5></div>
-            <div class="card-body"><canvas id="chartTareasUser" height="120"></canvas></div>
-          </div>
-        </div>
+        <button class="btn btn-outline-light btn-lg">
+          <i class="bi bi-eye"></i> Ver tareas
+        </button>
       </div>
     </div>
-    <div class="col-lg-4">
+
+    <div class="col-md-6 d-flex justify-content-end">
+      <div class="bg-warning border-start border-5 border-danger shadow-lg p-4 rounded-4 d-flex justify-content-between align-items-center" style="min-height: 180px; width: 100%;">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-exclamation-lg me-4 text-danger fs-1"></i>
+          <div class="fw-bold text-dark">
+            <h4 class="mb-2">Próximos vencimientos</h4>
+            <span class="fs-5">3 tareas próximas a vencer</span>
+          </div>
+        </div>
+        <button class="btn btn-outline-danger btn-lg">
+          <i class="bi bi-calendar-event"></i> Ver fechas
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="row g-4">
+    <!-- Columna izquierda -->
+    <div class="col-lg-8 order-1">
+      <div class="row g-4">
+
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Horas por iteración</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i></button>
+                <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-download"></i></button>
+              </div>
+            </div>
+            <div class="card-body text-center text-muted">
+              <div style="height:200px; background:#f8f9fa; display:flex; align-items:center; justify-content:center;">
+                (Gráfico estático)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm" style="cursor: default;">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Horas por día y tareas</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i></button>
+                <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-download"></i></button>
+              </div>
+            </div>
+            <div class="card-body text-center text-muted">
+              <div style="height:200px; background:#f8f9fa; display:flex; align-items:center; justify-content:center;">
+                (Gráfico estático)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Tareas por miembro</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i></button>
+                <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-download"></i></button>
+              </div>
+            </div>
+            <div class="card-body text-center text-muted">
+              <canvas id="chartTareasUser" style="height:200px;"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Horas por fase</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i></button>
+                <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-download"></i></button>
+              </div>
+            </div>
+            <div class="card-body text-center text-muted">
+              <div style="height:200px; background:#f8f9fa; display:flex; align-items:center; justify-content:center;">
+                (Gráfico estático)
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Columna derecha -->
+    <div class="col-lg-4 order-2">
       <div class="row g-3">
+
         <div class="col-12">
-          <div class="card dashboard-card metric-card success text-center p-3">
-            <i class="bi bi-check-circle fs-1 mb-2 text-success"></i>
-            <div class="metric-value fs-3">{{ tareasCompletadas }} / {{ totalTareas }}</div>
-            <div class="text-muted">Completadas</div>
+          <div class="card dashboard-card metric-card success">
+            <div class="card-body text-center">
+              <i class="bi bi-check-circle fs-1 mb-3 text-success"></i>
+              <div class="metric-value fs-3">18 / 36</div>
+              <h6 class="mb-0">Completadas</h6>
+              <small class="text-muted">50% de progreso</small>
+            </div>
           </div>
         </div>
+
         <div class="col-12">
-          <div class="card dashboard-card metric-card warning text-center p-3">
-            <i class="bi bi-clock fs-1 mb-2 text-warning"></i>
-            <div class="metric-value fs-3">{{ totalHoras }} h</div>
-            <div class="text-muted">Horas registradas</div>
+          <div class="card dashboard-card metric-card warning">
+            <div class="card-body text-center">
+              <i class="bi bi-clock fs-1 mb-3 text-warning"></i>
+              <div class="metric-value fs-3">156</div>
+              <h6 class="mb-0">Horas Trabajadas</h6>
+              <small class="text-muted">Esta semana: 42h</small>
+            </div>
           </div>
         </div>
+
         <div class="col-12">
-          <div class="card dashboard-card metric-card danger text-center p-3">
-            <i class="bi bi-speedometer fs-1 mb-2 text-danger"></i>
-            <div class="metric-value fs-3">{{ eficiencia }}%</div>
-            <div class="text-muted">Eficiencia (estimado vs real)</div>
+          <div class="card dashboard-card metric-card danger">
+            <div class="card-body text-center">
+              <i class="bi bi-speedometer fs-1 mb-3 text-danger"></i>
+              <div class="metric-value fs-3">87%</div>
+              <h6 class="mb-0">Eficiencia</h6>
+              <small class="text-muted">Estimado vs Real</small>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
