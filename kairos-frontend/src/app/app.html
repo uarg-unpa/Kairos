@@ -32,13 +32,13 @@
                 <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
                     <a class="nav-link" routerLink="/workspace" routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a> 
                 </li>
-                <li class="nav-item" *ngIf="rolUsuario === ROL_ADMIN">
-                    <a class="nav-link" routerLink="/usuarios" routerLinkActive="active"><span class="bi bi-person"></span> Usuarios</a>
+                <li class="nav-item" *ngIf="esAdmin()">
+                    <a class="nav-link" routerLink="/usuarios">Usuarios</a>
                 </li>
-                <li class="nav-item" *ngIf="rolUsuario === ROL_ADMIN">
+                <li class="nav-item" *ngIf="esAdmin()">
                     <a class="nav-link" routerLink="/roles" routerLinkActive="active"><span class="bi bi-people"></span> Roles</a>
                 </li>
-                <li class="nav-item" *ngIf="rolUsuario === ROL_ADMIN">
+                <li class="nav-item" *ngIf="esAdmin()">
                     <a class="nav-link" routerLink="/permisos" routerLinkActive="active"><span class="bi bi-key"></span> Permisos</a>
                 </li>
 
@@ -82,5 +82,9 @@
     <div class="container">
     </div>
 </footer>
-
+<div class="loading-overlay" *ngIf="loadingService.loading$ | async">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
 <app-global-timer *ngIf="usuarioLogueado && router.url !== '/login'"></app-global-timer>

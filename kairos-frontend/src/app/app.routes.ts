@@ -18,6 +18,7 @@ import { EtapasComponent } from './pages/etapas/etapas';
 import { IteracionesComponent } from './pages/iteraciones/iteraciones';
 import { RolVerComponent } from './pages/roles/rol-ver';
 import { RolModificarComponent } from './pages/roles/rol-modificar';
+import { AdminGuard } from './guards/admin.guard';
 // import { PermisoVerComponent } from './pages/roles/permiso-ver';
 
 
@@ -31,7 +32,24 @@ export const routes: Routes = [
     ]
   },
   { path: 'login', component: LoginComponent },
-  { path: 'usuarios', component: UsuariosComponent, canActivate: [authGuard] },
+  {
+    path: 'usuarios',
+    component: UsuariosComponent,
+    canActivate: [AdminGuard],
+    data: { requiereAdmin: true }
+  },
+  {
+    path: 'admin',
+    canActivate: [AdminGuard],
+    data: { requiereAdmin: true },
+    children: [
+      { path: 'roles', component: RolesComponent },
+      { path: 'permisos', component: RolesComponent },
+      { path: 'rol', component: RolesComponent },
+
+      // { path: 'config', component: ConfigComponent },
+    ]
+  },
   { path: 'roles', component: RolesComponent, canActivate: [authGuard] },
   { path: 'permisos', component: PermisosComponent, canActivate: [authGuard] },
   { path: 'roles/crear', component: RolFormComponent, canActivate: [authGuard] },
