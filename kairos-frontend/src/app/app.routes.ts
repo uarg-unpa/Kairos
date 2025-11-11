@@ -16,6 +16,7 @@ import { InicioComponent } from './pages/inicio/inicio.component';
 import { ProyectoDetalleComponent } from './pages/proyecto/detalle/proyecto-detalle.component';
 import { EtapasComponent } from './pages/etapas/etapas';
 import { IteracionesComponent } from './pages/iteraciones/iteraciones';
+import { DashboardComponent } from './pages/dashboard/dashboard';
 
 export const routes: Routes = [
   {
@@ -60,5 +61,6 @@ export const routes: Routes = [
   { path: 'iteraciones/:etapa', component: IteracionesComponent, canActivate: [authGuard] },
   { path: 'iteraciones/etapa/:id', component: IteracionesComponent, canActivate: [authGuard] },
   { path: 'iteraciones', component: IteracionesComponent, canActivate: [authGuard] },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' } // mantener este siempre al final
 ];

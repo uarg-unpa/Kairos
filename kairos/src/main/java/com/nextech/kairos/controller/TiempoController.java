@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.nextech.kairos.dto.TiempoEditRequestDTO;
 import com.nextech.kairos.dto.TiempoRegistroRequest;
 import com.nextech.kairos.dto.TiempoResponseDTO;
+import com.nextech.kairos.dto.HorasPorIteracionDTO;
+import com.nextech.kairos.dto.HorasPorUsuarioDTO;
 import com.nextech.kairos.model.Tiempo;
 import com.nextech.kairos.model.Usuario;
 import com.nextech.kairos.service.TiempoService;
@@ -26,6 +30,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/tiempos")
+@CrossOrigin(origins = "http://localhost:4200")
 public class TiempoController {
 
     private final TiempoService tiempoService;
@@ -83,5 +88,54 @@ public class TiempoController {
 
         Tiempo tiempoActualizado = tiempoService.updateTime(idTiempo, request, usuario.getId());
         return ResponseEntity.ok(tiempoActualizado);
+    }
+
+    // Reportes simples para dashboard
+    @GetMapping("/horas-por-iteracion")
+    public ResponseEntity<List<HorasPorIteracionDTO>> horasPorIteracion(
+        @RequestParam(name = "etapaId", required = false) Long etapaId,
+        @RequestParam(name = "from", required = false) String from,
+        @RequestParam(name = "to", required = false) String to
+    ) {
+        java.util.List<Object[]> rows;
+        if (from != null && to != null) {
+            java.time.LocalDate f = java.time.LocalDate.parse(from);
+            java.time.LocalDate t = java.time.LocalDate.parse(to);
+            rows = (etapaId == null)
+                ? tiempoService.horasPorIteracionGlobalRango(f, t)
+                : tiempoService.horasPorIteracionEnEtapaRango(etapaId, f, t);
+        } else {
+            rows = (etapaId == null)
+                ? tiempoService.horasPorIteracionGlobal()
+                : tiempoService.horasPorIteracionEnEtapa(etapaId);
+        }
+        List<HorasPorIteracionDTO> out = rows.stream()
+            .map(r -> new HorasPorIteracionDTO(((Number) r[0]).longValue(), (Integer) r[1], ((Number) r[2]).intValue()))
+            .toList();
+        return ResponseEntity.ok(out);
+    }
+
+    @GetMapping("/horas-por-usuario")
+    public ResponseEntity<List<HorasPorUsuarioDTO>> horasPorUsuario(
+        @RequestParam(name = "iteracionId", required = false) Long iteracionId,
+        @RequestParam(name = "from", required = false) String from,
+        @RequestParam(name = "to", required = false) String to
+    ) {
+        java.util.List<Object[]> rows;
+        if (from != null && to != null) {
+            java.time.LocalDate f = java.time.LocalDate.parse(from);
+            java.time.LocalDate t = java.time.LocalDate.parse(to);
+            rows = (iteracionId == null)
+                ? tiempoService.horasPorUsuarioGlobalRango(f, t)
+                : tiempoService.horasPorUsuarioEnIteracionRango(iteracionId, f, t);
+        } else {
+            rows = (iteracionId == null)
+                ? tiempoService.horasPorUsuarioGlobal()
+                : tiempoService.horasPorUsuarioEnIteracion(iteracionId);
+        }
+        List<HorasPorUsuarioDTO> out = rows.stream()
+            .map(r -> new HorasPorUsuarioDTO(((Number) r[0]).longValue(), (String) r[1], ((Number) r[2]).intValue()))
+            .toList();
+        return ResponseEntity.ok(out);
     }
 }

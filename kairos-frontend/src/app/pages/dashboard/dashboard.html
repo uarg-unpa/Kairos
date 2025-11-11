@@ -1,0 +1,81 @@
+<main class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-1">Panel de Control</h2>
+      <p class="text-muted mb-0">Resumen de iteraciones, tareas y horas</p>
+    </div>
+    <div class="d-flex gap-2">
+      <select class="form-select" style="width:auto" [(ngModel)]="filtroEtapa" (change)="reload()">
+        <option [ngValue]="null">Todas las etapas</option>
+        <option *ngFor="let e of etapas" [ngValue]="e.idEtapa">{{ e.nombre }}</option>
+      </select>
+      <select class="form-select" style="width:auto" [(ngModel)]="filtroIteracion" (change)="reload()">
+        <option [ngValue]="null">Todas las iteraciones</option>
+        <option *ngFor="let it of iteraciones" [ngValue]="it.idIteracion">Iteración {{ it.numero }}</option>
+      </select>
+      <select class="form-select" style="width:auto" [(ngModel)]="filtroTiempo" (change)="reload()">
+        <option value="today">Hoy</option>
+        <option value="week" selected>Esta semana</option>
+        <option value="month">Este mes</option>
+        <option value="quarter">Últimos 90 días</option>
+        <option value="all">Todo</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="row g-4">
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Horas por iteración</h5></div>
+            <div class="card-body"><canvas id="chartHorasIter" height="120"></canvas></div>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Horas por miembro</h5></div>
+            <div class="card-body"><canvas id="chartHorasUser" height="120"></canvas></div>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Tareas por estado</h5></div>
+            <div class="card-body"><canvas id="chartTareasEstado" height="120"></canvas></div>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Tareas por miembro</h5></div>
+            <div class="card-body"><canvas id="chartTareasUser" height="120"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="card dashboard-card metric-card success text-center p-3">
+            <i class="bi bi-check-circle fs-1 mb-2 text-success"></i>
+            <div class="metric-value fs-3">{{ tareasCompletadas }} / {{ totalTareas }}</div>
+            <div class="text-muted">Completadas</div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="card dashboard-card metric-card warning text-center p-3">
+            <i class="bi bi-clock fs-1 mb-2 text-warning"></i>
+            <div class="metric-value fs-3">{{ totalHoras }} h</div>
+            <div class="text-muted">Horas registradas</div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="card dashboard-card metric-card danger text-center p-3">
+            <i class="bi bi-speedometer fs-1 mb-2 text-danger"></i>
+            <div class="metric-value fs-3">{{ eficiencia }}%</div>
+            <div class="text-muted">Eficiencia (estimado vs real)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

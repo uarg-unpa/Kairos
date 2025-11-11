@@ -32,6 +32,9 @@
                 <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
                     <a class="nav-link" routerLink="/workspace" routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a> 
                 </li>
+                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO)">
+                    <a class="nav-link" routerLink="/dashboard" routerLinkActive="active"><span class="bi bi-graph-up"></span> Reportes</a>
+                </li>
                 <li class="nav-item" *ngIf="rolUsuario === ROL_ADMIN">
                     <a class="nav-link" routerLink="/usuarios" routerLinkActive="active"><span class="bi bi-person"></span> Usuarios</a>
                 </li>

@@ -175,4 +175,45 @@ public Tiempo updateTime(Long idTiempo, TiempoEditRequestDTO request, Long idUsu
                 .mapToInt(Tiempo::getDuracion)
                 .sum();
     }
+
+    // Agregaciones para dashboard
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorIteracionGlobal() {
+        return tiempoRepository.sumHorasPorIteracionGlobal();
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorIteracionEnEtapa(Long etapaId) {
+        return tiempoRepository.sumHorasPorIteracionEnEtapa(etapaId);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorIteracionGlobalRango(LocalDate desde, LocalDate hasta) {
+        return tiempoRepository.sumHorasPorIteracionGlobalRango(desde, hasta);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorIteracionEnEtapaRango(Long etapaId, LocalDate desde, LocalDate hasta) {
+        return tiempoRepository.sumHorasPorIteracionEnEtapaRango(etapaId, desde, hasta);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorUsuarioGlobal() {
+        return tiempoRepository.sumHorasPorUsuarioGlobal();
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorUsuarioEnIteracion(Long iteracionId) {
+        return tiempoRepository.sumHorasPorUsuarioEnIteracion(iteracionId);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorUsuarioGlobalRango(LocalDate desde, LocalDate hasta) {
+        return tiempoRepository.sumHorasPorUsuarioGlobalRango(desde, hasta);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorUsuarioEnIteracionRango(Long iteracionId, LocalDate desde, LocalDate hasta) {
+        return tiempoRepository.sumHorasPorUsuarioEnIteracionRango(iteracionId, desde, hasta);
+    }
 }
