@@ -61,6 +61,7 @@ Constants.java
 *.zip
 
 /kairos/target/
+target/
 
 .vscode/
 .mvn/
