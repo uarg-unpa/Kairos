@@ -1,6 +1,15 @@
 <div class="container my-5" *ngIf="proyecto; else loading">
   <h2 class="mb-4">{{ proyecto.nombre }}</h2>
-  
+  <button 
+      *ngIf="rol === 'Admin' || rol === 'Líder'" 
+      class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
+      (click)="abrirModalEditar()"
+      title="Configurar proyecto"
+    >
+      <i class="bi bi-gear"></i>
+      <span class="d-none d-md-inline">Configurar</span>
+    </button>
+  </div>
   <div class="row g-4">
     <!-- Planificación (común a todos) -->
     <div class="col-md-3">
@@ -99,7 +108,6 @@
     </div>
 
   </div>
-</div>
 
 <!-- Loading -->
 <ng-template #loading>
@@ -108,3 +116,92 @@
     <p>Cargando proyecto...</p>
   </div>
 </ng-template>
+
+<!-- MODAL DE EDICIÓN -->
+<div class="modal fade" [class.show]="mostrarModalEditar" [style.display]="mostrarModalEditar ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Proyecto</h5>
+        <button type="button" class="btn-close" (click)="cerrarModalEditar()"></button>
+      </div>
+      <form (ngSubmit)="actualizarProyecto()">
+        <div class="modal-body">
+          <div *ngIf="errorMensaje" class="alert alert-danger" role="alert">
+            {{ errorMensaje }}
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nombre del Proyecto *</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="proyectoEdit.nombre"
+                name="nombre"
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Equipo *</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="proyectoEdit.equipo"
+                name="equipo"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="mb-3 mt-3">
+            <label class="form-label">Descripción</label>
+            <textarea
+              class="form-control"
+              [(ngModel)]="proyectoEdit.descripcion"
+              name="descripcion"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Fecha de Inicio</label>
+              <input
+                type="date"
+                class="form-control"
+                [(ngModel)]="proyectoEdit.fechaInicio"
+                name="fechaInicio"
+              >
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Estado</label>
+              <select class="form-select" [(ngModel)]="proyectoEdit.estado" name="estado">
+                <option value="En Progreso">En Progreso</option>
+                <option value="Completado">Completado</option>
+                <option value="Pausado">Pausado</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3 mt-3">
+            <label class="form-label">Logo del Proyecto</label>
+            <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
+            <div *ngIf="proyectoEdit.logo" class="mt-2 text-center">
+              <img [src]="proyectoEdit.logo" class="img-thumbnail" style="max-height: 100px;">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModalEditar()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="mostrarModalEditar" (click)="cerrarModalEditar()"></div>

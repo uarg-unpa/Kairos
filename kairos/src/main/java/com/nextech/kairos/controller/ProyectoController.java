@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nextech.kairos.dto.ActualizarProyectoRequest;
 import com.nextech.kairos.dto.CrearProyectoRequest;
 import com.nextech.kairos.dto.ProyectoDetalleResponse;
 import com.nextech.kairos.dto.UsuarioProyectoResponse;
@@ -170,6 +172,55 @@ public class ProyectoController {
             ProyectoDetalleResponse response = new ProyectoDetalleResponse(proyecto, usuarios);
 
             return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(Map.of("error", "Error interno: " + e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') or hasAuthority('ROLE_LIDER')")
+    public ResponseEntity<?> actualizarProyecto(
+        @PathVariable Long id,
+        @Valid @RequestBody ActualizarProyectoRequest request,
+        Authentication auth) {
+
+        try {
+            Usuario usuario = getCurrentUser(auth);
+            Proyecto proyecto = proyectoService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+
+            // Validar rol
+            boolean esAdmin = authService.isAdmin(usuario.getEmail());
+            boolean esLider = proyecto.getUsuariosProyecto().stream()
+                .anyMatch(up -> up.getUsuario().getId().equals(usuario.getId()) && "Líder".equals(up.getRolProyecto()));
+
+            if (!esAdmin && !esLider) {
+                return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+            }
+
+            // Validar nombre único
+            if (!proyecto.getNombre().equals(request.getNombre()) && proyectoService.existsByNombre(request.getNombre())) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Ya existe un proyecto con ese nombre"));
+            }
+
+            // Actualizar campos
+            proyecto.setNombre(request.getNombre());
+            proyecto.setEquipo(request.getEquipo());
+            proyecto.setDescripcion(request.getDescripcion());
+            proyecto.setFechaInicio(
+                request.getFechaInicio() != null && !request.getFechaInicio().isBlank()
+                    ? LocalDate.parse(request.getFechaInicio())
+                    : proyecto.getFechaInicio()
+            );
+            proyecto.setEstado(request.getEstado() != null ? request.getEstado() : proyecto.getEstado());
+            proyecto.setLogo(request.getLogo());
+
+            Proyecto actualizado = proyectoService.save(proyecto);
+            return ResponseEntity.ok(actualizado);
 
         } catch (Exception e) {
             e.printStackTrace();
