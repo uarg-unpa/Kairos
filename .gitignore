@@ -65,3 +65,4 @@ kairos/target/
 .vscode/
 .mvn/
 .mvn/wrapper//target/
+target/

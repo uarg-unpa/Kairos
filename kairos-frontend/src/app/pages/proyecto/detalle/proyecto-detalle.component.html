@@ -19,13 +19,12 @@
             
             <small class="text-muted d-none d-md-block">Fecha de Inicio: {{ proyecto.fechaInicio }}</small>
             
-            <button *ngIf="rol === 'Admin' || rol === 'Líder'" 
-                    class="btn btn-outline-secondary btn-sm btn-config" 
-                    (click)="abrirModalEditar()">
-                
-                <i class="bi bi-gear"></i> 
-                
-                <span class="d-none d-md-inline"> Configurar</span> 
+            <button 
+              *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder'"
+              class="btn btn-outline-secondary btn-sm btn-config"
+              (click)="abrirModalEditar()">
+              <i class="bi bi-gear"></i>
+              <span class="d-none d-md-inline"> Configurar</span>
             </button>
         </div>
     </div>
@@ -53,7 +52,7 @@
     </div>
 
     <!-- Etapas (para Líder y Admin, reducido para Miembro) -->
-    <div class="col-md-3" *ngIf="rol === 'Miembro' || rol === 'Líder' || rol === 'Admin'">
+    <div class="col-md-3" *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder'">
       <a [routerLink]="['/proyecto', proyecto?.idProyecto, 'etapas']" class="text-decoration-none text-dark">
         <div class="card-section p-3 h-100">
           <div class="d-flex align-items-center justify-content-between mb-2">
@@ -65,7 +64,7 @@
           <p class="text-muted small mb-2">Seguimiento de fases y entregables.</p>
           <small class="text-muted"><i class="bi bi-circle-fill text-primary me-1"></i>Etapa actual: Desarrollo</small>
           <!-- Solo para Líder/Admin: + botón agregar etapa -->
-          <button *ngIf="rol === 'Líder' || rol === 'Admin'" class="btn btn-sm btn-outline-primary mt-2">
+          <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder'" class="btn btn-sm btn-outline-primary mt-2">
             <i class="bi bi-plus-circle"></i> Nueva Etapa
           </button>
         </div>
@@ -83,14 +82,14 @@
         <h6 class="fw-semibold">Reportes</h6>
         <p class="text-muted small mb-2">Análisis, métricas y estadísticas.</p>
         <!-- Solo para Admin/Líder: + botón generar reporte -->
-        <button *ngIf="rol === 'Líder' || rol === 'Admin'" class="btn btn-sm btn-outline-warning mt-2">
+        <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder'" class="btn btn-sm btn-outline-warning mt-2">
           <i class="bi bi-file-earmark-bar-graph"></i> Generar Reporte
         </button>
       </div>
     </div>
 
     <!-- Workspace (para Miembro y Líder) -->
-    <div class="col-md-3" *ngIf="rol === 'Miembro' || rol === 'Lider'">
+    <div class="col-md-3" *ngIf="rolEnProyecto === 'Miembro' || rolEnProyecto === 'Líder'">
       <a routerLink="/workspace" class="text-decoration-none text-dark">
         <div class="card-section p-3 h-100">
           <div class="d-flex align-items-center justify-content-between mb-2">
@@ -106,7 +105,7 @@
     </div>
 
     <!-- Usuarios (para Admin y Líder, solo vista para Miembro) -->
-    <div class="col-md-3" *ngIf="rol === 'Admin' || rol === 'Líder' || rol === 'Miembro'">
+    <div class="col-md-3" *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder' || rolEnProyecto === 'Miembro'">
       <div class="card-section p-3 h-100">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <div class="icon-container bg-success bg-opacity-10">
@@ -122,7 +121,7 @@
           <span class="text-muted small">+3</span>
         </div>
         <!-- Botón agregar solo para Admin/Líder -->
-        <button *ngIf="rol === 'Admin' || rol === 'Líder'" class="btn btn-sm btn-outline-success mt-2">
+        <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder'" class="btn btn-sm btn-outline-success mt-2">
           <i class="bi bi-plus-circle"></i> Agregar Miembro
         </button>
       </div>

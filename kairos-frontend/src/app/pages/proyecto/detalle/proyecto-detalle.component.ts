@@ -15,10 +15,11 @@ import { FormsModule } from '@angular/forms';
 })
 export class ProyectoDetalleComponent implements OnInit {
   proyecto: Proyecto | null = null;
-  rol: string = 'Miembro'; // Default
+  rolEnProyecto: 'Admin' | 'Líder' | 'Miembro' = 'Miembro';
   mostrarModalEditar = false;
   proyectoEdit: any = {};
   errorMensaje: string | null = null;
+  usuarioId: number | null = null;
   // === VALIDACIONES ===
   maxNombre = 20;
   maxEquipo = 20;
@@ -37,15 +38,45 @@ export class ProyectoDetalleComponent implements OnInit {
     if (id) {
       this.cargarProyecto(+id);
     }
-    this.cargarRol();
+    this.cargarUsuarioId();
+  }
+
+  private cargarUsuarioId(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.usuarioId = user?.id || null;
+    });
   }
 
   private cargarProyecto(id: number): void {
     this.proyectoService.getProyectoById(id).subscribe({
-      next: (proyecto) => this.proyecto = proyecto,
-      error: (err) => console.error('Error al cargar proyecto', err)
+      next: (proyecto) => {
+        this.proyecto = proyecto;
+        this.determinarRolEnProyecto(); // ← NUEVO
+      },
+      error: (err) => console.error('Error:', err)
     });
   }
+
+  private determinarRolEnProyecto(): void {
+    if (!this.proyecto || !this.usuarioId) {
+      this.rolEnProyecto = 'Miembro';
+      return;
+    }
+
+    // 1. ¿Es admin global?
+    if (this.authService.esAdmin()) {
+      this.rolEnProyecto = 'Admin';
+      return;
+    }
+
+    // 2. ¿Es líder del proyecto?
+    const esLider = this.proyecto.usuariosProyecto?.some(up =>
+      up.idUsuario === this.usuarioId && up.rolProyecto === 'Líder'
+    ) || false;
+
+    this.rolEnProyecto = esLider ? 'Líder' : 'Miembro';
+  }
+
   abrirModalEditar(): void {
     this.proyectoEdit = { ...this.proyecto };
     this.mostrarModalEditar = true;
@@ -120,11 +151,11 @@ export class ProyectoDetalleComponent implements OnInit {
       .replace(/[\u0300-\u036f]/g, ""); // quita tildes
 
     if (rolNormalizado.includes('ADMIN')) {
-      this.rol = 'Admin';
+      this.rolEnProyecto = 'Admin';
     } else if (rolNormalizado.includes('LIDER')) {
-      this.rol = 'Líder';
+      this.rolEnProyecto = 'Líder';
     } else {
-      this.rol = 'Miembro';
+      this.rolEnProyecto = 'Miembro';
     }
   });
 }
