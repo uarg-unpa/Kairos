@@ -13,7 +13,8 @@ declare const bootstrap: any;
   selector: 'app-etapas',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './etapas.html'
+  templateUrl: './etapas.html',
+  styleUrls: ['./etapas.css']
 })
 export class EtapasComponent implements OnInit, AfterViewInit {
   idProyecto!: number;

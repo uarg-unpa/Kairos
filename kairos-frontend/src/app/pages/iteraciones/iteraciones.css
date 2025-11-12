@@ -1,0 +1,80 @@
+/* Title handled via .truncate-1; no extra rule here to avoid overrides */
+
+.stage-card p.text-muted {
+  /* WebKit/Chromium multi-line clamp */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+  word-break: break-word; /* standard */
+  word-break: break-all;  /* fallback for long tokens without spaces */
+}
+
+/* Fallback clamp for browsers sin -webkit-line-clamp (p.ej. Firefox) */
+@supports not (-webkit-line-clamp: 1) {
+  .stage-card p.text-muted {
+    display: block;
+    line-height: 1.4;
+    max-height: calc(1.4em * 2); /* ~2 líneas */
+    overflow: hidden;
+  }
+}
+
+/* Safety net to avoid growth by ultra-largas cadenas */
+.stage-card .card-body {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Clip any stray overflow within the card itself */
+.stage-card {
+  overflow: hidden;
+}
+.stage-text .truncate-1 {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.stage-text .truncate-2 {
+  /* Prefer WebKit clamp */
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+@supports not (-webkit-line-clamp: 1) {
+  .stage-text .truncate-2 {
+    display: block;
+    line-height: 1.4;
+    max-height: calc(1.4em * 2);
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
+/* Defensive breaking for tokens sin espacios */
+.truncate-1,
+.truncate-2 {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Container to guarantee clipping and shrinking */
+.stage-text {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  position: relative;
+}

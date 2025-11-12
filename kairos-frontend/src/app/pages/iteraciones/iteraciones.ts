@@ -11,7 +11,8 @@ declare const bootstrap: any;
   selector: 'app-iteraciones',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './iteraciones.html'
+  templateUrl: './iteraciones.html',
+  styleUrls: ['./iteraciones.css']
 })
 export class IteracionesComponent implements OnInit {
   private addIterationModal: any;
@@ -110,8 +111,8 @@ export class IteracionesComponent implements OnInit {
         this.cerrarModalIteracion();
       },
       error: (err) => {
-        console.error('Error creando iteración', err);
-        this.errorNuevaIteracion = err?.error?.error || 'No se pudo crear la iteración';
+        console.error('Error creando iteraciï¿½n', err);
+        this.errorNuevaIteracion = err?.error?.error || 'No se pudo crear la iteraciï¿½n';
       }
     });
   }

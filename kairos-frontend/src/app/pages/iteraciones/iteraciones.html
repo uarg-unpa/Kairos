@@ -55,6 +55,12 @@
                     {{ it.fechaInicio || '-' }} - {{ it.fechaFin || '-' }}
                   </small>
                 </div>
+                <div class="mb-2" *ngIf="it.descripcion">
+                  <small class="text-muted">
+                    <i class="bi bi-card-text me-1"></i>
+                    <span class="d-inline-block text-truncate" [style.maxWidth.px]="240" [attr.title]="it.descripcion">{{ it.descripcion }}</span>
+                  </small>
+                </div>
               </div>
             </div>
             <div class="mb-3">
