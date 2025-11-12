@@ -26,4 +26,9 @@ public class EtapaService implements IEtapaService {
 
     @Override
     public void eliminar(Long id) { repo.deleteById(id); }
+
+    @Override
+    public List<Etapa> listarPorProyecto(Long idProyecto) {
+        return repo.findByProyecto_IdProyecto(idProyecto);
+    }
 }

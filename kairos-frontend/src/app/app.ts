@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet, RouterModule, NavigationEnd } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { Router, RouterOutlet, RouterModule } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { GlobalTimerComponent } from './components/global-timer/global-timer.component';
 import { CommonModule } from '@angular/common';
-import { ProjectContextService } from './services/project-context.service';
+import { LoadingService } from './services/loading.service';
+import { Proyecto } from '././models/proyecto.model';
+
 
 
 @Component({
@@ -15,15 +17,15 @@ import { ProjectContextService } from './services/project-context.service';
 })
 export class AppComponent implements OnInit {
   title = 'Kairos Frontend'; 
-
-  readonly ROL_ADMIN = 'ADMINISTRADOR';
-  readonly ROL_LIDER = 'LIDER';
-  readonly ROL_MIEMBRO = 'MIEMBRO';
-  // 2. Inyectar el Router en el constructor
-  constructor(public router: Router, private auth: AuthService, private projectCtx: ProjectContextService) {}
+  proyecto: Proyecto | null = null;
+  usuarioId: number | null = null;
+  rolEnProyecto: 'Admin' | 'Líder' | 'Miembro' = 'Miembro';
+  proyectoId: number | null = null;
+  loadingService = inject(LoadingService);
+  
+  constructor(public router: Router, public auth: AuthService) {}
 
   ngOnInit(): void {
-    // Suscribirse al estado de autenticación
     this.auth.isLoggedIn$.subscribe(isLoggedIn => {
       this.usuarioLogueado = isLoggedIn;
     });
@@ -32,21 +34,52 @@ export class AppComponent implements OnInit {
     this.auth.currentUser$.subscribe(user => {
         if (user) {
             this.usuarioNombre = user.nombre || 'Usuario';
+            let rolPrincipal = null;
+            if (user.rol) {
+                rolPrincipal = user.rol;
+            } else if (user.roles && user.roles.length > 0) {
+                rolPrincipal = user.roles[0];
+            }
             this.rolUsuario = (user.rol || (user.roles?.length ? user.roles[0] : null))?.toUpperCase() || null; 
         } else {
             this.usuarioNombre = 'Invitado';
             this.rolUsuario = null;
         }
     });
-
-    // Persistir id de proyecto al navegar por rutas /proyecto/:id/...
-    this.router.events.subscribe(ev => {
-      if (ev instanceof NavigationEnd) {
-        const id = this.currentProjectId;
-        if (id) this.projectCtx.setProjectId(id);
-      }
+    this.router.events.subscribe(() => {
+      this.actualizarProyectoId();
     });
+    this.actualizarProyectoId();
   }
+  private actualizarProyectoId(): void {
+    const url = this.router.url;
+    const match = url.match(/\/proyecto\/(\d+)/);
+    this.proyectoId = match ? +match[1] : null;
+  }
+  private determinarRolEnProyecto(): void {
+    if (!this.proyecto || !this.usuarioId) {
+      this.rolEnProyecto = 'Miembro';
+      return;
+    }
+
+    // 1. ¿Es admin global?
+    if (this.auth.esAdmin()) {
+      this.rolEnProyecto = 'Admin';
+      return;
+    }
+
+    // 2. ¿Es líder del proyecto?
+    const esLider = this.proyecto.usuariosProyecto?.some(up =>
+      up.idUsuario === this.usuarioId && up.rolProyecto === 'Líder'
+    ) || false;
+
+    this.rolEnProyecto = esLider ? 'Líder' : 'Miembro';
+  }
+
+  esAdmin(): boolean {
+    return this.auth.esAdmin();
+  }
+  
 
   // 3. Implementar la función de logout
   logout(): void {
@@ -69,10 +102,5 @@ export class AppComponent implements OnInit {
   esRutaProyecto(): boolean {
     // Comprueba si la URL actual comienza con '/proyecto/'
     return this.router.url.startsWith('/proyecto/');
-  }
-
-  get currentProjectId(): number | null {
-    const m = this.router.url.match(/^\/proyecto\/(\d+)/);
-    return m ? Number(m[1]) : null;
   }
 }

@@ -1,18 +1,25 @@
-<div class="card">
-  <div class="card-header">
-    <h5>{{ titulo }}</h5>
-  </div>
-  <div class="card-body">
-    <form (ngSubmit)="guardar()">
-      <div class="form-group">
-        <label>Nombre</label>
-        <input type="text" class="form-control" [(ngModel)]="nombre" name="nombre" required />
-      </div>
-      <div class="mt-3">
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <a routerLink="/permisos" class="btn btn-secondary ml-2">Cancelar</a>
-      </div>
-    </form>
-  </div>
-  </div>
-
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h4><span class="bi bi-plus"></span> Crear Permiso</h4>
+        </div>
+        <div class="card-body">
+            <form (ngSubmit)="guardar()">
+                <div class="form-group mb-3">
+                    <label for="nombre">Nombre del Permiso:</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" [(ngModel)]="nombre" required>
+                    <small class="form-text text-muted">Ingrese un nombre descriptivo para el permiso (ej: "Usuarios", "Roles", "Permisos")</small>
+                </div>
+                
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-success">
+                        <span class="bi bi-check"></span> Crear Permiso
+                    </button>
+                    <a routerLink="/permisos" class="btn btn-secondary ms-2">
+                        <span class="bi bi-x"></span> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

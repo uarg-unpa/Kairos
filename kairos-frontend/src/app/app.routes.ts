@@ -17,68 +17,86 @@ import { ProyectoDetalleComponent } from './pages/proyecto/detalle/proyecto-deta
 import { EtapasComponent } from './pages/etapas/etapas';
 import { IteracionesComponent } from './pages/iteraciones/iteraciones';
 import { DashboardComponent } from './pages/dashboard/dashboard';
-import { projectContextGuard } from './guards/project-context.guard';
-import { proyectoResolver } from './resolvers/proyecto.resolver';
+import { RolVerComponent } from './pages/roles/rol-ver';
+import { RolModificarComponent } from './pages/roles/rol-modificar';
+import { AdminGuard } from './guards/admin.guard';
+// import { PermisoVerComponent } from './pages/roles/permiso-ver';
+
 
 export const routes: Routes = [
-  // Redirección inicial explícita para evitar "pantalla en blanco" al abrir /
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
   {
     path: '',
     canActivate: [authGuard],
     children: [
+      { path: '', redirectTo: 'inicio', pathMatch: 'full' },
       { path: 'inicio', component: InicioComponent }
     ]
   },
-  { path: 'usuarios', component: UsuariosComponent, canActivate: [authGuard] },
+  { path: 'login', component: LoginComponent },
+  {
+    path: 'usuarios',
+    component: UsuariosComponent,
+    canActivate: [AdminGuard],
+    data: { requiereAdmin: true }
+  },
+  {
+    path: 'admin',
+    canActivate: [AdminGuard],
+    data: { requiereAdmin: true },
+    children: [
+      { path: 'roles', component: RolesComponent },
+      { path: 'permisos', component: RolesComponent },
+      { path: 'rol', component: RolesComponent },
+
+      // { path: 'config', component: ConfigComponent },
+    ]
+  },
   { path: 'roles', component: RolesComponent, canActivate: [authGuard] },
   { path: 'permisos', component: PermisosComponent, canActivate: [authGuard] },
   { path: 'roles/crear', component: RolFormComponent, canActivate: [authGuard] },
+  { path: 'rol/ver/:id', component: RolVerComponent, canActivate: [authGuard] },
+  { path: 'rol/modificar/:id', component: RolModificarComponent, canActivate: [authGuard] },
   { path: 'permisos/crear', component: PermisoFormComponent, canActivate: [authGuard] },
+  { path: 'permiso/ver/:id', component: PermisosComponent, canActivate: [authGuard] },
+  { path: 'permiso/modificar/:id', component: PermisosComponent, canActivate: [authGuard] },
   { path: 'usuario/ver/:id', component: UsuarioVerComponent, canActivate: [authGuard] },
   { path: 'usuario/modificar/:id', component: UsuarioModificarComponent, canActivate: [authGuard] },
   { path: 'usuario/crear', component: UsuarioCrearComponent, canActivate: [authGuard] },
   { path: 'salir', component: SalirComponent },
-  { path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard, projectContextGuard], data: { target: 'workspace' } },
+  {path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard] },
   { path: 'proyecto/:id', component: ProyectoDetalleComponent, canActivate: [authGuard] },
   // SUBRUTAS DEL PROYECTO
   { 
     path: 'proyecto/:id/planificacion', 
-    component: PlanificacionComponent,
-    resolve: { proyecto: proyectoResolver },
+    component: PlanificacionComponent, 
     canActivate: [authGuard] 
   },
   { 
     path: 'proyecto/:id/etapas', 
-    component: EtapasComponent,
-    resolve: { proyecto: proyectoResolver },
-    canActivate: [authGuard] 
-  },
-  { 
-    path: 'proyecto/:id/iteraciones', 
-    component: IteracionesComponent,
-    resolve: { proyecto: proyectoResolver },
+    component: EtapasComponent, 
     canActivate: [authGuard] 
   },
   { 
     path: 'proyecto/:id/workspace', 
-    component: WorkspaceTimerComponent,
-    resolve: { proyecto: proyectoResolver },
+    component: WorkspaceTimerComponent, 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'proyecto/:id/iteraciones/:etapa', 
+    component: IteracionesComponent, 
     canActivate: [authGuard] 
   },
   { 
     path: 'proyecto/:id/dashboard', 
-    component: DashboardComponent,
-    resolve: { proyecto: proyectoResolver },
+    component: DashboardComponent, 
     canActivate: [authGuard] 
   },
   // { path: 'proyecto/:id/planificacion', component: PlanificacionComponent, canActivate: [authGuard] },
   // {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
-  { path: 'etapas', component: EtapasComponent, canActivate: [authGuard, projectContextGuard], data: { target: 'etapas' } },
-  { path: 'iteraciones/:etapa', component: IteracionesComponent, canActivate: [authGuard] },
+  // { path: 'etapas', component: EtapasComponent, canActivate: [authGuard] },
+  // { path: 'iteraciones/:etapa', component: IteracionesComponent, canActivate: [authGuard] },
   { path: 'iteraciones/etapa/:id', component: IteracionesComponent, canActivate: [authGuard] },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard, projectContextGuard], data: { target: 'dashboard' } },
-  { path: 'iteraciones', component: IteracionesComponent, canActivate: [authGuard, projectContextGuard], data: { target: 'iteraciones' } },
+  { path: 'iteraciones', component: IteracionesComponent, canActivate: [authGuard] },
+  
   { path: '**', redirectTo: '' } // mantener este siempre al final
 ];

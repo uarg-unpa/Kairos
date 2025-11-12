@@ -8,4 +8,5 @@ export interface Etapa {
   proyectoId?: number;
   progreso?: number;
   iteraciones?: number;
+  idProyecto?: number;
 }

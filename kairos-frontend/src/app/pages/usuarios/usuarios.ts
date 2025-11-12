@@ -1,7 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterOutlet, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UsuariosService } from '../../services/usuarios';
+import { AuthService } from '../../services/auth.service';
+
 
 
 @Component({
@@ -12,6 +14,10 @@ import { UsuariosService } from '../../services/usuarios';
   styleUrls: ['./usuarios.css']
 })
 export class UsuariosComponent {
+    constructor(public router: Router, private auth: AuthService) {}
+  readonly ROL_ADMIN = 'ADMINISTRADOR';
+  usuarioLogueado: boolean = false;
+  rolUsuario: string | null = null;
   private usuariosService = inject(UsuariosService);
   usuarios = this.usuariosService.usuarios; 
 
@@ -22,5 +28,8 @@ export class UsuariosComponent {
       },
       error: (err) => console.error('Error al eliminar usuario', err)
     });
+  }
+  esAdmin(): boolean {
+    return this.auth.esAdmin();
   }
 }

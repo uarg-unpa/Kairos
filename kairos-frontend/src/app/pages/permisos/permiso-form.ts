@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { PermisosService } from '../../services/permisos';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '../../services/config.service';
@@ -9,8 +9,8 @@ import { ConfigService } from '../../services/config.service';
 @Component({
   selector: 'app-permiso-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './permiso-form.html'
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './permiso-form.html' // Usaremos este nombre
 })
 export class PermisoFormComponent {
   private router = inject(Router);
@@ -32,8 +32,7 @@ export class PermisoFormComponent {
         this.permisosService.cargarPermisos();
         this.router.navigate(['/permisos']);
       },
-      error: (err) => console.error('Error creando permiso', err)
+      error: (err) => alert(`Error creando permiso: ${err.error?.error || 'Error desconocido'}`)
     });
   }
 }
-

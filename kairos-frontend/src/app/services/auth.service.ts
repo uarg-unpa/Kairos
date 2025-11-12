@@ -13,7 +13,7 @@ interface UserInfoResponse {
   nombre: string;
   email: string;
   permissions: string[];
-  isAdmin: boolean;
+  admin: boolean;
   roles?: string[];
   rol?: string;
 }
@@ -58,24 +58,49 @@ export class AuthService {
   set usuario(value: any) {
     if (value) {
       if (value.admin === true) {
-      value.rol = 'ADMINISTRADOR'; 
-    } else if (value.rol && value.rol.toUpperCase().includes('LIDER')) {
-      value.rol = 'LÍDER'; 
-    }
-    else {
-      value.rol = 'MIEMBRO'; 
-    }
+        const usuarioSeguro = {
+          id: value.id,
+          nombre: value.nombre,
+          email: value.email,
+          rol: 'ADMINISTRADOR',
+          admin: true
+        };
+        localStorage.setItem(this.storageUserKey, JSON.stringify(usuarioSeguro));
+        this.currentUserSubject.next(usuarioSeguro);
+        return;
+      }
+      const rolFinal = this.normalizarRol(value.rol || value.roles?.[0]);
 
-      localStorage.setItem(this.storageUserKey, JSON.stringify(value));
+      const usuarioSeguro = {
+        id: value.id,
+        nombre: value.nombre,
+        email: value.email,
+        rol: rolFinal,
+        admin: rolFinal === 'ADMINISTRADOR'
+      };
+
+      localStorage.setItem(this.storageUserKey, JSON.stringify(usuarioSeguro));
+      this.currentUserSubject.next(usuarioSeguro);
     } else {
       localStorage.removeItem(this.storageUserKey);
+      this.currentUserSubject.next(null);
     }
-    // actualizar estado del usuario actual
-    this.currentUserSubject.next(value);
+  }
+
+  private normalizarRol(rolRaw: string): string {
+    if (!rolRaw) return 'MIEMBRO';
+    const normalized = rolRaw.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (normalized.includes('ADMINISTRADOR') || normalized.includes('ADMIN')) return 'ADMINISTRADOR';
+    if (normalized.includes('LIDER')) return 'LÍDER';
+    return 'MIEMBRO';
   }
 
   isAuthenticated(): boolean {
     return !!this.token;
+  }
+  
+  esAdmin(): boolean {
+    return this.usuario?.admin === true;
   }
 
   logout(): void {

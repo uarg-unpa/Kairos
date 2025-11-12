@@ -1,10 +1,11 @@
-import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuariosService } from '../../services/usuarios';
 import { EtapaService } from '../../services/etapa.service';
 import { Etapa } from '../../models/etapa.model';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 declare const bootstrap: any;
 
@@ -15,43 +16,46 @@ declare const bootstrap: any;
   templateUrl: './etapas.html'
 })
 export class EtapasComponent implements OnInit, AfterViewInit {
+  idProyecto!: number;
   private addStageModal: any;
 
   private usuariosService = inject(UsuariosService);
   private etapaService = inject(EtapaService);
   usuarios = this.usuariosService.usuarios; // usable si agregamos responsable en el futuro
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
-
-  proyectoId: number | null = null;
-  proyectoNombre: string | null = null;
 
   nuevaEtapa: any = {
     nombre: '',
     descripcion: '',
     fechaInicio: '',
-    fechaFin: ''
+    fechaFin: '', 
+    idProyecto: this.idProyecto,
   };
 
   etapas: Etapa[] = [];
   filtroEstado: 'TODAS' | 'PENDIENTE' | 'EN_PROGRESO' | 'FINALIZADA' = 'TODAS';
 
+  constructor(private route: ActivatedRoute) {}
+
   ngOnInit(): void {
     const el = document.getElementById('addStageModal');
     if (el) this.addStageModal = new bootstrap.Modal(el);
 
-    // Detecta si estamos en /proyecto/:id/etapas
-    this.route.paramMap.subscribe(pm => {
-      const id = pm.get('id');
-      this.proyectoId = id ? Number(id) : null;
-      const data: any = (this.route.snapshot as any).data;
-      this.proyectoNombre = data?.['proyecto']?.nombre || null;
-      const obs = this.proyectoId ? this.etapaService.getEtapasPorProyecto(this.proyectoId) : this.etapaService.getEtapas();
-      obs.subscribe((data) => {
-        this.etapas = data;
+    this.idProyecto = Number(this.route.snapshot.paramMap.get('id'));
+    console.log('Proyecto ID:', this.idProyecto);
+
+    this.etapaService.getEtapasPorProyecto(this.idProyecto).subscribe({
+      next: (etapas) => {
+        this.etapas = etapas;
         setTimeout(() => this.enableTooltips(), 0);
-      });
+      },
+      error: (err) => {
+        console.error('Error cargando etapas', err);
+        alert('No se pudieron cargar las etapas del proyecto');
+      }
     });
+
+    
   }
 
   ngAfterViewInit(): void {
@@ -74,8 +78,8 @@ export class EtapasComponent implements OnInit, AfterViewInit {
 
   crearEtapa() {
     if (!this.nuevaEtapaValida()) return;
-    const payload: any = { nombre: this.nuevaEtapa.nombre, descripcion: this.nuevaEtapa.descripcion, fechaInicio: this.nuevaEtapa.fechaInicio, fechaFin: this.nuevaEtapa.fechaFin };
-    if (this.proyectoId) payload.proyectoId = this.proyectoId;
+    const payload = { nombre: this.nuevaEtapa.nombre, descripcion: this.nuevaEtapa.descripcion, fechaInicio: this.nuevaEtapa.fechaInicio, fechaFin: this.nuevaEtapa.fechaFin, idProyecto: this.idProyecto };
+    console.log('Crear etapa con payload:', payload);
     this.etapaService.crearEtapa(payload).subscribe({
       next: (nueva) => {
         this.etapas = [nueva, ...this.etapas];

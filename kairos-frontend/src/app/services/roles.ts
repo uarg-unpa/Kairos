@@ -2,10 +2,15 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from './config.service';
 
+export interface Permiso {
+  id: number;
+  nombre: string;
+}
+
 export interface RolItem {
   id: number;
   nombre: string;
-  permisos: string[]; // viene como set de strings desde el backend
+  permisos: Permiso[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -25,6 +30,17 @@ export class RolesService {
       next: (data) => this.roles.set(data || []),
       error: (err) => console.error('Error al cargar roles', err)
     });
+  }
+  eliminar(id: number, nombre: string): void {
+    if (confirm(`¿Está seguro de eliminar el rol "${nombre}"?`)) {
+      this.http.delete(`${this.baseUrl}/${id}`).subscribe({
+        next: () => {
+          alert(`Rol "${nombre}" eliminado con éxito.`);
+          this.cargarRoles(); // Recargar lista
+        },
+        error: (err) => alert(`Error al eliminar rol: ${err.error?.error || 'Error desconocido'}`)
+      });
+    }
   }
 }
 

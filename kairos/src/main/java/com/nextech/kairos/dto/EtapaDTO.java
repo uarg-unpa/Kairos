@@ -10,12 +10,13 @@ public class EtapaDTO {
     private Long proyectoId;
     private Integer progreso; // 0-100
     private Integer iteraciones; // cantidad
+    private Long idProyecto;
 
     public EtapaDTO() {}
 
     public EtapaDTO(Long idEtapa, String nombre, String descripcion, String estado,
                     String fechaInicio, String fechaFin, Long proyectoId,
-                    Integer progreso, Integer iteraciones) {
+                    Integer progreso, Integer iteraciones, Long idProyecto) {
         this.idEtapa = idEtapa;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -25,6 +26,7 @@ public class EtapaDTO {
         this.proyectoId = proyectoId;
         this.progreso = progreso;
         this.iteraciones = iteraciones;
+        this.idProyecto = idProyecto;
     }
 
     public Long getIdEtapa() { return idEtapa; }
@@ -45,4 +47,6 @@ public class EtapaDTO {
     public void setProgreso(Integer progreso) { this.progreso = progreso; }
     public Integer getIteraciones() { return iteraciones; }
     public void setIteraciones(Integer iteraciones) { this.iteraciones = iteraciones; }
+    public Long getIdProyecto() { return idProyecto; }
+    public void setIdProyecto(Long idProyecto) { this.idProyecto = idProyecto; }
 }
