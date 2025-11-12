@@ -11,6 +11,7 @@ import com.nextech.kairos.service.IEtapaService;
 import com.nextech.kairos.repository.ProyectoRepository;
 import com.nextech.kairos.model.Proyecto;
 import com.nextech.kairos.model.EstadoEtapa;
+import java.util.stream.Collectors;
 
 import java.time.LocalDate;
 
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 public class EtapaController {
     private final IEtapaService etapaService;
     private final ProyectoRepository proyectoRepository;
+
     public EtapaController(IEtapaService etapaService, ProyectoRepository proyectoRepository) {
         this.etapaService = etapaService;
         this.proyectoRepository = proyectoRepository;
@@ -27,7 +29,16 @@ public class EtapaController {
 
     @GetMapping
     public List<EtapaDTO> listar() {
-        return etapaService.listar().stream().map(EtapaMapper::toDTO).toList();
+        List<Etapa> etapas = etapaService.listar();
+
+        etapas.forEach(e -> {
+            if (e.getProyecto() != null)
+                e.getProyecto().getIdProyecto(); // fuerza la carga del proxy
+        });
+
+        return etapas.stream()
+                .map(EtapaMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
@@ -55,6 +66,12 @@ public class EtapaController {
         }
         Etapa saved = etapaService.guardar(e);
         return EtapaMapper.toDTO(saved);
+    }
+
+    @GetMapping("/proyecto/{idProyecto}")
+    public List<EtapaDTO> listarPorProyecto(@PathVariable Long idProyecto) {
+        List<Etapa> etapas = etapaService.listarPorProyecto(idProyecto);
+        return etapas.stream().map(EtapaMapper::toDTO).toList();
     }
 
     @DeleteMapping("/{id}")

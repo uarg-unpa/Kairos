@@ -13,4 +13,5 @@ public interface EtapaRepository extends JpaRepository<Etapa, Long> {
     @Override
     @EntityGraph(attributePaths = {"iteraciones"})
     List<Etapa> findAll();
+    List<Etapa> findByProyecto_IdProyecto(Long idProyecto);
 }

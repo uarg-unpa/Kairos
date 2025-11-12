@@ -7,4 +7,5 @@ export interface Etapa {
   fechaFin?: string;
   progreso?: number;
   iteraciones?: number;
+  idProyecto?: number;
 }

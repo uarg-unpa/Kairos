@@ -22,7 +22,8 @@ public class EtapaMapper {
             e.getFechaInicio() != null ? e.getFechaInicio().toString() : null,
             e.getFechaFin() != null ? e.getFechaFin().toString() : null,
             progreso,
-            iteraciones
+            iteraciones,
+            e.getProyecto() != null ? e.getProyecto().getIdProyecto() : null
         );
     }
 
