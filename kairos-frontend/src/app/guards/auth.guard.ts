@@ -8,7 +8,7 @@ export const authGuard: CanActivateFn = () => {
   if (auth.isAuthenticated()) {
     return true;
   }
-  router.navigate(['/login']);
-  return false;
+  // Devuelve un UrlTree para redirigir inmediatamente sin parpadeos
+  return router.parseUrl('/login');
 };
 

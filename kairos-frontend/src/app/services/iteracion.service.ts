@@ -30,6 +30,10 @@ export class IteracionService {
         return this.http.get<Iteracion[]>(`${this.baseUrl()}/por-etapa/${etapaId}`);
     }
 
+    getIteracionesPorProyectoId(proyectoId: number): Observable<Iteracion[]> {
+        return this.http.get<Iteracion[]>(`${this.baseUrl()}/por-proyecto/${proyectoId}`);
+    }
+
     // Eliminado: entregables por iteración
 
     crearIteracion(payload: { numero: number; descripcion?: string; fechaInicio: string; fechaFin: string; etapaId: number }): Observable<Iteracion> {

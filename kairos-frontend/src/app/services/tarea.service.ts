@@ -26,6 +26,10 @@ export class TaskService {
     return this.http.get<Tarea[]>(this.baseUrl);
   }
 
+  getTareasPorProyecto(proyectoId: number): Observable<Tarea[]> {
+    return this.http.get<Tarea[]>(`${this.baseUrl}/por-proyecto/${proyectoId}`);
+  }
+
   // Obtener una tarea por ID
   getTareaById(id: number): Observable<Tarea> {
     return this.http.get<Tarea>(`${this.baseUrl}/${id}`);

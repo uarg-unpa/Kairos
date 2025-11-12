@@ -1,7 +1,7 @@
 <main class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h2 class="mb-1">Panel de Control</h2>
+      <h2 class="mb-1">Panel de Control <small *ngIf="proyectoNombre" class="text-muted">– {{ proyectoNombre }}</small></h2>
       <p class="text-muted mb-0">Resumen de iteraciones, tareas y horas</p>
     </div>
     <div class="d-flex gap-2">

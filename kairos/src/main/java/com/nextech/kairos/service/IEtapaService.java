@@ -5,6 +5,7 @@ import com.nextech.kairos.model.Etapa;
 
 public interface IEtapaService {
     List<Etapa> listar();
+    List<Etapa> listarPorProyecto(Long idProyecto);
     Etapa obtener(Long id);
     Etapa guardar(Etapa etapa);
     void eliminar(Long id);

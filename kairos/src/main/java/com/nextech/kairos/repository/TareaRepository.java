@@ -20,4 +20,7 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
     List<Tarea> findByHorasEstimadas(Double horas);
     List<Tarea> findByHorasEstimadasGreaterThan(Double horas);
     List<Tarea> findByHorasEstimadasLessThan(Double horas);
+
+    // Por proyecto a través de iteración -> etapa -> proyecto
+    List<Tarea> findByIteracion_Etapa_Proyecto_IdProyecto(Long idProyecto);
 }

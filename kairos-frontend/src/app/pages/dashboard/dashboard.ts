@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, effect, inject } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EtapaService } from '../../services/etapa.service';
 import { IteracionService } from '../../services/iteracion.service';
 import { TaskService } from '../../services/tarea.service';
 import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 
 declare const Chart: any;
 
@@ -19,24 +20,38 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private iteracionService = inject(IteracionService);
   private taskService = inject(TaskService);
   private http = inject(HttpClient);
+  private route = inject(ActivatedRoute);
 
   etapas: any[] = [];
   iteraciones: any[] = [];
   filtroEtapa: number | null = null;
   filtroIteracion: number | null = null;
   filtroTiempo: 'today' | 'week' | 'month' | 'quarter' | 'all' = 'week';
+  proyectoId: number | null = null;
 
   // métricas
   totalTareas = 0;
   tareasCompletadas = 0;
   totalHoras = 0; // horas reales (minutos agregados / 60)
   eficiencia = 0; // (reales/estimadas)*100 si hay estimadas
+  proyectoNombre: string | null = null;
 
   private charts: any[] = [];
 
   ngOnInit(): void {
-    this.etapaService.getEtapas().subscribe(e => this.etapas = e || []);
-    this.iteracionService.getIteraciones().subscribe(it => this.iteraciones = it || []);
+    this.route.paramMap.subscribe(pm => {
+      const id = pm.get('id');
+      this.proyectoId = id ? Number(id) : null;
+      const data: any = this.route.snapshot.data;
+      this.proyectoNombre = data?.['proyecto']?.nombre || null;
+      if (this.proyectoId) {
+        this.etapaService.getEtapasPorProyecto(this.proyectoId).subscribe(e => this.etapas = e || []);
+        this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(it => this.iteraciones = it || []);
+      } else {
+        this.etapaService.getEtapas().subscribe(e => this.etapas = e || []);
+        this.iteracionService.getIteraciones().subscribe(it => this.iteraciones = it || []);
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -52,6 +67,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.destroyCharts();
     if (this.filtroEtapa) {
       this.iteracionService.getIteracionesPorEtapaId(this.filtroEtapa).subscribe(it => this.iteraciones = it || []);
+    } else if (this.proyectoId) {
+      this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(it => this.iteraciones = it || []);
     } else {
       this.iteracionService.getIteraciones().subscribe(it => this.iteraciones = it || []);
     }
@@ -59,6 +76,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const range = this.computeRange();
     const iterParams = new URLSearchParams();
     if (this.filtroEtapa) iterParams.set('etapaId', String(this.filtroEtapa));
+    else if (this.proyectoId) iterParams.set('proyectoId', String(this.proyectoId));
     if (range.from && range.to) { iterParams.set('from', range.from); iterParams.set('to', range.to); }
     const paramsIter = iterParams.toString() ? `?${iterParams.toString()}` : '';
     this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-iteracion${paramsIter}`).subscribe(rows => {
@@ -71,6 +89,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const userParams = new URLSearchParams();
     if (this.filtroIteracion) userParams.set('iteracionId', String(this.filtroIteracion));
+    else if (this.proyectoId) userParams.set('proyectoId', String(this.proyectoId));
     if (range.from && range.to) { userParams.set('from', range.from); userParams.set('to', range.to); }
     const paramsUser = userParams.toString() ? `?${userParams.toString()}` : '';
     this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-usuario${paramsUser}`).subscribe(rows => {
@@ -84,9 +103,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // 2) tareas para métricas y gráficos complementarios
-    this.taskService.getTareas().subscribe(ts => {
+    const tareas$ = this.proyectoId ? this.taskService.getTareasPorProyecto(this.proyectoId) : this.taskService.getTareas();
+    tareas$.subscribe(ts => {
       const filtrar = (t: any) => {
         if (this.filtroIteracion && t.iteracionId !== this.filtroIteracion) return false;
+        if (this.proyectoId && this.iteraciones?.length) {
+          const ids = new Set(this.iteraciones.map(it => it.idIteracion));
+          if (!ids.has(t.iteracionId)) return false;
+        }
         return true;
       };
       const tareas = (ts || []).filter(filtrar);

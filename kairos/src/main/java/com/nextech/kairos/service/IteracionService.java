@@ -37,4 +37,9 @@ public class IteracionService implements IIteracionService {
     public List<Iteracion> listarPorEtapa(Long idEtapa) {
         return iteracionRepository.findByEtapa_IdEtapa(idEtapa);
     }
+
+    @Override
+    public List<Iteracion> listarPorProyecto(Long idProyecto) {
+        return iteracionRepository.findByEtapa_Proyecto_IdProyecto(idProyecto);
+    }
 }

@@ -50,6 +50,14 @@ public class IteracionController {
             .toList();
     }
 
+    @GetMapping("/por-proyecto/{idProyecto}")
+    public List<IteracionDTO> listarPorProyecto(@PathVariable Long idProyecto) {
+        return iteracionService.listarPorProyecto(idProyecto)
+            .stream()
+            .map(IteracionMapper::toDTO)
+            .toList();
+    }
+
     @GetMapping("/{id}")
     public Iteracion obtener(@PathVariable Long id) {
         return iteracionService.obtenerPorId(id);

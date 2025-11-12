@@ -7,13 +7,14 @@ public class EtapaDTO {
     private String estado;
     private String fechaInicio;
     private String fechaFin;
+    private Long proyectoId;
     private Integer progreso; // 0-100
     private Integer iteraciones; // cantidad
 
     public EtapaDTO() {}
 
     public EtapaDTO(Long idEtapa, String nombre, String descripcion, String estado,
-                    String fechaInicio, String fechaFin,
+                    String fechaInicio, String fechaFin, Long proyectoId,
                     Integer progreso, Integer iteraciones) {
         this.idEtapa = idEtapa;
         this.nombre = nombre;
@@ -21,6 +22,7 @@ public class EtapaDTO {
         this.estado = estado;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
+        this.proyectoId = proyectoId;
         this.progreso = progreso;
         this.iteraciones = iteraciones;
     }
@@ -37,6 +39,8 @@ public class EtapaDTO {
     public void setFechaInicio(String fechaInicio) { this.fechaInicio = fechaInicio; }
     public String getFechaFin() { return fechaFin; }
     public void setFechaFin(String fechaFin) { this.fechaFin = fechaFin; }
+    public Long getProyectoId() { return proyectoId; }
+    public void setProyectoId(Long proyectoId) { this.proyectoId = proyectoId; }
     public Integer getProgreso() { return progreso; }
     public void setProgreso(Integer progreso) { this.progreso = progreso; }
     public Integer getIteraciones() { return iteraciones; }

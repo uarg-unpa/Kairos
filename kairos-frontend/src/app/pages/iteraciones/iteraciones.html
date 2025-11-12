@@ -1,6 +1,6 @@
 <main class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">Iteraciones <small class="text-muted" *ngIf="etapaId">— Etapa #{{ etapaId }}</small></h2>
+    <h2 class="mb-0">Iteraciones <small class="text-muted" *ngIf="proyectoNombre">– {{ proyectoNombre }}</small><small class="text-muted" *ngIf="!proyectoNombre && etapaId">– Etapa #{{ etapaId }}</small></h2>
   </div>
 
   <a routerLink="/etapas" class="text-decoration-none text-muted fw-bold">

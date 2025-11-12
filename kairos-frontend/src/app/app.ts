@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet, RouterModule } from '@angular/router';
+import { Router, RouterOutlet, RouterModule, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { GlobalTimerComponent } from './components/global-timer/global-timer.component';
 import { CommonModule } from '@angular/common';
+import { ProjectContextService } from './services/project-context.service';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class AppComponent implements OnInit {
   readonly ROL_LIDER = 'LIDER';
   readonly ROL_MIEMBRO = 'MIEMBRO';
   // 2. Inyectar el Router en el constructor
-  constructor(public router: Router, private auth: AuthService) {}
+  constructor(public router: Router, private auth: AuthService, private projectCtx: ProjectContextService) {}
 
   ngOnInit(): void {
     // Suscribirse al estado de autenticación
@@ -31,17 +32,19 @@ export class AppComponent implements OnInit {
     this.auth.currentUser$.subscribe(user => {
         if (user) {
             this.usuarioNombre = user.nombre || 'Usuario';
-            let rolPrincipal = null;
-            if (user.rol) {
-                rolPrincipal = user.rol;
-            } else if (user.roles && user.roles.length > 0) {
-                rolPrincipal = user.roles[0];
-            }
             this.rolUsuario = (user.rol || (user.roles?.length ? user.roles[0] : null))?.toUpperCase() || null; 
         } else {
             this.usuarioNombre = 'Invitado';
             this.rolUsuario = null;
         }
+    });
+
+    // Persistir id de proyecto al navegar por rutas /proyecto/:id/...
+    this.router.events.subscribe(ev => {
+      if (ev instanceof NavigationEnd) {
+        const id = this.currentProjectId;
+        if (id) this.projectCtx.setProjectId(id);
+      }
     });
   }
 
@@ -66,5 +69,10 @@ export class AppComponent implements OnInit {
   esRutaProyecto(): boolean {
     // Comprueba si la URL actual comienza con '/proyecto/'
     return this.router.url.startsWith('/proyecto/');
+  }
+
+  get currentProjectId(): number | null {
+    const m = this.router.url.match(/^\/proyecto\/(\d+)/);
+    return m ? Number(m[1]) : null;
   }
 }

@@ -19,6 +19,8 @@ export class IteracionesComponent implements OnInit {
   private route = inject(ActivatedRoute);
   etapaSlug: string | null = null;
   etapaId: number | null = null;
+  proyectoId: number | null = null;
+  proyectoNombre: string | null = null;
   private iteracionService = inject(IteracionService);
 
   iteraciones: Iteracion[] = [];
@@ -36,22 +38,33 @@ export class IteracionesComponent implements OnInit {
     if (el) this.addIterationModal = new bootstrap.Modal(el);
 
     this.route.paramMap.subscribe(pm => {
-      // soporta dos variantes: /iteraciones/:etapa (slug) o /iteraciones/etapa/:id
+      // Detecta distintas variantes de ruta
       this.etapaSlug = pm.get('etapa');
       const idParam = pm.get('id');
-      this.etapaId = idParam ? Number(idParam) : null;
+      const path = this.route.snapshot.routeConfig?.path || '';
+      const data: any = (this.route.snapshot as any).data;
+      this.proyectoNombre = data?.['proyecto']?.nombre || null;
 
-      if (this.etapaId) {
-        this.iteracionService.getIteracionesPorEtapaId(this.etapaId).subscribe(all => this.iteraciones = all);
-        return;
+      if (path.startsWith('iteraciones/etapa')) {
+        // /iteraciones/etapa/:id -> id es etapa
+        this.etapaId = idParam ? Number(idParam) : null;
+        if (this.etapaId) {
+          this.iteracionService.getIteracionesPorEtapaId(this.etapaId).subscribe(all => this.iteraciones = all);
+          return;
+        }
+      } else if (path.startsWith('proyecto/:id/iteraciones')) {
+        // /proyecto/:id/iteraciones -> id es proyecto
+        this.proyectoId = idParam ? Number(idParam) : null;
+        if (this.proyectoId) {
+          this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(all => this.iteraciones = all);
+          return;
+        }
       }
 
       if (this.etapaSlug) {
-        // fallback antiguo por slug — carga todas
         this.iteracionService.getIteraciones().subscribe(all => this.iteraciones = all);
         return;
       }
-
       this.iteracionService.getIteraciones().subscribe(all => this.iteraciones = all);
     });
   }

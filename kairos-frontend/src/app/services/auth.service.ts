@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { ConfigService } from './config.service';
 
 interface AuthResponse {

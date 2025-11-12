@@ -2,7 +2,6 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Usuario } from '../models/usuarios';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { ConfigService } from './config.service';
 
 @Injectable({
@@ -25,7 +24,7 @@ export class UsuariosService {
   cargarUsuarios() {
     this.http.get<any[]>(this.baseUrl).subscribe({
       next: (data) => {
-        const mapped: Usuario[] = (data || []).map((u: any, idx: number) => ({
+    const mapped: Usuario[] = (data || []).map((u: any, _idx: number) => ({
           id: u.id,
           nombre: u.nombre,
           email: u.email,

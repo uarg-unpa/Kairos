@@ -16,6 +16,9 @@ public class EtapaService implements IEtapaService {
     public List<Etapa> listar() { return repo.findAll(); }
 
     @Override
+    public List<Etapa> listarPorProyecto(Long idProyecto) { return repo.findByProyecto_IdProyecto(idProyecto); }
+
+    @Override
     public Etapa obtener(Long id) { return repo.findById(id).orElse(null); }
 
     @Override

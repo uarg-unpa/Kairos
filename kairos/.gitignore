@@ -55,12 +55,13 @@ temp/
 .cache/
 .parcel-cache/
 .eslintcache
-Constants.java
+# No ignorar clases fuente de negocio.
+# Mover constantes sensibles a application.properties o .env
 # === Misc ===
 *.tgz
 *.zip
 
-kairos-frontend/
+# no ignorar el frontend por error de scope
 .vscode/
 .mvn/
 .mvn/wrapper/

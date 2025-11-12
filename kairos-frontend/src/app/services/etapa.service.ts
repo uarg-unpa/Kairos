@@ -12,7 +12,11 @@ export class EtapaService {
     return this.http.get<Etapa[]>(this.baseUrl);
   }
 
-  crearEtapa(payload: Partial<Etapa>): Observable<Etapa> {
+  getEtapasPorProyecto(proyectoId: number): Observable<Etapa[]> {
+    return this.http.get<Etapa[]>(`${this.baseUrl}/por-proyecto/${proyectoId}`);
+  }
+
+  crearEtapa(payload: any): Observable<Etapa> {
     return this.http.post<Etapa>(this.baseUrl, payload);
   }
 

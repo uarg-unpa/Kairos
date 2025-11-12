@@ -45,6 +45,12 @@ public interface TiempoRepository extends JpaRepository<Tiempo, Long> {
            "GROUP BY i.idIteracion, i.numero ORDER BY i.numero")
     List<Object[]> sumHorasPorIteracionEnEtapa(@Param("etapaId") Long etapaId);
 
+    @Query("SELECT i.idIteracion, i.numero, COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.tarea ta JOIN ta.iteracion i " +
+           "WHERE i.etapa.proyecto.idProyecto = :proyectoId " +
+           "GROUP BY i.idIteracion, i.numero ORDER BY i.numero")
+    List<Object[]> sumHorasPorIteracionEnProyecto(@Param("proyectoId") Long proyectoId);
+
     // Con rango de fechas
     @Query("SELECT i.idIteracion, i.numero, COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
            "JOIN t.tarea ta JOIN ta.iteracion i " +
@@ -58,6 +64,12 @@ public interface TiempoRepository extends JpaRepository<Tiempo, Long> {
            "GROUP BY i.idIteracion, i.numero ORDER BY i.numero")
     List<Object[]> sumHorasPorIteracionEnEtapaRango(@Param("etapaId") Long etapaId, @Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
 
+    @Query("SELECT i.idIteracion, i.numero, COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.tarea ta JOIN ta.iteracion i " +
+           "WHERE i.etapa.proyecto.idProyecto = :proyectoId AND t.fechaRegistro BETWEEN :desde AND :hasta " +
+           "GROUP BY i.idIteracion, i.numero ORDER BY i.numero")
+    List<Object[]> sumHorasPorIteracionEnProyectoRango(@Param("proyectoId") Long proyectoId, @Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
+
     // Horas por usuario (global o filtrado por iteración)
     @Query("SELECT u.id, u.nombre, COALESCE(SUM(t.duracion),0) FROM Tiempo t JOIN t.usuario u GROUP BY u.id, u.nombre ORDER BY u.nombre")
     List<Object[]> sumHorasPorUsuarioGlobal();
@@ -67,6 +79,12 @@ public interface TiempoRepository extends JpaRepository<Tiempo, Long> {
            "WHERE i.idIteracion = :iteracionId " +
            "GROUP BY u.id, u.nombre ORDER BY u.nombre")
     List<Object[]> sumHorasPorUsuarioEnIteracion(@Param("iteracionId") Long iteracionId);
+
+    @Query("SELECT u.id, u.nombre, COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.usuario u JOIN t.tarea ta JOIN ta.iteracion i " +
+           "WHERE i.etapa.proyecto.idProyecto = :proyectoId " +
+           "GROUP BY u.id, u.nombre ORDER BY u.nombre")
+    List<Object[]> sumHorasPorUsuarioEnProyecto(@Param("proyectoId") Long proyectoId);
 
     // Con rango de fechas
     @Query("SELECT u.id, u.nombre, COALESCE(SUM(t.duracion),0) FROM Tiempo t JOIN t.usuario u " +
@@ -79,4 +97,10 @@ public interface TiempoRepository extends JpaRepository<Tiempo, Long> {
            "WHERE i.idIteracion = :iteracionId AND t.fechaRegistro BETWEEN :desde AND :hasta " +
            "GROUP BY u.id, u.nombre ORDER BY u.nombre")
     List<Object[]> sumHorasPorUsuarioEnIteracionRango(@Param("iteracionId") Long iteracionId, @Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
+
+    @Query("SELECT u.id, u.nombre, COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.usuario u JOIN t.tarea ta JOIN ta.iteracion i " +
+           "WHERE i.etapa.proyecto.idProyecto = :proyectoId AND t.fechaRegistro BETWEEN :desde AND :hasta " +
+           "GROUP BY u.id, u.nombre ORDER BY u.nombre")
+    List<Object[]> sumHorasPorUsuarioEnProyectoRango(@Param("proyectoId") Long proyectoId, @Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
 }

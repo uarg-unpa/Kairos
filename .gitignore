@@ -4,8 +4,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-package-lock.json
-yarn.lock
 .pnpm-debug.log
 
 # === Environment variables ===
@@ -55,7 +53,8 @@ temp/
 .cache/
 .parcel-cache/
 .eslintcache
-Constants.java
+# No versionar archivos locales sensibles
+# Constants.java debe migrarse a config/properties o plantillas, no ignorarse
 # === Misc ===
 *.tgz
 *.zip

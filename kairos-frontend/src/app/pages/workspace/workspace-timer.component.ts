@@ -9,7 +9,7 @@ import { TaskService } from '../../services/tarea.service';
 import { TimerState, TaskTimerInfo } from '../../models/timer.model'; 
 import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
-import { catchError, map, of } from 'rxjs';
+import { map } from 'rxjs';
 
 
 // Definimos la estructura del payload para registro manual
@@ -30,7 +30,7 @@ interface TiempoResponseDTO {
 }
 
 
-// Declaración global para Bootstrap Modal
+// Declaraci�n global para Bootstrap Modal
 declare var bootstrap: any;
 
 @Component({
@@ -48,20 +48,20 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   elapsedTimeDisplay: string = '00:00:00';
   timerState: TimerState = {} as TimerState;
   
-  // Lista para el selector del cronómetro y el modal manual
+  // Lista para el selector del cron�metro y el modal manual
   availableTasks: TaskTimerInfo[] = []; 
   selectedTaskId: number | null = null;
   
-  // 🆕 Tareas para la lista general (requiere mapeo en loadTasks)
+  // ?? Tareas para la lista general (requiere mapeo en loadTasks)
   tareas: Tarea[] = []; 
-  // Propiedades para estadísticas (como en el prototipo)
+  // Propiedades para estad�sticas (como en el prototipo)
 totalTimeToday: string = '0h 0m';
 tasksCompletedToday: number = 0;
 activeTasks: number = 0;
 recentActivities: { time: string; message: string }[] = [];
 
   // -----------------------
-  // 🆕 Paginación y Filtros (adaptado de PlanificacionComponent)
+  // ?? Paginaci�n y Filtros (adaptado de PlanificacionComponent)
   // -----------------------
   tareasPorPagina = 5;
   paginaActual = 1;
@@ -71,11 +71,11 @@ recentActivities: { time: string; message: string }[] = [];
   filtroFechaDesde: string = '';
   filtroFechaHasta: string = '';
   
-  // 🆕 Usuarios y usuario actual (solo para referencia, el servicio de tareas ya filtra)
+  // ?? Usuarios y usuario actual (solo para referencia, el servicio de tareas ya filtra)
   usuarios: Usuario[] = [];
   usuarioActual: Usuario | null = null;
 
-  // 🆕 Propiedades para el CU21 (Registro Manual)
+  // ?? Propiedades para el CU21 (Registro Manual)
   manualTimeEntry: ManualTimeEntry = {
     idTarea: null,
     hours: 0,
@@ -98,7 +98,7 @@ recentActivities: { time: string; message: string }[] = [];
     private TaskService: TaskService // <-- Servicio para la carga HTTP
   ) {}
 
-  // --- FUNCIÓN RESTAURADA ---
+  // --- FUNCI�N RESTAURADA ---
   private formatTime(seconds: number): string {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -169,7 +169,7 @@ recentActivities: { time: string; message: string }[] = [];
           priority: t.prioridad,
           description: t.descripcion
         }));
-        this.updateStats(); // ← ahora sí tiene tareas
+        this.updateStats(); // ? ahora s� tiene tareas
       },
       error: (err) => {
         console.error('Error al cargar tareas', err);
@@ -200,7 +200,7 @@ private updateStats(): void {
   this.activeTasks = (this.tareas || []).filter(t => t.estado !== 'Completado').length;
 }
 
-  formatHours(hoyMinutos: any): string {
+  formatHours(_hoyMinutos: any): string {
     throw new Error('Method not implemented.');
   }
 addRecentActivity(message: string): void {
@@ -210,7 +210,7 @@ addRecentActivity(message: string): void {
 }
 
   /**
-   * 🆕 Carga las tareas completas (Tarea[]) para el listado inferior (Asignadas al usuario).
+   * ?? Carga las tareas completas (Tarea[]) para el listado inferior (Asignadas al usuario).
    * Usamos el mismo endpoint /mis-tareas que ya usamos para el selector.
    */
   loadFullTareas(): void {
@@ -241,7 +241,7 @@ addRecentActivity(message: string): void {
       this.usuarioActual = JSON.parse(usuarioGuardado);
     }
 
-    // 2. Suscripción al estado del timer
+    // 2. Suscripci�n al estado del timer
     this.subscriptions.add(this.timerService.timerState$.subscribe(state => {
       this.timerState = state;
       if (state.taskId && this.selectedTaskId === null) {
@@ -253,12 +253,12 @@ addRecentActivity(message: string): void {
       }
     }));
 
-    // 3. Suscripción al display del tiempo
+    // 3. Suscripci�n al display del tiempo
     this.subscriptions.add(this.timerService.elapsedSeconds$.subscribe(seconds => {
       this.elapsedTimeDisplay = this.formatTime(seconds);
     }));
     
-    // 🆕 4. Inicializar el modal de Bootstrap para Tiempo Manual
+    // ?? 4. Inicializar el modal de Bootstrap para Tiempo Manual
     const modalEl = document.getElementById('manualTimeModal');
     if (modalEl && typeof bootstrap !== 'undefined') {
         this.manualTimeModal = new bootstrap.Modal(modalEl);
@@ -266,7 +266,7 @@ addRecentActivity(message: string): void {
   }
 
   // -------------------------
-  // 🆕 Lógica de Paginación y Filtros (adaptada)
+  // ?? L�gica de Paginaci�n y Filtros (adaptada)
   // -------------------------
 
   filtroPrioridad: string = '';
@@ -279,19 +279,19 @@ tareasFiltradas(): Tarea[] {
   });
 }
 
-  // Método para obtener las tareas visibles en la página actual
+  // M�todo para obtener las tareas visibles en la p�gina actual
   tareasPaginadas(): Tarea[] {
     const inicio = (this.paginaActual - 1) * this.tareasPorPagina;
     const fin = inicio + this.tareasPorPagina;
     return this.tareasFiltradas().slice(inicio, fin);
   }
 
-  // Total de páginas
+  // Total de p�ginas
   totalPaginas(): number {
     return Math.ceil(this.tareasFiltradas().length / this.tareasPorPagina);
   }
 
-  // Cambiar de página
+  // Cambiar de p�gina
   cambiarPagina(pagina: number): void {
     if (pagina >= 1 && pagina <= this.totalPaginas()) {
       this.paginaActual = pagina;
@@ -303,10 +303,10 @@ tareasFiltradas(): Tarea[] {
     const tarea = this.tareas.find(t => t.idTarea === tareaId);
     if (!tarea) return;
 
-    tarea.estado = nuevoEstado; // Actualización optimista en el frontend
+    tarea.estado = nuevoEstado; // Actualizaci�n optimista en el frontend
     this.TaskService.updateTarea(tareaId, { estado: nuevoEstado, usuarioId: tarea.usuarioId, iteracionId: tarea.iteracionId }).subscribe({
-      next: (res) => {
-          console.log('Estado actualizado:', res);
+      next: () => {
+          console.log('Estado actualizado');
           this.loadTasks(); // Recargar para sincronizar
       },
       error: (err) => {
@@ -318,7 +318,7 @@ tareasFiltradas(): Tarea[] {
   }
   
   // -------------------------
-  // Manejadores CU20: Cronómetro (Existentes)
+  // Manejadores CU20: Cron�metro (Existentes)
   // -------------------------
 
   handleStart(): void { 
@@ -346,7 +346,7 @@ tareasFiltradas(): Tarea[] {
   }
 
   // -------------------------
-  // 🆕 Manejadores CU21: Tiempo Manual
+  // ?? Manejadores CU21: Tiempo Manual
   // -------------------------
 
   /** Muestra el modal de registro manual */
@@ -376,7 +376,7 @@ tareasFiltradas(): Tarea[] {
         this.updateStats(); // actualiza con tiempos reales
       },
       error: (err) => {
-        console.error('Error al cargar últimos tiempos', err);
+        console.error('Error al cargar �ltimos tiempos', err);
         this.ultimosTiempos = [];
       }
     })
@@ -394,7 +394,7 @@ openEditModal(tiempo: TiempoResponseDTO): void {
 
 saveEditedTime(): void {
   if (!this.editTimeForm || this.editTimeForm.duracionMinutos < 1) {
-    alert('La duración debe ser al menos 1 minuto');
+    alert('La duraci�n debe ser al menos 1 minuto');
     return;
   }
 
@@ -417,13 +417,13 @@ saveEditedTime(): void {
   );
 }
 
-  /** Maneja el envío del formulario de registro manual. */
+  /** Maneja el env�o del formulario de registro manual. */
   handleManualTimeSubmission(): void {
     const entry = this.manualTimeEntry;
 
-    // 1. Validaciones básicas
+    // 1. Validaciones b�sicas
     if (!entry.idTarea || (entry.hours === 0 && entry.minutes <= 0 && entry.seconds === 0)) {
-        alert("Debe seleccionar una tarea e ingresar una duración de al menos un minuto.");
+        alert("Debe seleccionar una tarea e ingresar una duraci�n de al menos un minuto.");
         return; 
     }
     if (new Date(entry.fechaRegistro) > new Date()) {
@@ -431,7 +431,7 @@ saveEditedTime(): void {
         return;
     }
     
-    // 2. Calcular duración total en segundos
+    // 2. Calcular duraci�n total en segundos
     const totalSeconds = (entry.hours * 3600) + (entry.minutes * 60) + entry.seconds;
 
     // 3. Preparar payload para TaskService
@@ -446,13 +446,13 @@ saveEditedTime(): void {
     // 4. Enviar al backend
     this.subscriptions.add(
         this.TaskService.registrarTiempo(payload).subscribe({
-            next: (res) => {
-                alert('✅ Tiempo manual registrado exitosamente.');
+            next: () => {
+                alert('? Tiempo manual registrado exitosamente.');
                 this.loadTasks(); // Recargar para actualizar tiempos registrados en la lista
                 this.closeManualTimeModal();
             },
             error: (err) => {
-                console.error('❌ Error al registrar tiempo manual:', err);
+                console.error('? Error al registrar tiempo manual:', err);
                 const errorMessage = err.error && err.error.message ? err.error.message : 'Error al registrar tiempo. Verifique el estado de la tarea.';
                 alert(`Error de Registro: ${errorMessage}`);
             }

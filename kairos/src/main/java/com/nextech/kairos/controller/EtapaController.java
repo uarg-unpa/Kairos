@@ -13,6 +13,8 @@ import com.nextech.kairos.model.Proyecto;
 import com.nextech.kairos.model.EstadoEtapa;
 
 import java.time.LocalDate;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/etapas")
@@ -30,6 +32,11 @@ public class EtapaController {
         return etapaService.listar().stream().map(EtapaMapper::toDTO).toList();
     }
 
+    @GetMapping("/por-proyecto/{idProyecto}")
+    public List<EtapaDTO> listarPorProyecto(@PathVariable Long idProyecto) {
+        return etapaService.listarPorProyecto(idProyecto).stream().map(EtapaMapper::toDTO).toList();
+    }
+
     @GetMapping("/{id}")
     public EtapaDTO obtener(@PathVariable Long id) {
         Etapa e = etapaService.obtener(id);
@@ -42,17 +49,24 @@ public class EtapaController {
         e.setNombre(dto.getNombre());
         e.setDescripcion(dto.getDescripcion());
         e.setEstado(EstadoEtapa.PENDIENTE);
-        if (dto.getFechaInicio() != null && !dto.getFechaInicio().isBlank()) {
-            e.setFechaInicio(LocalDate.parse(dto.getFechaInicio()));
+        LocalDate ini = (dto.getFechaInicio() != null && !dto.getFechaInicio().isBlank()) ? LocalDate.parse(dto.getFechaInicio()) : null;
+        LocalDate fin = (dto.getFechaFin() != null && !dto.getFechaFin().isBlank()) ? LocalDate.parse(dto.getFechaFin()) : null;
+        if (ini != null && fin != null && fin.isBefore(ini)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de fin no puede ser anterior a la fecha de inicio");
         }
-        if (dto.getFechaFin() != null && !dto.getFechaFin().isBlank()) {
-            e.setFechaFin(LocalDate.parse(dto.getFechaFin()));
+        e.setFechaInicio(ini);
+        e.setFechaFin(fin);
+        // Asociar a proyecto indicado o fallback
+        Proyecto proyecto = null;
+        if (dto.getProyectoId() != null) {
+            proyecto = proyectoRepository.findById(dto.getProyectoId()).orElse(null);
+            if (proyecto == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Proyecto no encontrado con id: " + dto.getProyectoId());
+            }
+        } else {
+            proyecto = proyectoRepository.findAll().stream().findFirst().orElse(null);
         }
-        // Asociar a un proyecto existente por defecto (primero encontrado)
-        Proyecto proyecto = proyectoRepository.findAll().stream().findFirst().orElse(null);
-        if (proyecto != null) {
-            e.setProyecto(proyecto);
-        }
+        if (proyecto != null) { e.setProyecto(proyecto); }
         Etapa saved = etapaService.guardar(e);
         return EtapaMapper.toDTO(saved);
     }

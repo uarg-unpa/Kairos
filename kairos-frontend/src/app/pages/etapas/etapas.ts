@@ -1,10 +1,10 @@
-import { Component, OnInit, AfterViewInit, effect, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuariosService } from '../../services/usuarios';
 import { EtapaService } from '../../services/etapa.service';
 import { Etapa } from '../../models/etapa.model';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 declare const bootstrap: any;
 
@@ -21,6 +21,10 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   private etapaService = inject(EtapaService);
   usuarios = this.usuariosService.usuarios; // usable si agregamos responsable en el futuro
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  proyectoId: number | null = null;
+  proyectoNombre: string | null = null;
 
   nuevaEtapa: any = {
     nombre: '',
@@ -36,9 +40,17 @@ export class EtapasComponent implements OnInit, AfterViewInit {
     const el = document.getElementById('addStageModal');
     if (el) this.addStageModal = new bootstrap.Modal(el);
 
-    this.etapaService.getEtapas().subscribe((data) => {
-      this.etapas = data;
-      setTimeout(() => this.enableTooltips(), 0);
+    // Detecta si estamos en /proyecto/:id/etapas
+    this.route.paramMap.subscribe(pm => {
+      const id = pm.get('id');
+      this.proyectoId = id ? Number(id) : null;
+      const data: any = (this.route.snapshot as any).data;
+      this.proyectoNombre = data?.['proyecto']?.nombre || null;
+      const obs = this.proyectoId ? this.etapaService.getEtapasPorProyecto(this.proyectoId) : this.etapaService.getEtapas();
+      obs.subscribe((data) => {
+        this.etapas = data;
+        setTimeout(() => this.enableTooltips(), 0);
+      });
     });
   }
 
@@ -62,7 +74,8 @@ export class EtapasComponent implements OnInit, AfterViewInit {
 
   crearEtapa() {
     if (!this.nuevaEtapaValida()) return;
-    const payload = { nombre: this.nuevaEtapa.nombre, descripcion: this.nuevaEtapa.descripcion, fechaInicio: this.nuevaEtapa.fechaInicio, fechaFin: this.nuevaEtapa.fechaFin };
+    const payload: any = { nombre: this.nuevaEtapa.nombre, descripcion: this.nuevaEtapa.descripcion, fechaInicio: this.nuevaEtapa.fechaInicio, fechaFin: this.nuevaEtapa.fechaFin };
+    if (this.proyectoId) payload.proyectoId = this.proyectoId;
     this.etapaService.crearEtapa(payload).subscribe({
       next: (nueva) => {
         this.etapas = [nueva, ...this.etapas];

@@ -4,7 +4,7 @@
   <div class="row g-4">
     <!-- Planificación (común a todos) -->
     <div class="col-md-3">
-      <a [routerLink]="['/proyecto', proyecto?.idProyecto, 'planificacion']" class="text-decoration-none text-dark">
+      <a [routerLink]="['/proyecto', proyecto.idProyecto, 'planificacion']" class="text-decoration-none text-dark">
         <div class="card-section p-3 h-100">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="icon-container bg-info bg-opacity-10">
@@ -24,7 +24,7 @@
 
     <!-- Etapas (para Líder y Admin, reducido para Miembro) -->
     <div class="col-md-3" *ngIf="rol === 'Miembro' || rol === 'Líder' || rol === 'Administrador'">
-      <a routerLink="/etapas" class="text-decoration-none text-dark">
+      <a [routerLink]="['/proyecto', proyecto.idProyecto, 'etapas']" class="text-decoration-none text-dark">
         <div class="card-section p-3 h-100">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="icon-container bg-purple bg-opacity-10">
@@ -61,7 +61,7 @@
 
     <!-- Workspace (para Miembro y Líder) -->
     <div class="col-md-3" *ngIf="rol === 'Miembro' || rol === 'Lider'">
-      <a routerLink="/workspace" class="text-decoration-none text-dark">
+      <a [routerLink]="['/proyecto', proyecto.idProyecto, 'workspace']" class="text-decoration-none text-dark">
         <div class="card-section p-3 h-100">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="icon-container bg-primary bg-opacity-10">

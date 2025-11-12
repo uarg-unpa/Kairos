@@ -81,4 +81,9 @@ public void eliminarTarea(Long id) {
         return tareaRepository.findByUsuario_Id(usuarioId);
     }
 
+    @Transactional
+    public List<Tarea> listarPorProyecto(Long idProyecto) {
+        return tareaRepository.findByIteracion_Etapa_Proyecto_IdProyecto(idProyecto);
+    }
+
 }

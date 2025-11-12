@@ -18,22 +18,22 @@
                     <a class="nav-link" routerLink="/inicio" routerLinkActive="active"><span class="bi bi-house-door"></span> Inicio</a>
                 </li>
                 
-                <li class="nav-item" *ngIf="esRutaProyecto()">
-                    <a class="nav-link" routerLink="/planificacion" routerLinkActive="active"><span class="bi bi-calendar4-week"></span> Planificación</a>
+                <li class="nav-item" *ngIf="esRutaProyecto() && currentProjectId">
+                    <a class="nav-link" [routerLink]="['/proyecto', currentProjectId, 'planificacion']" routerLinkActive="active"><span class="bi bi-calendar4-week"></span> Planificación</a>
                 </li>
                 
-                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
-                    <a class="nav-link" routerLink="/etapas" routerLinkActive="active"><span class="bi bi-diagram-2"></span> Etapas</a>
+                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto() && currentProjectId">
+                    <a class="nav-link" [routerLink]="['/proyecto', currentProjectId, 'etapas']" routerLinkActive="active"><span class="bi bi-diagram-2"></span> Etapas</a>
                 </li>
-                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
-                    <a class="nav-link" routerLink="/iteraciones" routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a> 
+                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto() && currentProjectId">
+                    <a class="nav-link" [routerLink]="['/proyecto', currentProjectId, 'iteraciones']" routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a> 
                 </li>
                 
-                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto()">
-                    <a class="nav-link" routerLink="/workspace" routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a> 
+                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && esRutaProyecto() && currentProjectId">
+                    <a class="nav-link" [routerLink]="['/proyecto', currentProjectId, 'workspace']" routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a> 
                 </li>
-                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO)">
-                    <a class="nav-link" routerLink="/dashboard" routerLinkActive="active"><span class="bi bi-graph-up"></span> Reportes</a>
+                <li class="nav-item" *ngIf="(rolUsuario === ROL_LIDER || rolUsuario === ROL_MIEMBRO) && currentProjectId">
+                    <a class="nav-link" [routerLink]="['/proyecto', currentProjectId, 'dashboard']" routerLinkActive="active"><span class="bi bi-graph-up"></span> Reportes</a>
                 </li>
                 <li class="nav-item" *ngIf="rolUsuario === ROL_ADMIN">
                     <a class="nav-link" routerLink="/usuarios" routerLinkActive="active"><span class="bi bi-person"></span> Usuarios</a>

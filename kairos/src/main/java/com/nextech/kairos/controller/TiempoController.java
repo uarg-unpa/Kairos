@@ -94,6 +94,7 @@ public class TiempoController {
     @GetMapping("/horas-por-iteracion")
     public ResponseEntity<List<HorasPorIteracionDTO>> horasPorIteracion(
         @RequestParam(name = "etapaId", required = false) Long etapaId,
+        @RequestParam(name = "proyectoId", required = false) Long proyectoId,
         @RequestParam(name = "from", required = false) String from,
         @RequestParam(name = "to", required = false) String to
     ) {
@@ -101,13 +102,21 @@ public class TiempoController {
         if (from != null && to != null) {
             java.time.LocalDate f = java.time.LocalDate.parse(from);
             java.time.LocalDate t = java.time.LocalDate.parse(to);
-            rows = (etapaId == null)
-                ? tiempoService.horasPorIteracionGlobalRango(f, t)
-                : tiempoService.horasPorIteracionEnEtapaRango(etapaId, f, t);
+            if (etapaId != null) {
+                rows = tiempoService.horasPorIteracionEnEtapaRango(etapaId, f, t);
+            } else if (proyectoId != null) {
+                rows = tiempoService.horasPorIteracionEnProyectoRango(proyectoId, f, t);
+            } else {
+                rows = tiempoService.horasPorIteracionGlobalRango(f, t);
+            }
         } else {
-            rows = (etapaId == null)
-                ? tiempoService.horasPorIteracionGlobal()
-                : tiempoService.horasPorIteracionEnEtapa(etapaId);
+            if (etapaId != null) {
+                rows = tiempoService.horasPorIteracionEnEtapa(etapaId);
+            } else if (proyectoId != null) {
+                rows = tiempoService.horasPorIteracionEnProyecto(proyectoId);
+            } else {
+                rows = tiempoService.horasPorIteracionGlobal();
+            }
         }
         List<HorasPorIteracionDTO> out = rows.stream()
             .map(r -> new HorasPorIteracionDTO(((Number) r[0]).longValue(), (Integer) r[1], ((Number) r[2]).intValue()))
@@ -118,6 +127,7 @@ public class TiempoController {
     @GetMapping("/horas-por-usuario")
     public ResponseEntity<List<HorasPorUsuarioDTO>> horasPorUsuario(
         @RequestParam(name = "iteracionId", required = false) Long iteracionId,
+        @RequestParam(name = "proyectoId", required = false) Long proyectoId,
         @RequestParam(name = "from", required = false) String from,
         @RequestParam(name = "to", required = false) String to
     ) {
@@ -125,13 +135,21 @@ public class TiempoController {
         if (from != null && to != null) {
             java.time.LocalDate f = java.time.LocalDate.parse(from);
             java.time.LocalDate t = java.time.LocalDate.parse(to);
-            rows = (iteracionId == null)
-                ? tiempoService.horasPorUsuarioGlobalRango(f, t)
-                : tiempoService.horasPorUsuarioEnIteracionRango(iteracionId, f, t);
+            if (iteracionId != null) {
+                rows = tiempoService.horasPorUsuarioEnIteracionRango(iteracionId, f, t);
+            } else if (proyectoId != null) {
+                rows = tiempoService.horasPorUsuarioEnProyectoRango(proyectoId, f, t);
+            } else {
+                rows = tiempoService.horasPorUsuarioGlobalRango(f, t);
+            }
         } else {
-            rows = (iteracionId == null)
-                ? tiempoService.horasPorUsuarioGlobal()
-                : tiempoService.horasPorUsuarioEnIteracion(iteracionId);
+            if (iteracionId != null) {
+                rows = tiempoService.horasPorUsuarioEnIteracion(iteracionId);
+            } else if (proyectoId != null) {
+                rows = tiempoService.horasPorUsuarioEnProyecto(proyectoId);
+            } else {
+                rows = tiempoService.horasPorUsuarioGlobal();
+            }
         }
         List<HorasPorUsuarioDTO> out = rows.stream()
             .map(r -> new HorasPorUsuarioDTO(((Number) r[0]).longValue(), (String) r[1], ((Number) r[2]).intValue()))

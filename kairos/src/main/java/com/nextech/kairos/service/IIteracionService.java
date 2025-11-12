@@ -9,4 +9,5 @@ public interface IIteracionService {
     Iteracion guardarIteracion(Iteracion iteracion);
     void eliminarIteracion(Long id);
     List<Iteracion> listarPorEtapa(Long idEtapa);
+    List<Iteracion> listarPorProyecto(Long idProyecto);
 }

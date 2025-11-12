@@ -17,17 +17,20 @@ import { ProyectoDetalleComponent } from './pages/proyecto/detalle/proyecto-deta
 import { EtapasComponent } from './pages/etapas/etapas';
 import { IteracionesComponent } from './pages/iteraciones/iteraciones';
 import { DashboardComponent } from './pages/dashboard/dashboard';
+import { projectContextGuard } from './guards/project-context.guard';
+import { proyectoResolver } from './resolvers/proyecto.resolver';
 
 export const routes: Routes = [
+  // Redirección inicial explícita para evitar "pantalla en blanco" al abrir /
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
   {
     path: '',
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'inicio', pathMatch: 'full' },
       { path: 'inicio', component: InicioComponent }
     ]
   },
-  { path: 'login', component: LoginComponent },
   { path: 'usuarios', component: UsuariosComponent, canActivate: [authGuard] },
   { path: 'roles', component: RolesComponent, canActivate: [authGuard] },
   { path: 'permisos', component: PermisosComponent, canActivate: [authGuard] },
@@ -37,30 +40,45 @@ export const routes: Routes = [
   { path: 'usuario/modificar/:id', component: UsuarioModificarComponent, canActivate: [authGuard] },
   { path: 'usuario/crear', component: UsuarioCrearComponent, canActivate: [authGuard] },
   { path: 'salir', component: SalirComponent },
-  {path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard] },
+  { path: 'workspace', component: WorkspaceTimerComponent, canActivate: [authGuard, projectContextGuard], data: { target: 'workspace' } },
   { path: 'proyecto/:id', component: ProyectoDetalleComponent, canActivate: [authGuard] },
   // SUBRUTAS DEL PROYECTO
   { 
     path: 'proyecto/:id/planificacion', 
-    component: PlanificacionComponent, 
+    component: PlanificacionComponent,
+    resolve: { proyecto: proyectoResolver },
     canActivate: [authGuard] 
   },
   { 
     path: 'proyecto/:id/etapas', 
-    component: EtapasComponent, 
+    component: EtapasComponent,
+    resolve: { proyecto: proyectoResolver },
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'proyecto/:id/iteraciones', 
+    component: IteracionesComponent,
+    resolve: { proyecto: proyectoResolver },
     canActivate: [authGuard] 
   },
   { 
     path: 'proyecto/:id/workspace', 
-    component: WorkspaceTimerComponent, 
+    component: WorkspaceTimerComponent,
+    resolve: { proyecto: proyectoResolver },
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'proyecto/:id/dashboard', 
+    component: DashboardComponent,
+    resolve: { proyecto: proyectoResolver },
     canActivate: [authGuard] 
   },
   // { path: 'proyecto/:id/planificacion', component: PlanificacionComponent, canActivate: [authGuard] },
   // {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
-  { path: 'etapas', component: EtapasComponent, canActivate: [authGuard] },
+  { path: 'etapas', component: EtapasComponent, canActivate: [authGuard, projectContextGuard], data: { target: 'etapas' } },
   { path: 'iteraciones/:etapa', component: IteracionesComponent, canActivate: [authGuard] },
   { path: 'iteraciones/etapa/:id', component: IteracionesComponent, canActivate: [authGuard] },
-  { path: 'iteraciones', component: IteracionesComponent, canActivate: [authGuard] },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard, projectContextGuard], data: { target: 'dashboard' } },
+  { path: 'iteraciones', component: IteracionesComponent, canActivate: [authGuard, projectContextGuard], data: { target: 'iteraciones' } },
   { path: '**', redirectTo: '' } // mantener este siempre al final
 ];
