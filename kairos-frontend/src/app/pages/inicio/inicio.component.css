@@ -1,23 +1,57 @@
 .project-card {
-  transition: all 0.3s ease;
-  cursor: pointer;
-  border: none;
-  overflow: hidden;
-  border-radius: 0.75rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .project-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, .15);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
 .project-preview {
+  height: 120px; /* Altura fija para el logo */
   background: linear-gradient(180deg, #f0f4f8, #ffffff);
-  height: 140px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.card-body {
+  flex-grow: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid #e9ecef;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+
+.card-text {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Máximo 3 líneas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.badge {
+  font-size: 0.7rem;
 }
 .modal-backdrop {
   opacity: 0.5;

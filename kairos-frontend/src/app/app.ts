@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet, RouterModule } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { GlobalTimerComponent } from './components/global-timer/global-timer.component';
 import { CommonModule } from '@angular/common';
+import { LoadingService } from './services/loading.service';
+import { Proyecto } from '././models/proyecto.model';
+
 
 
 @Component({
@@ -14,15 +17,15 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent implements OnInit {
   title = 'Kairos Frontend'; 
-
-  readonly ROL_ADMIN = 'ADMINISTRADOR';
-  readonly ROL_LIDER = 'LIDER';
-  readonly ROL_MIEMBRO = 'MIEMBRO';
-  // 2. Inyectar el Router en el constructor
-  constructor(public router: Router, private auth: AuthService) {}
+  proyecto: Proyecto | null = null;
+  usuarioId: number | null = null;
+  rolEnProyecto: 'Admin' | 'Líder' | 'Miembro' = 'Miembro';
+  proyectoId: number | null = null;
+  loadingService = inject(LoadingService);
+  
+  constructor(public router: Router, public auth: AuthService) {}
 
   ngOnInit(): void {
-    // Suscribirse al estado de autenticación
     this.auth.isLoggedIn$.subscribe(isLoggedIn => {
       this.usuarioLogueado = isLoggedIn;
     });
@@ -43,7 +46,40 @@ export class AppComponent implements OnInit {
             this.rolUsuario = null;
         }
     });
+    this.router.events.subscribe(() => {
+      this.actualizarProyectoId();
+    });
+    this.actualizarProyectoId();
   }
+  private actualizarProyectoId(): void {
+    const url = this.router.url;
+    const match = url.match(/\/proyecto\/(\d+)/);
+    this.proyectoId = match ? +match[1] : null;
+  }
+  private determinarRolEnProyecto(): void {
+    if (!this.proyecto || !this.usuarioId) {
+      this.rolEnProyecto = 'Miembro';
+      return;
+    }
+
+    // 1. ¿Es admin global?
+    if (this.auth.esAdmin()) {
+      this.rolEnProyecto = 'Admin';
+      return;
+    }
+
+    // 2. ¿Es líder del proyecto?
+    const esLider = this.proyecto.usuariosProyecto?.some(up =>
+      up.idUsuario === this.usuarioId && up.rolProyecto === 'Líder'
+    ) || false;
+
+    this.rolEnProyecto = esLider ? 'Líder' : 'Miembro';
+  }
+
+  esAdmin(): boolean {
+    return this.auth.esAdmin();
+  }
+  
 
   // 3. Implementar la función de logout
   logout(): void {
