@@ -130,7 +130,12 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   }
 
   goToEtapaId(id: number) {
-    this.router.navigate(['/iteraciones/etapa', id]);
+    // Mantener el contexto del proyecto en la URL para que el navbar y vistas usen el mismo proyecto
+    if (this.idProyecto) {
+      this.router.navigate(['/proyecto', this.idProyecto, 'iteraciones', id]);
+    } else {
+      this.router.navigate(['/iteraciones/etapa', id]);
+    }
   }
 
   // Estado derivado solo por fechas: PENDIENTE, EN_PROGRESO, FINALIZADA

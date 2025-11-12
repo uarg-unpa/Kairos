@@ -371,7 +371,7 @@
             <div class="col-md-6">
               <label class="form-label">Iteración *</label>
               <select class="form-select" [(ngModel)]="nuevaTarea.iteracionId" name="iteracionId" required>
-                <option *ngFor="let i of iteraciones" [ngValue]="i.idIteracion">Iteración: {{ i.numero }}</option>
+                <option *ngFor="let i of iteraciones" [ngValue]="i.idIteracion">Iteración {{ i.numero }} ({{ i.etapaNombre || 'Sin etapa' }})</option>
               </select>
             </div>
           </div>

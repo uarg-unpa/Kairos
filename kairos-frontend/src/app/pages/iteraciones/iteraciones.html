@@ -36,7 +36,7 @@
   <div class="row g-4">
     @for (it of iteracionesFiltradas(); track it.idIteracion) {
       <div class="col-lg-4 col-md-6">
-        <div class="card stage-card h-100">
+        <div class="card stage-card h-100" role="button" (click)="verTareasDeIteracion(it)">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-3">
               <div>
@@ -75,7 +75,7 @@
             </div>
 
             <div class="d-flex justify-content-end mt-2">
-              <button class="btn btn-outline-danger btn-sm" title="Eliminar iteración" (click)="eliminarIteracion(it)">
+              <button class="btn btn-outline-danger btn-sm" title="Eliminar iteración" (click)="eliminarIteracion(it, $event)">
                 <i class="bi bi-trash"></i>
               </button>
             </div>

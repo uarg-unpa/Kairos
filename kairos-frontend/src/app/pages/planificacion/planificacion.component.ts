@@ -1,4 +1,5 @@
 import { Component, OnInit, effect } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -106,7 +107,8 @@ export class PlanificacionComponent implements OnInit {
     private taskService: TaskService,
     private usuariosService: UsuariosService,
     private iteracionService: IteracionService,
-    private comentarioService: ComentarioService
+    private comentarioService: ComentarioService,
+    private route: ActivatedRoute
   ) {
     // sincroniza la lista de usuarios cada vez que cambia el servicio
     effect(() => {
@@ -122,6 +124,11 @@ export class PlanificacionComponent implements OnInit {
    * - inicializa el modal de bootstrap si está presente en el DOM
    */
   ngOnInit(): void {
+    const qp = this.route.snapshot.queryParamMap;
+    const iterParam = qp.get('iteracionId');
+    if (iterParam) this.filtroIteracionId = Number(iterParam);
+
+    this.proyectoId = Number(this.route.snapshot.paramMap.get('id')) || null;
     this.cargarTareas();
     this.cargarCategorias();
     this.cargarIteraciones();
@@ -176,7 +183,10 @@ export class PlanificacionComponent implements OnInit {
 
   /** Carga todas las iteraciones desde el backend */
   cargarIteraciones(): void {
-    this.iteracionService.getIteraciones().subscribe({
+    const obs = this.proyectoId
+      ? this.iteracionService.getIteracionesPorProyectoId(this.proyectoId)
+      : this.iteracionService.getIteraciones();
+    obs.subscribe({
       next: (data) => (this.iteraciones = data),
       error: (err) => console.error('Error al cargar iteraciones:', err)
     });
@@ -195,7 +205,10 @@ export class PlanificacionComponent implements OnInit {
    * Se separa la carga de comentarios para evitar peticiones fallidas cuando las tareas aún no existen.
    */
   cargarTareas(): void {
-    this.taskService.getTareas().subscribe({
+    const obs = this.proyectoId
+      ? this.taskService.getTareasPorProyecto(this.proyectoId)
+      : this.taskService.getTareas();
+    obs.subscribe({
       next: (data) => {
         this.tareas = data;
         console.log('Tareas cargadas:', this.tareas);
@@ -582,6 +595,7 @@ eliminarCategoria(categoriaId: number): void {
    */
   tareasFiltradas(): Tarea[] {
     return this.tareas.filter(t => {
+      const cumpleIteracion = !this.filtroIteracionId || t.iteracionId === this.filtroIteracionId;
       const cumpleCategoria =
         this.filtroCategoria === 'Todas' ||
         t.categorias.some(c => c.nombre === this.filtroCategoria);
@@ -602,9 +616,13 @@ eliminarCategoria(categoriaId: number): void {
         !this.filtroFechaHasta ||
         (t.fechaFin && new Date(t.fechaFin) <= new Date(this.filtroFechaHasta));
 
-      return cumpleCategoria && cumpleResponsable && cumpleEstado && cumpleFechaDesde && cumpleFechaHasta;
+      return cumpleIteracion && cumpleCategoria && cumpleResponsable && cumpleEstado && cumpleFechaDesde && cumpleFechaHasta;
     });
   }
+
+  // Filtros derivados de ruta
+  proyectoId: number | null = null;
+  filtroIteracionId: number | null = null;
 
 
   categoriaExpandida: string | null = null;
