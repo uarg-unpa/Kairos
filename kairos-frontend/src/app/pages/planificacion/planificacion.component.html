@@ -27,6 +27,15 @@
     </div>
   </div>
 
+  <!-- Filtro de vencimiento activo (proveniente del Dashboard) -->
+  <div *ngIf="filtroVencimiento" class="alert alert-info d-flex align-items-center justify-content-between mb-3">
+    <span>
+      Filtro aplicado:
+      {{ filtroVencimiento === 'proximas' ? 'Próximos vencimientos (7 días)' : 'Tareas atrasadas' }}
+    </span>
+    <button class="btn btn-sm btn-outline-secondary" (click)="clearVencimientoFilter()">Quitar filtro</button>
+  </div>
+
   <!-- FILTROS -->
   <div class="row g-4 mb-2">
     <!-- Filtros generales rápidos (puedes reemplazarlos por los vinculados a la componente) -->

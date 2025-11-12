@@ -1,5 +1,5 @@
 import { Component, OnInit, effect } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -98,6 +98,9 @@ export class PlanificacionComponent implements OnInit {
   filtroFechaDesde: string = '';
   filtroFechaHasta: string = '';
 
+  // Filtro por vencimiento proveniente del Dashboard (?vencimiento=proximas|atrasadas)
+  filtroVencimiento: 'proximas' | 'atrasadas' | null = null;
+
   /**
    * Constructor inyecta servicios necesarios.
    * Además utiliza effect() para escuchar cambios en el servicio de usuarios.
@@ -108,7 +111,8 @@ export class PlanificacionComponent implements OnInit {
     private usuariosService: UsuariosService,
     private iteracionService: IteracionService,
     private comentarioService: ComentarioService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     // sincroniza la lista de usuarios cada vez que cambia el servicio
     effect(() => {
@@ -127,6 +131,12 @@ export class PlanificacionComponent implements OnInit {
     const qp = this.route.snapshot.queryParamMap;
     const iterParam = qp.get('iteracionId');
     if (iterParam) this.filtroIteracionId = Number(iterParam);
+
+    // Escucha y aplica filtro de vencimiento desde query params
+    this.route.queryParamMap.subscribe(params => {
+      const venc = params.get('vencimiento');
+      this.filtroVencimiento = (venc === 'proximas' || venc === 'atrasadas') ? venc : null;
+    });
 
     this.proyectoId = Number(this.route.snapshot.paramMap.get('id')) || null;
     this.cargarTareas();
@@ -594,7 +604,7 @@ eliminarCategoria(categoriaId: number): void {
    * Retorna la lista de tareas filtradas por los criterios seleccionados en la UI.
    */
   tareasFiltradas(): Tarea[] {
-    return this.tareas.filter(t => {
+    let items = this.tareas.filter(t => {
       const cumpleIteracion = !this.filtroIteracionId || t.iteracionId === this.filtroIteracionId;
       const cumpleCategoria =
         this.filtroCategoria === 'Todas' ||
@@ -618,6 +628,30 @@ eliminarCategoria(categoriaId: number): void {
 
       return cumpleIteracion && cumpleCategoria && cumpleResponsable && cumpleEstado && cumpleFechaDesde && cumpleFechaHasta;
     });
+
+    // Aplica filtro de vencimiento si corresponde
+    if (this.filtroVencimiento) {
+      const ahora = new Date();
+      const limite = new Date(ahora);
+      limite.setDate(limite.getDate() + 7);
+
+      const esNoCompletada = (t: Tarea) => !/completad|finalizad/i.test(t?.estado ?? '');
+      const fechaFin = (t: Tarea) => t?.fechaFin ? new Date(t.fechaFin) : null;
+
+      if (this.filtroVencimiento === 'proximas') {
+        items = items.filter(t => {
+          const f = fechaFin(t);
+          return esNoCompletada(t) && !!f && f >= ahora && f <= limite;
+        });
+      } else if (this.filtroVencimiento === 'atrasadas') {
+        items = items.filter(t => {
+          const f = fechaFin(t);
+          return esNoCompletada(t) && !!f && f < ahora;
+        });
+      }
+    }
+
+    return items;
   }
 
   // Filtros derivados de ruta
@@ -641,6 +675,16 @@ getNombreTareaPorId(id: number): string {
   const tarea = this.tareas.find(t => t.idTarea === id);
   return tarea ? tarea.nombre : 'Desconocida';
 }
+
+
+  // Quita el filtro de vencimiento proveniente del Dashboard
+  clearVencimientoFilter(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { vencimiento: null },
+      queryParamsHandling: 'merge'
+    });
+  }
 
 
 }

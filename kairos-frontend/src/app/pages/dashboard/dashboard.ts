@@ -5,14 +5,14 @@ import { EtapaService } from '../../services/etapa.service';
 import { IteracionService } from '../../services/iteracion.service';
 import { TaskService } from '../../services/tarea.service';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 declare const Chart: any;
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './dashboard.html'
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -35,6 +35,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   totalHoras = 0; // horas reales (minutos agregados / 60)
   eficiencia = 0; // (reales/estimadas)*100 si hay estimadas
   proyectoNombre: string | null = null;
+  atrasadasCount = 0;
+  proximasCount = 0;
 
   private charts: any[] = [];
 
@@ -119,6 +121,29 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tareasCompletadas = completadas.length;
 
       // eficiencia simple: horas reales / estimadas
+      // calcular atrasadas y próximas a vencer (7 días)
+      const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const hoy = startOfDay(new Date());
+      const limite = new Date(hoy);
+      limite.setDate(limite.getDate() + 7);
+      const esPendiente = (t: any) => !(/completad|finalizad/i.test((t.estado || '').toLowerCase()));
+      const parseFecha = (s: any) => {
+        try {
+          if (!s) return null;
+          const d = new Date(s);
+          return isNaN(d.getTime()) ? null : startOfDay(d);
+        } catch { return null; }
+      };
+      const pendientes = tareas.filter(esPendiente);
+      this.atrasadasCount = pendientes.filter(t => {
+        const f = parseFecha(t.fechaFin);
+        return !!f && f < hoy;
+      }).length;
+      this.proximasCount = pendientes.filter(t => {
+        const f = parseFecha(t.fechaFin);
+        return !!f && f >= hoy && f <= limite;
+      }).length;
+
       const estimadas = tareas.map(t => t.horasEstimadas || 0).reduce((a: number, b: number) => a + b, 0);
       const reales = this.totalHoras; // ya en horas
       this.eficiencia = estimadas > 0 ? Math.min(100, Math.round((reales / estimadas) * 100)) : 0;
@@ -138,6 +163,26 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         porUserMap.set(key, (porUserMap.get(key) || 0) + 1);
       });
       this.renderBar('chartTareasUser', Array.from(porUserMap.keys()), Array.from(porUserMap.values()), '#ffc107', '#ffe08a', true);
+
+      // Actualiza el texto del card "Próximos vencimientos" en caso de que la plantilla tenga texto fijo
+      try {
+        const cards = document.querySelectorAll('.row.mb-5.g-4.justify-content-between .col-md-6');
+        const proximasCard = cards && cards.length > 1 ? cards[1] as HTMLElement : null;
+        const titleEl = proximasCard?.querySelector('h4.mb-2');
+        if (titleEl && titleEl.textContent && titleEl.textContent.trim().startsWith('Pr')) {
+          titleEl.textContent = 'Próximos vencimientos';
+        }
+        const spanEl = proximasCard?.querySelector('span.fs-5');
+        if (spanEl) {
+          if (this.proximasCount > 0) {
+            spanEl.classList.remove('text-muted');
+            spanEl.textContent = `${this.proximasCount} ${this.proximasCount === 1 ? 'tarea próxima a vencer' : 'tareas próximas a vencer'}`;
+          } else {
+            spanEl.classList.add('text-muted');
+            spanEl.textContent = 'No hay tareas próximas a vencer';
+          }
+        }
+      } catch {}
     });
   }
 
