@@ -22,14 +22,14 @@
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'planificacion']" routerLinkActive="active"><span class="bi bi-calendar4-week"></span> Planificacion</a>
                 </li>
 
-                <li class="nav-item" *ngIf="(rolEnProyecto !== 'Admin') && esRutaProyecto() && proyectoId">
+                <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'etapas']" routerLinkActive="active"><span class="bi bi-diagram-2"></span> Etapas</a>
                 </li>
-                <li class="nav-item" *ngIf="(rolEnProyecto !== 'Admin') && esRutaProyecto() && proyectoId">
+                <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'iteraciones']" routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a> 
                 </li>
 
-                <li class="nav-item" *ngIf="(rolEnProyecto !== 'Admin') && esRutaProyecto() && proyectoId">
+                <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'workspace']" routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a> 
                 </li>
                 <li class="nav-item" *ngIf="esRutaProyecto() && proyectoId">
@@ -91,4 +91,3 @@
   </div>
 </div>
 <app-global-timer *ngIf="usuarioLogueado && router.url !== '/login'"></app-global-timer>
-

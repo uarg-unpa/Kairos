@@ -91,7 +91,7 @@ export class AuthService {
     if (!rolRaw) return 'MIEMBRO';
     const normalized = rolRaw.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     if (normalized.includes('ADMINISTRADOR') || normalized.includes('ADMIN')) return 'ADMINISTRADOR';
-    if (normalized.includes('LIDER')) return 'LÍDER';
+    if (normalized.includes('LIDER')) return 'LIDER';
     return 'MIEMBRO';
   }
 

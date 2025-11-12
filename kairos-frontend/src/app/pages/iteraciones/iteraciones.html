@@ -22,9 +22,12 @@
           </div>
         </div>
         <div class="col-md-4 text-end ms-auto">
-          <button class="btn btn-success" (click)="abrirModalIteracion()">
+          <button class="btn btn-success" (click)="abrirModalIteracion()" [disabled]="!etapaId" [attr.title]="!etapaId ? 'Para crear una iteración, ingresa desde una etapa específica' : null">
             <i class="bi bi-plus-circle me-2"></i>Crear iteración
           </button>
+          <div class="form-text text-danger" *ngIf="!etapaId">
+            Para crear una iteración, ingresa desde una etapa específica.
+          </div>
         </div>
       </div>
     </div>
@@ -39,6 +42,12 @@
               <div>
                 <div class="d-flex align-items-center gap-2 mb-2">
                   <h5 class="card-title mb-0">Iteración {{ it.numero }}</h5>
+                  <small
+                    class="text-muted d-inline-block text-truncate"
+                    [style.maxWidth.px]="200"
+                    *ngIf="it.etapaNombre"
+                    [attr.title]="it.etapaNombre"
+                  >– {{ it.etapaNombre }}</small>
                 </div>
                 <div class="mb-2">
                   <small class="text-muted">
@@ -80,6 +89,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cerrarModalIteracion()"></button>
       </div>
       <div class="modal-body">
+        <div *ngIf="errorNuevaIteracion" class="alert alert-danger" role="alert">{{ errorNuevaIteracion }}</div>
         <form #formIter="ngForm">
           <div class="row g-3">
             <div class="col-md-4">
@@ -92,11 +102,14 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">Fecha de inicio *</label>
-              <input type="date" class="form-control" [(ngModel)]="nuevaIteracion.fechaInicio" name="fechaInicio" required />
+              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()" [(ngModel)]="nuevaIteracion.fechaInicio" (ngModelChange)="onFechaInicioChange($event)" name="fechaInicio" required />
             </div>
             <div class="col-md-6">
               <label class="form-label">Fecha de fin *</label>
-              <input type="date" class="form-control" [(ngModel)]="nuevaIteracion.fechaFin" name="fechaFin" required />
+              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()" [attr.min]="nuevaIteracion.fechaInicio || null" [(ngModel)]="nuevaIteracion.fechaFin" name="fechaFin" required />
+            </div>
+            <div class="col-12" *ngIf="fechasDesordenadas()">
+              <div class="invalid-feedback d-block">La fecha de fin no puede ser anterior a la fecha de inicio</div>
             </div>
           </div>
         </form>

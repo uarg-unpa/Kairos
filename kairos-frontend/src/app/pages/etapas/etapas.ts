@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, effect, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuariosService } from '../../services/usuarios';
@@ -17,6 +17,7 @@ declare const bootstrap: any;
 })
 export class EtapasComponent implements OnInit, AfterViewInit {
   idProyecto!: number;
+  proyectoNombre?: string;
   private addStageModal: any;
 
   private usuariosService = inject(UsuariosService);
@@ -29,8 +30,9 @@ export class EtapasComponent implements OnInit, AfterViewInit {
     descripcion: '',
     fechaInicio: '',
     fechaFin: '', 
-    idProyecto: this.idProyecto,
+    proyectoId: this.idProyecto,
   };
+  errorNuevaEtapa: string | null = null;
 
   etapas: Etapa[] = [];
   filtroEstado: 'TODAS' | 'PENDIENTE' | 'EN_PROGRESO' | 'FINALIZADA' = 'TODAS';
@@ -43,6 +45,7 @@ export class EtapasComponent implements OnInit, AfterViewInit {
 
     this.idProyecto = Number(this.route.snapshot.paramMap.get('id'));
     console.log('Proyecto ID:', this.idProyecto);
+    this.nuevaEtapa.proyectoId = this.idProyecto;
 
     this.etapaService.getEtapasPorProyecto(this.idProyecto).subscribe({
       next: (etapas) => {
@@ -63,22 +66,30 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   }
 
   abrirModalEtapa() {
+    this.errorNuevaEtapa = null;
     this.addStageModal?.show();
   }
 
   cerrarModalEtapa() {
     this.addStageModal?.hide();
+    this.errorNuevaEtapa = null;
     (document.activeElement as HTMLElement)?.blur();
   }
 
   nuevaEtapaValida(): boolean {
     const e = this.nuevaEtapa;
-    return !!(e.nombre && e.fechaInicio && e.fechaFin);
+    this.errorNuevaEtapa = null;
+    if (!(e.nombre && e.fechaInicio && e.fechaFin)) return false;
+    if (this.fechasDesordenadas()) {
+      this.errorNuevaEtapa = 'La fecha de fin no puede ser anterior a la fecha de inicio';
+      return false;
+    }
+    return true;
   }
 
   crearEtapa() {
     if (!this.nuevaEtapaValida()) return;
-    const payload = { nombre: this.nuevaEtapa.nombre, descripcion: this.nuevaEtapa.descripcion, fechaInicio: this.nuevaEtapa.fechaInicio, fechaFin: this.nuevaEtapa.fechaFin, idProyecto: this.idProyecto };
+    const payload = { nombre: this.nuevaEtapa.nombre, descripcion: this.nuevaEtapa.descripcion, fechaInicio: this.nuevaEtapa.fechaInicio, fechaFin: this.nuevaEtapa.fechaFin, proyectoId: this.idProyecto };
     console.log('Crear etapa con payload:', payload);
     this.etapaService.crearEtapa(payload).subscribe({
       next: (nueva) => {
@@ -89,13 +100,32 @@ export class EtapasComponent implements OnInit, AfterViewInit {
       },
       error: (err) => {
         console.error('Error creando etapa', err);
-        alert('No se pudo crear la etapa');
+        this.errorNuevaEtapa = err?.error?.error || 'No se pudo crear la etapa';
       }
     });
   }
 
   private resetForm() {
-    this.nuevaEtapa = { nombre: '', descripcion: '', fechaInicio: '', fechaFin: '' };
+    this.nuevaEtapa = { nombre: '', descripcion: '', fechaInicio: '', fechaFin: '', proyectoId: this.idProyecto };
+    this.errorNuevaEtapa = null;
+  }
+
+  fechasDesordenadas(): boolean {
+    const e = this.nuevaEtapa;
+    if (!e?.fechaInicio || !e?.fechaFin) return false;
+    const ini = new Date(e.fechaInicio);
+    const fin = new Date(e.fechaFin);
+    if (isNaN(ini.getTime()) || isNaN(fin.getTime())) return false;
+    return fin < ini;
+  }
+
+  onFechaInicioChange(value: string): void {
+    this.nuevaEtapa.fechaInicio = value;
+    if (this.nuevaEtapa.fechaFin && this.nuevaEtapa.fechaFin < value) {
+      // Ajusta la fecha fin al mínimo permitido para mantener consistencia visual
+      this.nuevaEtapa.fechaFin = value;
+    }
+    this.errorNuevaEtapa = null;
   }
 
   goToEtapaId(id: number) {

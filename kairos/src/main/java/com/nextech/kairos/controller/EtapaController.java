@@ -82,11 +82,7 @@ public class EtapaController {
         return EtapaMapper.toDTO(saved);
     }
 
-    @GetMapping("/proyecto/{idProyecto}")
-    public List<EtapaDTO> listarPorProyecto(@PathVariable Long idProyecto) {
-        List<Etapa> etapas = etapaService.listarPorProyecto(idProyecto);
-        return etapas.stream().map(EtapaMapper::toDTO).toList();
-    }
+    // Duplicate method removed; use the existing endpoint GET /api/etapas/por-proyecto/{idProyecto}
 
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable Long id) {

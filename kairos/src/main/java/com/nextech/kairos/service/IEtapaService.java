@@ -9,5 +9,4 @@ public interface IEtapaService {
     Etapa obtener(Long id);
     Etapa guardar(Etapa etapa);
     void eliminar(Long id);
-    List<Etapa> listarPorProyecto(Long idProyecto);
 }

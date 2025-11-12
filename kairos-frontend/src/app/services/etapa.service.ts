@@ -25,8 +25,6 @@ export class EtapaService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  getEtapasPorProyecto(idProyecto: number): Observable<Etapa[]> {
-    return this.http.get<Etapa[]>(`${this.baseUrl}/proyecto/${idProyecto}`);
-  }
+  // Nota: endpoint unificado en /por-proyecto/{idProyecto}
 }
 

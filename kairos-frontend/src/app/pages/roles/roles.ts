@@ -1,7 +1,7 @@
 // pages/roles/roles.ts
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RolesService, RolItem } from '../../services/roles';
+import { RolesService } from '../../services/roles';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '../../services/config.service';

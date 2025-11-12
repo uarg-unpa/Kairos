@@ -32,6 +32,7 @@ export class IteracionesComponent implements OnInit {
     fechaInicio: '',
     fechaFin: ''
   };
+  errorNuevaIteracion: string | null = null;
 
   ngOnInit(): void {
     const el = document.getElementById('addIterationModal');
@@ -70,17 +71,26 @@ export class IteracionesComponent implements OnInit {
   }
 
   abrirModalIteracion() {
+    this.errorNuevaIteracion = null;
     this.addIterationModal?.show();
   }
 
   cerrarModalIteracion() {
     this.addIterationModal?.hide();
+    this.errorNuevaIteracion = null;
+    this.errorNuevaIteracion = null;
     (document.activeElement as HTMLElement)?.blur();
   }
 
   nuevaIteracionValida(): boolean {
     const i = this.nuevaIteracion;
-    return !!(i.numero && i.fechaInicio && i.fechaFin);
+    this.errorNuevaIteracion = null;
+    if (!(i.numero && i.fechaInicio && i.fechaFin)) return false;
+    if (this.fechasDesordenadas()) {
+      this.errorNuevaIteracion = 'La fecha de fin no puede ser anterior a la fecha de inicio';
+      return false;
+    }
+    return true;
   }
 
   crearIteracion() {
@@ -100,10 +110,27 @@ export class IteracionesComponent implements OnInit {
         this.cerrarModalIteracion();
       },
       error: (err) => {
-        console.error('Error creando iteraciÃ³n', err);
-        alert('No se pudo crear la iteraciÃ³n');
+        console.error('Error creando iteración', err);
+        this.errorNuevaIteracion = err?.error?.error || 'No se pudo crear la iteración';
       }
     });
+  }
+
+  fechasDesordenadas(): boolean {
+    const i = this.nuevaIteracion;
+    if (!i?.fechaInicio || !i?.fechaFin) return false;
+    const ini = new Date(i.fechaInicio);
+    const fin = new Date(i.fechaFin);
+    if (isNaN(ini.getTime()) || isNaN(fin.getTime())) return false;
+    return fin < ini;
+  }
+
+  onFechaInicioChange(value: string): void {
+    this.nuevaIteracion.fechaInicio = value;
+    if (this.nuevaIteracion.fechaFin && this.nuevaIteracion.fechaFin < value) {
+      this.nuevaIteracion.fechaFin = value;
+    }
+    this.errorNuevaIteracion = null;
   }
 
   private resetForm() {
@@ -143,3 +170,13 @@ export class IteracionesComponent implements OnInit {
     });
   }
 }
+
+
+
+
+
+
+
+
+
+

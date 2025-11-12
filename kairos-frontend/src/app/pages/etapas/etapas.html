@@ -169,6 +169,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cerrarModalEtapa()"></button>
       </div>
       <div class="modal-body">
+        <div *ngIf="errorNuevaEtapa" class="alert alert-danger" role="alert">{{ errorNuevaEtapa }}</div>
         <form #formEtapa="ngForm">
           <div class="row g-3">
             <div class="col-md-6">
@@ -181,11 +182,17 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">Fecha de inicio *</label>
-              <input type="date" class="form-control" [(ngModel)]="nuevaEtapa.fechaInicio" name="fechaInicio" required />
+              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()" [(ngModel)]="nuevaEtapa.fechaInicio" (ngModelChange)="onFechaInicioChange($event)" name="fechaInicio" required />
+              <div class="invalid-feedback" *ngIf="fechasDesordenadas()">
+                La fecha de fin no puede ser anterior a la fecha de inicio
+              </div>
             </div>
             <div class="col-md-6">
               <label class="form-label">Fecha de fin *</label>
-              <input type="date" class="form-control" [(ngModel)]="nuevaEtapa.fechaFin" name="fechaFin" required />
+              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()" [attr.min]="nuevaEtapa.fechaInicio || null" [(ngModel)]="nuevaEtapa.fechaFin" name="fechaFin" required />
+              <div class="invalid-feedback" *ngIf="fechasDesordenadas()">
+                La fecha de fin no puede ser anterior a la fecha de inicio
+              </div>
             </div>
           </div>
         </form>

@@ -15,11 +15,12 @@ import { FormsModule } from '@angular/forms';
 })
 export class ProyectoDetalleComponent implements OnInit {
   proyecto: Proyecto | null = null;
-  rolEnProyecto: 'Admin' | 'Líder' | 'Miembro' = 'Miembro';
+  rolEnProyecto: 'Admin' | 'Lider' | 'Miembro' = 'Miembro';
   mostrarModalEditar = false;
   proyectoEdit: any = {};
   errorMensaje: string | null = null;
   usuarioId: number | null = null;
+
   // === VALIDACIONES ===
   maxNombre = 20;
   maxEquipo = 20;
@@ -51,7 +52,7 @@ export class ProyectoDetalleComponent implements OnInit {
     this.proyectoService.getProyectoById(id).subscribe({
       next: (proyecto) => {
         this.proyecto = proyecto;
-        this.determinarRolEnProyecto(); // ← NUEVO
+        this.determinarRolEnProyecto();
       },
       error: (err) => console.error('Error:', err)
     });
@@ -69,12 +70,16 @@ export class ProyectoDetalleComponent implements OnInit {
       return;
     }
 
-    // 2. ¿Es líder del proyecto?
-    const esLider = this.proyecto.usuariosProyecto?.some(up =>
-      up.idUsuario === this.usuarioId && up.rolProyecto === 'Líder'
-    ) || false;
+    // 2. ¿Es lider del proyecto? (normalizado sin tildes)
+    const esLider = this.proyecto.usuariosProyecto?.some(up => {
+      const rolNorm = (up.rolProyecto || '')
+        .toUpperCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+      return up.idUsuario === this.usuarioId && rolNorm.includes('LIDER');
+    }) || false;
 
-    this.rolEnProyecto = esLider ? 'Líder' : 'Miembro';
+    this.rolEnProyecto = esLider ? 'Lider' : 'Miembro';
   }
 
   abrirModalEditar(): void {
@@ -83,10 +88,12 @@ export class ProyectoDetalleComponent implements OnInit {
     this.fechaOriginal = this.proyecto?.fechaInicio || null;
     this.errorMensaje = null;
   }
+
   cerrarModalEditar(): void {
     this.mostrarModalEditar = false;
     this.errorMensaje = null;
   }
+
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     const error = this.validarImagen(file);
@@ -103,7 +110,7 @@ export class ProyectoDetalleComponent implements OnInit {
     };
     reader.readAsDataURL(file);
   }
-  
+
   actualizarProyecto(): void {
     this.errorMensaje = null;
 
@@ -115,13 +122,13 @@ export class ProyectoDetalleComponent implements OnInit {
     ].filter(e => e);
 
     if (errores.length > 0) {
-      this.errorMensaje = errores[0];
+      this.errorMensaje = errores[0] || null;
       return;
     }
 
     const payload = {
-      nombre: this.proyectoEdit.nombre.trim(),
-      equipo: this.proyectoEdit.equipo.trim(),
+      nombre: this.proyectoEdit.nombre?.trim() || '',
+      equipo: this.proyectoEdit.equipo?.trim() || '',
       descripcion: this.proyectoEdit.descripcion || '',
       fechaInicio: this.proyectoEdit.fechaInicio || null,
       estado: this.proyectoEdit.estado || 'En Progreso',
@@ -131,7 +138,7 @@ export class ProyectoDetalleComponent implements OnInit {
     this.proyectoService.actualizarProyecto(this.proyecto!.idProyecto, payload).subscribe({
       next: (actualizado) => {
         this.proyecto = actualizado;
-        alert('Proyecto actualizado con éxito');
+        alert('Proyecto actualizado con exito');
         this.cerrarModalEditar();
       },
       error: (err) => {
@@ -140,25 +147,7 @@ export class ProyectoDetalleComponent implements OnInit {
     });
   }
 
-  private cargarRol(): void {
-  this.authService.currentUser$.subscribe(user => {
-    const rolRaw = user?.rol || 'Miembro';
-
-    // NORMALIZA: mayúsculas + sin acentos
-    const rolNormalizado = rolRaw
-      .toUpperCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, ""); // quita tildes
-
-    if (rolNormalizado.includes('ADMIN')) {
-      this.rolEnProyecto = 'Admin';
-    } else if (rolNormalizado.includes('LIDER')) {
-      this.rolEnProyecto = 'Líder';
-    } else {
-      this.rolEnProyecto = 'Miembro';
-    }
-  });
-}
+  // rol de usuario ya determinado mediante determinarRolEnProyecto
 
   get hoyISO(): string {
     return new Date().toISOString().split('T')[0];
@@ -167,23 +156,24 @@ export class ProyectoDetalleComponent implements OnInit {
   validarNombre(): string | null {
     const valor = this.proyectoEdit?.nombre?.trim();
     if (!valor) return 'El nombre es obligatorio';
-    if (valor.length > this.maxNombre) return `Máximo ${this.maxNombre} caracteres`;
+    if (valor.length > this.maxNombre) return `Maximo ${this.maxNombre} caracteres`;
     return null;
   }
 
   validarEquipo(): string | null {
     const valor = this.proyectoEdit?.equipo?.trim();
     if (!valor) return 'El equipo es obligatorio';
-    if (valor.length > this.maxEquipo) return `Máximo ${this.maxEquipo} caracteres`;
+    if (valor.length > this.maxEquipo) return `Maximo ${this.maxEquipo} caracteres`;
     return null;
   }
 
   validarDescripcion(): string | null {
     if (this.proyectoEdit?.descripcion?.length > this.maxDescripcion) {
-      return `Máximo ${this.maxDescripcion} caracteres`;
+      return `Maximo ${this.maxDescripcion} caracteres`;
     }
     return null;
   }
+
   get anioActual(): number {
     return new Date().getFullYear();
   }
@@ -192,7 +182,7 @@ export class ProyectoDetalleComponent implements OnInit {
     const actual = this.proyectoEdit?.fechaInicio;
     const original = this.fechaOriginal;
 
-    // Si había fecha y ahora está vacía → ERROR
+    // Si habia fecha y ahora esta vacia -> ERROR
     if (original && !actual) {
       return 'No puedes eliminar la fecha de inicio';
     }
@@ -200,7 +190,7 @@ export class ProyectoDetalleComponent implements OnInit {
     // Si hay fecha, valida formato y año
     if (actual) {
       const match = actual.match(/^(\d{4})-\d{2}-\d{2}$/);
-      if (!match) return 'Formato inválido (YYYY-MM-DD)';
+      if (!match) return 'Formato invalido (YYYY-MM-DD)';
 
       const anio = parseInt(match[1], 10);
       if (anio < this.anioActual) {
@@ -213,9 +203,8 @@ export class ProyectoDetalleComponent implements OnInit {
 
   validarImagen(file: File): string | null {
     if (!file) return null;
-    if (!file.type.startsWith('image/')) return 'Solo se permiten imágenes';
-    if (file.size > this.maxImagenMB * 1024 * 1024) return `Máximo ${this.maxImagenMB} MB`;
+    if (!file.type.startsWith('image/')) return 'Solo se permiten imagenes';
+    if (file.size > this.maxImagenMB * 1024 * 1024) return `Maximo ${this.maxImagenMB} MB`;
     return null;
   }
-  
 }

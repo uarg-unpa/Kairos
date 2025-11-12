@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { RolesService } from '../../services/roles';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '../../services/config.service';
-import { PermisosService, PermisoItem } from '../../services/permisos';
+import { PermisosService } from '../../services/permisos';
 
 @Component({
   selector: 'app-rol-form',
