@@ -73,6 +73,7 @@
 
     <!-- Reportes (para todos, más opciones para Admin/Líder) -->
     <div class="col-md-3">
+      <a [routerLink]="['/proyecto', proyecto?.idProyecto, 'dashboard']" class="text-decoration-none text-dark">
       <div class="card-section p-3 h-100">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <div class="icon-container bg-warning bg-opacity-10">
@@ -86,6 +87,7 @@
           <i class="bi bi-file-earmark-bar-graph"></i> Generar Reporte
         </button>
       </div>
+      </a>
     </div>
 
     <!-- Workspace (para Miembro y Líder) -->
