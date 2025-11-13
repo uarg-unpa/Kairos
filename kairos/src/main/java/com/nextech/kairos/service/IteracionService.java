@@ -3,6 +3,8 @@ package com.nextech.kairos.service;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
+
 
 import com.nextech.kairos.model.Iteracion;
 import com.nextech.kairos.repository.IteracionRepository;
@@ -42,4 +44,12 @@ public class IteracionService implements IIteracionService {
     public List<Iteracion> listarPorProyecto(Long idProyecto) {
         return iteracionRepository.findByEtapa_Proyecto_IdProyecto(idProyecto);
     }
+
+    @Override
+    public Iteracion obtenerIteracionActualPorProyecto(Long idProyecto) {
+        List<Iteracion> iteraciones = iteracionRepository.findIteracionesActualesPorProyecto(idProyecto, LocalDate.now());
+        return iteraciones.isEmpty() ? null : iteraciones.get(0);
+    }
+
+
 }

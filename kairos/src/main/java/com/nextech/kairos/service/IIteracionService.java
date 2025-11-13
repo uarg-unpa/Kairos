@@ -10,4 +10,5 @@ public interface IIteracionService {
     void eliminarIteracion(Long id);
     List<Iteracion> listarPorEtapa(Long idEtapa);
     List<Iteracion> listarPorProyecto(Long idProyecto);
+    Iteracion obtenerIteracionActualPorProyecto(Long idProyecto);
 }

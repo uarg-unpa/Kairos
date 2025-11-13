@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.ResponseEntity;
 
 import com.nextech.kairos.dto.IteracionCreateDTO;
 import com.nextech.kairos.dto.IteracionDTO;
@@ -56,6 +57,13 @@ public class IteracionController {
             .stream()
             .map(IteracionMapper::toDTO)
             .toList();
+    }
+
+     @GetMapping("/proyecto/{idProyecto}/actual")
+    public ResponseEntity<IteracionDTO> obtenerIteracionActualPorProyecto(@PathVariable Long idProyecto) {
+        Iteracion iteracion = iteracionService.obtenerIteracionActualPorProyecto(idProyecto);
+        if (iteracion == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(IteracionMapper.toDTO(iteracion));
     }
 
     @GetMapping("/{id}")
