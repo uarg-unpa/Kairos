@@ -50,6 +50,10 @@ export class IteracionService {
     deleteIteracion(id: number): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl()}/${id}`);
     }
+
+    getIteracionActualPorProyecto(proyectoId: number): Observable<Iteracion> {
+        return this.http.get<Iteracion>(`${this.baseUrl()}/proyecto/${proyectoId}/actual`);
+    }
 }
 
 

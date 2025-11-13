@@ -24,6 +24,7 @@ declare var bootstrap: any;
   imports: [CommonModule, FormsModule]
 })
 export class PlanificacionComponent implements OnInit {
+  idProyecto!: number;
   // -----------------------
   // Modal bootstrap
   // -----------------------
@@ -37,6 +38,7 @@ export class PlanificacionComponent implements OnInit {
   iteraciones: Iteracion[] = [];
   tareas: Tarea[] = [];
 
+  iteracionActual: Iteracion | null = null;
   // -----------------------
   // Paginación
   // -----------------------
@@ -87,7 +89,7 @@ export class PlanificacionComponent implements OnInit {
   nuevaCategoria: any = {
     nombre: '',
     descripcion: '',
-    idProyecto: 1,
+    idProyecto: this.idProyecto,
   }
   // -----------------------
   // Filtros para la vista
@@ -138,7 +140,8 @@ export class PlanificacionComponent implements OnInit {
       this.filtroVencimiento = (venc === 'proximas' || venc === 'atrasadas') ? venc : null;
     });
 
-    this.proyectoId = Number(this.route.snapshot.paramMap.get('id')) || null;
+    this.proyectoId = Number(this.route.snapshot.paramMap.get('id'));
+    console.log('Proyecto ID:', this.proyectoId);
     this.cargarTareas();
     this.cargarCategorias();
     this.cargarIteraciones();
@@ -148,6 +151,9 @@ export class PlanificacionComponent implements OnInit {
       this.usuarioActual = JSON.parse(usuarioGuardado);
     }
     console.log('Usuario actual:', this.usuarioActual);
+
+    this.obtenerIteracionActual();
+
 
     const modalEl = document.getElementById('addTaskModal');
     if (modalEl) {
@@ -164,6 +170,41 @@ export class PlanificacionComponent implements OnInit {
     }
 
   }
+
+  obtenerIteracionActual(): void {
+  if (!this.proyectoId) {
+    console.warn('No hay proyectoId definido, no se puede obtener la iteración actual');
+    return;
+  }
+
+  this.iteracionService.getIteracionActualPorProyecto(this.proyectoId).subscribe({
+    next: (iteracionActual) => {
+      if (iteracionActual) {
+        console.log('Iteración actual detectada:', iteracionActual);
+        this.iteracionActual = iteracionActual;
+        this.iteraciones = [iteracionActual]; // ✅ solo la actual en la lista
+        this.nuevaTarea.iteracionId = iteracionActual.idIteracion; // preselecciona en el modal
+        this.filtroIteracionId = iteracionActual.idIteracion; // para filtrar tareas
+      } else {
+        console.warn('No hay iteración actual activa para este proyecto');
+        this.iteraciones = [];
+      }
+
+      // Cargar datos dependientes
+      this.cargarTareas();
+      this.cargarCategorias();
+      this.cargarIteraciones();
+    },
+    error: (err) => {
+      console.warn('No se pudo obtener la iteración actual:', err);
+      // fallback: no hay iteración actual, se puede decidir si mostrar vacío o todas
+      this.iteraciones = [];
+      this.cargarTareas();
+      this.cargarCategorias();
+    }
+  });
+}
+
 
   // -----------------------
   // Metodos de paginación 
