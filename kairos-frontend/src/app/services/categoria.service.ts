@@ -29,4 +29,8 @@ export class CategoriaService {
   deleteCategoria(id: number): Observable<void>{
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+
+  getCategoriaporProyecto(idProyecto: number): Observable<CategoriaDTO[]> {
+    return this.http.get<CategoriaDTO[]>(`${this.baseUrl}/proyecto/${idProyecto}`);
+  }
 }

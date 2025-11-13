@@ -3,6 +3,7 @@ package com.nextech.kairos.controller;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Collections;
 
 import com.nextech.kairos.dto.CategoriaRequest;
 import com.nextech.kairos.dto.CategoriaResponse;
@@ -46,7 +47,8 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> actualizarCategoria(@PathVariable Long id, @RequestBody CategoriaRequest categoriaRequest) {
+    public ResponseEntity<CategoriaResponse> actualizarCategoria(@PathVariable Long id,
+            @RequestBody CategoriaRequest categoriaRequest) {
         Categoria actualizada = categoriaService.actualizarCategoria(id, categoriaMapper.toEntity(categoriaRequest));
         return ResponseEntity.ok(categoriaMapper.toResponse(actualizada));
     }
@@ -66,11 +68,17 @@ public class CategoriaController {
     }
 
     @GetMapping("/proyecto/{idProyecto}")
-    public List<CategoriaResponse> buscarPorProyecto(@PathVariable Long idProyecto) {
-        return categoriaService.buscarPorProyecto(idProyecto)
+    public ResponseEntity<List<CategoriaResponse>> buscarPorProyecto(@PathVariable Long idProyecto) {
+        List<CategoriaResponse> categorias = categoriaService.buscarPorProyecto(idProyecto)
                 .stream()
                 .map(categoriaMapper::toResponse)
                 .toList();
+
+        if (categorias.isEmpty()) {
+            return ResponseEntity.ok(Collections.emptyList()); // ✅ Devuelve 200 OK con []
+        }
+
+        return ResponseEntity.ok(categorias);
     }
 
     @GetMapping("/proyecto/{idProyecto}/contar")

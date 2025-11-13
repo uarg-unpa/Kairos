@@ -83,13 +83,13 @@ export class PlanificacionComponent implements OnInit {
     dependenciaId: null,
   };
 
-    // -----------------------
+  // -----------------------
   // Objeto para crear/editar categorias desde el modal
   // -----------------------
   nuevaCategoria: any = {
     nombre: '',
     descripcion: '',
-    idProyecto: this.idProyecto,
+    idProyecto: null,
   }
   // -----------------------
   // Filtros para la vista
@@ -172,38 +172,38 @@ export class PlanificacionComponent implements OnInit {
   }
 
   obtenerIteracionActual(): void {
-  if (!this.proyectoId) {
-    console.warn('No hay proyectoId definido, no se puede obtener la iteración actual');
-    return;
-  }
-
-  this.iteracionService.getIteracionActualPorProyecto(this.proyectoId).subscribe({
-    next: (iteracionActual) => {
-      if (iteracionActual) {
-        console.log('Iteración actual detectada:', iteracionActual);
-        this.iteracionActual = iteracionActual;
-        this.iteraciones = [iteracionActual]; // ✅ solo la actual en la lista
-        this.nuevaTarea.iteracionId = iteracionActual.idIteracion; // preselecciona en el modal
-        this.filtroIteracionId = iteracionActual.idIteracion; // para filtrar tareas
-      } else {
-        console.warn('No hay iteración actual activa para este proyecto');
-        this.iteraciones = [];
-      }
-
-      // Cargar datos dependientes
-      this.cargarTareas();
-      this.cargarCategorias();
-      this.cargarIteraciones();
-    },
-    error: (err) => {
-      console.warn('No se pudo obtener la iteración actual:', err);
-      // fallback: no hay iteración actual, se puede decidir si mostrar vacío o todas
-      this.iteraciones = [];
-      this.cargarTareas();
-      this.cargarCategorias();
+    if (!this.proyectoId) {
+      console.warn('No hay proyectoId definido, no se puede obtener la iteración actual');
+      return;
     }
-  });
-}
+
+    this.iteracionService.getIteracionActualPorProyecto(this.proyectoId).subscribe({
+      next: (iteracionActual) => {
+        if (iteracionActual) {
+          console.log('Iteración actual detectada:', iteracionActual);
+          this.iteracionActual = iteracionActual;
+          this.iteraciones = [iteracionActual]; // ✅ solo la actual en la lista
+          this.nuevaTarea.iteracionId = iteracionActual.idIteracion; // preselecciona en el modal
+          this.filtroIteracionId = iteracionActual.idIteracion; // para filtrar tareas
+        } else {
+          console.warn('No hay iteración actual activa para este proyecto');
+          this.iteraciones = [];
+        }
+
+        // Cargar datos dependientes
+        this.cargarTareas();
+        this.cargarCategorias();
+        this.cargarIteraciones();
+      },
+      error: (err) => {
+        console.warn('No se pudo obtener la iteración actual:', err);
+        // fallback: no hay iteración actual, se puede decidir si mostrar vacío o todas
+        this.iteraciones = [];
+        this.cargarTareas();
+        this.cargarCategorias();
+      }
+    });
+  }
 
 
   // -----------------------
@@ -245,11 +245,34 @@ export class PlanificacionComponent implements OnInit {
 
   /** Carga todas las categorías desde el backend */
   cargarCategorias(): void {
-    this.categoriaService.getCategorias().subscribe({
-      next: (data) => (this.categorias = data),
-      error: (err) => console.error('Error al cargar categorías:', err)
-    });
-  }
+  this.categoriaService.getCategoriaporProyecto(this.proyectoId!).subscribe({
+    next: (data) => {
+      if (!data || data.length === 0) {
+        console.warn('⚠️ No hay categorías disponibles para este proyecto.');
+        this.categorias = [];
+        // Opcional: mostrar aviso visual
+      } else {
+        this.categorias = data;
+      }
+    },
+    error: (err) => {
+      console.error('❌ Error al cargar categorías:', err);
+
+      let mensaje: string;
+      if (err.status === 404) {
+        mensaje = 'No se encontraron categorías para este proyecto.';
+      } else {
+        mensaje =
+          err?.error?.message ||
+          err?.message ||
+          'Ocurrió un error inesperado al obtener las categorías.';
+      }
+      console.error('⚠️ ' + mensaje);
+      this.categorias = []; // deja la lista vacía para evitar errores en la vista
+    }
+  });
+}
+
 
   /**
    * Carga todas las tareas y luego carga sus comentarios asociados.
@@ -363,31 +386,35 @@ export class PlanificacionComponent implements OnInit {
     const categoriaBackend = {
       nombre: this.nuevaCategoria.nombre,
       descripcion: this.nuevaCategoria.descripcion,
-      idProyecto: 1,
+      idProyecto: this.proyectoId,
     }
 
     console.log('Categoria a enviar', categoriaBackend)
 
     this.categoriaService.createCategoria(categoriaBackend).subscribe({
-      next:  (categoriaCreada) =>{
+      next: (categoriaCreada) => {
         this.categorias.push(categoriaCreada);
-      this.resetModalCategorias();
-      }, 
+        this.resetModalCategorias();
+      },
       error: (err) => console.error('Error al crear tarea:', err)
-  })
-}
+    })
+  }
 
-eliminarCategoria(categoriaId: number): void {
-  if (!confirm('¿Estás seguro que quieres eliminar esta tarea?')) return;
+  eliminarCategoria(categoriaId: number): void {
+    if (!confirm('¿Estás seguro que quieres eliminar esta categoria?')) return;
 
-  this.categoriaService.deleteCategoria(categoriaId).subscribe({
-    next: () => {
-      this.cargarCategorias();
-      console.log('Tarea eliminada');
-    },
-    error: (err) => console.error('Error al eliminar tarea:', err)
-  })
-}
+    this.categoriaService.deleteCategoria(categoriaId).subscribe({
+      next: () => {
+        alert("✅ Categoría eliminada correctamente");
+        this.cargarCategorias();
+        console.log('Tarea eliminada');
+      },
+      error: (err) => {
+        console.error('Error al eliminar tarea:', err);
+        alert(err.error || "❌ Error al eliminar la categoría");
+      }
+    })
+  }
 
   // -----------------------
   // Operaciones con tareas
@@ -399,10 +426,10 @@ eliminarCategoria(categoriaId: number): void {
   }
 
   abrirModalCrear(): void {
-  this.tareaEnEdicion = null; // ← ahora sí, explícitamente
-  this.resetModal();
-  this.addTaskModal?.show();
-}
+    this.tareaEnEdicion = null; // ← ahora sí, explícitamente
+    this.resetModal();
+    this.addTaskModal?.show();
+  }
 
 
   /** Cierra el modal y quita foco */
@@ -429,30 +456,30 @@ eliminarCategoria(categoriaId: number): void {
 
   }
 
-  abrirCategorias(){
+  abrirCategorias() {
     this.categoriaModal?.show();
   }
 
-  cerrarModalCategorias(){
+  cerrarModalCategorias() {
     this.categoriaModal?.hide();
   }
 
   /** Reinicia el formulario del modal a valores por defecto */
   resetModal(): void {
-  this.nuevaTarea = {
-    nombre: '',
-    descripcion: '',
-    categoria: '',
-    categoriaId: null,
-    prioridad: 'Media',
-    estado: 'En progreso',
-    fechaCreacion: '',
-    fechaFin: '',
-    horasEstimadas: 0,
-    usuarioId: 1,
-    iteracionId: 7
-  };
-}
+    this.nuevaTarea = {
+      nombre: '',
+      descripcion: '',
+      categoria: '',
+      categoriaId: null,
+      prioridad: 'Media',
+      estado: 'En progreso',
+      fechaCreacion: '',
+      fechaFin: '',
+      horasEstimadas: 0,
+      usuarioId: 1,
+      iteracionId: 7
+    };
+  }
 
 
   /** Agrega una tarea nueva validando campos básicos */
@@ -562,31 +589,31 @@ eliminarCategoria(categoriaId: number): void {
       return;
     }
     this.taskService.updateTarea(this.tareaEnEdicion.idTarea!, tareaParaBackend).subscribe({
-  next: (tareaActualizada) => {
-    const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
-    if (index !== -1) this.tareas[index] = tareaActualizada;
-    this.tareaEnEdicion = null;
-    this.cargarTareas();
-    this.resetModal();
-    this.cerrarModal();
+      next: (tareaActualizada) => {
+        const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
+        if (index !== -1) this.tareas[index] = tareaActualizada;
+        this.tareaEnEdicion = null;
+        this.cargarTareas();
+        this.resetModal();
+        this.cerrarModal();
 
-    console.log('✅ Tarea editada correctamente');
-    alert('✅ Tarea actualizada correctamente.');
-  },
-  error: (err) => {
-    console.error('❌ Error al editar tarea:', err);
+        console.log('✅ Tarea editada correctamente');
+        alert('✅ Tarea actualizada correctamente.');
+      },
+      error: (err) => {
+        console.error('❌ Error al editar tarea:', err);
 
-    // Capturar mensaje del backend
-    const mensaje =
-  err?.error?.message ||   // 🔹 caso más común: { message: "Dependencia circular..." }
-  err?.message ||          // fallback: HttpErrorResponse.message
-  'Ocurrió un error inesperado.';
+        // Capturar mensaje del backend
+        const mensaje =
+          err?.error?.error ||     // caso: { error: "mensaje" }
+          err?.error?.message ||   // caso: { message: "mensaje" }
+          'Ocurrió un error inesperado.';
 
-alert('⚠️ ' + mensaje);
-console.error('Error completo:', err);
+        alert('⚠️ ' + mensaje);
+        console.error('Error completo:', err);
 
-  }
-});
+      }
+    });
   }
 
   /** Elimina tarea tanto en backend como en la lista local */
@@ -715,20 +742,20 @@ console.error('Error completo:', err);
 
   categoriaExpandida: string | null = null;
 
-toggleDescripcion(nombreCategoria: string) {
-  if (this.categoriaExpandida === nombreCategoria) {
-    // Si se vuelve a hacer clic, se colapsa
-    this.categoriaExpandida = null;
-  } else {
-    // Si se hace clic en otra, se muestra esa
-    this.categoriaExpandida = nombreCategoria;
+  toggleDescripcion(nombreCategoria: string) {
+    if (this.categoriaExpandida === nombreCategoria) {
+      // Si se vuelve a hacer clic, se colapsa
+      this.categoriaExpandida = null;
+    } else {
+      // Si se hace clic en otra, se muestra esa
+      this.categoriaExpandida = nombreCategoria;
+    }
   }
-}
 
-getNombreTareaPorId(id: number): string {
-  const tarea = this.tareas.find(t => t.idTarea === id);
-  return tarea ? tarea.nombre : 'Desconocida';
-}
+  getNombreTareaPorId(id: number): string {
+    const tarea = this.tareas.find(t => t.idTarea === id);
+    return tarea ? tarea.nombre : 'Desconocida';
+  }
 
 
   // Quita el filtro de vencimiento proveniente del Dashboard
