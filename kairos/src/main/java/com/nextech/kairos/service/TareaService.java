@@ -32,37 +32,35 @@ public class TareaService implements ITareaService {
         return tareaRepository.save(tarea);
     }
 
-   @Override
-@Transactional
-public void eliminarTarea(Long id) {
-    Tarea tarea = tareaRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Tarea con ID " + id + " no encontrada."));
+    @Override
+    @Transactional
+    public void eliminarTarea(Long id) {
+        Tarea tarea = tareaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tarea con ID " + id + " no encontrada."));
 
-    // 🔹 Limpiar categorías
-    tarea.getCategorias().clear();
+        // 🔹 Limpiar categorías
+        tarea.getCategorias().clear();
 
-    // 🔹 Quitar esta tarea de las dependencias de otras tareas
-    for (Tarea dependiente : new HashSet<>(tarea.getDependientes())) {
-        dependiente.getDependencias().remove(tarea);
+        // 🔹 Quitar esta tarea de las dependencias de otras tareas
+        for (Tarea dependiente : new HashSet<>(tarea.getDependientes())) {
+            dependiente.getDependencias().remove(tarea);
+        }
+
+        // 🔹 Quitar dependencias propias
+        for (Tarea dependencia : new HashSet<>(tarea.getDependencias())) {
+            dependencia.getDependientes().remove(tarea);
+        }
+
+        tarea.getDependencias().clear();
+        tarea.getDependientes().clear();
+
+        // 🔹 Guardar y forzar sincronización antes de eliminar
+        tareaRepository.save(tarea);
+        tareaRepository.flush(); // 🔸 fuerza UPDATEs antes del DELETE
+
+        // 🔹 Ahora sí eliminar
+        tareaRepository.delete(tarea);
     }
-
-    // 🔹 Quitar dependencias propias
-    for (Tarea dependencia : new HashSet<>(tarea.getDependencias())) {
-        dependencia.getDependientes().remove(tarea);
-    }
-
-    tarea.getDependencias().clear();
-    tarea.getDependientes().clear();
-
-    // 🔹 Guardar y forzar sincronización antes de eliminar
-    tareaRepository.save(tarea);
-    tareaRepository.flush(); // 🔸 fuerza UPDATEs antes del DELETE
-
-    // 🔹 Ahora sí eliminar
-    tareaRepository.delete(tarea);
-}
-
-
 
     // 🔹 Métodos para horas estimadas
     public List<Tarea> listarPorHorasEstimadas(Double horas) {

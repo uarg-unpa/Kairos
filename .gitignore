@@ -59,6 +59,7 @@ temp/
 *.tgz
 *.zip
 
+<<<<<<< HEAD
 /kairos/target/
 target/
 
@@ -66,3 +67,11 @@ kairos/target
 .vscode/
 .mvn/
 .mvn/wrapper/
+=======
+/target/
+kairos/target/
+.vscode/
+.mvn/
+.mvn/wrapper//target/
+target/
+>>>>>>> origin/feature/categorias

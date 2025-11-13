@@ -16,6 +16,7 @@ import { Comentario } from '../../models/comentario.model';
 
 declare var bootstrap: any;
 
+
 @Component({
   selector: 'app-planificacion',
   templateUrl: './planificacion.component.html',
@@ -85,13 +86,16 @@ export class PlanificacionComponent implements OnInit {
 
   // -----------------------
   // Objeto para crear/editar categorias desde el modal
+  categoriaEnEdicion: CategoriaDTO | null = null;
+  categoriaEdicion: boolean = false;
+
   // -----------------------
   nuevaCategoria: any = {
     nombre: '',
     descripcion: '',
     idProyecto: null,
   }
-  // -----------------------
+    // -----------------------
   // Filtros para la vista
   // -----------------------
   filtroCategoria: string = 'Todas';
@@ -121,6 +125,7 @@ export class PlanificacionComponent implements OnInit {
       this.usuarios = this.usuariosService.usuarios();
       console.log('Usuarios actualizados:', this.usuarios);
     });
+  
   }
 
   /**
@@ -400,21 +405,56 @@ export class PlanificacionComponent implements OnInit {
     })
   }
 
-  eliminarCategoria(categoriaId: number): void {
-    if (!confirm('¿Estás seguro que quieres eliminar esta categoria?')) return;
+eliminarCategoria(categoriaId: number): void {
+  if (!confirm('¿Estás seguro que quieres eliminar esta categoria?')) return;
 
-    this.categoriaService.deleteCategoria(categoriaId).subscribe({
+  this.categoriaService.deleteCategoria(categoriaId).subscribe({
+    next: () => {
+      alert("✅ Categoría eliminada correctamente");
+      this.cargarCategorias();
+      console.log('Tarea eliminada');
+    },
+    error: (err) => {console.error('Error al eliminar tarea:', err);
+    alert(err.error || "❌ Error al eliminar la categoría");
+    }
+  })
+}
+
+seleccionarCategoriaParaEditar(cat: CategoriaDTO): void {
+  this.categoriaEnEdicion = cat;
+  this.categoriaEdicion = true;
+
+  // Precarga los campos del formulario
+  this.nuevaCategoria = {
+    nombre: cat.nombre,
+    descripcion: cat.descripcion,
+    idProyecto: cat.proyectoId || 1
+  };
+}
+
+guardarCategoriaEditada(): void {
+  if (!this.categoriaEnEdicion) return;
+
+  const categoriaBackend = {
+    nombre: this.nuevaCategoria.nombre,
+    descripcion: this.nuevaCategoria.descripcion,
+    idProyecto: 1
+  };
+
+  this.categoriaService
+    .updateCategoria(this.categoriaEnEdicion.idCategoria!, categoriaBackend)
+    .subscribe({
       next: () => {
-        alert("✅ Categoría eliminada correctamente");
         this.cargarCategorias();
-        console.log('Tarea eliminada');
+        this.resetModalCategorias();
+        this.categoriaEdicion = false;
+        this.categoriaEnEdicion = null;
+        console.log('✅ Categoría editada correctamente');
       },
-      error: (err) => {
-        console.error('Error al eliminar tarea:', err);
-        alert(err.error || "❌ Error al eliminar la categoría");
-      }
-    })
-  }
+      error: (err) => console.error('❌ Error al editar categoría:', err)
+    });
+}
+
 
   // -----------------------
   // Operaciones con tareas
@@ -449,18 +489,18 @@ export class PlanificacionComponent implements OnInit {
   }
 
   resetModalCategorias(): void {
-    this.nuevaCategoria = {
-      nombre: '',
-      descripcion: '',
-    }
+  this.nuevaCategoria = { nombre: '', descripcion: '', idProyecto: 1 };
+  this.categoriaEdicion = false;
+  this.categoriaEnEdicion = null;
+}
 
-  }
 
   abrirCategorias() {
     this.categoriaModal?.show();
   }
 
-  cerrarModalCategorias() {
+  cerrarModalCategorias(){
+    this.resetModalCategorias();
     this.categoriaModal?.hide();
   }
 

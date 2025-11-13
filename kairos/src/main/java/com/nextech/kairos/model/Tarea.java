@@ -43,15 +43,15 @@ public class Tarea {
     private Set<Tiempo> tiempos = new HashSet<>();
 
     @Column(length = 50)
+    @NotNull(message = "El estado es obligatorio")
     private String estado;
 
     @Column(columnDefinition = "TEXT")
-    @Size(max=150)
+    @Size(max = 150)
     private String descripcion;
 
     @NotNull(message = "La fecha de creación es obligatoria")
     private LocalDate fechaCreacion;
-
 
     @Column(length = 50)
     private String prioridad;
@@ -59,8 +59,8 @@ public class Tarea {
     @NotNull(message = "La fecha de fin es obligatoria")
     private LocalDate fechaFin;
 
-    @Column(length = 255)
-    @Size(max=255)
+    @Column(length = 15)
+    @Size(max = 50, message = "El nombre de la tarea no puede exceder los 50 caracteres")
     @NotBlank(message = "El nombre de la tarea es obligatorio")
     private String nombre;
 
@@ -68,9 +68,7 @@ public class Tarea {
     private Double horasEstimadas;
 
     @OneToMany(mappedBy = "tarea", cascade = CascadeType.ALL, orphanRemoval = true)
-private Set<Comentario> comentarios = new HashSet<>();
-
-
+    private Set<Comentario> comentarios = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "tarea_categoria", joinColumns = @JoinColumn(name = "idTarea"), inverseJoinColumns = @JoinColumn(name = "idCategoria"))
@@ -118,7 +116,7 @@ private Set<Comentario> comentarios = new HashSet<>();
     public void setDependientes(Set<Tarea> dependientes) {
         this.dependientes = dependientes;
     }
-    
+
     public Long getIdTarea() {
         return idTarea;
     }

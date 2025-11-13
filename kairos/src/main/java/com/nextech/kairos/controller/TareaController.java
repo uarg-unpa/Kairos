@@ -1,11 +1,14 @@
 package com.nextech.kairos.controller;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,14 +20,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import jakarta.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Objects;
-import com.nextech.kairos.mapper.TareaMapper;
 
 import com.nextech.kairos.dto.CategoriaResponse;
 import com.nextech.kairos.dto.TareaRequest;
 import com.nextech.kairos.dto.TareaResponse;
+import com.nextech.kairos.mapper.TareaMapper;
 import com.nextech.kairos.model.Categoria;
 import com.nextech.kairos.model.Iteracion;
 import com.nextech.kairos.model.Tarea;
@@ -33,6 +33,8 @@ import com.nextech.kairos.service.ICategoriaService;
 import com.nextech.kairos.service.IIteracionService;
 import com.nextech.kairos.service.TareaService;
 import com.nextech.kairos.service.UsuarioService;
+
+import jakarta.transaction.Transactional;
 
 @RestController
 @RequestMapping("/api/tareas")
@@ -49,6 +51,9 @@ public class TareaController {
     private ICategoriaService categoriaService;
     @Autowired
     private TareaMapper tareaMapper;
+
+
+    private static final Logger logger = LoggerFactory.getLogger(TareaController.class);
 
     @GetMapping
     public List<TareaResponse> getTareas() {
@@ -67,7 +72,7 @@ public class TareaController {
             dto.setHorasEstimadas(t.getHorasEstimadas());
             dto.setUsuarioId(t.getUsuario().getId());
             dto.setUsuarioNombre(t.getUsuario().getNombre());
-             dto.setIteracionId(t.getIteracion() != null ? t.getIteracion().getIdIteracion() : null);
+            dto.setIteracionId(t.getIteracion() != null ? t.getIteracion().getIdIteracion() : null);
 
             Set<CategoriaResponse> categoriasDTO = t.getCategorias().stream()
                     .map(c -> new CategoriaResponse(c.getIdCategoria(), c.getNombre(), c.getDescripcion(),
@@ -76,10 +81,9 @@ public class TareaController {
             dto.setCategorias(categoriasDTO);
 
             dto.setDependenciasIds(
-                t.getDependencias().stream()
-                        .map(Tarea::getIdTarea)
-                        .collect(Collectors.toSet())
-        );
+                    t.getDependencias().stream()
+                            .map(Tarea::getIdTarea)
+                            .collect(Collectors.toSet()));
 
             return dto;
         }).toList();
@@ -307,10 +311,9 @@ if (tieneAutoDependencia) {
                                     c.getProyecto().getIdProyecto()))
                             .collect(Collectors.toSet()));
             dto.setDependenciasIds(
-                t.getDependencias().stream()
-                        .map(Tarea::getIdTarea)
-                        .collect(Collectors.toSet())
-            );
+                    t.getDependencias().stream()
+                            .map(Tarea::getIdTarea)
+                            .collect(Collectors.toSet()));
             return dto;
         }).collect(Collectors.toList());
     }
