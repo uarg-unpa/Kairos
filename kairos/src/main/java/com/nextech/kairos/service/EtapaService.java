@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.nextech.kairos.model.Etapa;
 import com.nextech.kairos.repository.EtapaRepository;
+import java.time.LocalDate;
 
 @Service
 public class EtapaService implements IEtapaService {
@@ -28,4 +29,11 @@ public class EtapaService implements IEtapaService {
     public List<Etapa> listarPorProyecto(Long idProyecto) {
         return repo.findByProyecto_IdProyecto(idProyecto);
     }
+
+    @Override
+     public Etapa obtenerEtapaActualPorProyecto(Long idProyecto) {
+    LocalDate hoy = LocalDate.now();
+    return repo.findEtapaActualPorProyecto(idProyecto, hoy).orElse(null);
+}
+
 }

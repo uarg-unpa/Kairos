@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import java.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/etapas")
@@ -48,6 +49,14 @@ public class EtapaController {
         return etapaService.listarPorProyecto(idProyecto).stream().map(EtapaMapper::toDTO).toList();
     }
 
+   @GetMapping("/proyecto/{idProyecto}/actual")
+public ResponseEntity<EtapaDTO> obtenerEtapaActualPorProyecto(@PathVariable Long idProyecto) {
+    Etapa etapa = etapaService.obtenerEtapaActualPorProyecto(idProyecto);
+    if (etapa == null) return ResponseEntity.notFound().build();
+    return ResponseEntity.ok(EtapaMapper.toDTO(etapa));
+}
+
+
     @GetMapping("/{id}")
     public EtapaDTO obtener(@PathVariable Long id) {
         Etapa e = etapaService.obtener(id);
@@ -60,10 +69,14 @@ public class EtapaController {
         e.setNombre(dto.getNombre());
         e.setDescripcion(dto.getDescripcion());
         e.setEstado(EstadoEtapa.PENDIENTE);
-        LocalDate ini = (dto.getFechaInicio() != null && !dto.getFechaInicio().isBlank()) ? LocalDate.parse(dto.getFechaInicio()) : null;
-        LocalDate fin = (dto.getFechaFin() != null && !dto.getFechaFin().isBlank()) ? LocalDate.parse(dto.getFechaFin()) : null;
+        LocalDate ini = (dto.getFechaInicio() != null && !dto.getFechaInicio().isBlank())
+                ? LocalDate.parse(dto.getFechaInicio())
+                : null;
+        LocalDate fin = (dto.getFechaFin() != null && !dto.getFechaFin().isBlank()) ? LocalDate.parse(dto.getFechaFin())
+                : null;
         if (ini != null && fin != null && fin.isBefore(ini)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de fin no puede ser anterior a la fecha de inicio");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "La fecha de fin no puede ser anterior a la fecha de inicio");
         }
         e.setFechaInicio(ini);
         e.setFechaFin(fin);
@@ -72,21 +85,27 @@ public class EtapaController {
         if (dto.getProyectoId() != null) {
             proyecto = proyectoRepository.findById(dto.getProyectoId()).orElse(null);
             if (proyecto == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Proyecto no encontrado con id: " + dto.getProyectoId());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Proyecto no encontrado con id: " + dto.getProyectoId());
             }
         } else {
             proyecto = proyectoRepository.findAll().stream().findFirst().orElse(null);
         }
-        if (proyecto != null) { e.setProyecto(proyecto); }
+        if (proyecto != null) {
+            e.setProyecto(proyecto);
+        }
         Etapa saved = etapaService.guardar(e);
         return EtapaMapper.toDTO(saved);
     }
 
-    // Duplicate method removed; use the existing endpoint GET /api/etapas/por-proyecto/{idProyecto}
+    // Duplicate method removed; use the existing endpoint GET
+    // /api/etapas/por-proyecto/{idProyecto}
 
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable Long id) {
         etapaService.eliminar(id);
     }
+
+    
 
 }
