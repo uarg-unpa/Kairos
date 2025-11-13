@@ -86,4 +86,35 @@ public void eliminarTarea(Long id) {
         return tareaRepository.findByIteracion_Etapa_Proyecto_IdProyecto(idProyecto);
     }
 
+    public void validarDependenciasCirculares(Long tareaId, List<Long> dependenciasIds) {
+    if (dependenciasIds == null || dependenciasIds.isEmpty())
+        return;
+
+    for (Long depId : dependenciasIds) {
+        if (depId.equals(tareaId)) {
+            System.out.println("⚠️ VALIDACIÓN: la tarea " + tareaId + " intenta depender de sí misma");
+            throw new IllegalArgumentException("Una tarea no puede depender de sí misma");
+        }
+
+        if (tieneDependenciaRecursiva(depId, tareaId)) {
+            System.out.println("⚠️ VALIDACIÓN: dependencia circular detectada entre " + tareaId + " y " + depId);
+            throw new IllegalArgumentException("Dependencia circular detectada entre tareas");
+        }
+    }
+}
+
+    private boolean tieneDependenciaRecursiva(Long idOrigen, Long idBuscado) {
+        Tarea tarea = tareaRepository.findById(idOrigen)
+                .orElse(null);
+        if (tarea == null || tarea.getDependencias().isEmpty())
+            return false;
+
+        for (Tarea dep : tarea.getDependencias()) {
+            if (dep.getIdTarea().equals(idBuscado) || tieneDependenciaRecursiva(dep.getIdTarea(), idBuscado)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

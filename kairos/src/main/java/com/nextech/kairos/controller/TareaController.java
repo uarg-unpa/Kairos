@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Objects;
+import com.nextech.kairos.mapper.TareaMapper;
 
 import com.nextech.kairos.dto.CategoriaResponse;
 import com.nextech.kairos.dto.TareaRequest;
@@ -43,6 +47,8 @@ public class TareaController {
     private IIteracionService iteracionService;
     @Autowired
     private ICategoriaService categoriaService;
+    @Autowired
+    private TareaMapper tareaMapper;
 
     @GetMapping
     public List<TareaResponse> getTareas() {
@@ -185,147 +191,88 @@ public class TareaController {
         return dtoResponse;
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @PutMapping("/{id}")
-    public TareaRequest actualizarTarea(@PathVariable Long id, @RequestBody Map<String, Object> cambios) {
+    public TareaResponse actualizarTarea(@PathVariable Long id, @RequestBody TareaRequest cambios) {
+
+        // ✅ Buscar la tarea existente
         Tarea tarea = tareaService.obtenerPorId(id);
         if (tarea == null) {
             throw new RuntimeException("Tarea no encontrada con id: " + id);
         }
 
-        if (cambios.containsKey("nombre")) {
-            tarea.setNombre(cambios.get("nombre").toString());
+        // ✅ Actualizar solo los campos presentes en el DTO
+        if (cambios.getNombre() != null)
+            tarea.setNombre(cambios.getNombre());
 
+        if (cambios.getDescripcion() != null)
+            tarea.setDescripcion(cambios.getDescripcion());
+
+        if (cambios.getEstado() != null)
+            tarea.setEstado(cambios.getEstado());
+
+        if (cambios.getPrioridad() != null)
+            tarea.setPrioridad(cambios.getPrioridad());
+
+        if (cambios.getHorasEstimadas() != null)
+            tarea.setHorasEstimadas(cambios.getHorasEstimadas());
+
+        if (cambios.getUsuarioId() != null) {
+            Usuario usuario = usuarioService.findById(cambios.getUsuarioId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Usuario no encontrado con id: " + cambios.getUsuarioId()));
+            tarea.setUsuario(usuario);
         }
 
-        if (cambios.containsKey("descripcion")) {
-            tarea.setDescripcion(cambios.get("descripcion").toString());
-
-        }
-        // Actualizamos solo los campos que envía Angular
-        if (cambios.containsKey("estado")) {
-            tarea.setEstado(cambios.get("estado").toString());
-        }
-        if (cambios.containsKey("prioridad")) {
-            tarea.setPrioridad(cambios.get("prioridad").toString());
+        if (cambios.getIteracionId() != null) {
+            Iteracion iteracion = iteracionService.obtenerPorId(cambios.getIteracionId());
+            if (iteracion != null)
+                tarea.setIteracion(iteracion);
         }
 
-        if (cambios.containsKey("horasEstimadas")) {
-            Object valor = cambios.get("horasEstimadas");
-            if (valor != null) {
-                try {
-                    tarea.setHorasEstimadas(Double.valueOf(valor.toString()));
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("El valor de horasEstimadas no es numérico: " + valor);
-                }
+        if (cambios.getCategoriaIds() != null) {
+            Set<Categoria> categorias = cambios.getCategoriaIds().stream()
+                    .map(idCat -> categoriaService.obtenerPorId(idCat).orElse(null))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+            tarea.setCategorias(categorias);
+        }
+
+        if (cambios.getDependenciasIds() != null) {
+            // 🚫 Validar auto-dependencia
+            // 🚫 Validar auto-dependencia (con chequeo fuerte de tipo)
+boolean tieneAutoDependencia = cambios.getDependenciasIds().stream()
+        .filter(Objects::nonNull)
+        .map(depId -> {
+            try {
+                return Long.valueOf(depId);
+            } catch (Exception e) {
+                return null;
             }
+        })
+        .filter(Objects::nonNull)
+        .anyMatch(depId -> depId.equals(id));
 
-        }
-        if (cambios.containsKey("usuarioId")) {
-            Object valor2 = cambios.get("usuarioId");
-            if (valor2 != null) {
-                try {
-                    Long usuarioId = Long.valueOf(valor2.toString());
+if (tieneAutoDependencia) {
+    throw new IllegalArgumentException("Una tarea no puede depender de sí misma.");
+}
 
-                    // ✅ si tenés un servicio:
-                    Usuario usuario = usuarioService.findById(usuarioId).orElse(null);
 
-                    // o si usás el repositorio directamente:
-                    // Usuario usuario = usuarioRepository.findById(usuarioId)
-                    // .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " +
-                    // usuarioId));
+            // 🔄 Validar dependencias circulares
+            tareaService.validarDependenciasCirculares(id, new ArrayList<>(cambios.getDependenciasIds()));
 
-                    tarea.setUsuario(usuario);
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("El ID de usuario no es válido: " + valor2);
-                }
-            }
-
+            Set<Tarea> dependencias = cambios.getDependenciasIds().stream()
+                    .map(tareaService::obtenerPorId)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+            tarea.setDependencias(dependencias);
         }
 
-        if (cambios.containsKey("categoriaIds")) {
-            Object valor3 = cambios.get("categoriaIds");
-            if (valor3 != null && valor3 instanceof List) {
-                List<?> listaIds = (List<?>) valor3;
-                Set<Categoria> categorias = new HashSet<>();
-                for (Object idObj : listaIds) {
-                    try {
-                        Long categoriaId = Long.valueOf(idObj.toString());
-                        Categoria categoria = categoriaService.obtenerPorId(categoriaId).orElse(null);
-                        if (categoria != null) {
-                            categorias.add(categoria);
-                        }
-                    } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException("El ID de categoría no es válido: " + idObj);
-                    }
-                }
-                tarea.setCategorias(categorias);
-
-            }
-        }
-
-        if (cambios.containsKey("iteracionId")) {
-            Object valor4 = cambios.get("iteracionId");
-            if (valor4 != null) {
-                try {
-                    Long iteracionId = Long.valueOf(valor4.toString());
-
-                    Iteracion iteracion = iteracionService.obtenerPorId(iteracionId);
-                    if (iteracion != null) {
-                        tarea.setIteracion(iteracion);
-                    }
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("El ID de iteración no es válido: " + valor4);
-                }
-            }
-
-        }
-
-        if(cambios.containsKey("dependenciasIds")) {
-            Object valor5 = cambios.get("dependenciasIds");
-            if (valor5 != null && valor5 instanceof List) {
-                List<?> listaIds = (List<?>) valor5;
-                Set<Tarea> dependencias = new HashSet<>();
-                for (Object idObj : listaIds) {
-                    try {
-                        Long dependenciaId = Long.valueOf(idObj.toString());
-                        Tarea dependencia = tareaService.obtenerPorId(dependenciaId);
-                        if (dependencia != null) {
-                            dependencias.add(dependencia);
-                        }
-                    } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException("El ID de dependencia no es válido: " + idObj);
-                    }
-                }
-                tarea.setDependencias(dependencias);
-
-            }
-        }
-        // Agrega más campos si quieres permitir actualizar
-
+        // ✅ Guardar la tarea actualizada
         Tarea tareaActualizada = tareaService.guardarTarea(tarea);
 
-        // Mapeamos a DTO
-        TareaRequest dtoResponse = new TareaRequest();
-        dtoResponse.setIdTarea(tareaActualizada.getIdTarea());
-        dtoResponse.setNombre(tareaActualizada.getNombre());
-        dtoResponse.setDescripcion(tareaActualizada.getDescripcion());
-        dtoResponse.setEstado(tareaActualizada.getEstado());
-        dtoResponse.setPrioridad(tareaActualizada.getPrioridad());
-        dtoResponse.setFechaCreacion(tareaActualizada.getFechaCreacion());
-        dtoResponse.setFechaFin(tareaActualizada.getFechaFin());
-        dtoResponse.setHorasEstimadas(tareaActualizada.getHorasEstimadas());
-        dtoResponse.setUsuarioNombre(tareaActualizada.getUsuario().getNombre());
-        dtoResponse.setCategorias(
-                tareaActualizada.getCategorias().stream()
-                        .map(c -> new CategoriaResponse(c.getIdCategoria(), c.getNombre(), c.getDescripcion(),
-                                c.getProyecto().getIdProyecto()))
-                        .collect(Collectors.toSet()));
-        dtoResponse.setDependenciasIds(
-            tareaActualizada.getDependencias().stream()
-                    .map(Tarea::getIdTarea)
-                    .collect(Collectors.toSet()));
-
-        return dtoResponse;
+        // ✅ Convertir a DTO de salida
+        return tareaMapper.toResponse(tareaActualizada);
     }
 
     @DeleteMapping("/{id}")
