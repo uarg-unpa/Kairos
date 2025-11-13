@@ -562,18 +562,31 @@ eliminarCategoria(categoriaId: number): void {
       return;
     }
     this.taskService.updateTarea(this.tareaEnEdicion.idTarea!, tareaParaBackend).subscribe({
-      next: (tareaActualizada) => {
-        const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
-        if (index !== -1) this.tareas[index] = tareaActualizada;
-        this.tareaEnEdicion = null;
-        this.cargarTareas;
-        this.resetModal();
-        this.cerrarModal();
+  next: (tareaActualizada) => {
+    const index = this.tareas.findIndex(t => t.idTarea === this.tareaEnEdicion?.idTarea);
+    if (index !== -1) this.tareas[index] = tareaActualizada;
+    this.tareaEnEdicion = null;
+    this.cargarTareas();
+    this.resetModal();
+    this.cerrarModal();
 
-        console.log('✅ Tarea editada correctamente');
-      },
-      error: (err) => console.error('❌ Error al editar tarea:', err)
-    });
+    console.log('✅ Tarea editada correctamente');
+    alert('✅ Tarea actualizada correctamente.');
+  },
+  error: (err) => {
+    console.error('❌ Error al editar tarea:', err);
+
+    // Capturar mensaje del backend
+    const mensaje =
+  err?.error?.message ||   // 🔹 caso más común: { message: "Dependencia circular..." }
+  err?.message ||          // fallback: HttpErrorResponse.message
+  'Ocurrió un error inesperado.';
+
+alert('⚠️ ' + mensaje);
+console.error('Error completo:', err);
+
+  }
+});
   }
 
   /** Elimina tarea tanto en backend como en la lista local */
