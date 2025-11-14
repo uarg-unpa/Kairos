@@ -135,7 +135,7 @@ export class PlanificacionComponent implements OnInit {
 
   private cargarTareas(): void {
     const obs = this.proyectoId
-      ? this.taskService.getTareasPorProyecto(this.proyectoId)
+      ? this.taskService.getTareasPorProyectoEIteracion(this.proyectoId, this.filtroIteracionId || 0)
       : this.taskService.getTareas();
 
     obs.subscribe({
@@ -337,9 +337,7 @@ export class PlanificacionComponent implements OnInit {
   onEliminarCategoria(categoriaId: number): void {
     this.categoriaService.deleteCategoria(categoriaId).subscribe({
       next: () => this.cargarCategorias(),
-      error: (err) => {console.error('Error al eliminar tarea:', err);
-    alert(err.error || "❌ Error al eliminar la categoría");
-    }
+      error: (err) => console.error('Error al eliminar categoría:', err)
     });
   }
 
