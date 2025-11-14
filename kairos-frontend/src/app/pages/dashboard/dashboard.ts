@@ -9,6 +9,31 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 
 declare const Chart: any;
 
+type DetalleTipo = 'horasIteracion' | 'horasUsuario' | 'tareasEstado' | 'tareasUsuario';
+
+interface HorasIteracionDetalle {
+  etiqueta: string;
+  horas: number;
+  minutos: number;
+  etapa?: string | null;
+}
+
+interface HorasUsuarioDetalle {
+  usuario: string;
+  horas: number;
+}
+
+interface TareasEstadoDetalle {
+  estado: string;
+  cantidad: number;
+  porcentaje: number;
+}
+
+interface TareasUsuarioDetalle {
+  usuario: string;
+  cantidad: number;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -39,6 +64,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   proximasCount = 0;
 
   private charts: any[] = [];
+  detalleAbierto: DetalleTipo | null = null;
+  horasIteracionDetalle: HorasIteracionDetalle[] = [];
+  horasUsuarioDetalle: HorasUsuarioDetalle[] = [];
+  tareasEstadoDetalle: TareasEstadoDetalle[] = [];
+  tareasUsuarioDetalle: TareasUsuarioDetalle[] = [];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(pm => {
@@ -87,6 +117,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       const dataHoras = dataMin.map((m: number) => Math.round((m / 60) * 10) / 10);
       this.totalHoras = Math.round((dataHoras.reduce((a: number, b: number) => a + b, 0)) * 10) / 10;
       this.renderBar('chartHorasIter', labels, dataHoras, '#0d6efd', '#6ea8fe');
+      this.horasIteracionDetalle = rows.map((row, idx) => ({
+        etiqueta: `Iteración ${row.numero ?? '-'}${row.nombre ? ` · ${row.nombre}` : ''}`,
+        horas: dataHoras[idx] ?? 0,
+        minutos: dataMin[idx] ?? 0,
+        etapa: this.nombreEtapaDeIteracion(row.iteracionId) || row.etapaNombre || row.etapa || null
+      }));
     });
 
     const userParams = new URLSearchParams();
@@ -102,6 +138,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       const labels = pairs.map(p => p.label);
       const dataHoras = pairs.map(p => p.horas);
       this.renderBar('chartHorasUser', labels, dataHoras, '#198754', '#71d19e', true);
+      this.horasUsuarioDetalle = pairs.map(p => ({
+        usuario: p.label || 'Sin usuario',
+        horas: p.horas
+      }));
     });
 
     // 2) tareas para métricas y gráficos complementarios
@@ -155,6 +195,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         porEstadoMap.set(key, (porEstadoMap.get(key) || 0) + 1);
       });
       this.renderPie('chartTareasEstado', Array.from(porEstadoMap.keys()), Array.from(porEstadoMap.values()));
+      this.tareasEstadoDetalle = Array.from(porEstadoMap.entries()).map(([estado, cantidad]) => ({
+        estado,
+        cantidad,
+        porcentaje: this.totalTareas > 0 ? Math.round((cantidad / this.totalTareas) * 100) : 0
+      }));
 
       // tareas por usuario
       const porUserMap = new Map<string, number>();
@@ -163,6 +208,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         porUserMap.set(key, (porUserMap.get(key) || 0) + 1);
       });
       this.renderBar('chartTareasUser', Array.from(porUserMap.keys()), Array.from(porUserMap.values()), '#ffc107', '#ffe08a', true);
+      this.tareasUsuarioDetalle = Array.from(porUserMap.entries())
+        .sort((a, b) => b[1] - a[1])
+        .map(([usuario, cantidad]) => ({ usuario, cantidad }));
 
       // Actualiza el texto del card "Próximos vencimientos" en caso de que la plantilla tenga texto fijo
       try {
@@ -274,5 +322,29 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       plugins: [centerText]
     });
     this.charts.push(chart);
+  }
+
+  mostrarDetalle(tipo: DetalleTipo) {
+    this.detalleAbierto = tipo;
+  }
+
+  cerrarDetalle() {
+    this.detalleAbierto = null;
+  }
+
+  detalleTituloActual(): string {
+    switch (this.detalleAbierto) {
+      case 'horasIteracion': return 'Detalle de horas por iteración';
+      case 'horasUsuario': return 'Detalle de horas por usuario';
+      case 'tareasEstado': return 'Tareas por estado';
+      case 'tareasUsuario': return 'Tareas por usuario';
+      default: return '';
+    }
+  }
+
+  private nombreEtapaDeIteracion(iteracionId?: number | null): string | null {
+    if (!iteracionId || !this.iteraciones?.length) return null;
+    const iter = this.iteraciones.find((it: any) => Number(it?.idIteracion) === Number(iteracionId));
+    return iter?.etapaNombre || null;
   }
 }
