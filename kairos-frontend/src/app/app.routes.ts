@@ -20,6 +20,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard';
 import { RolVerComponent } from './pages/roles/rol-ver';
 import { RolModificarComponent } from './pages/roles/rol-modificar';
 import { AdminGuard } from './guards/admin.guard';
+import { MiembrosComponent } from './pages/proyecto/miembros/miembros.component';
 // import { PermisoVerComponent } from './pages/roles/permiso-ver';
 
 
@@ -96,6 +97,7 @@ export const routes: Routes = [
     component: DashboardComponent, 
     canActivate: [authGuard] 
   },
+  { path: 'proyecto/:id/miembros', component: MiembrosComponent, canActivate: [authGuard] },
   // { path: 'proyecto/:id/planificacion', component: PlanificacionComponent, canActivate: [authGuard] },
   // {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
   // { path: 'etapas', component: EtapasComponent, canActivate: [authGuard] },

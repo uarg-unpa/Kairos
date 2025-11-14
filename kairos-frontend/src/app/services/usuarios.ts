@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Usuario } from '../models/usuarios';
 import { ConfigService } from './config.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -65,5 +66,12 @@ export class UsuariosService {
 
   create(payload: { nombre: string; email: string }) {
     return this.http.post(this.baseUrl, payload);
+  }
+
+  searchByName(search: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}?search=${search}`, { headers: this.getHeaders() });
+  }
+  getHeaders(): import("@angular/common/http").HttpHeaders | Record<string, string | string[]> | undefined {
+    throw new Error('Method not implemented.');
   }
 }

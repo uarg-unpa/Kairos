@@ -1,6 +1,7 @@
 package com.nextech.kairos.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -23,12 +24,14 @@ public class UsuarioProyecto {
     @MapsId("idUsuario")
     @JsonIgnore
     @JoinColumn(name = "id_usuario", nullable = false)
+    @JsonProperty("usuario")
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idProyecto")
     @JsonIgnore
     @JoinColumn(name = "id_proyecto", nullable = false)
+    @JsonProperty("proyecto")
     private Proyecto proyecto;
 
     @Size(max = 100)

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Proyecto } from '../models/proyecto.model';
 import { ConfigService } from './config.service';
@@ -48,6 +48,41 @@ export class ProyectoService {
   }
 
   actualizarProyecto(id: number, datos: any): Observable<Proyecto> {
-  return this.http.put<Proyecto>(`${this.baseUrl}/${id}`, datos, { headers: this.getHeaders() });
-}
+    return this.http.put<Proyecto>(`${this.baseUrl}/${id}`, datos, { headers: this.getHeaders() });
+  }
+  getMiembros(idProyecto: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.config.get('apiBaseUrl')}/api/usuario-proyecto/proyecto/${idProyecto}/miembros`, {
+      headers: this.getHeaders()
+    });
+  }
+
+  agregarMiembro(idProyecto: number, idUsuario: number, rol: string): Observable<any> {
+    const params = new HttpParams()
+      .set('idProyecto', idProyecto.toString())
+      .set('idUsuario', idUsuario.toString())
+      .set('rolProyecto', rol);
+    return this.http.post(`${this.config.get('apiBaseUrl')}/api/usuario-proyecto/agregar`, null, {
+      headers: this.getHeaders(), params
+    });
+  }
+
+  invitarMiembro(idProyecto: number, email: string, rol: string): Observable<any> {
+    const params = new HttpParams()
+      .set('idProyecto', idProyecto.toString())
+      .set('email', email)
+      .set('rolProyecto', rol);
+    return this.http.post(`${this.config.get('apiBaseUrl')}/api/usuario-proyecto/invitar`, null, {
+      headers: this.getHeaders(), params
+    });
+  }
+
+  actualizarRolMiembro(idProyecto: number, idUsuario: number, rol: string): Observable<any> {
+    const params = new HttpParams()
+      .set('idProyecto', idProyecto.toString())
+      .set('idUsuario', idUsuario.toString())
+      .set('nuevoRol', rol);
+    return this.http.put(`${this.config.get('apiBaseUrl')}/api/usuario-proyecto/editar-rol`, null, {
+      headers: this.getHeaders(), params
+    });
+  }
 }
