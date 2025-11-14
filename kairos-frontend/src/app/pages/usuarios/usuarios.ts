@@ -1,7 +1,7 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { UsuariosService } from '../../services/usuarios';
+import { UsuariosService } from '../../services/usuarios.service';
 import { AuthService } from '../../services/auth.service';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../../services/config.service';

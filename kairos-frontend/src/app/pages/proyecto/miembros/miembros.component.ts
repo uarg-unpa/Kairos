@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProyectoService } from '../../../services/proyecto.service';
 import { AuthService } from '../../../services/auth.service';
-import { UsuariosService } from '../../../services/usuarios';
+import { UsuariosService } from '../../../services/usuarios.service';
 // import { Proyecto } from '../../../models/proyecto.model';
 
 @Component({
@@ -54,7 +54,6 @@ export class MiembrosComponent implements OnInit {
     private cargarMiembros(): void {
     this.proyectoService.getMiembros(this.proyectoId!).subscribe({
         next: (miembros: any[]) => {
-        console.log('MIEMBROS REALES:', miembros);
 
         this.miembros = miembros.map(m => ({
             idUsuario: m.idUsuario,
