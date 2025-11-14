@@ -1,0 +1,71 @@
+<div class="modal fade" id="categoriasModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Gestión de Categorías</h5>
+        <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-7 border-end">
+            <h6 class="mb-3 text-muted">Categorías existentes</h6>
+            <div *ngIf="(categorias || []).length > 0; else sinCategorias">
+              <ul class="list-group">
+                <li *ngFor="let cat of categorias" class="list-group-item d-flex flex-column"
+                  (click)="toggleDescripcion(cat.nombre)" style="cursor: pointer;">
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                    <div><i class="bi bi-tag-fill text-primary me-2"></i>{{ cat.nombre }}</div>
+                    <div class="btn-group">
+                      <button class="btn btn-sm btn-outline-primary" (click)="seleccionarParaEditar(cat); $event.stopPropagation()">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger" (click)="onEliminarCategoria(cat.idCategoria); $event.stopPropagation()">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div *ngIf="categoriaExpandida === cat.nombre" class="mt-2 text-muted">
+                    <small>{{ cat.descripcion || 'Sin descripción' }}</small>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <ng-template #sinCategorias>
+              <p class="text-muted small fst-italic">No hay categorías registradas aún.</p>
+            </ng-template>
+          </div>
+
+          <div class="col-md-5 ps-4">
+            <h6 class="mb-3 text-muted">{{ categoriaEdicion ? 'Editar categoría' : 'Agregar nueva categoría' }}</h6>
+            <form (ngSubmit)="categoriaEdicion ? onEditarCategoria() : onAgregarCategoria()">
+              <div class="mb-3">
+                <label class="form-label">Nombre *</label>
+                <input type="text" class="form-control" [(ngModel)]="nuevaCategoria.nombre" name="nombre"
+                  required maxlength="14" placeholder="Ej: Documentación" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <input type="text" class="form-control" [(ngModel)]="nuevaCategoria.descripcion" name="descripcion"
+                  maxlength="50" placeholder="Descripción de la categoría" />
+              </div>
+              <div class="d-flex justify-content-end gap-2">
+                <button *ngIf="categoriaEdicion" type="button" class="btn btn-secondary" (click)="resetModal()">
+                  Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi" [ngClass]="categoriaEdicion ? 'bi-save' : 'bi-plus-circle'"></i>
+                  {{ categoriaEdicion ? 'Guardar cambios' : 'Agregar' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
