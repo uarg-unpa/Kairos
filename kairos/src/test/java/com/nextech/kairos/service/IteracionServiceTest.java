@@ -46,7 +46,7 @@ class IteracionServiceTest {
 
         when(iteracionRepository.findById(id)).thenReturn(Optional.of(iteracion));
 
-        Iteracion result = iteracionService.obtenerPorId(id);
+        Iteracion result = iteracionService.obtenerPorId(id).orElse(null);
 
         assertNotNull(result);
         assertEquals(iteracion, result);
@@ -59,7 +59,7 @@ class IteracionServiceTest {
 
         when(iteracionRepository.findById(id)).thenReturn(Optional.empty());
 
-        Iteracion result = iteracionService.obtenerPorId(id);
+        Iteracion result = iteracionService.obtenerPorId(id).orElse(null);
 
         assertNull(result);
         verify(iteracionRepository).findById(id);

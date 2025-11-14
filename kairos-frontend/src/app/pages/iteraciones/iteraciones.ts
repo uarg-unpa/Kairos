@@ -25,6 +25,7 @@ export class IteracionesComponent implements OnInit {
   etapaId: number | null = null;
   proyectoId: number | null = null;
   proyectoNombre: string | null = null;
+  backLink: string | any[] = '/inicio';
 
   iteraciones: Iteracion[] = [];
   filtroProgreso: 'TODAS' | 'SIN_INICIAR' | 'EN_PROCESO' | 'FINALIZADA' = 'TODAS';
@@ -47,6 +48,14 @@ export class IteracionesComponent implements OnInit {
       const path = this.route.snapshot.routeConfig?.path || '';
       const data: any = (this.route.snapshot as any).data;
       this.proyectoNombre = data?.['proyecto']?.nombre || null;
+      this.proyectoId = null;
+      this.backLink = '/inicio';
+      if (path.startsWith('proyecto/:id/iteraciones')) {
+        this.proyectoId = idParam ? Number(idParam) : null;
+        if (this.proyectoId) {
+          this.backLink = ['/proyecto', this.proyectoId, 'etapas'];
+        }
+      }
 
       // Prioriza filtrar por etapa si viene en la ruta (proyecto/:id/iteraciones/:etapa o iteraciones/etapa/:id)
       const etapaParam = pm.get('etapa');
@@ -59,7 +68,6 @@ export class IteracionesComponent implements OnInit {
       }
 
       if (path.startsWith('proyecto/:id/iteraciones')) {
-        this.proyectoId = idParam ? Number(idParam) : null;
         if (this.proyectoId) {
           this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(all => this.iteraciones = all);
           return;

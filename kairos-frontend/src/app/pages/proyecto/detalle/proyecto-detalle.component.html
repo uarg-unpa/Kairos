@@ -39,14 +39,26 @@
             <div class="icon-container bg-info bg-opacity-10">
               <i class="bi bi-calendar-event text-info fs-5"></i>
             </div>
-            <span class="badge bg-info bg-opacity-25 text-info">Activo</span>
+            <span class="badge"
+              [ngClass]="{
+                'bg-success text-white': planificacionProgreso === 100 && tareasTotales > 0,
+                'bg-info bg-opacity-25 text-info': tareasTotales > 0 && planificacionProgreso > 0 && planificacionProgreso < 100,
+                'bg-secondary text-white': tareasTotales === 0
+              }">
+              {{ tareasTotales === 0 ? 'Sin tareas' : (planificacionProgreso === 100 ? 'Completado' : 'Activo') }}
+            </span>
           </div>
           <h6 class="fw-semibold">Planificación</h6>
           <p class="text-muted small mb-2">Herramientas para definir objetivos y roadmap.</p>
-          <div class="progress mt-3">
-            <div class="progress-bar bg-info" role="progressbar" style="width: 45%" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="progress mt-3" role="progressbar" [attr.aria-valuenow]="planificacionProgreso" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar bg-info" [style.width.%]="planificacionProgreso"></div>
           </div>
-          <small class="text-muted d-block mt-2">Progreso: 45%</small>
+          <small class="text-muted d-block mt-2" *ngIf="tareasTotales > 0; else sinTareasPlanificacion">
+            Progreso: {{ planificacionProgreso }}% · {{ tareasFinalizadas }}/{{ tareasTotales }} tareas
+          </small>
+          <ng-template #sinTareasPlanificacion>
+            <small class="text-muted d-block mt-2">Todavía no hay tareas registradas en este proyecto.</small>
+          </ng-template>
         </div>
       </a>
     </div>
@@ -61,8 +73,17 @@
             </div>
           </div>
           <h6 class="fw-semibold">Etapas</h6>
-          <p class="text-muted small mb-2">Seguimiento de fases y entregables.</p>
-          <small class="text-muted"><i class="bi bi-circle-fill text-primary me-1"></i>Etapa actual: Desarrollo</small>
+          <p class="text-muted small mb-2" *ngIf="etapas.length; else sinEtapas">
+            Seguimiento de fases y entregables.
+          </p>
+          <ng-template #sinEtapas>
+            <p class="text-muted small mb-2">Todavía no se cargaron etapas para este proyecto.</p>
+          </ng-template>
+          <small class="text-muted d-block">
+            <i class="bi bi-circle-fill text-primary me-1"></i>
+            Etapa actual: {{ etapaActualNombre || 'Sin definir' }}
+          </small>
+          <small class="text-muted d-block mt-1">Completadas: {{ etapasCompletadas }}/{{ etapas.length }}</small>
           <!-- Solo para Lider/Admin: + boton agregar etapa -->
           <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Lider'" class="btn btn-sm btn-outline-primary mt-2">
             <i class="bi bi-plus-circle"></i> Nueva Etapa
@@ -92,16 +113,23 @@
 
     <!-- Workspace (para Miembro y Lider) -->
     <div class="col-md-3" *ngIf="rolEnProyecto === 'Miembro' || rolEnProyecto === 'Lider'">
-      <a routerLink="/workspace" class="text-decoration-none text-dark">
+      <a [routerLink]="['/proyecto', proyecto?.idProyecto, 'workspace']" class="text-decoration-none text-dark">
         <div class="card-section p-3 h-100">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="icon-container bg-primary bg-opacity-10">
               <i class="bi bi-person-workspace text-primary fs-5"></i>
             </div>
-            <span class="badge bg-primary bg-opacity-25 text-primary">12 tareas</span>
+            <span class="badge bg-primary bg-opacity-25 text-primary">
+              {{ tareasAsignadasPendientes }} {{ tareasAsignadasPendientes === 1 ? 'tarea' : 'tareas' }}
+            </span>
           </div>
           <h6 class="fw-semibold">Espacio de Trabajo</h6>
-          <p class="text-muted small mb-2">Entrá a tu espacio de trabajo para comenzar a tomar tus tiempos</p>
+          <p class="text-muted small mb-2" *ngIf="tareasAsignadasPendientes > 0; else sinPendientes">
+            Tenés {{ tareasAsignadasPendientes }} {{ tareasAsignadasPendientes === 1 ? 'tarea' : 'tareas' }} pendientes asignadas a vos en este proyecto.
+          </p>
+          <ng-template #sinPendientes>
+            <p class="text-muted small mb-2">No tenés tareas pendientes asignadas en este proyecto.</p>
+          </ng-template>
         </div>
       </a>
     </div>
@@ -117,10 +145,20 @@
         <h6 class="fw-semibold">Miembros</h6>
         <p class="text-muted small mb-2">Gestiona el equipo del proyecto.</p>
         <!-- Muestra avatars -->
-        <div class="d-flex align-items-center mt-2">
-          <img src="https://ui-avatars.com/api/?name=M&background=6C63FF&color=fff" class="rounded-circle me-1" width="24" height="24">
-          <img src="https://ui-avatars.com/api/?name=C&background=28A745&color=fff" class="rounded-circle me-1" width="24" height="24">
-          <span class="text-muted small">+3</span>
+        <div class="d-flex align-items-center mt-2 gap-2 flex-wrap">
+          <ng-container *ngIf="proyecto?.usuariosProyecto?.length; else sinMiembros">
+            <ng-container *ngFor="let miembro of (proyecto?.usuariosProyecto || []) | slice:0:3; let idx = index">
+              <div class="avatar-circle" [ngStyle]="{ 'background-color': colorAvatar(idx) }" [attr.title]="miembro.nombre">
+                {{ inicialesUsuario(miembro.nombre) }}
+              </div>
+            </ng-container>
+            <span class="text-muted small" *ngIf="(proyecto?.usuariosProyecto?.length || 0) > 3">
+              +{{ (proyecto?.usuariosProyecto?.length || 0) - 3 }}
+            </span>
+          </ng-container>
+          <ng-template #sinMiembros>
+            <small class="text-muted">Todavía no hay miembros asignados.</small>
+          </ng-template>
         </div>
         <!-- Boton agregar solo para Admin/Lider -->
         <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Lider'" class="btn btn-sm btn-outline-success mt-2">
