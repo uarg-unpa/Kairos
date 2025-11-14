@@ -1,7 +1,7 @@
 <div class="container my-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h3>Miembros del Proyecto</h3>
-    <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder'" 
+    <button *ngIf="rolEnProyecto === 'Admin'" 
             class="btn btn-primary" 
             (click)="abrirModalAgregar()">
       <i class="bi bi-plus-circle"></i> Agregar Miembro
@@ -34,16 +34,6 @@
                     title="Editar etiqueta">
                 <i class="bi bi-pencil"></i>
             </button>
-        </div>
-
-        <!-- HORAS -->
-        <p class="text-muted small mb-2">Horas trabajadas: {{ miembro.horas || 0 }}</p>
-
-        <!-- PROGRESO -->
-        <div class="progress mb-3" style="height: 8px;">
-          <div class="progress-bar bg-primary" 
-               [style.width.%]="miembro.progreso || 0">
-          </div>
         </div>
 
         <!-- ACCIONES -->

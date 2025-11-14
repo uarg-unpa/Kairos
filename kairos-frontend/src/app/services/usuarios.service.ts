@@ -1,27 +1,29 @@
-import { Injectable, signal } from '@angular/core';
+// src/app/services/usuarios.service.ts
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { signal, WritableSignal } from '@angular/core';
 import { ConfigService } from './config.service';
+import { AuthService } from './auth.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuariosService {
-    private apiUrl: string | null = null;
-    usuarios = signal<any[]>([]); // ← TU SIGNAL
+    private apiUrl = '';
+    usuarios: WritableSignal<any[]> = signal<any[]>([]);
 
     constructor(
         private http: HttpClient,
-        private config: ConfigService
+        private config: ConfigService,
+        private auth: AuthService 
     ) {
-        this.apiUrl = this.config.get('apiBaseUrl') ?? null;
-
+        this.apiUrl = this.config.get('apiBaseUrl') || '';
         this.cargarUsuarios();
     }
 
-    // GET HEADERS (JWT)
-    getHeaders(): HttpHeaders {
-        const token = localStorage.getItem('token') || '';
+    private getHeaders(): HttpHeaders {
+        const token = this.auth.token;
         return new HttpHeaders({
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -29,10 +31,24 @@ export class UsuariosService {
     }
 
     cargarUsuarios(): void {
+        console.log('CARGANDO USUARIOS DESDE API...');
         this.http.get<any[]>(`${this.apiUrl}/api/usuarios`, { headers: this.getHeaders() })
             .subscribe({
-                next: (data) => this.usuarios.set(data),
-                error: (err) => console.error('Error al cargar usuarios', err)
+                next: (data) => {
+                    const normalizados = data.map(u => ({
+                        ...u,
+                        rol: u.roles?.[0]?.nombre || 'MIEMBRO', // si querés mantener "rol"
+                        roles: u.roles || []
+                    }));
+                    console.log('USUARIOS NORMALIZADOS:', normalizados);
+                    this.usuarios.set(normalizados);
+                    },
+                error: (err) => {
+                    console.error('ERROR AL CARGAR USUARIOS:', err);
+                    if (err.status === 401) {
+                        this.auth.logout();
+                    }
+                }
             });
     }
 
