@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
-
+import java.util.Optional;
 
 import com.nextech.kairos.model.Iteracion;
 import com.nextech.kairos.repository.IteracionRepository;
@@ -21,8 +21,8 @@ public class IteracionService implements IIteracionService {
     }
 
     @Override
-    public Iteracion obtenerPorId(Long id) {
-        return iteracionRepository.findById(id).orElse(null);
+    public Optional<Iteracion> obtenerPorId(Long id) {
+        return iteracionRepository.findById(id);
     }
 
     @Override
@@ -47,9 +47,9 @@ public class IteracionService implements IIteracionService {
 
     @Override
     public Iteracion obtenerIteracionActualPorProyecto(Long idProyecto) {
-        List<Iteracion> iteraciones = iteracionRepository.findIteracionesActualesPorProyecto(idProyecto, LocalDate.now());
+        List<Iteracion> iteraciones = iteracionRepository.findIteracionesActualesPorProyecto(idProyecto,
+                LocalDate.now());
         return iteraciones.isEmpty() ? null : iteraciones.get(0);
     }
-
 
 }

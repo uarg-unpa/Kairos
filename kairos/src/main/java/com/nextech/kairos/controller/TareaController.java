@@ -182,7 +182,7 @@ public List<TareaResponse> getTareasPorProyectoEIteracion(
         tarea.setUsuario(usuario);
 
         // 3️⃣ Asociar Iteración
-        Iteracion iteracion = iteracionService.obtenerPorId(dto.getIteracionId());
+        Iteracion iteracion = iteracionService.obtenerPorId(dto.getIteracionId()).orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada con id "));
         if (iteracion == null) {
             throw new RuntimeException("Iteración no encontrada con id: " + dto.getIteracionId());
         }
@@ -270,7 +270,7 @@ public List<TareaResponse> getTareasPorProyectoEIteracion(
         }
 
         if (cambios.getIteracionId() != null) {
-            Iteracion iteracion = iteracionService.obtenerPorId(cambios.getIteracionId());
+            Iteracion iteracion = iteracionService.obtenerPorId(cambios.getIteracionId()).orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada con id "));
             if (iteracion != null)
                 tarea.setIteracion(iteracion);
         }

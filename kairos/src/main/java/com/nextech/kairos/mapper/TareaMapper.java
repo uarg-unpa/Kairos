@@ -92,7 +92,7 @@ public class TareaMapper {
         }
 
         if (req.getIteracionId() != null) {
-            tarea.setIteracion(iteracionService.obtenerPorId(req.getIteracionId()));
+            tarea.setIteracion(iteracionService.obtenerPorId(req.getIteracionId()).orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada con id ")));
         }
 
          Set<Categoria> categorias = new HashSet<>();

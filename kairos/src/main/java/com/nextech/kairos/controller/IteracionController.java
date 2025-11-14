@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.ResponseEntity;
+import com.nextech.kairos.exception.*; 
 
 import com.nextech.kairos.dto.IteracionCreateDTO;
 import com.nextech.kairos.dto.IteracionDTO;
@@ -67,9 +68,12 @@ public class IteracionController {
     }
 
     @GetMapping("/{id}")
-    public Iteracion obtener(@PathVariable Long id) {
-        return iteracionService.obtenerPorId(id);
-    }
+public ResponseEntity<IteracionDTO> obtenerIteracion(@PathVariable Long id) {
+    Iteracion iter = iteracionService.obtenerPorId(id)
+        .orElseThrow(() -> new NotFoundException("Iteración no encontrada"));
+
+    return ResponseEntity.ok(IteracionMapper.toDTO(iter));
+}
 
     @PostMapping
     public IteracionDTO guardar(@RequestBody IteracionCreateDTO dto) {
