@@ -4,6 +4,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.nextech.kairos.model.Tarea;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 
 @Repository
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
@@ -23,4 +26,13 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
 
     // Por proyecto a través de iteración -> etapa -> proyecto
     List<Tarea> findByIteracion_Etapa_Proyecto_IdProyecto(Long idProyecto);
+
+    @Query("SELECT t FROM Tarea t " +
+       "WHERE t.iteracion.idIteracion = :idIteracion " +
+       "AND t.iteracion.etapa.proyecto.idProyecto = :idProyecto")
+List<Tarea> findByProyectoIdAndIteracionId(
+        @Param("idProyecto") Long idProyecto,
+        @Param("idIteracion") Long idIteracion);
+
+
 }

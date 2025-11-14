@@ -16,5 +16,7 @@ public interface ITareaService {
     List<Tarea> listarPorHorasEstimadas(Double horas);
     List<Tarea> listarPorHorasEstimadasMayorQue(Double horas);
     List<Tarea> listarPorHorasEstimadasMenorQue(Double horas);
+    // 🔹 Nuevo método para obtener tareas por proyecto e iteración
+    Optional<Tarea> obtenerTareasPorProyectoYIteracion(Long idProyecto, Long idIteracion);
 }
 

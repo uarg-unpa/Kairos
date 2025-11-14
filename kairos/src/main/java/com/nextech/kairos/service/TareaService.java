@@ -11,6 +11,7 @@ import com.nextech.kairos.model.Tarea;
 import com.nextech.kairos.repository.TareaRepository;
 import com.nextech.kairos.service.IIteracionService;
 import com.nextech.kairos.model.Iteracion;
+import com.nextech.kairos.service.ITareaService;
 
 import jakarta.transaction.Transactional;
 
@@ -128,6 +129,11 @@ public class TareaService implements ITareaService {
             }
         }
         return false;
+    }
+
+    @Override
+    public List<Tarea> obtenerTareasPorProyectoYIteracion(Long idProyecto, Long idIteracion) {
+        return tareaRepository.findByProyectoIdAndIteracionId(idProyecto, idIteracion);
     }
 
 }

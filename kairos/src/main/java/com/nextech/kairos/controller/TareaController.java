@@ -118,6 +118,45 @@ public class TareaController {
         }).toList();
     }
 
+    @GetMapping("/proyecto/{idProyecto}/iteracion/{idIteracion}")
+public List<TareaResponse> getTareasPorProyectoEIteracion(
+        @PathVariable Long idProyecto,
+        @PathVariable Long idIteracion) {
+
+    List<Tarea> tareas = tareaService.obtenerTareasPorProyectoYIteracion(idProyecto, idIteracion);
+
+    return tareas.stream().map(t -> {
+        TareaResponse dto = new TareaResponse();
+        dto.setIdTarea(t.getIdTarea());
+        dto.setNombre(t.getNombre());
+        dto.setDescripcion(t.getDescripcion());
+        dto.setEstado(t.getEstado());
+        dto.setPrioridad(t.getPrioridad());
+        dto.setFechaCreacion(t.getFechaCreacion());
+        dto.setFechaFin(t.getFechaFin());
+        dto.setHorasEstimadas(t.getHorasEstimadas());
+        dto.setUsuarioId(t.getUsuario().getId());
+        dto.setUsuarioNombre(t.getUsuario().getNombre());
+        dto.setIteracionId(t.getIteracion() != null ? t.getIteracion().getIdIteracion() : null);
+
+        dto.setCategorias(t.getCategorias().stream()
+                .map(c -> new CategoriaResponse(
+                        c.getIdCategoria(),
+                        c.getNombre(),
+                        c.getDescripcion(),
+                        c.getProyecto().getIdProyecto()))
+                .collect(Collectors.toSet()));
+
+        dto.setDependenciasIds(
+                t.getDependencias().stream()
+                        .map(Tarea::getIdTarea)
+                        .collect(Collectors.toSet()));
+
+        return dto;
+    }).toList();
+}
+
+
     @GetMapping("/{id}")
     public Tarea obtener(@PathVariable Long id) {
         return tareaService.obtenerPorId(id);
@@ -194,6 +233,8 @@ public class TareaController {
 
         return dtoResponse;
     }
+
+    
 
     @Transactional(rollbackOn = Exception.class)
     @PutMapping("/{id}")

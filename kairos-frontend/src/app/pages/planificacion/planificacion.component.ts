@@ -337,7 +337,9 @@ export class PlanificacionComponent implements OnInit {
   onEliminarCategoria(categoriaId: number): void {
     this.categoriaService.deleteCategoria(categoriaId).subscribe({
       next: () => this.cargarCategorias(),
-      error: (err) => console.error('Error al eliminar categoría:', err)
+      error: (err) => {console.error('Error al eliminar tarea:', err);
+    alert(err.error || "❌ Error al eliminar la categoría");
+    }
     });
   }
 
