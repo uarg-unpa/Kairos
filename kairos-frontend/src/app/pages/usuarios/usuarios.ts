@@ -8,7 +8,7 @@ import { ConfigService } from '../../services/config.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 
-
+ 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
