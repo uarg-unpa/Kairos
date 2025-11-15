@@ -1,10 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 import { ProyectoService } from '../../../services/proyecto.service';
 import { AuthService } from '../../../services/auth.service';
+import { EtapaService } from '../../../services/etapa.service';
+import { TaskService } from '../../../services/tarea.service';
+
 import { Proyecto } from '../../../models/proyecto.model';
-import { FormsModule } from '@angular/forms';
+import { Etapa } from '../../../models/etapa.model';
+import { Tarea } from '../../../models/tarea.model';
 
 @Component({
   selector: 'app-proyecto-detalle',
@@ -20,6 +26,15 @@ export class ProyectoDetalleComponent implements OnInit {
   proyectoEdit: any = {};
   errorMensaje: string | null = null;
   usuarioId: number | null = null;
+  etapas: Etapa[] = [];
+  tareasProyecto: Tarea[] = [];
+  etapaActualNombre: string | null = null;
+  etapasCompletadas = 0;
+  planificacionProgreso = 0;
+  tareasTotales = 0;
+  tareasFinalizadas = 0;
+  tareasAsignadasPendientes = 0;
+  private avatarPalette = ['#6C63FF', '#0d6efd', '#198754', '#20c997', '#fd7e14', '#6f42c1'];
 
   // === VALIDACIONES ===
   maxNombre = 20;
@@ -31,7 +46,9 @@ export class ProyectoDetalleComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private proyectoService: ProyectoService,
-    private authService: AuthService
+    private authService: AuthService,
+    private etapaService: EtapaService,
+    private taskService: TaskService
   ) {}
 
   ngOnInit(): void {
@@ -45,6 +62,8 @@ export class ProyectoDetalleComponent implements OnInit {
   private cargarUsuarioId(): void {
     this.authService.currentUser$.subscribe(user => {
       this.usuarioId = user?.id || null;
+      this.determinarRolEnProyecto();
+      this.actualizarTareasAsignadas();
     });
   }
 
@@ -53,8 +72,27 @@ export class ProyectoDetalleComponent implements OnInit {
       next: (proyecto) => {
         this.proyecto = proyecto;
         this.determinarRolEnProyecto();
+        this.cargarResumenProyecto(id);
       },
       error: (err) => console.error('Error:', err)
+    });
+  }
+
+  private cargarResumenProyecto(id: number): void {
+    this.etapaService.getEtapasPorProyecto(id).subscribe({
+      next: (etapas) => {
+        this.etapas = etapas || [];
+        this.actualizarResumenEtapas();
+      },
+      error: (err) => console.error('Error al cargar etapas del proyecto:', err)
+    });
+
+    this.taskService.getTareasPorProyecto(id).subscribe({
+      next: (tareas) => {
+        this.tareasProyecto = tareas || [];
+        this.actualizarResumenTareas();
+      },
+      error: (err) => console.error('Error al cargar tareas del proyecto:', err)
     });
   }
 
@@ -138,6 +176,7 @@ export class ProyectoDetalleComponent implements OnInit {
     this.proyectoService.actualizarProyecto(this.proyecto!.idProyecto, payload).subscribe({
       next: (actualizado) => {
         this.proyecto = actualizado;
+        this.cargarResumenProyecto(actualizado.idProyecto);
         alert('Proyecto actualizado con exito');
         this.cerrarModalEditar();
       },
@@ -206,5 +245,46 @@ export class ProyectoDetalleComponent implements OnInit {
     if (!file.type.startsWith('image/')) return 'Solo se permiten imagenes';
     if (file.size > this.maxImagenMB * 1024 * 1024) return `Maximo ${this.maxImagenMB} MB`;
     return null;
+  }
+
+  private actualizarResumenEtapas(): void {
+    this.etapasCompletadas = this.etapas.filter(e => (e.estado || '').toUpperCase() === 'COMPLETADA').length;
+    const enCurso = this.etapas.find(e => (e.estado || '').toUpperCase() === 'EN_PROGRESO');
+    const pendiente = this.etapas.find(e => (e.estado || '').toUpperCase() === 'PENDIENTE');
+    this.etapaActualNombre = enCurso?.nombre || pendiente?.nombre || this.etapas[0]?.nombre || null;
+  }
+
+  private actualizarResumenTareas(): void {
+    this.tareasTotales = this.tareasProyecto.length;
+    this.tareasFinalizadas = this.tareasProyecto.filter(t => this.esTareaCompletada(t.estado)).length;
+    this.planificacionProgreso = this.tareasTotales
+      ? Math.round((this.tareasFinalizadas / this.tareasTotales) * 100)
+      : 0;
+    this.actualizarTareasAsignadas();
+  }
+
+  private actualizarTareasAsignadas(): void {
+    if (!this.usuarioId) {
+      this.tareasAsignadasPendientes = 0;
+      return;
+    }
+    this.tareasAsignadasPendientes = this.tareasProyecto.filter(
+      t => t.usuarioId === this.usuarioId && !this.esTareaCompletada(t.estado)
+    ).length;
+  }
+
+  private esTareaCompletada(estado: string | null | undefined): boolean {
+    if (!estado) return false;
+    return /completad|finalizad/i.test(estado);
+  }
+
+  inicialesUsuario(nombre?: string): string {
+    if (!nombre) return '?';
+    const partes = nombre.trim().split(/\s+/).filter(Boolean);
+    return partes.slice(0, 2).map(p => p[0]?.toUpperCase() || '').join('') || '?';
+  }
+
+  colorAvatar(index: number): string {
+    return this.avatarPalette[index % this.avatarPalette.length];
   }
 }

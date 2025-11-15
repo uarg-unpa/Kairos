@@ -103,4 +103,40 @@ public interface TiempoRepository extends JpaRepository<Tiempo, Long> {
            "WHERE i.etapa.proyecto.idProyecto = :proyectoId AND t.fechaRegistro BETWEEN :desde AND :hasta " +
            "GROUP BY u.id, u.nombre ORDER BY u.nombre")
     List<Object[]> sumHorasPorUsuarioEnProyectoRango(@Param("proyectoId") Long proyectoId, @Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
+
+    // Horas por categoría (para reportes semanales)
+    @Query("SELECT c.idCategoria, COALESCE(c.nombre, 'Sin categoría'), COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.tarea ta LEFT JOIN ta.categorias c " +
+           "GROUP BY c.idCategoria, c.nombre ORDER BY COALESCE(c.nombre, 'Sin categoría')")
+    List<Object[]> sumHorasPorCategoriaGlobal();
+
+    @Query("SELECT c.idCategoria, COALESCE(c.nombre, 'Sin categoría'), COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.tarea ta LEFT JOIN ta.categorias c JOIN ta.iteracion i " +
+           "WHERE i.idIteracion = :iteracionId " +
+           "GROUP BY c.idCategoria, c.nombre ORDER BY COALESCE(c.nombre, 'Sin categoría')")
+    List<Object[]> sumHorasPorCategoriaEnIteracion(@Param("iteracionId") Long iteracionId);
+
+    @Query("SELECT c.idCategoria, COALESCE(c.nombre, 'Sin categoría'), COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.tarea ta LEFT JOIN ta.categorias c JOIN ta.iteracion i " +
+           "WHERE i.etapa.proyecto.idProyecto = :proyectoId " +
+           "GROUP BY c.idCategoria, c.nombre ORDER BY COALESCE(c.nombre, 'Sin categoría')")
+    List<Object[]> sumHorasPorCategoriaEnProyecto(@Param("proyectoId") Long proyectoId);
+
+    @Query("SELECT c.idCategoria, COALESCE(c.nombre, 'Sin categoría'), COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.tarea ta LEFT JOIN ta.categorias c " +
+           "WHERE t.fechaRegistro BETWEEN :desde AND :hasta " +
+           "GROUP BY c.idCategoria, c.nombre ORDER BY COALESCE(c.nombre, 'Sin categoría')")
+    List<Object[]> sumHorasPorCategoriaGlobalRango(@Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
+
+    @Query("SELECT c.idCategoria, COALESCE(c.nombre, 'Sin categoría'), COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.tarea ta LEFT JOIN ta.categorias c JOIN ta.iteracion i " +
+           "WHERE i.idIteracion = :iteracionId AND t.fechaRegistro BETWEEN :desde AND :hasta " +
+           "GROUP BY c.idCategoria, c.nombre ORDER BY COALESCE(c.nombre, 'Sin categoría')")
+    List<Object[]> sumHorasPorCategoriaEnIteracionRango(@Param("iteracionId") Long iteracionId, @Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
+
+    @Query("SELECT c.idCategoria, COALESCE(c.nombre, 'Sin categoría'), COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.tarea ta LEFT JOIN ta.categorias c JOIN ta.iteracion i " +
+           "WHERE i.etapa.proyecto.idProyecto = :proyectoId AND t.fechaRegistro BETWEEN :desde AND :hasta " +
+           "GROUP BY c.idCategoria, c.nombre ORDER BY COALESCE(c.nombre, 'Sin categoría')")
+    List<Object[]> sumHorasPorCategoriaEnProyectoRango(@Param("proyectoId") Long proyectoId, @Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
 }

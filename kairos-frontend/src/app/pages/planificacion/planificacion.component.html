@@ -1,552 +1,86 @@
-<!--
-  Planificación de Tareas - Vista principal
-  - Filtros
-  - Lista paginada de tareas con comentarios
-  - Panel lateral con estadísticas
-  - Modal: crear/editar tarea
-  - Modal: agregar comentario
--->
-
 <div class="container py-4">
 
-  <!-- Encabezado y acciones principales -->
+  <!-- Encabezado -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Planificación de Tareas - Kairos</h2>
-
     <div class="d-flex gap-2">
-      <button type="button" class="btn btn-primary" (click)="abrirModalCrear()">
+      <button type="button" class="btn btn-primary" (click)="onAbrirModalCrear()">
         Nueva Tarea
       </button>
-      <button type="button" class="btn btn-primary" (click)="abrirCategorias()">
+      <button type="button" class="btn btn-primary" (click)="categoriesModal.abrirModal()">
         Categorias
       </button>
       <button class="btn btn-outline-primary">
         <i class="bi bi-plus-circle me-2"></i>Tareas propuestas
       </button>
-
     </div>
   </div>
 
-  <!-- Filtro de vencimiento activo (proveniente del Dashboard) -->
+  <!-- Filtro vencimiento -->
   <div *ngIf="filtroVencimiento" class="alert alert-info d-flex align-items-center justify-content-between mb-3">
     <span>
-      Filtro aplicado:
-      {{ filtroVencimiento === 'proximas' ? 'Próximos vencimientos (7 días)' : 'Tareas atrasadas' }}
+      Filtro: {{ filtroVencimiento === 'proximas' ? 'Próximos vencimientos (7 días)' : 'Tareas atrasadas' }}
     </span>
     <button class="btn btn-sm btn-outline-secondary" (click)="clearVencimientoFilter()">Quitar filtro</button>
   </div>
 
-  <!-- FILTROS -->
-  <div class="row g-4 mb-2">
-    <!-- Filtros generales rápidos (puedes reemplazarlos por los vinculados a la componente) -->
-    <div class="col-4">
-      <select class="form-select">
-        <option>Elaboración</option>
-        <option>Desarrollo</option>
-        <option>Diseño</option>
-        <option>Testing</option>
-        <option>Documentación</option>
-        <option>Reuniones</option>
-        <option>Investigación</option>
-      </select>
-    </div>
-
-    <div class="col-4">
-      <select class="form-select">
-        <option>Iteración 1</option>
-        <option>Iteración 2</option>
-        <option>Iteración 3</option>
-      </select>
-    </div>
-  </div>
-
   <div class="row g-4">
-    <!-- PANEL PRINCIPAL: lista de tareas -->
+    <!-- Panel Principal -->
     <div class="col-lg-9">
+      <!-- Filtros -->
+      <app-task-filters
+  [categorias]="categorias"
+  [usuarios]="usuarios"
+  [filtroCategoria]="filtroCategoria"
+  [filtroResponsable]="filtroResponsable"
+  [filtroEstado]="filtroEstado"
+  [filtroFechaDesde]="filtroFechaDesde"
+  [filtroFechaHasta]="filtroFechaHasta"
+  (filtrosChange)="onCambiarPagina(1)">
+</app-task-filters>
 
-      <!-- Panel filtros avanzados (categoria, responsable, estado, fechas) -->
-      <div class="card planning-card mb-4">
-        <div class="card-body">
-          <div class="row g-3 align-items-center">
-            <div class="col-md-3">
-              <select class="form-select" [(ngModel)]="filtroCategoria" aria-label="Filtrar por categoría">
-                <option value="Todas">Todas las categorías</option>
-                <option *ngFor="let cat of categorias" [value]="cat.nombre">{{ cat.nombre }}</option>
-              </select>
-            </div>
 
-            <div class="col-md-3">
-              <select class="form-select" [(ngModel)]="filtroResponsable" aria-label="Filtrar por responsable">
-                <option value="Todos">Todos los responsables</option>
-                <option *ngFor="let u of usuarios" [value]="u.nombre">{{ u.nombre }}</option>
-              </select>
-            </div>
-
-            <div class="col-md-2">
-              <select class="form-select" [(ngModel)]="filtroEstado" aria-label="Filtrar por estado">
-                <option value="Todos">Todos los estados</option>
-                <option>En Progreso</option>
-                <option>Completado</option>
-              </select>
-            </div>
-
-            <div class="col-md-2">
-              <input type="date" class="form-control" [(ngModel)]="filtroFechaDesde" aria-label="Fecha desde">
-            </div>
-
-            <div class="col-md-2">
-              <input type="date" class="form-control" [(ngModel)]="filtroFechaHasta" aria-label="Fecha hasta">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Lista de tareas (paginada) -->
-      <div class="card planning-card">
-        <div class="card-header bg-white">
-          <h5 class="mb-0">Lista de Tareas</h5>
-        </div>
-
-        <div class="card-body p-0">
-          <!-- Iteración sobre tareas paginadas -->
-          <div *ngFor="let tarea of tareasPaginadas()" class="task-card p-3 border-bottom bg-white" [ngClass]="{
-                 'card-prioridad-baja': tarea.prioridad === 'Baja',
-                 'card-prioridad-media': tarea.prioridad === 'Media',
-                 'card-prioridad-alta': tarea.prioridad === 'Alta'
-               }">
-
-            <!-- Cabecera tarea: título, badges y acciones -->
-            <div class="d-flex justify-content-between align-items-start">
-              <div class="flex-grow-1">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                  <h6 class="mb-0">{{ tarea.nombre }}</h6>
-
-                  <span class="badge bg-danger" *ngIf="tarea.prioridad === 'Alta'">Alta</span>
-                  <span class="badge bg-warning" *ngIf="tarea.prioridad === 'Media'">Media</span>
-                  <span class="badge bg-primary" *ngIf="tarea.prioridad === 'Baja'">Baja</span>
-
-                  <span class="badge bg-info ms-1">{{ tarea.estado }}</span>
-                  <span class="badge bg-secondary ms-1">{{ tarea.categorias[0]?.nombre || 'Sin categoría' }}</span>
-                </div>
-
-                <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
-
-                <!-- Metadatos tarea -->
-                <div class="row g-2 small text-muted">
-                  <div class="col-md-6">
-                    <div class="d-flex align-items-center gap-3">
-                      <span><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
-                      <span><i class="bi bi-briefcase me-1"></i>{{ tarea.usuarioRol }}</span>
-                    </div>
-                  </div>
-
-                  <div class="col-md-6">
-                    <div class="d-flex align-items-center gap-3">
-                      <span><i class="bi bi-calendar me-1"></i>{{ tarea.fechaCreacion }} / {{ tarea.fechaFin }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row g-2 small text-muted mt-1">
-                  <div class="col-md-6">
-                    <span><i class="bi bi-hourglass me-1"></i>Estimado: {{ tarea.horasEstimadas }}h</span>
-                  </div>
-                  <div class="col-md-6">
-                    <div>
-                      <i class="bi bi-link me-1"></i>
-                      Dependencias:
-                      <ng-container *ngIf="tarea.dependenciasIds?.length; else sinDeps">
-                        <span *ngFor="let depId of tarea.dependenciasIds" class="badge bg-secondary me-1">
-                          {{ getNombreTareaPorId(depId) }}
-                        </span>
-                      </ng-container>
-                      <ng-template #sinDeps><span class="text-muted">Ninguna</span></ng-template>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Acciones de tarea -->
-              <div class="d-flex flex-column gap-1">
-                <div class="dropdown">
-                  <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    Acciones
-                  </button>
-
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" (click)="cambiarEstado(tarea.idTarea, 'En Progreso')"><i
-                          class="bi bi-play me-2"></i>En Progreso</a></li>
-                    <li><a class="dropdown-item" (click)="cambiarEstado(tarea.idTarea, 'Completado')"><i
-                          class="bi bi-check-circle me-2"></i>Completar</a></li>
-                    <li>
-                      <hr class="dropdown-divider">
-                    </li>
-                    <li><a class="dropdown-item" (click)="abrirModalEditar(tarea)"><i
-                          class="bi bi-pencil me-2"></i>Editar</a></li>
-                    <li><a class="dropdown-item text-danger" (click)="eliminarTarea(tarea.idTarea)"><i
-                          class="bi bi-trash me-2"></i>Eliminar</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <!-- SECCIÓN: Comentarios de la tarea -->
-            <div class="mt-3 p-3 bg-light rounded border">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <strong><i class="bi bi-sticky me-2"></i>Comentarios</strong>
-                <button class="btn btn-sm btn-outline-primary"
-                  (click)="abrirModalComentarios(tarea.idTarea); $event.stopPropagation()">
-                  <i class="bi bi-plus-circle me-1"></i>Agregar comentario
-                </button>
-              </div>
-
-              <!-- Lista de comentarios -->
-              <div *ngIf="(comentariosPorTarea?.[tarea.idTarea]?.length || 0) > 0; else sinNotas">
-                <div *ngFor="let c of comentariosPorTarea?.[tarea.idTarea]"
-                  class="p-2 border-bottom small text-muted d-flex justify-content-between align-items-center">
-                  <div>
-                    <i class="bi bi-chat-left-text me-1" aria-hidden="true"></i>
-                    {{ c.contenido }}
-                  </div>
-
-                  <button class="btn btn-sm btn-outline-danger" title="Eliminar comentario"
-                    (click)="eliminarComentario(c.idComentario, tarea.idTarea)">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Placeholder si no hay comentarios -->
-              <ng-template #sinNotas>
-                <p class="text-muted small fst-italic m-0">Sin notas adicionales.</p>
-              </ng-template>
-            </div>
-            <ng-template #sinTareas>
-              <p class="text-muted small fst-italic m-0">Sin tareas cargadas.</p>
-            </ng-template>
-          </div>
-
-          <!-- PAGINACIÓN -->
-          <nav class="mt-3 mb-2">
-            <ul class="pagination justify-content-center mb-0">
-              <li class="page-item" [class.disabled]="paginaActual === 1">
-                <a class="page-link" (click)="cambiarPagina(paginaActual - 1)" aria-label="Anterior">Anterior</a>
-              </li>
-
-              <li class="page-item" *ngFor="let num of [].constructor(totalPaginas()); let i = index"
-                [class.active]="paginaActual === i + 1">
-                <a class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</a>
-              </li>
-
-              <li class="page-item" [class.disabled]="paginaActual === totalPaginas()">
-                <a class="page-link" (click)="cambiarPagina(paginaActual + 1)" aria-label="Siguiente">Siguiente</a>
-              </li>
-            </ul>
-          </nav>
-
-        </div>
-      </div>
+      <!-- Lista de Tareas -->
+      <app-task-list
+        [tareas]="tareasFiltradas()"
+        [comentariosPorTarea]="comentariosPorTarea"
+        [usuarios]="usuarios"
+        [paginaActual]="paginaActual"
+        [tareasPorPagina]="tareasPorPagina"
+        (editarTarea)="onAbrirModalEditar($event)"
+        (eliminarTarea)="onEliminarTarea($event)"
+        (cambiarEstado)="onCambiarEstado($event)"
+        (abrirComentarios)="onAbrirComentarios($event)"
+        (cambiarPagina)="onCambiarPagina($event)"
+        (eliminarComentario)="onEliminarComentario($event)">
+      </app-task-list>
     </div>
 
-    <!-- PANEL LATERAL: estadísticas y resumen -->
+    <!-- Panel Lateral -->
     <div class="col-lg-3">
-      <div class="card mb-4 text-center p-3">
-        <h6 class="mb-2">Progreso General</h6>
-        <h3 class="mb-0">{{ porcentajeCompletado() }}% Completado</h3>
-
-        <div class="progress my-2" style="height: 8px;" aria-label="Progreso general">
-          <div class="progress-bar bg-success" role="progressbar" [style.width.%]="porcentajeCompletado()"></div>
-        </div>
-
-        <small>Total: {{ totalTareas() }} | Completadas: {{ completadas() }}</small>
-      </div>
-
-      <div class="card mb-4">
-        <div class="card-header bg-white">
-          <h6>Tareas por Categoría</h6>
-        </div>
-
-        <div class="card-body">
-          <div *ngFor="let cat of tareasPorCategoria() | keyvalue" class="d-flex justify-content-between mb-2">
-            <span class="small">{{ cat.key }}:</span>
-            <span class="badge bg-primary">{{ cat.value }}</span>
-          </div>
-        </div>
-      </div>
+      <app-stats-panel [tareas]="tareasFiltradas()"></app-stats-panel>
     </div>
   </div>
 </div>
 
-<!-- ============================
-     MODAL: Crear / Editar Tarea
-     ============================ -->
-<div class="modal fade" id="addTaskModal" tabindex="-1" aria-hidden="true" aria-labelledby="addTaskModalLabel">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
+<!-- Modales -->
+<app-task-form-modal
+  [tareaEnEdicion]="null"
+  [categorias]="categorias"
+  [usuarios]="usuarios"
+  [iteracionActual]="iteracionActual"
+  [tareas]="tareas"
+  (guardarTarea)="onGuardarTarea($event)">
+</app-task-form-modal>
 
-      <div class="modal-header d-flex justify-content-between align-items-center">
-        <h5 id="addTaskModalLabel" class="modal-title">{{ tareaEnEdicion ? 'Editar Tarea' : 'Nueva Tarea de
-          Planificación' }}</h5>
-        <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
-      </div>
+<app-categories-modal
+  [categorias]="categorias"
+  (agregarCategoria)="onAgregarCategoria($event)"
+  (editarCategoria)="onEditarCategoria($event)"
+  (eliminarCategoria)="onEliminarCategoria($event)">
+</app-categories-modal>
 
-      <form #form="ngForm" (ngSubmit)="tareaEnEdicion ? editarTarea() : agregarTarea()">
-        <div class="modal-body">
-          <h6 class="text-muted">* Campos obligatorios</h6>
-
-          <!-- Título y Prioridad -->
-          <div class="row g-3">
-            <div class="col-md-8">
-              <label class="form-label">Título *</label>
-              <input type="text" class="form-control" [(ngModel)]="nuevaTarea.nombre" name="nombre" required
-                maxlength="50" #nombre="ngModel">
-              <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched || form.submitted)" class="text-danger mt-1">
-                ⚠️ El título es obligatorio.
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">Prioridad</label>
-              <select class="form-select" [(ngModel)]="nuevaTarea.prioridad" name="prioridad">
-                <option value="Baja">Baja</option>
-                <option value="Media" selected>Media</option>
-                <option value="Alta">Alta</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Descripción -->
-          <div class="mb-3 mt-3">
-            <label class="form-label">Descripción</label>
-            <textarea class="form-control" [(ngModel)]="nuevaTarea.descripcion" name="descripcion" rows="3"></textarea>
-          </div>
-
-          <!-- Categoría y Responsable -->
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Categoría *</label>
-              <select class="form-select" [(ngModel)]="nuevaTarea.categoriaId" name="categoriaId" required
-                #categoriaId="ngModel">
-                <option value="">Seleccionar categoría...</option>
-                <option *ngFor="let cat of categorias" [value]="cat.idCategoria">{{ cat.nombre }}</option>
-              </select>
-              <div *ngIf="categoriaId.invalid && (categoriaId.dirty || categoriaId.touched || form.submitted)" class="text-danger mt-1">
-                ⚠️ La categoría es obligatoria.
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Responsable *</label>
-              <select class="form-select" [(ngModel)]="nuevaTarea.usuarioId" name="usuarioId" required
-                #usuarioId="ngModel">
-                <option value="">Seleccionar responsable...</option>
-                <option *ngFor="let u of usuarios" [value]="u.id">{{ u.nombre }}</option>
-              </select>
-              <div *ngIf="usuarioId.invalid && (usuarioId.dirty || usuarioId.touched || form.submitted)" class="text-danger mt-1">
-                ⚠️ El responsable es obligatorio.
-              </div>
-            </div>
-          </div>
-
-          <!-- Fechas y Horas -->
-          <div class="row g-3 mt-2">
-            <div class="col-md-6">
-              <label class="form-label">Fecha de Inicio *</label>
-              <input type="date" class="form-control" [(ngModel)]="nuevaTarea.fechaCreacion" name="fechaCreacion"
-                required #fechaCreacion="ngModel">
-              <div *ngIf="fechaCreacion.invalid && (fechaCreacion.dirty || fechaCreacion.touched || form.submitted )"
-                class="text-danger mt-1">
-                ⚠️ La fecha es obligatoria.
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Fecha de Fin *</label>
-              <input type="date" class="form-control" [(ngModel)]="nuevaTarea.fechaFin" name="fechaFin" required
-                #fechaFin="ngModel">
-              <div *ngIf="fechaFin.invalid && (fechaFin.dirty || fechaFin.touched || form.submitted)" class="text-danger mt-1">
-                ⚠️ La fecha es obligatoria.
-              </div>
-            </div>
-          </div>
-
-          <div class="row g-3 mt-2">
-            <div class="col-md-6">
-              <label class="form-label">Horas Estimadas</label>
-              <input type="number" class="form-control" [(ngModel)]="nuevaTarea.horasEstimadas" name="horasEstimadas"
-                min="0" max="1000" step="0.5">
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Iteración *</label>
-              <select class="form-select" [(ngModel)]="nuevaTarea.iteracionId" name="iteracionId" required>
-                <option *ngFor="let i of iteraciones" [ngValue]="i.idIteracion">Iteración {{ i.numero }} ({{ i.etapaNombre || 'Sin etapa' }})</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Dependencias -->
-          <div class="mb-3">
-            <label for="dependenciaId" class="form-label">Tarea de la que depende</label>
-            <select id="dependenciaId" class="form-select" [(ngModel)]="nuevaTarea.dependenciaId" name="dependenciaId">
-              <option value="">-- Ninguna --</option>
-              <option *ngFor="let tarea of tareas" [value]="tarea.idTarea">
-                {{ tarea.nombre }}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">{{ tareaEnEdicion ? 'Guardar cambios' : 'Agregar tarea'
-            }}</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- ============================
-     MODAL: Agregar Comentario
-     ============================ -->
-<div class="modal fade" id="addComentarioModal" tabindex="-1" aria-hidden="true"
-  aria-labelledby="addComentarioModalLabel">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header d-flex justify-content-between align-items-center">
-        <h5 id="addComentarioModalLabel" class="modal-title">Agregar Comentario</h5>
-        <button type="button" class="btn-close" (click)="cerrarModalComentario()" aria-label="Cerrar"></button>
-      </div>
-
-      <form (ngSubmit)="agregarComentarioModal()">
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Comentario *</label>
-            <textarea class="form-control" [(ngModel)]="nuevoComentarioModal.contenido" name="contenido" rows="3"
-              required maxlength="90" #contenido="ngModel"></textarea>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="cerrarModalComentario()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar</button>
-        </div>
-      </form>
-
-    </div>
-  </div>
-</div>
-
-<!-- ============================
-     MODAL: Gestionar Categorías
-     ============================ -->
-<div class="modal fade" id="categoriasModal" tabindex="-1" aria-labelledby="categoriasModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-
-      <!-- Encabezado -->
-      <div class="modal-header">
-        <h5 class="modal-title" id="categoriasModalLabel">Gestión de Categorías</h5>
-        <button type="button" class="btn-close" (click)="cerrarModalCategorias()" aria-label="Cerrar"></button>
-      </div>
-
-      <!-- Cuerpo del modal -->
-      <div class="modal-body">
-        <div class="row">
-          <!-- Listado de categorías -->
-          <div class="col-md-7 border-end">
-            <h6 class="mb-3 text-muted">Categorías existentes</h6>
-
-            <div *ngIf="(categorias || []).length > 0; else sinCategorias">
-              <ul class="list-group">
-                <li *ngFor="let cat of categorias" class="list-group-item d-flex flex-column"
-                  (click)="toggleDescripcion(cat.nombre)" style="cursor: pointer;">
-
-                  <div class="d-flex justify-content-between align-items-center w-100">
-                    <div>
-                      <i class="bi bi-tag-fill text-primary me-2"></i>{{ cat.nombre }}
-                    </div>
-
-                    <div class="btn-group">
-                      <button class="btn btn-sm btn-outline-primary" title="Editar categoría"
-                        (click)="seleccionarCategoriaParaEditar(cat); $event.stopPropagation()">
-                        <i class="bi bi-pencil"></i>
-                      </button>
-
-                      <button class="btn btn-sm btn-outline-danger" title="Eliminar categoría"
-                        (click)="eliminarCategoria(cat.idCategoria); $event.stopPropagation()">
-                        <i class="bi bi-trash"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Descripción visible solo si está expandida -->
-                  <div *ngIf="categoriaExpandida === cat.nombre" class="mt-2 text-muted">
-                    <small>{{ cat.descripcion || 'Sin descripción' }}</small>
-                  </div>
-                </li>
-
-              </ul>
-            </div>
-
-            <!-- Placeholder cuando no hay categorías -->
-            <ng-template #sinCategorias>
-              <p class="text-muted small fst-italic">No hay categorías registradas aún.</p>
-            </ng-template>
-          </div>
-
-          <!-- Formulario para agregar nueva categoría -->
-          <!-- Formulario para agregar o editar categoría -->
-          <div class="col-md-5 ps-4">
-            <h6 class="mb-3 text-muted">
-              {{ categoriaEdicion ? 'Editar categoría' : 'Agregar nueva categoría' }}
-            </h6>
-
-            <form #form="ngForm" (ngSubmit)="categoriaEdicion ? guardarCategoriaEditada() : agregarCategorias()">
-              <div class="mb-3">
-                <label for="nombreCategoria" class="form-label">Nombre *</label>
-                <input type="text" id="nombreCategoria" class="form-control" [(ngModel)]="nuevaCategoria.nombre"
-                  name="nombreCategoria" required #nombre="ngModel" maxlength="14" placeholder="Ej: Documentación" />
-                <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched || form.submitted)"
-                  class="text-danger mt-1">
-                  ⚠️ El nombre es obligatorio.
-                </div>
-
-              </div>
-
-              <div class="mb-3">
-                <label for="descripcionCategoria" class="form-label">Descripción</label>
-                <input type="text" id="descripcionCategoria" class="form-control"
-                  [(ngModel)]="nuevaCategoria.descripcion" name="descripcionCategoria" maxlength="50"
-                  placeholder="Descripción de la categoría" />
-              </div>
-
-              <div class="d-flex justify-content-end gap-2">
-                <!-- Botón de cancelar edición -->
-                <button *ngIf="categoriaEdicion" type="button" class="btn btn-secondary"
-                  (click)="resetModalCategorias()">
-                  Cancelar
-                </button>
-
-                <!-- Botón de acción principal -->
-                <button type="submit" class="btn btn-primary">
-                  <i class="bi" [ngClass]="categoriaEdicion ? 'bi-save' : 'bi-plus-circle'"></i>
-                  {{ categoriaEdicion ? 'Guardar cambios' : 'Agregar' }}
-                </button>
-              </div>
-            </form>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Pie del modal -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModalCategorias()">Cerrar</button>
-      </div>
-
-    </div>
-  </div>
-</div>
+<app-comments-modal
+  [usuarioActual]="usuarioActual"
+  (agregarComentario)="onAgregarComentario($event)">
+</app-comments-modal>

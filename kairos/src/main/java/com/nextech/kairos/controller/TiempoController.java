@@ -21,6 +21,7 @@ import com.nextech.kairos.dto.TiempoRegistroRequest;
 import com.nextech.kairos.dto.TiempoResponseDTO;
 import com.nextech.kairos.dto.HorasPorIteracionDTO;
 import com.nextech.kairos.dto.HorasPorUsuarioDTO;
+import com.nextech.kairos.dto.HorasPorCategoriaDTO;
 import com.nextech.kairos.model.Tiempo;
 import com.nextech.kairos.model.Usuario;
 import com.nextech.kairos.service.TiempoService;
@@ -153,6 +154,44 @@ public class TiempoController {
         }
         List<HorasPorUsuarioDTO> out = rows.stream()
             .map(r -> new HorasPorUsuarioDTO(((Number) r[0]).longValue(), (String) r[1], ((Number) r[2]).intValue()))
+            .toList();
+        return ResponseEntity.ok(out);
+    }
+
+    @GetMapping("/horas-por-categoria")
+    public ResponseEntity<List<HorasPorCategoriaDTO>> horasPorCategoria(
+        @RequestParam(name = "iteracionId", required = false) Long iteracionId,
+        @RequestParam(name = "proyectoId", required = false) Long proyectoId,
+        @RequestParam(name = "from", required = false) String from,
+        @RequestParam(name = "to", required = false) String to
+    ) {
+        java.util.List<Object[]> rows;
+        if (from != null && to != null) {
+            java.time.LocalDate f = java.time.LocalDate.parse(from);
+            java.time.LocalDate t = java.time.LocalDate.parse(to);
+            if (iteracionId != null) {
+                rows = tiempoService.horasPorCategoriaEnIteracionRango(iteracionId, f, t);
+            } else if (proyectoId != null) {
+                rows = tiempoService.horasPorCategoriaEnProyectoRango(proyectoId, f, t);
+            } else {
+                rows = tiempoService.horasPorCategoriaGlobalRango(f, t);
+            }
+        } else {
+            if (iteracionId != null) {
+                rows = tiempoService.horasPorCategoriaEnIteracion(iteracionId);
+            } else if (proyectoId != null) {
+                rows = tiempoService.horasPorCategoriaEnProyecto(proyectoId);
+            } else {
+                rows = tiempoService.horasPorCategoriaGlobal();
+            }
+        }
+
+        List<HorasPorCategoriaDTO> out = rows.stream()
+            .map(r -> new HorasPorCategoriaDTO(
+                r[0] != null ? ((Number) r[0]).longValue() : null,
+                (String) r[1],
+                ((Number) r[2]).intValue()
+            ))
             .toList();
         return ResponseEntity.ok(out);
     }

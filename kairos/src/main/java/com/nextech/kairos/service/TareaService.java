@@ -1,5 +1,6 @@
 package com.nextech.kairos.service;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
@@ -8,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.nextech.kairos.model.Tarea;
 import com.nextech.kairos.repository.TareaRepository;
+import com.nextech.kairos.service.IIteracionService;
+import com.nextech.kairos.model.Iteracion;
+import com.nextech.kairos.service.ITareaService;
 
 import jakarta.transaction.Transactional;
 
@@ -16,6 +20,8 @@ public class TareaService implements ITareaService {
 
     @Autowired
     private TareaRepository tareaRepository;
+    @Autowired
+    private IIteracionService iteracionService;
 
     @Override
     public List<Tarea> listarTareas() {
@@ -29,6 +35,16 @@ public class TareaService implements ITareaService {
 
     @Override
     public Tarea guardarTarea(Tarea tarea) {
+        Iteracion iteracion = iteracionService.obtenerPorId(tarea.getIteracion().getIdIteracion())
+        .orElseThrow(() -> new IllegalArgumentException("Iteración con ID " + tarea.getIteracion().getIdIteracion() + " no encontrada."));
+
+        LocalDate fechaInicio = tarea.getFechaCreacion();
+        LocalDate fechaFin = tarea.getFechaFin();
+        if (fechaInicio.isBefore(iteracion.getFechaInicio()) || fechaFin.isAfter(iteracion.getFechaFin())) {
+            throw new IllegalArgumentException("Las fechas de la tarea deben estar dentro del rango de la iteración.");
+        }
+        
+
         return tareaRepository.save(tarea);
     }
 
@@ -113,6 +129,11 @@ public class TareaService implements ITareaService {
             }
         }
         return false;
+    }
+
+    @Override
+    public List<Tarea> obtenerTareasPorProyectoYIteracion(Long idProyecto, Long idIteracion) {
+        return tareaRepository.findByProyectoIdAndIteracionId(idProyecto, idIteracion);
     }
 
 }

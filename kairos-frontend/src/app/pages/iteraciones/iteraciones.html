@@ -3,7 +3,7 @@
     <h2 class="mb-0">Iteraciones <small class="text-muted" *ngIf="proyectoNombre">– {{ proyectoNombre }}</small><small class="text-muted" *ngIf="!proyectoNombre && etapaId">– Etapa #{{ etapaId }}</small></h2>
   </div>
 
-  <a routerLink="/etapas" class="text-decoration-none text-muted fw-bold">
+  <a [routerLink]="backLink" class="text-decoration-none text-muted fw-bold">
     <i class="bi-chevron-left me-2"></i>Volver
   </a>
 

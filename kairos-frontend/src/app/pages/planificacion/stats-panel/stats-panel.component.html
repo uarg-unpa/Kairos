@@ -1,0 +1,20 @@
+<div class="card mb-4 text-center p-3">
+  <h6 class="mb-2">Progreso General</h6>
+  <h3 class="mb-0">{{ porcentajeCompletado() }}% Completado</h3>
+  <div class="progress my-2" style="height: 8px;" aria-label="Progreso general">
+    <div class="progress-bar bg-success" role="progressbar" [style.width.%]="porcentajeCompletado()"></div>
+  </div>
+  <small>Total: {{ totalTareas() }} | Completadas: {{ completadas() }}</small>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header bg-white">
+    <h6>Tareas por Categoría</h6>
+  </div>
+  <div class="card-body">
+    <div *ngFor="let cat of tareasPorCategoria() | keyvalue" class="d-flex justify-content-between mb-2">
+      <span class="small">{{ cat.key }}:</span>
+      <span class="badge bg-primary">{{ cat.value }}</span>
+    </div>
+  </div>
+</div>

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Planificacion } from './planificacion.component';
+import { TaskFilters } from './task-filters.component';
 
-describe('Planificacion', () => {
-  let component: Planificacion;
-  let fixture: ComponentFixture<Planificacion>;
+describe('TaskFilters', () => {
+  let component: TaskFilters;
+  let fixture: ComponentFixture<TaskFilters>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Planificacion]
+      imports: [TaskFilters]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Planificacion);
+    fixture = TestBed.createComponent(TaskFilters);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

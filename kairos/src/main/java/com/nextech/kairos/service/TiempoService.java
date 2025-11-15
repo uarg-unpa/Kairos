@@ -232,4 +232,34 @@ public Tiempo updateTime(Long idTiempo, TiempoEditRequestDTO request, Long idUsu
     public java.util.List<Object[]> horasPorUsuarioEnProyectoRango(Long proyectoId, LocalDate desde, LocalDate hasta) {
         return tiempoRepository.sumHorasPorUsuarioEnProyectoRango(proyectoId, desde, hasta);
     }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorCategoriaGlobal() {
+        return tiempoRepository.sumHorasPorCategoriaGlobal();
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorCategoriaEnIteracion(Long iteracionId) {
+        return tiempoRepository.sumHorasPorCategoriaEnIteracion(iteracionId);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorCategoriaEnProyecto(Long proyectoId) {
+        return tiempoRepository.sumHorasPorCategoriaEnProyecto(proyectoId);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorCategoriaGlobalRango(LocalDate desde, LocalDate hasta) {
+        return tiempoRepository.sumHorasPorCategoriaGlobalRango(desde, hasta);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorCategoriaEnIteracionRango(Long iteracionId, LocalDate desde, LocalDate hasta) {
+        return tiempoRepository.sumHorasPorCategoriaEnIteracionRango(iteracionId, desde, hasta);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorCategoriaEnProyectoRango(Long proyectoId, LocalDate desde, LocalDate hasta) {
+        return tiempoRepository.sumHorasPorCategoriaEnProyectoRango(proyectoId, desde, hasta);
+    }
 }

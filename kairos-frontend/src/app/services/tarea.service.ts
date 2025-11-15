@@ -80,5 +80,14 @@ export class TaskService {
         return this.http.post(this.tiempoUrl, payload);
     }
 
+    getTareasPorProyectoEIteracion(idProyecto: number, idIteracion: number): Observable<Tarea[]> {
+      return this.http.get<Tarea[]>(`${this.baseUrl}/proyecto/${idProyecto}/iteracion/${idIteracion}`, {
+        params: {
+          idProyecto: idProyecto.toString(),
+          idIteracion: idIteracion.toString()
+        }
+      });
+    }
+
 }
 
