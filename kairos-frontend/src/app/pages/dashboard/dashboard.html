@@ -78,7 +78,7 @@
         <div class="col-lg-6 col-md-12">
           <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Horas por iteración</h5>
+              <h5 class="mb-0">Estimación vs ejecución</h5>
               <div class="d-flex gap-2">
                 <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasIteracion')" [disabled]="!horasIteracionDetalle.length">
                   <i class="bi bi-eye"></i>
@@ -95,16 +95,16 @@
         <div class="col-lg-6 col-md-12">
           <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Horas por usuario</h5>
+              <h5 class="mb-0">Horas semanales por categoría</h5>
               <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasUsuario')" [disabled]="!horasUsuarioDetalle.length">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasCategoria')" [disabled]="!horasCategoriaDetalle.length">
                   <i class="bi bi-eye"></i>
                 </button>
                 <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
               </div>
             </div>
             <div class="card-body text-center">
-              <canvas id="chartHorasUser" style="height:240px;"></canvas>
+              <canvas id="chartHorasCategoria" style="height:240px;"></canvas>
             </div>
           </div>
         </div>
@@ -112,16 +112,16 @@
         <div class="col-lg-6 col-md-12">
           <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Tareas por estado</h5>
+              <h5 class="mb-0">Horas por iteración</h5>
               <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('tareasEstado')" [disabled]="!tareasEstadoDetalle.length">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasIteracion')" [disabled]="!horasIteracionDetalle.length">
                   <i class="bi bi-eye"></i>
                 </button>
                 <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
               </div>
             </div>
             <div class="card-body text-center">
-              <canvas id="chartTareasEstado" style="height:240px;"></canvas>
+              <canvas id="chartHorasIterDistrib" style="height:240px;"></canvas>
             </div>
           </div>
         </div>
@@ -202,7 +202,8 @@
                   <tr>
                     <th>Iteración</th>
                     <th>Etapa</th>
-                    <th class="text-end">Horas (h)</th>
+                    <th class="text-end">Estimadas (h)</th>
+                    <th class="text-end">Ejecución (h)</th>
                     <th class="text-end">Minutos</th>
                   </tr>
                 </thead>
@@ -210,7 +211,8 @@
                   <tr *ngFor="let item of horasIteracionDetalle">
                     <td>{{ item.etiqueta }}</td>
                     <td>{{ item.etapa || 'Sin etapa' }}</td>
-                    <td class="text-end">{{ item.horas | number:'1.0-1' }}</td>
+                    <td class="text-end">{{ item.estimadas | number:'1.0-1' }}</td>
+                    <td class="text-end">{{ item.horas | number:'1.2-2' }} ({{ item.minutos }} min)</td>
                     <td class="text-end">{{ item.minutos }}</td>
                   </tr>
                 </tbody>
@@ -218,40 +220,21 @@
             </ng-container>
           </div>
 
-          <div *ngSwitchCase="'horasUsuario'">
-            <ng-container *ngIf="horasUsuarioDetalle.length; else sinDatos">
+          <div *ngSwitchCase="'horasCategoria'">
+            <ng-container *ngIf="horasCategoriaDetalle.length; else sinDatos">
               <table class="table table-sm align-middle">
                 <thead>
                   <tr>
-                    <th>Usuario</th>
+                    <th>Categoría</th>
+                    <th class="text-end">Minutos</th>
                     <th class="text-end">Horas (h)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let item of horasUsuarioDetalle">
-                    <td>{{ item.usuario || 'Sin usuario' }}</td>
-                    <td class="text-end">{{ item.horas | number:'1.0-1' }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </ng-container>
-          </div>
-
-          <div *ngSwitchCase="'tareasEstado'">
-            <ng-container *ngIf="tareasEstadoDetalle.length; else sinDatos">
-              <table class="table table-sm align-middle">
-                <thead>
-                  <tr>
-                    <th>Estado</th>
-                    <th class="text-end">Tareas</th>
-                    <th class="text-end">% del total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let item of tareasEstadoDetalle">
-                    <td>{{ item.estado }}</td>
-                    <td class="text-end">{{ item.cantidad }}</td>
-                    <td class="text-end">{{ item.porcentaje }}%</td>
+                  <tr *ngFor="let item of horasCategoriaDetalle">
+                    <td>{{ item.categoria || 'Sin categoría' }}</td>
+                    <td class="text-end">{{ item.minutos }}</td>
+                    <td class="text-end">{{ item.horas | number:'1.2-2' }} ({{ item.minutos }} min)</td>
                   </tr>
                 </tbody>
               </table>
