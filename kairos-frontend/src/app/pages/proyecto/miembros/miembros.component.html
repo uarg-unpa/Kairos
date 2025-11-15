@@ -27,19 +27,15 @@
         <div class="d-flex align-items-center gap-2 mb-2">
             <h6 class="mb-0">Rol:</h6>
             <span class="badge bg-info text-dark">{{ miembro.rolProyecto || 'Sin etiqueta' }}</span>
-            <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder'"
-                    class="btn btn-sm btn-link text-muted p-0 ms-1"
-                    (click)="abrirModalEditar(miembro)"
-                    [disabled]="esLiderActual && us()"
-                    title="Editar etiqueta">
-                <i class="bi bi-pencil"></i>
+            <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder'" class="btn btn-sm btn-link text-muted p-0 ms-1"
+              (click)="abrirModalEditar(miembro)" [disabled]="esLider(miembro)" title="Editar etiqueta">
+              <i class="bi bi-pencil"></i>
             </button>
         </div>
-
         <!-- ACCIONES -->
         <div class="d-flex gap-2">
           <button class="btn btn-sm btn-outline-danger" 
-                  *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder'">
+                  *ngIf="rolEnProyecto === 'Admin'">
             Eliminar
           </button>
         </div>

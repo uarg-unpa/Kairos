@@ -38,6 +38,7 @@ export class MiembrosComponent implements OnInit {
   errorMensaje: string | null = null;
   esLiderActual: boolean = false;
   selectedUsuarioId: number | null = null;
+  currentUserId: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -64,7 +65,7 @@ export class MiembrosComponent implements OnInit {
           horas: 0,
           progreso: 0,
           status: 'offline',
-          usuario: { id: m.idUsuario, nombre: m.nombre, email: m.email } // opcional
+          usuario: { id: m.idUsuario, nombre: m.nombre, email: m.email }
         }));
       },
       error: (err) => {
@@ -76,8 +77,10 @@ export class MiembrosComponent implements OnInit {
 
   private cargarRolEnProyecto(): void {
     this.authService.currentUser$.subscribe(user => {
-      const rolRaw = user?.rol || 'Miembro';
-      this.rolEnProyecto = rolRaw.toUpperCase() === 'ADMINISTRADOR' ? 'Admin' : 'Líder';
+        this.currentUserId = user?.id || null; 
+        
+        const rolRaw = user?.rol || 'Miembro';
+        this.rolEnProyecto = rolRaw.toUpperCase() === 'ADMINISTRADOR' ? 'Admin' : 'Líder';
     });
   }
 
@@ -149,14 +152,17 @@ export class MiembrosComponent implements OnInit {
   abrirModalEditar(miembro: any): void {
     this.usuarioEdit = { ...miembro };
     this.rolEdit = miembro.rolProyecto;
-    this.esLiderActual = this.authService.currentUser$ === miembro.idUsuario
-      && miembro.rolProyecto?.toLowerCase().includes('líder');
-
+    const esMiUsuario = this.currentUserId === miembro.idUsuario;
+    this.esLiderActual = esMiUsuario && miembro.rolProyecto?.toLowerCase().includes('líder');
     this.mostrarModalEditar = true;
   }
 
+  esLider(miembro: any): boolean {
+    return this.currentUserId === miembro.idUsuario && miembro.rolProyecto?.toLowerCase().includes('líder')
+  }
+
   us(): boolean {
-    return this.authService.currentUser$ === this.usuarioEdit.idUsuario;
+    return this.currentUserId === this.usuarioEdit.idUsuario;
   }
 
   cerrarModalEditar(): void {
