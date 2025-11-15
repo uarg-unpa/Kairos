@@ -395,6 +395,17 @@ export class PlanificacionComponent implements OnInit {
     return items;
   }
 
+  onFiltrosChange(filtros: any): void {
+  this.filtroCategoria = filtros.categoria;
+  this.filtroResponsable = filtros.responsable;
+  this.filtroEstado = filtros.estado;
+  this.filtroFechaDesde = filtros.fechaDesde;
+  this.filtroFechaHasta = filtros.fechaHasta;
+
+  this.paginaActual = 1; 
+}
+
+
   clearVencimientoFilter(): void {
     this.router.navigate([], {
       relativeTo: this.route,

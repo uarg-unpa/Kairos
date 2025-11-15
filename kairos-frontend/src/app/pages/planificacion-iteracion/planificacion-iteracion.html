@@ -1,0 +1,50 @@
+<div class="container py-4">
+
+  <!-- Encabezado -->
+  <div class="mb-4">
+  <h2 class="mb-1">Planificación de Tareas - {{proyectoActual?.nombre}}</h2>
+  <h4 class="text-muted">
+    Iteración: {{ filtroIteracionId }} – {{ iteracionActual?.etapaNombre }}
+  </h4>
+</div>
+
+
+  <!-- Filtro vencimiento -->
+  <div *ngIf="filtroVencimiento" class="alert alert-info d-flex align-items-center justify-content-between mb-3">
+    <span>
+      Filtro: {{ filtroVencimiento === 'proximas' ? 'Próximos vencimientos (7 días)' : 'Tareas atrasadas' }}
+    </span>
+    <button class="btn btn-sm btn-outline-secondary" (click)="clearVencimientoFilter()">Quitar filtro</button>
+  </div>
+
+  <div class="row g-4">
+    <!-- Panel Principal -->
+    <div class="col-lg-9">
+      <!-- Filtros -->
+      <app-task-filters 
+  [categorias]="categorias"
+  [usuarios]="usuarios"
+  [filtroCategoria]="filtroCategoria"
+  [filtroResponsable]="filtroResponsable"
+  [filtroEstado]="filtroEstado"
+  [filtroFechaDesde]="filtroFechaDesde"
+  [filtroFechaHasta]="filtroFechaHasta"
+  (filtrosChange)="onFiltrosChange($event)">
+</app-task-filters>
+
+
+
+      <!-- Lista de Tareas -->
+      <app-task-list [tareas]="tareasFiltradas()" [comentariosPorTarea]="comentariosPorTarea" [usuarios]="usuarios"
+        [paginaActual]="paginaActual" [tareasPorPagina]="tareasPorPagina" 
+        >
+      </app-task-list>
+    </div>
+
+    <!-- Panel Lateral -->
+    <div class="col-lg-3">
+      <app-stats-panel [tareas]="tareasFiltradas()"></app-stats-panel>
+    </div>
+  </div>
+</div>
+

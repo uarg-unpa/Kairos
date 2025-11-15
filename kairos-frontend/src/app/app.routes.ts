@@ -11,6 +11,7 @@ import { UsuarioModificarComponent } from './pages/usuario/modificar';
 import { UsuarioCrearComponent } from './pages/usuario/crear';
 import { SalirComponent } from './pages/salir/salir';
 import { PlanificacionComponent } from './pages/planificacion/planificacion.component';
+import { PlanificacionIteracion } from './pages/planificacion-iteracion/planificacion-iteracion';
 import { WorkspaceTimerComponent } from './pages/workspace/workspace-timer.component'; 
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { ProyectoDetalleComponent } from './pages/proyecto/detalle/proyecto-detalle.component';
@@ -71,6 +72,12 @@ export const routes: Routes = [
     component: PlanificacionComponent, 
     canActivate: [authGuard] 
   },
+  {
+  path: 'proyecto/:id/iteracion/:idIteracion/planificacion',
+  component: PlanificacionIteracion,
+  canActivate: [authGuard]
+},
+
   { 
     path: 'proyecto/:id/etapas', 
     component: EtapasComponent, 

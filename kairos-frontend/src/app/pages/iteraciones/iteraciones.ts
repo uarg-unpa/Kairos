@@ -189,14 +189,17 @@ export class IteracionesComponent implements OnInit {
     });
   }
 
-  verTareasDeIteracion(it: Iteracion) {
-    const iterId = (it as any)?.idIteracion;
-    if (!iterId) return;
-    const pid = this.proyectoId ?? (Number(this.route.snapshot.paramMap.get('id')) || null);
-    if (pid) {
-      this.router.navigate(['/proyecto', pid, 'planificacion'], { queryParams: { iteracionId: iterId } });
-    } else {
-      this.router.navigate(['/planificacion'], { queryParams: { iteracionId: iterId } });
-    }
-  }
+ verTareasDeIteracion(it: Iteracion) {
+  const iterId = it.idIteracion;
+  const pid = this.proyectoId ?? Number(this.route.snapshot.paramMap.get('id'));
+
+  this.router.navigate([
+    '/proyecto', 
+    pid, 
+    'iteracion', 
+    iterId, 
+    'planificacion'
+  ]);
+}
+
 }
