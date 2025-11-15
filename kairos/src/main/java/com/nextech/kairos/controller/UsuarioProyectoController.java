@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -110,39 +111,16 @@ public class UsuarioProyectoController {
             @RequestParam String rolProyecto) {
 
         try {
-            Proyecto proyecto = proyectoService.findById(idProyecto)
-                    .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
-
-            Optional<Usuario> usuarioOpt = usuarioService.findByEmail(email);
-
-            Usuario usuario;
-            if (usuarioOpt.isPresent()) {
-                usuario = usuarioOpt.get();
-            } else {
-                // Crear usuario "invitado"
-                usuario = new Usuario();
-                usuario.setNombre("Invitado (" + email.split("@")[0] + ")");
-                usuario.setEmail(email);
-                usuario = usuarioService.save(usuario);
-            }
-
-            // Verificar si ya está asignado
-            UsuarioProyectoId id = new UsuarioProyectoId(usuario.getId(), idProyecto);
-            if (usuarioProyectoService.obtenerPorId(id).isPresent()) {
-                return ResponseEntity.badRequest()
-                        .body("El usuario ya está en el proyecto");
-            }
-
-            UsuarioProyecto up = new UsuarioProyecto();
-            up.setUsuario(usuario);
-            up.setProyecto(proyecto);
-            up.setRolProyecto(rolProyecto);
-
-            UsuarioProyecto guardado = usuarioProyectoService.save(up);
+            // Se elimina toda la lógica de validación/creación/asignación de rol.
+            // Se llama directamente al método del ProyectoService que hace todo (incluyendo la lógica del rol).
+            UsuarioProyecto guardado = proyectoService.invitarUsuario(idProyecto, email, rolProyecto);
             return ResponseEntity.ok(guardado);
 
+        } catch (RuntimeException e) { // Cambiado de Exception a RuntimeException para capturar las excepciones del Service
+            return ResponseEntity.badRequest()
+                    .body("Error al invitar: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al invitar: " + e.getMessage());
         }
     }

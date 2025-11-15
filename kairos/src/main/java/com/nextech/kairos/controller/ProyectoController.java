@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nextech.kairos.dto.ActualizarProyectoRequest;
@@ -230,4 +231,18 @@ public class ProyectoController {
     }
 
 
+    @PostMapping("/invitar")
+    public ResponseEntity<?> invitarMiembro(
+            @RequestParam Long idProyecto,
+            @RequestParam String email,
+            @RequestParam String rolProyecto) {
+
+        try {
+            UsuarioProyecto asignacion = proyectoService.invitarUsuario(idProyecto, email, rolProyecto);
+            return ResponseEntity.ok(asignacion);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 }

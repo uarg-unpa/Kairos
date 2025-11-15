@@ -10,9 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nextech.kairos.model.Etapa;
 import com.nextech.kairos.model.Proyecto;
+import com.nextech.kairos.model.Rol;
 import com.nextech.kairos.model.Usuario;
 import com.nextech.kairos.model.UsuarioProyecto;
+import com.nextech.kairos.model.UsuarioProyectoId;
 import com.nextech.kairos.repository.ProyectoRepository;
+import com.nextech.kairos.repository.RolRepository;
 import com.nextech.kairos.repository.UsuarioProyectoRepository;
 
 @Service
@@ -33,6 +36,8 @@ public class ProyectoService implements IProyectoService {
         this.usuarioProyectoRepository = usuarioProyectoRepository;
         this.usuarioService = usuarioService;
     }
+    @Autowired
+    private RolRepository rolRepository;
 
     @Transactional(readOnly = true)
     public List<Proyecto> findAll() {
@@ -137,6 +142,50 @@ public class ProyectoService implements IProyectoService {
         
         usuarioProyectoRepository.delete(asignacion);
     }
+
+    /**
+     * Invita a un usuario por email. Si no existe, lo crea con rol "Usuario
+     * Común". Lo asigna al proyecto con el rolProyecto indicado.
+     */
+    @Transactional
+    public UsuarioProyecto invitarUsuario(Long idProyecto, String email, String rolProyecto) {
+        Proyecto proyecto = proyectoRepository.findById(idProyecto)
+            .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+
+        Optional<Usuario> usuarioOpt = usuarioService.findByEmail(email);
+        Usuario usuario;
+
+        if (usuarioOpt.isPresent()) {
+            usuario = usuarioOpt.get();
+        } else {
+            // 1. Crear usuario nuevo
+            String nombre = "Invitado (" + email.split("@")[0] + ")";
+            usuario = new Usuario(nombre, email);
+
+            // 2. Asignar rol "Usuario Común" (como en createUserFromGoogle)
+            Optional<Rol> defaultRoleOpt = rolRepository.findByNombre("Usuario Común");
+            if (defaultRoleOpt.isPresent()) {
+                Rol defaultRole = defaultRoleOpt.get();
+                usuario.addRol(defaultRole); // Sincroniza bidireccional
+            } else {
+                throw new RuntimeException("Rol 'Usuario Común' no encontrado. Verifica que exista en la DB.");
+            }
+
+            // 3. Guardar el usuario con el rol
+            usuario = usuarioService.save(usuario);
+        }
+
+        // 4. Verificar duplicado en proyecto
+        UsuarioProyectoId id = new UsuarioProyectoId(usuario.getId(), idProyecto);
+        if (usuarioProyectoRepository.existsById(id)) {
+            throw new RuntimeException("El usuario ya está en el proyecto");
+        }
+
+        // 5. Asignar al proyecto
+        UsuarioProyecto asignacion = new UsuarioProyecto(usuario, proyecto, rolProyecto);
+        return usuarioProyectoRepository.save(asignacion);
+    }
+    
 
     /**
      * Busca proyectos donde participa un miembro

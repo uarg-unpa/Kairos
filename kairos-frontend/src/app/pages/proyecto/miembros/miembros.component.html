@@ -57,19 +57,31 @@
         <button type="button" class="btn-close" (click)="cerrarModalAgregar()"></button>
       </div>
       <div class="modal-body">
-        <input type="text" class="form-control mb-3" placeholder="Buscar usuario..." [(ngModel)]="searchQuery" (input)="buscarUsuarios()">
-        <ul class="list-group mb-3">
-          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let u of usuariosBusqueda">
-            {{ u.nombre }} ({{ u.email }})
-            <button class="btn btn-sm btn-primary" (click)="agregarMiembro(u.id)">Agregar</button>
-          </li>
-        </ul>
+      <div class="mb-3">
+        <label class="form-label">Buscar usuario existente</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          [(ngModel)]="searchQuery" 
+          (input)="buscarUsuarios()"
+          placeholder="Escribe al menos 2 letras...">
+        
+        <div class="list-group mt-2" *ngIf="usuariosBusqueda.length > 0">
+          <button 
+            *ngFor="let usuario of usuariosBusqueda" 
+            type="button"
+            class="list-group-item list-group-item-action"
+            (click)="seleccionarUsuario(usuario)">
+            {{ usuario.nombre }} ({{ usuario.email }})
+          </button>
+        </div>
+      </div>
         <hr>
         <h6>O invita por email</h6>
         <input type="email" class="form-control mb-2" placeholder="Email" [(ngModel)]="newEmail">
         <h6>Ingresar rol</h6>
         <input type="text" class="form-control mb-3" [(ngModel)]="newRol" placeholder="Ej: Diseñador, Analista, Programador">
-        <button class="btn btn-success w-100" (click)="invitarMiembro()">Invitar</button>
+        <button class="btn btn-success w-100" (click)="agregarMiembro()">Invitar</button>
       </div>
     </div>
   </div>
