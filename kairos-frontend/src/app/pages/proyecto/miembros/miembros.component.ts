@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProyectoService } from '../../../services/proyecto.service';
 import { AuthService } from '../../../services/auth.service';
 import { UsuariosService } from '../../../services/usuarios.service';
+import { IdCoderService } from '../../../services/id-coder.service'
 // import { Proyecto } from '../../../models/proyecto.model';
 
 @Component({
@@ -42,14 +43,33 @@ export class MiembrosComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router, // << Inyección para manejo de errores
+    private idCoderService: IdCoderService,
     public proyectoService: ProyectoService,
     private authService: AuthService,
     private usuariosService: UsuariosService
   ) { }
 
   ngOnInit(): void {
-    this.proyectoId = +this.route.snapshot.paramMap.get('id')!;
-    this.cargarMiembros();
+    const encodedId = this.route.snapshot.paramMap.get('id');
+
+    if (encodedId) {
+      const id = this.idCoderService.decode(encodedId);
+
+      if (id) {
+        this.proyectoId = id;
+        this.cargarMiembros();
+      } else {
+        alert('Acceso denegado o ID de proyecto inválido.');
+        this.router.navigate(['/inicio']);
+        return;
+      }
+    } else {
+      alert('ID de proyecto faltante.');
+      this.router.navigate(['/inicio']);
+      return;
+    }
+
     this.cargarRolEnProyecto();
   }
 

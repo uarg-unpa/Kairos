@@ -98,10 +98,6 @@ export const routes: Routes = [
     canActivate: [authGuard] 
   },
   { path: 'proyecto/:id/miembros', component: MiembrosComponent, canActivate: [authGuard] },
-  // { path: 'proyecto/:id/planificacion', component: PlanificacionComponent, canActivate: [authGuard] },
-  // {path: 'planificacion', component: PlanificacionComponent, canActivate: [authGuard]},
-  // { path: 'etapas', component: EtapasComponent, canActivate: [authGuard] },
-  // { path: 'iteraciones/:etapa', component: IteracionesComponent, canActivate: [authGuard] },
   { path: 'iteraciones/etapa/:id', component: IteracionesComponent, canActivate: [authGuard] },
   { path: 'iteraciones', component: IteracionesComponent, canActivate: [authGuard] },
   

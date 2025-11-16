@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { IdCoderService } from '../../services/id-coder.service';
 import { TaskService } from '../../services/tarea.service';
 import { CategoriaService, CategoriaDTO } from '../../services/categoria.service';
 import { IteracionService } from '../../services/iteracion.service';
@@ -79,7 +80,8 @@ export class PlanificacionComponent implements OnInit {
     private comentarioService: ComentarioService,
     private etapaService: EtapaService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private idCoderService: IdCoderService
   ) {
     effect(() => {
       this.usuarios = this.usuariosService.usuarios();
@@ -87,8 +89,22 @@ export class PlanificacionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.proyectoId = Number(this.route.snapshot.paramMap.get('id'));
-    
+    const encodedId = this.route.snapshot.paramMap.get('id');
+
+    if (encodedId) {
+      const id = this.idCoderService.decode(encodedId);
+
+      if (id) {
+        this.proyectoId = id;
+      } else {
+        alert('Acceso denegado o ID de proyecto inválido.');
+        this.router.navigate(['/inicio']);
+        return;
+      }
+    } else {
+      this.proyectoId = null;
+    }
+
     const usuarioGuardado = localStorage.getItem('usuario_data');
     if (usuarioGuardado) {
       this.usuarioActual = JSON.parse(usuarioGuardado);

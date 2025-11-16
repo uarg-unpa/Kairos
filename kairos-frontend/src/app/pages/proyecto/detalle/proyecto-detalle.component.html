@@ -33,7 +33,7 @@
   <div class="row g-4">
     <!-- Planificación (común a todos) -->
     <div class="col-md-3">
-      <a [routerLink]="['/proyecto', proyecto?.idProyecto, 'planificacion']" class="text-decoration-none text-dark">
+      <a [routerLink]="['/proyecto', getEncodedId(), 'planificacion']" class="text-decoration-none text-dark">
         <div class="card-section p-3 h-100">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="icon-container bg-info bg-opacity-10">
@@ -65,7 +65,7 @@
 
     <!-- Etapas (para Líder y Admin, reducido para Miembro) -->
     <div class="col-md-3" *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Lider'">
-      <a [routerLink]="['/proyecto', proyecto?.idProyecto, 'etapas']" class="text-decoration-none text-dark">
+      <a [routerLink]="['/proyecto', getEncodedId(), 'etapas']" class="text-decoration-none text-dark">
         <div class="card-section p-3 h-100">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="icon-container bg-purple bg-opacity-10">
@@ -94,7 +94,7 @@
 
     <!-- Reportes (para todos, mas opciones para Admin/Lider) -->
     <div class="col-md-3">
-      <a [routerLink]="['/proyecto', proyecto?.idProyecto, 'dashboard']" class="text-decoration-none text-dark">
+      <a [routerLink]="['/proyecto', getEncodedId(), 'dashboard']" class="text-decoration-none text-dark">
       <div class="card-section p-3 h-100">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <div class="icon-container bg-warning bg-opacity-10">
@@ -113,7 +113,7 @@
 
     <!-- Workspace (para Miembro y Lider) -->
     <div class="col-md-3" *ngIf="rolEnProyecto === 'Miembro' || rolEnProyecto === 'Lider'">
-      <a [routerLink]="['/proyecto', proyecto?.idProyecto, 'workspace']" class="text-decoration-none text-dark">
+      <a [routerLink]="['/proyecto', getEncodedId(), 'workspace']" class="text-decoration-none text-dark">
         <div class="card-section p-3 h-100">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="icon-container bg-primary bg-opacity-10">
@@ -136,7 +136,7 @@
 
     <!-- Usuarios (para Admin y Lider, solo vista para Miembro) -->
     <div class="col-md-3" *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Lider' || rolEnProyecto === 'Miembro'">
-      <a [routerLink]="['/proyecto', proyecto?.idProyecto,'miembros']" class="text-decoration-none text-dark">
+      <a [routerLink]="['/proyecto', getEncodedId(),'miembros']" class="text-decoration-none text-dark">
         <div class="card-section p-3 h-100">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="icon-container bg-success bg-opacity-10">

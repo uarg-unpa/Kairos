@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -7,6 +7,7 @@ import { ProyectoService } from '../../../services/proyecto.service';
 import { AuthService } from '../../../services/auth.service';
 import { EtapaService } from '../../../services/etapa.service';
 import { TaskService } from '../../../services/tarea.service';
+import { IdCoderService } from '../../../services/id-coder.service';  
 
 import { Proyecto } from '../../../models/proyecto.model';
 import { Etapa } from '../../../models/etapa.model';
@@ -48,15 +49,29 @@ export class ProyectoDetalleComponent implements OnInit {
     private proyectoService: ProyectoService,
     private authService: AuthService,
     private etapaService: EtapaService,
-    private taskService: TaskService
+    private taskService: TaskService,
+    private idCoderService: IdCoderService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.cargarProyecto(+id);
+    const encodedId = this.route.snapshot.paramMap.get('id');
+    if (encodedId) {
+        const id = this.idCoderService.decode(encodedId); 
+        if (id) {
+            this.cargarProyecto(id);
+        } else {
+            alert('Acceso denegado.');
+            this.router.navigate(['/inicio']);
+        }
     }
     this.cargarUsuarioId();
+  }
+  getEncodedId(): string | null {
+    if (this.proyecto?.idProyecto) {
+      return this.idCoderService.encode(this.proyecto.idProyecto);
+    }
+    return null;
   }
 
   private cargarUsuarioId(): void {

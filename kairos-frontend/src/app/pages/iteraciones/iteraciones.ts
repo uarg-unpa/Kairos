@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { IteracionService } from '../../services/iteracion.service';
+import { IdCoderService } from '../../services/id-coder.service'; // << Importado
 import { Iteracion } from '../../models/iteracion.model';
 
 declare const bootstrap: any;
@@ -20,12 +21,14 @@ export class IteracionesComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private iteracionService = inject(IteracionService);
+  private idCoderService = inject(IdCoderService);
 
   etapaSlug: string | null = null;
   etapaId: number | null = null;
   proyectoId: number | null = null;
   proyectoNombre: string | null = null;
   backLink: string | any[] = '/inicio';
+  private encodedProyectoId: string | null = null;
 
   iteraciones: Iteracion[] = [];
   filtroProgreso: 'TODAS' | 'SIN_INICIAR' | 'EN_PROCESO' | 'FINALIZADA' = 'TODAS';
@@ -43,48 +46,65 @@ export class IteracionesComponent implements OnInit {
     if (el) this.addIterationModal = new bootstrap.Modal(el);
 
     this.route.paramMap.subscribe(pm => {
-      this.etapaSlug = pm.get('etapa');
+      // 1. Obtener parámetros y ruta
       const idParam = pm.get('id');
+      const etapaParam = pm.get('etapa');
       const path = this.route.snapshot.routeConfig?.path || '';
       const data: any = (this.route.snapshot as any).data;
+
       this.proyectoNombre = data?.['proyecto']?.nombre || null;
       this.proyectoId = null;
+      this.etapaId = null;
       this.backLink = '/inicio';
-      if (path.startsWith('proyecto/:id/iteraciones')) {
-        this.proyectoId = idParam ? Number(idParam) : null;
-        if (this.proyectoId) {
-          this.backLink = ['/proyecto', this.proyectoId, 'etapas'];
+      this.encodedProyectoId = null;
+
+      if (path.startsWith('proyecto/:id')) {
+        if (idParam) {
+          const decodedId = this.idCoderService.decode(idParam);
+          if (decodedId) {
+            this.proyectoId = decodedId;
+            this.encodedProyectoId = idParam;
+            this.backLink = ['/proyecto', idParam, 'etapas'];
+          } else {
+            alert('ID de proyecto inválido o manipulado.');
+            this.router.navigate(['/inicio']);
+            return;
+          }
         }
       }
 
-      // Prioriza filtrar por etapa si viene en la ruta (proyecto/:id/iteraciones/:etapa o iteraciones/etapa/:id)
-      const etapaParam = pm.get('etapa');
       if (etapaParam) {
-        this.etapaId = Number(etapaParam);
-        if (!isNaN(this.etapaId)) {
-          this.iteracionService.getIteracionesPorEtapaId(this.etapaId!).subscribe(all => this.iteraciones = all);
-          return;
+        const decodedEtapaId = this.idCoderService.decode(etapaParam);
+        if (decodedEtapaId) {
+          this.etapaId = decodedEtapaId;
+        } else {
+          this.etapaSlug = etapaParam;
         }
       }
 
-      if (path.startsWith('proyecto/:id/iteraciones')) {
-        if (this.proyectoId) {
-          this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(all => this.iteraciones = all);
-          return;
-        }
-      } else if (path.startsWith('iteraciones/etapa')) {
-        // fallback para la ruta vieja sin proyecto
-        this.etapaId = idParam ? Number(idParam) : null;
-        if (this.etapaId) {
-          this.iteracionService.getIteracionesPorEtapaId(this.etapaId).subscribe(all => this.iteraciones = all);
-          return;
+      else if (path.startsWith('iteraciones/etapa')) {
+        if (idParam) {
+          const decodedEtapaId = this.idCoderService.decode(idParam);
+          if (decodedEtapaId) {
+            this.etapaId = decodedEtapaId;
+          } else {
+            alert('ID de etapa inválido o manipulado.');
+            this.router.navigate(['/inicio']);
+            return;
+          }
         }
       }
 
-      if (this.etapaSlug) {
-        this.iteracionService.getIteraciones().subscribe(all => this.iteraciones = all);
+      if (this.etapaId) {
+        this.iteracionService.getIteracionesPorEtapaId(this.etapaId).subscribe(all => this.iteraciones = all);
         return;
       }
+
+      if (this.proyectoId) {
+        this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(all => this.iteraciones = all);
+        return;
+      }
+
       this.iteracionService.getIteraciones().subscribe(all => this.iteraciones = all);
     });
   }
@@ -192,9 +212,10 @@ export class IteracionesComponent implements OnInit {
   verTareasDeIteracion(it: Iteracion) {
     const iterId = (it as any)?.idIteracion;
     if (!iterId) return;
-    const pid = this.proyectoId ?? (Number(this.route.snapshot.paramMap.get('id')) || null);
-    if (pid) {
-      this.router.navigate(['/proyecto', pid, 'planificacion'], { queryParams: { iteracionId: iterId } });
+    const pidEncoded = this.encodedProyectoId;
+
+    if (pidEncoded) {
+      this.router.navigate(['/proyecto', pidEncoded, 'planificacion'], { queryParams: { iteracionId: iterId } });
     } else {
       this.router.navigate(['/planificacion'], { queryParams: { iteracionId: iterId } });
     }

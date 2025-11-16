@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ProyectoService } from '../../services/proyecto.service';
+import { IdCoderService } from '../../services/id-coder.service'; 
 import { Router } from '@angular/router';
 import { Proyecto } from '../../models/proyecto.model';
 import { RouterModule } from '@angular/router';
@@ -12,7 +13,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [RouterModule,
     CommonModule,
-    FormsModule],
+    FormsModule,],
   templateUrl: './inicio.component.html',
   styleUrls: ['./inicio.component.css']
 })
@@ -47,12 +48,16 @@ export class InicioComponent implements OnInit {
   constructor(
     public authService: AuthService,
     private proyectoService: ProyectoService,
-    private router: Router
+    private router: Router,
+    private idCoderService: IdCoderService,
   ) {}
 
   ngOnInit(): void {
-    this.cargarUsuarioYProyectos();
+      this.cargarUsuarioYProyectos();
   }
+  getEncodedIdForProject(p: Proyecto): string {
+    return this.idCoderService.encode(p.idProyecto);
+}
 
   abrirModal() {
     this.mostrarModal = true;

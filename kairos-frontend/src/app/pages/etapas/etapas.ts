@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuariosService } from '../../services/usuarios';
 import { EtapaService } from '../../services/etapa.service';
+import { IdCoderService } from '../../services/id-coder.service';
 import { Etapa } from '../../models/etapa.model';
 import { Router, RouterModule } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
@@ -25,6 +26,7 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   private etapaService = inject(EtapaService);
   usuarios = this.usuariosService.usuarios; // usable si agregamos responsable en el futuro
   private router = inject(Router);
+  private idCoderService = inject(IdCoderService);
 
   nuevaEtapa: any = {
     nombre: '',
@@ -44,10 +46,28 @@ export class EtapasComponent implements OnInit, AfterViewInit {
     const el = document.getElementById('addStageModal');
     if (el) this.addStageModal = new bootstrap.Modal(el);
 
-    this.idProyecto = Number(this.route.snapshot.paramMap.get('id'));
-    console.log('Proyecto ID:', this.idProyecto);
-    this.nuevaEtapa.proyectoId = this.idProyecto;
+    const encodedId = this.route.snapshot.paramMap.get('id');
 
+    if (encodedId) {
+      const decodedId = this.idCoderService.decode(encodedId);
+
+      if (decodedId) {
+        this.idProyecto = decodedId;
+        console.log('Proyecto ID Decodificado:', this.idProyecto);
+        this.nuevaEtapa.proyectoId = this.idProyecto;
+        this.cargarEtapas();
+      } else {
+        console.error('ID de proyecto inválido en la ruta');
+        alert('Acceso denegado o ID de proyecto inválido.');
+        this.router.navigate(['/inicio']);
+        return;
+      }
+    } else {
+      this.router.navigate(['/inicio']);
+      return;
+    }
+  }
+  private cargarEtapas(): void {
     this.etapaService.getEtapasPorProyecto(this.idProyecto).subscribe({
       next: (etapas) => {
         this.etapas = etapas;
@@ -58,8 +78,6 @@ export class EtapasComponent implements OnInit, AfterViewInit {
         alert('No se pudieron cargar las etapas del proyecto');
       }
     });
-
-    
   }
 
   ngAfterViewInit(): void {
@@ -130,9 +148,9 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   }
 
   goToEtapaId(id: number) {
-    // Mantener el contexto del proyecto en la URL para que el navbar y vistas usen el mismo proyecto
     if (this.idProyecto) {
-      this.router.navigate(['/proyecto', this.idProyecto, 'iteraciones', id]);
+      const encodedProyectoId = this.idCoderService.encode(this.idProyecto);
+      this.router.navigate(['/proyecto', encodedProyectoId, 'iteraciones', id]);
     } else {
       this.router.navigate(['/iteraciones/etapa', id]);
     }
