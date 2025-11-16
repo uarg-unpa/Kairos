@@ -214,7 +214,9 @@ export class IteracionesComponent implements OnInit {
     });
   }
 
-  verTareasDeIteracion(it: Iteracion) {
+
+  //anterior
+  /*verTareasDeIteracion(it: Iteracion) {
     const iterId = (it as any)?.idIteracion;
     if (!iterId) return;
     const pidEncoded = this.encodedProyectoId;
@@ -224,5 +226,26 @@ export class IteracionesComponent implements OnInit {
     } else {
       this.router.navigate(['/planificacion'], { queryParams: { iteracionId: iterId } });
     }
+  }*/
+
+
+  verTareasDeIteracion(it: Iteracion) {
+  const iterId = (it as any)?.idIteracion;
+  if (!iterId) return;
+
+  const pidEncoded = this.encodedProyectoId;
+
+  if (pidEncoded) {
+    this.router.navigate([
+      '/proyecto',
+      pidEncoded,
+      'iteracion',
+      iterId,
+      'planificacion'
+    ]);
+  } else {
+  
+    this.router.navigate(['/planificacion'], { queryParams: { iteracionId: iterId } });
   }
+}
 }
