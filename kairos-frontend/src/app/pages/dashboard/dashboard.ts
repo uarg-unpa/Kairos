@@ -9,7 +9,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 
 declare const Chart: any;
 
-type DetalleTipo = 'horasIteracion' | 'horasCategoria' | 'tareasUsuario';
+type DetalleTipo = 'horasIteracion' | 'horasCategoria' | 'tareasUsuario' | 'horasDiaTarea';
 
 interface HorasIteracionDetalle {
   etiqueta: string;
@@ -28,6 +28,12 @@ interface HorasCategoriaDetalle {
 interface TareasUsuarioDetalle {
   usuario: string;
   cantidad: number;
+}
+
+interface HorasDiaDetalle {
+  dia: string;
+  horas: number;
+  minutos: number;
 }
 
 @Component({
@@ -60,12 +66,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   proximasCount = 0;
 
   private charts: any[] = [];
+  private chartsWithData = new Set<string>();
   detalleAbierto: DetalleTipo | null = null;
   horasIteracionDetalle: HorasIteracionDetalle[] = [];
   horasCategoriaDetalle: HorasCategoriaDetalle[] = [];
   tareasUsuarioDetalle: TareasUsuarioDetalle[] = [];
+  horasDiaDetalle: HorasDiaDetalle[] = [];
   private horasIteracionRows: any[] = [];
   private horasEstimadasPorIteracion = new Map<number, number>();
+  private readonly diasSemanaOrden = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+  private readonly diaPorIndice = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(pm => {
@@ -133,6 +143,30 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         minutos: p.minutos
       }));
     });
+
+    const diaParams = new URLSearchParams();
+    if (this.proyectoId) diaParams.set('proyectoId', String(this.proyectoId));
+    if (this.filtroEtapa) diaParams.set('etapaId', String(this.filtroEtapa));
+    if (this.filtroIteracion) diaParams.set('iteracionId', String(this.filtroIteracion));
+    const weekRange = this.computeWeeklyRange();
+    diaParams.set('from', weekRange.from);
+    diaParams.set('to', weekRange.to);
+    const paramsDia = diaParams.toString() ? `?${diaParams.toString()}` : '';
+    this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-dia-tarea${paramsDia}`).subscribe(rows => {
+      this.renderHorasPorDiaTareaChart(rows || []);
+    }, () => {
+      this.destroyChartByCanvasId('chartHorasDiaTarea');
+      this.horasDiaDetalle = [];
+    });
+
+    const etapaParams = new URLSearchParams();
+    if (this.proyectoId) etapaParams.set('proyectoId', String(this.proyectoId));
+    if (this.filtroIteracion) etapaParams.set('iteracionId', String(this.filtroIteracion));
+    if (range.from && range.to) { etapaParams.set('from', range.from); etapaParams.set('to', range.to); }
+    const paramsEtapa = etapaParams.toString() ? `?${etapaParams.toString()}` : '';
+    this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-etapa${paramsEtapa}`).subscribe(rows => {
+      this.renderHorasPorEtapaChart(rows || []);
+    }, () => this.destroyChartByCanvasId('chartHorasEtapa'));
 
     // 2) tareas para métricas y gráficos complementarios
     const tareas$ = this.proyectoId ? this.taskService.getTareasPorProyecto(this.proyectoId) : this.taskService.getTareas();
@@ -285,7 +319,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private computeRange(): { from: string | null, to: string | null } {
     const today = new Date();
-    const to = today.toISOString().slice(0, 10);
+    const to = this.formatLocalDate(today);
     const clone = (d: Date) => new Date(d.getTime());
     const addDays = (d: Date, n: number) => { const x = clone(d); x.setDate(x.getDate() + n); return x; };
     const startOfWeek = () => { const d = clone(today); const day = d.getDay(); const diff = (day === 0 ? -6 : 1) - day; return addDays(d, diff); };
@@ -296,23 +330,39 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       return { from: to, to };
     }
     if (this.filtroTiempo === 'week') {
-      const f = startOfWeek().toISOString().slice(0, 10);
+      const f = this.formatLocalDate(startOfWeek());
       return { from: f, to };
     }
     if (this.filtroTiempo === 'month') {
-      const f = startOfMonth().toISOString().slice(0, 10);
+      const f = this.formatLocalDate(startOfMonth());
       return { from: f, to };
     }
     if (this.filtroTiempo === 'quarter') {
-      const f = startOfQuarter().toISOString().slice(0, 10);
+      const f = this.formatLocalDate(startOfQuarter());
       return { from: f, to };
     }
     return { from: null, to: null };
   }
 
+  private computeWeeklyRange(): { from: string, to: string } {
+    const today = new Date();
+    const clone = (d: Date) => new Date(d.getTime());
+    const addDays = (d: Date, n: number) => { const x = clone(d); x.setDate(x.getDate() + n); return x; };
+    const startOfWeek = () => {
+      const d = clone(today);
+      const day = d.getDay();
+      const diff = (day === 0 ? -6 : 1) - day;
+      return addDays(d, diff);
+    };
+    const from = this.formatLocalDate(startOfWeek());
+    const to = this.formatLocalDate(today);
+    return { from, to };
+  }
+
   private destroyCharts() {
     this.charts.forEach(c => { try { c.destroy(); } catch {} });
     this.charts = [];
+    this.chartsWithData.clear();
   }
 
   private destroyChartByCanvasId(elId: string) {
@@ -321,6 +371,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       const sameCanvas = chart?.canvas?.id === elId;
       if (sameCanvas) {
         try { chart.destroy(); } catch {}
+        this.chartsWithData.delete(elId);
       }
       return !sameCanvas;
     });
@@ -333,16 +384,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     colorStart: string,
     colorEnd: string,
     horizontal = false,
-    showMinutes = false
+    showMinutes = false,
+    stacked = false
   ) {
-    this.renderBarMulti(elId, labels, [{ label: '', data, colorStart, colorEnd, showMinutes }], horizontal);
+    this.renderBarMulti(elId, labels, [{ label: '', data, colorStart, colorEnd, showMinutes }], horizontal, stacked);
   }
 
   private renderBarMulti(
     elId: string,
     labels: string[],
     datasetsConfig: Array<{ label: string; data: number[]; colorStart: string; colorEnd: string; showMinutes?: boolean }>,
-    horizontal = false
+    horizontal = false,
+    stacked = false
   ) {
     const canvas: any = document.getElementById(elId);
     if (!canvas) return;
@@ -394,12 +447,127 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         },
         scales: {
-          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { font: { size: 11 } } },
-          x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { font: { size: 11 } }, stacked },
+          x: { grid: { display: false }, ticks: { font: { size: 11 } }, stacked }
         }
       }
     });
     this.charts.push(chart);
+    const hasData = datasetsConfig.some(cfg => (cfg.data || []).some(val => (val || 0) > 0));
+    if (hasData) {
+      this.chartsWithData.add(elId);
+    }
+  }
+
+  private renderHorasPorDiaTareaChart(rows: any[]) {
+    if (!rows || !rows.length) {
+      this.destroyChartByCanvasId('chartHorasDiaTarea');
+      this.horasDiaDetalle = [];
+      return;
+    }
+    const dayMap = new Map<string, Map<string, number>>();
+    const totalPorTarea = new Map<string, number>();
+    rows.forEach(row => {
+      const dia = this.nombreDiaDesdeFecha(row?.fecha);
+      if (!dia) return;
+      const tarea = row?.tareaNombre || 'Sin tarea';
+      const minutos = Number(row?.minutos || 0);
+      if (!dayMap.has(dia)) dayMap.set(dia, new Map());
+      const tareasDia = dayMap.get(dia)!;
+      tareasDia.set(tarea, (tareasDia.get(tarea) || 0) + minutos);
+      totalPorTarea.set(tarea, (totalPorTarea.get(tarea) || 0) + minutos);
+    });
+    if (!totalPorTarea.size) {
+      this.destroyChartByCanvasId('chartHorasDiaTarea');
+      return;
+    }
+    const labels = this.diasSemanaOrden;
+    const topEntries = Array.from(totalPorTarea.entries()).sort((a, b) => b[1] - a[1]);
+    const maxSeries = 5;
+    const topTareas = topEntries.slice(0, maxSeries).map(entry => entry[0]);
+    const otrasTareas = topEntries.slice(maxSeries).map(entry => entry[0]);
+    const palette = [
+      { start: '#0d6efd', end: '#6ea8fe' },
+      { start: '#198754', end: '#6cc59d' },
+      { start: '#ffc107', end: '#ffe08a' },
+      { start: '#dc3545', end: '#f28b94' },
+      { start: '#20c997', end: '#7be0c3' },
+      { start: '#6f42c1', end: '#c8a4ff' }
+    ];
+    const datasetLabels = otrasTareas.length ? [...topTareas, 'Otros'] : topTareas;
+    const datasets = datasetLabels.map((label, idx) => {
+      const colors = palette[idx % palette.length];
+      const data = labels.map(dia => {
+        const tareasDia = dayMap.get(dia);
+        if (!tareasDia) return 0;
+        if (label === 'Otros' && otrasTareas.length) {
+          const minutosOtros = otrasTareas.reduce((acc, nombre) => acc + (tareasDia.get(nombre) || 0), 0);
+          return Math.round(((minutosOtros / 60) * 100)) / 100;
+        }
+        const minutos = tareasDia.get(label) || 0;
+        return Math.round(((minutos / 60) * 100)) / 100;
+      });
+      return { label, data, colorStart: colors.start, colorEnd: colors.end, showMinutes: true };
+    });
+    this.renderBarMulti('chartHorasDiaTarea', labels, datasets, false, true);
+    const detalle = this.diasSemanaOrden.map(dia => {
+      const tareasDia = dayMap.get(dia);
+      const minutos = tareasDia ? Array.from(tareasDia.values()).reduce((acc, val) => acc + val, 0) : 0;
+      return {
+        dia,
+        minutos,
+        horas: Math.round(((minutos / 60) * 100)) / 100
+      };
+    });
+    this.horasDiaDetalle = detalle;
+  }
+
+  private renderHorasPorEtapaChart(rows: any[]) {
+    const agregados = new Map<string, { nombre: string; minutos: number }>();
+    const addEntrada = (idRaw: any, nombreRaw: any, minutosRaw: any) => {
+      const nombre = nombreRaw || 'Sin etapa';
+      const id = this.toNumber(idRaw);
+      const key = Number.isFinite(id ?? NaN) ? `id-${id}` : `nombre-${nombre}`;
+      const minutos = Number(minutosRaw || 0);
+      if (agregados.has(key)) {
+        agregados.get(key)!.minutos += minutos;
+      } else {
+        agregados.set(key, { nombre, minutos });
+      }
+    };
+    (rows || []).forEach(row => addEntrada(row?.etapaId, row?.etapaNombre, row?.minutos));
+    if (this.etapas?.length) {
+      this.etapas.forEach(et => {
+        const id = this.toNumber(et?.idEtapa);
+        const nombre = et?.nombre || 'Sin etapa';
+        const key = Number.isFinite(id ?? NaN) ? `id-${id}` : `nombre-${nombre}`;
+        if (!agregados.has(key)) {
+          agregados.set(key, { nombre, minutos: 0 });
+        }
+      });
+    }
+    if (!agregados.size) {
+      this.destroyChartByCanvasId('chartHorasEtapa');
+      return;
+    }
+    const ordered: Array<{ nombre: string; minutos: number }> = [];
+    if (this.etapas?.length) {
+      this.etapas.forEach(et => {
+        const id = this.toNumber(et?.idEtapa);
+        const nombre = et?.nombre || 'Sin etapa';
+        const key = Number.isFinite(id ?? NaN) ? `id-${id}` : `nombre-${nombre}`;
+        const entry = agregados.get(key);
+        if (entry) {
+          ordered.push(entry);
+          agregados.delete(key);
+        }
+      });
+    }
+    agregados.forEach(entry => ordered.push(entry));
+    const labels = ordered.map(e => e.nombre);
+    const minutos = ordered.map(e => e.minutos);
+    const horas = minutos.map(min => Math.round(((min / 60) * 100)) / 100);
+    this.renderPie('chartHorasEtapa', labels, horas, minutos);
   }
 
   private renderPie(elId: string, labels: string[], data: number[], minutos?: number[]) {
@@ -462,6 +630,33 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       plugins: [centerText]
     });
     this.charts.push(chart);
+    if (data.some(val => (val || 0) > 0)) {
+      this.chartsWithData.add(elId);
+    }
+  }
+
+  private nombreDiaDesdeFecha(value: any): string | null {
+    if (!value) return null;
+    const date = typeof value === 'string' ? new Date(`${value}T00:00:00`) : new Date(value);
+    if (isNaN(date.getTime())) return null;
+    const index = date.getDay();
+    return this.diaPorIndice[index] || null;
+  }
+
+  private toNumber(value: any): number | null {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  private formatLocalDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  chartDataDisponibles(canvasId: string): boolean {
+    return this.chartsWithData.has(canvasId);
   }
 
   mostrarDetalle(tipo: DetalleTipo) {
@@ -477,6 +672,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'horasIteracion': return 'Detalle de estimación vs ejecución';
       case 'horasCategoria': return 'Detalle de horas por categoría';
       case 'tareasUsuario': return 'Tareas por usuario';
+      case 'horasDiaTarea': return 'Horas por día (semana actual)';
       default: return '';
     }
   }

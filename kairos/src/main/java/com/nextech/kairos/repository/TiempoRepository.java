@@ -139,4 +139,33 @@ public interface TiempoRepository extends JpaRepository<Tiempo, Long> {
            "WHERE i.etapa.proyecto.idProyecto = :proyectoId AND t.fechaRegistro BETWEEN :desde AND :hasta " +
            "GROUP BY c.idCategoria, c.nombre ORDER BY COALESCE(c.nombre, 'Sin categoría')")
     List<Object[]> sumHorasPorCategoriaEnProyectoRango(@Param("proyectoId") Long proyectoId, @Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
+    @Query("SELECT e.idEtapa, e.nombre, COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.tarea ta JOIN ta.iteracion i JOIN i.etapa e " +
+           "WHERE (:proyectoId IS NULL OR e.proyecto.idProyecto = :proyectoId) " +
+           "AND (:etapaId IS NULL OR e.idEtapa = :etapaId) " +
+           "AND (:iteracionId IS NULL OR i.idIteracion = :iteracionId) " +
+           "AND (:desde IS NULL OR t.fechaRegistro >= :desde) " +
+           "AND (:hasta IS NULL OR t.fechaRegistro <= :hasta) " +
+           "GROUP BY e.idEtapa, e.nombre ORDER BY e.nombre")
+    List<Object[]> sumHorasPorEtapa(@Param("proyectoId") Long proyectoId,
+                                    @Param("etapaId") Long etapaId,
+                                    @Param("iteracionId") Long iteracionId,
+                                    @Param("desde") LocalDate desde,
+                                    @Param("hasta") LocalDate hasta);
+
+    @Query("SELECT t.fechaRegistro, ta.idTarea, ta.nombre, COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
+           "JOIN t.tarea ta JOIN ta.iteracion i JOIN i.etapa e " +
+           "WHERE (:proyectoId IS NULL OR e.proyecto.idProyecto = :proyectoId) " +
+           "AND (:etapaId IS NULL OR e.idEtapa = :etapaId) " +
+           "AND (:iteracionId IS NULL OR i.idIteracion = :iteracionId) " +
+           "AND (:desde IS NULL OR t.fechaRegistro >= :desde) " +
+           "AND (:hasta IS NULL OR t.fechaRegistro <= :hasta) " +
+           "GROUP BY t.fechaRegistro, ta.idTarea, ta.nombre " +
+           "ORDER BY t.fechaRegistro")
+    List<Object[]> sumHorasPorDiaYTarea(@Param("proyectoId") Long proyectoId,
+                                        @Param("etapaId") Long etapaId,
+                                        @Param("iteracionId") Long iteracionId,
+                                        @Param("desde") LocalDate desde,
+                                        @Param("hasta") LocalDate hasta);
 }
+

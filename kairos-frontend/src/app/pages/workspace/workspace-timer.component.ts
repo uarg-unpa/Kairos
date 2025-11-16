@@ -164,7 +164,7 @@ recentActivities: { time: string; message: string }[] = [];
   }
 
   private updateStats(): void {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = this.formatLocalDate(new Date());
     const hoyMinutos = (this.ultimosTiempos || [])
       .filter(t => (t.fechaRegistro || '').startsWith(today))
       .reduce((sum, t) => sum + (t.duracionMinutos || 0), 0);
@@ -187,6 +187,13 @@ recentActivities: { time: string; message: string }[] = [];
     const h = Math.floor(totalMinutos / 60);
     const m = totalMinutos % 60;
     return `${h}h ${m}m`;
+  }
+
+  private formatLocalDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
   addRecentActivity(message: string): void {
   const time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
