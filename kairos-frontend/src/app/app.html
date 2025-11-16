@@ -36,10 +36,10 @@
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'dashboard']" routerLinkActive="active"><span class="bi bi-graph-up"></span> Reportes</a>
                 </li>
                 <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
-                    <a class="nav-link" routerLink="/usuarios">Usuarios</a>
+                    <a class="nav-link" routerLink="/usuarios"><span class="bi bi-people"></span> Usuarios</a>
                 </li>
                 <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
-                    <a class="nav-link" routerLink="/roles" routerLinkActive="active"><span class="bi bi-people"></span> Roles</a>
+                    <a class="nav-link" routerLink="/roles" routerLinkActive="active"><span class="bi bi-person-check"></span> Roles</a>
                 </li>
                 <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
                     <a class="nav-link" routerLink="/permisos" routerLinkActive="active"><span class="bi bi-key"></span> Permisos</a>

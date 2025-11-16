@@ -53,9 +53,12 @@ export class AppComponent implements OnInit {
 
   private actualizarProyectoId(): void {
     const url = this.router.url;
-    // La expresión regular debería buscar cualquier cosa que no sea '/'
     const match = url.match(/\/proyecto\/([^\/]+)/);
-    this.proyectoId = match ? match[1] : null; // << Ahora proyectoId guarda la CADENA CODIFICADA
+    if (match && match[1]) {
+      this.proyectoId = decodeURIComponent(match[1]);
+    } else {
+      this.proyectoId = null;
+    }
   }
 
   getEncodedUserId(): string | null {
