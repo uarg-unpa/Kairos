@@ -22,6 +22,8 @@ import com.nextech.kairos.dto.TiempoResponseDTO;
 import com.nextech.kairos.dto.HorasPorIteracionDTO;
 import com.nextech.kairos.dto.HorasPorUsuarioDTO;
 import com.nextech.kairos.dto.HorasPorCategoriaDTO;
+import com.nextech.kairos.dto.HorasPorDiaTareaDTO;
+import com.nextech.kairos.dto.HorasPorEtapaDTO;
 import com.nextech.kairos.model.Tiempo;
 import com.nextech.kairos.model.Usuario;
 import com.nextech.kairos.service.TiempoService;
@@ -188,6 +190,49 @@ public class TiempoController {
 
         List<HorasPorCategoriaDTO> out = rows.stream()
             .map(r -> new HorasPorCategoriaDTO(
+                r[0] != null ? ((Number) r[0]).longValue() : null,
+                (String) r[1],
+                ((Number) r[2]).intValue()
+            ))
+            .toList();
+        return ResponseEntity.ok(out);
+    }
+
+    @GetMapping("/horas-por-dia-tarea")
+    public ResponseEntity<List<HorasPorDiaTareaDTO>> horasPorDiaYTarea(
+        @RequestParam(name = "iteracionId", required = false) Long iteracionId,
+        @RequestParam(name = "etapaId", required = false) Long etapaId,
+        @RequestParam(name = "proyectoId", required = false) Long proyectoId,
+        @RequestParam(name = "from", required = false) String from,
+        @RequestParam(name = "to", required = false) String to
+    ) {
+        java.time.LocalDate desde = (from != null && !from.isBlank()) ? java.time.LocalDate.parse(from) : null;
+        java.time.LocalDate hasta = (to != null && !to.isBlank()) ? java.time.LocalDate.parse(to) : null;
+        List<HorasPorDiaTareaDTO> out = tiempoService.horasPorDiaYTarea(proyectoId, etapaId, iteracionId, desde, hasta)
+            .stream()
+            .map(r -> new HorasPorDiaTareaDTO(
+                (java.time.LocalDate) r[0],
+                r[1] != null ? ((Number) r[1]).longValue() : null,
+                (String) r[2],
+                ((Number) r[3]).intValue()
+            ))
+            .toList();
+        return ResponseEntity.ok(out);
+    }
+
+    @GetMapping("/horas-por-etapa")
+    public ResponseEntity<List<HorasPorEtapaDTO>> horasPorEtapa(
+        @RequestParam(name = "iteracionId", required = false) Long iteracionId,
+        @RequestParam(name = "etapaId", required = false) Long etapaId,
+        @RequestParam(name = "proyectoId", required = false) Long proyectoId,
+        @RequestParam(name = "from", required = false) String from,
+        @RequestParam(name = "to", required = false) String to
+    ) {
+        java.time.LocalDate desde = (from != null && !from.isBlank()) ? java.time.LocalDate.parse(from) : null;
+        java.time.LocalDate hasta = (to != null && !to.isBlank()) ? java.time.LocalDate.parse(to) : null;
+        List<HorasPorEtapaDTO> out = tiempoService.horasPorEtapa(proyectoId, etapaId, iteracionId, desde, hasta)
+            .stream()
+            .map(r -> new HorasPorEtapaDTO(
                 r[0] != null ? ((Number) r[0]).longValue() : null,
                 (String) r[1],
                 ((Number) r[2]).intValue()

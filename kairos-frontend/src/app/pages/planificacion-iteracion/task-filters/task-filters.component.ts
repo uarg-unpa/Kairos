@@ -31,5 +31,4 @@ export class TaskFiltersComponent {
     fechaHasta: this.filtroFechaHasta
   });
 }
-
 }

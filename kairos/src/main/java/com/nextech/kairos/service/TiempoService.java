@@ -262,4 +262,14 @@ public Tiempo updateTime(Long idTiempo, TiempoEditRequestDTO request, Long idUsu
     public java.util.List<Object[]> horasPorCategoriaEnProyectoRango(Long proyectoId, LocalDate desde, LocalDate hasta) {
         return tiempoRepository.sumHorasPorCategoriaEnProyectoRango(proyectoId, desde, hasta);
     }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorEtapa(Long proyectoId, Long etapaId, Long iteracionId, LocalDate desde, LocalDate hasta) {
+        return tiempoRepository.sumHorasPorEtapa(proyectoId, etapaId, iteracionId, desde, hasta);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Object[]> horasPorDiaYTarea(Long proyectoId, Long etapaId, Long iteracionId, LocalDate desde, LocalDate hasta) {
+        return tiempoRepository.sumHorasPorDiaYTarea(proyectoId, etapaId, iteracionId, desde, hasta);
+    }
 }

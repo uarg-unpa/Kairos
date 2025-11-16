@@ -54,6 +54,10 @@ export class IteracionService {
     getIteracionActualPorProyecto(proyectoId: number): Observable<Iteracion> {
         return this.http.get<Iteracion>(`${this.baseUrl()}/proyecto/${proyectoId}/actual`);
     }
+
+    getIteracionPorId(iteracionId: number): Observable <Iteracion>{
+        return this.http.get<Iteracion>(`${this.baseUrl()}/${iteracionId}`)
+    }
 }
 
 

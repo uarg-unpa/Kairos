@@ -127,6 +127,10 @@ ${this.iteracionActual?.fechaInicio} a ${this.iteracionActual?.fechaFin}.`);
       return;
     }
 
+    if (this.nuevaTarea.iteracionId === null){
+      return
+    }
+
     this.guardarTarea.emit({
       ...this.nuevaTarea,
       esEdicion: !!this.tareaEnEdicion,
