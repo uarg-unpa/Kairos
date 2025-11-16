@@ -1,3 +1,41 @@
+<style>
+  .tooltip-card {
+    position: relative;
+    overflow: visible;
+  }
+  .metric-tooltip {
+    position: absolute;
+    top: -10px;
+    right: 12px;
+    transform: translateY(-100%);
+    background: #1d1f24;
+    color: #f8f9fa;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    min-width: 220px;
+    box-shadow: 0 12px 30px rgba(15, 20, 36, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 2;
+  }
+  .metric-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 28px;
+    border-width: 8px 8px 0 8px;
+    border-style: solid;
+    border-color: #1d1f24 transparent transparent transparent;
+  }
+  .tooltip-card:hover .metric-tooltip {
+    opacity: 1;
+    transform: translateY(calc(-100% - 4px));
+  }
+</style>
+
 <main class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -73,9 +111,127 @@
   <!-- Contenido principal -->
   <div class="row g-4">
     <!-- Columna izquierda: gráficos -->
-    $newBlock`n    <!-- Columna derecha: métricas simples (placeholders) -->
+    <div class="col-lg-8 order-1">
+      <div class="row g-4">
+
+        <!-- ================= GRÁFICOS (sin cambios) ================= -->
+
+        <div class="col-lg-6 col-md-12 d-flex flex-column gap-4">
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Estimación vs ejecución</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasIteracion')" [disabled]="!horasIteracionDetalle.length">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+              </div>
+            </div>
+            <div class="card-body text-center position-relative">
+              <canvas id="chartHorasIter" style="height:240px;"></canvas>
+              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartHorasIter')">
+                <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Horas por iteracón</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasIteracion')" [disabled]="!horasIteracionDetalle.length">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+              </div>
+            </div>
+            <div class="card-body text-center position-relative">
+              <canvas id="chartHorasIterDistrib" style="height:240px;"></canvas>
+              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartHorasIterDistrib')">
+                <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Tareas por usuario</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('tareasUsuario')" [disabled]="!tareasUsuarioDetalle.length">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+              </div>
+            </div>
+            <div class="card-body text-center position-relative">
+              <canvas id="chartTareasUser" style="height:240px;"></canvas>
+              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartTareasUser')">
+                <p class="mb-0 text-muted small">No se registran tareas asignadas en este rango.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Horas por día y tareas</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasDiaTarea')" [disabled]="!horasDiaDetalle.length">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+              </div>
+            </div>
+            <div class="card-body text-center posición relativa">
+              <canvas id="chartHorasDiaTarea" style="height:240px;"></canvas>
+              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartHorasDiaTarea')">
+                <p class="mb-0 text-muted small">Aún no hay registros semanales de tiempo.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-md-12 d-flex flex-column gap-4">
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Horas semanales por categoría</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasCategoria')" [disabled]="!horasCategoriaDetalle.length">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+              </div>
+            </div>
+            <div class="card-body text-center posición relativa">
+              <canvas id="chartHorasCategoria" style="height:240px;"></canvas>
+              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartHorasCategoria')">
+                <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Horas por fase (etapa)</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+              </div>
+            </div>
+            <div class="card-body text-center posición relativa">
+              <canvas id="chartHorasEtapa" style="height:240px;"></canvas>
+              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartHorasEtapa')">
+                <p class="mb-0 text-muted small">Sin horas registradas por etapa.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Columna derecha: métricas simples -->
     <div class="col-lg-4 order-2">
       <div class="row g-3">
+
         <div class="col-12">
           <div class="card dashboard-card metric-card success">
             <div class="card-body text-center position-relative">
@@ -98,21 +254,31 @@
           </div>
         </div>
 
+        <!-- ================= TARJETA EFICIENCIA CORREGIDA ================= -->
         <div class="col-12">
-          <div class="card dashboard-card metric-card danger">
+          <div class="card dashboard-card metric-card danger tooltip-card">
             <div class="card-body text-center position-relative">
               <i class="bi bi-speedometer fs-1 mb-3 text-danger"></i>
               <div class="metric-value fs-3">{{ eficiencia }}%</div>
               <h6 class="mb-0">Eficiencia</h6>
               <small class="text-muted">Estimado vs real</small>
+
+              <!-- Tooltip estilizado -->
+              <div class="metric-tooltip">
+                La eficacia representa la proporción de horas reales respecto de las estimadas.<br>
+                Un 100% indica ejecución dentro del presupuesto planificado.
+              </div>
             </div>
           </div>
         </div>
+        <!-- ================= FIN TARJETA CORREGIDA ================= -->
+
       </div>
-</div>
+    </div>
   </div>
 </main>
 
+<!-- MODAL -->
 <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" *ngIf="detalleAbierto">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -219,10 +385,9 @@
     </div>
   </div>
 </div>
+
 <div class="modal-backdrop fade show" *ngIf="detalleAbierto"></div>
 
 <ng-template #sinDatos>
   <p class="text-muted mb-0">No hay datos disponibles para el filtro actual.</p>
 </ng-template>
-
-

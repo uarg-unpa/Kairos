@@ -219,7 +219,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const estimadas = tareas.map(t => t.horasEstimadas || 0).reduce((a: number, b: number) => a + b, 0);
       const reales = this.totalHoras; // ya en horas
-      this.eficiencia = estimadas > 0 ? Math.min(100, Math.round((reales / estimadas) * 100)) : 0;
+      if (estimadas > 0) {
+        const rawPct = Math.round((reales / estimadas) * 100);
+        this.eficiencia = Math.max(0, rawPct);
+      } else {
+        this.eficiencia = 0;
+      }
 
       // tareas por usuario
       const porUserMap = new Map<string, number>();
@@ -431,6 +436,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         plugins: {
           legend: { display: showLegend, position: 'top' },
           tooltip: {
+            ...this.tooltipStyle(),
             callbacks: {
               label: (ctx: any) => {
                 const value = horizontal ? ctx.parsed.x : ctx.parsed.y;
@@ -604,6 +610,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         plugins: {
           legend: { position: 'bottom' },
           tooltip: {
+            ...this.tooltipStyle(),
             callbacks: {
               label: (ctx: any) => {
                 const value = ctx.parsed ?? 0;
@@ -646,6 +653,23 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private toNumber(value: any): number | null {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  private tooltipStyle() {
+    return {
+      backgroundColor: '#1d1f24',
+      borderColor: 'rgba(255,255,255,0.1)',
+      borderWidth: 1,
+      titleColor: '#ffffff',
+      bodyColor: '#f8f9fa',
+      titleFont: { size: 13, weight: '600' },
+      bodyFont: { size: 12 },
+      padding: 12,
+      cornerRadius: 10,
+      displayColors: true,
+      boxPadding: 6,
+      caretSize: 7
+    };
   }
 
   private formatLocalDate(date: Date): string {
