@@ -31,7 +31,6 @@ export class UsuariosService {
     }
 
     cargarUsuarios(): void {
-        console.log('CARGANDO USUARIOS DESDE API...');
         this.http.get<any[]>(`${this.apiUrl}/api/usuarios`, { headers: this.getHeaders() })
             .subscribe({
                 next: (data) => {
@@ -40,7 +39,6 @@ export class UsuariosService {
                         rol: u.roles?.[0]?.nombre || 'MIEMBRO', // si querés mantener "rol"
                         roles: u.roles || []
                     }));
-                    console.log('USUARIOS NORMALIZADOS:', normalizados);
                     this.usuarios.set(normalizados);
                     },
                 error: (err) => {

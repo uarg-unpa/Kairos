@@ -63,11 +63,17 @@
                 <ng-container *ngIf="usuarioLogueado && router.url !== '/login'">
                     <li class="nav-item d-flex align-items-center">
                         <span class="navbar-text text-white me-3">
-                            Hola, <strong>{{ usuarioNombre }}</strong>! ({{ rolUsuario }})
+                            Hola,
+                            <a [routerLink]="['/usuario/ver', getEncodedUserId()]"
+                                class="text-decoration-none fw-bold text-white profile-link">
+                                {{ usuarioNombre }}
+                            </a>
+                            ! ({{ rolUsuario }})
                         </span>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" (click)="logout()" style="cursor: pointer;"><span class="bi bi-box-arrow-right"></span> Salir</a>
+                        <a class="nav-link" (click)="logout()" style="cursor: pointer;">
+                        <span class="bi bi-box-arrow-right"></span> Salir</a>
                     </li>
                 </ng-container>
             </ul>

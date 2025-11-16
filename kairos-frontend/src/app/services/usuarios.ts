@@ -17,7 +17,6 @@ export class UsuariosService {
   usuarios = signal<Usuario[]>([]);
 
   constructor() {
-    console.log('🟢 UsuariosComponent cargado');
     this.cargarUsuarios();
 
   }
@@ -54,8 +53,11 @@ export class UsuariosService {
         nombre: u.nombre,
         email: u.email,
         rol: Array.isArray(u.roles)
-          ? (u.roles as string[]).map((name, i) => ({ id: i, nombre: name }))
-          : (u.rol || [])
+          ? u.roles.map((r: any) => ({
+            id: r.id || Date.now() + Math.random(),
+            nombre: r.nombre || r
+          }))
+          : (u.rol && Array.isArray(u.rol) ? u.rol : [])
       }) as Usuario)
     );
   }

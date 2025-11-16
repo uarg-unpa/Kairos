@@ -58,12 +58,12 @@
                   </td>
                   <td class="text-center">
                     <div class="btn-group" role="group">
-                      <a [routerLink]="['/usuario/ver', usuario.id]"
+                      <a [routerLink]="['/usuario/ver', getEncodedId(usuario.id)]"
                          class="btn btn-outline-info btn-sm"
                          title="Ver detalles">
                         <i class="bi bi-eye"></i>
                       </a>
-                      <a [routerLink]="['/usuario/modificar', usuario.id]"
+                      <a [routerLink]="['/usuario/modificar', getEncodedId(usuario.id)]"
                          class="btn btn-outline-warning btn-sm"
                          title="Editar">
                         <i class="bi bi-pencil"></i>

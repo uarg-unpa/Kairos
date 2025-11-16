@@ -1,24 +1,112 @@
-<div class="card">
-  <div class="card-header">
-    <h5>Detalle de Usuario</h5>
-  </div>
-  <div class="card-body">
-    @if (usuario) {
-    <p><strong>ID:</strong> {{ usuario.id }}</p>
-    <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
-    <p><strong>Email:</strong> {{ usuario.email }}</p>
-    <p><strong>Roles:</strong>
-      @if (usuario.rol.length) {
-        @for (r of usuario.rol; let i = $index; track r.id) {
-          {{ r.nombre }}@if (i < usuario.rol.length - 1) {, }
+<div class="container my-5">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Perfil de {{ usuario?.nombre || 'Usuario' }}</h4>
+    </div>
+
+    <div class="card-body">
+      <!-- Loading State -->
+      @if (loading) {
+      <div class="text-center p-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Cargando perfil...</p>
+      </div>
+      }
+
+      <!-- Perfil / Formulario -->
+      @if (usuario && !loading) {
+
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <h5 class="card-title text-primary">{{ isEditing ? 'Modificar Datos' : 'Información Personal' }}</h5>
+
+        @if (esAdmin || esUsuarioActual) {
+        <button (click)="toggleEdit()" class="btn btn-sm"
+          [ngClass]="isEditing ? 'btn-outline-secondary' : 'btn-outline-primary'">
+          <i class="bi" [ngClass]="isEditing ? 'bi-x' : 'bi-pencil'"></i>
+          {{ isEditing ? 'Cancelar' : 'Editar Perfil' }}
+        </button>
         }
-      } @else { — }
-    </p>
-    <a routerLink="/usuarios" class="btn btn-secondary">Volver</a>
-    <a [routerLink]="['/usuario/modificar', usuario.id]" class="btn btn-primary ml-2">Editar</a>
-    } @else {
-      <p>Usuario no encontrado.</p>
-      <a routerLink="/usuarios" class="btn btn-secondary">Volver</a>
-    }
+      </div>
+
+      <!-- Mensaje de Error (para la edición) -->
+      @if (errorMensaje) {
+      <div class="alert alert-danger" role="alert">{{ errorMensaje }}</div>
+      }
+
+      <!-- === FORMULARIO DE EDICIÓN (Visible al hacer clic en Editar) === -->
+      @if (isEditing) {
+      <form (ngSubmit)="guardar()">
+        <div class="mb-3">
+          <label for="nombreInput" class="form-label">Nombre</label>
+          <input id="nombreInput" type="text" class="form-control" [(ngModel)]="usuarioEdit.nombre" name="nombre"
+            required />
+        </div>
+        <div class="mb-3">
+          <label for="emailInput" class="form-label">Email</label>
+          <input id="emailInput" type="email" class="form-control" [(ngModel)]="usuarioEdit.email" name="email"
+            required />
+          <small class="form-text text-muted">Este email se usa para iniciar sesión.</small>
+        </div>
+
+        <div class="mt-4">
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+      </form>
+      }
+
+      <!-- === VISTA DE DETALLE (Por defecto) === -->
+      @if (!isEditing) {
+      <dl class="row">
+        <dt class="col-sm-3">Nombre:</dt>
+        <dd class="col-sm-9">{{ usuario.nombre }}</dd>
+
+        <dt class="col-sm-3">Email:</dt>
+        <dd class="col-sm-9">{{ usuario.email }}</dd>
+
+        <!-- ID y Roles (SOLO para Administradores) -->
+        @if (esAdmin) {
+        <hr class="my-3">
+        <dt class="col-sm-3 text-muted">ID Sistema:</dt>
+        <dd class="col-sm-9 text-muted">{{ usuario.id }}</dd>
+
+        <dt class="col-sm-3 text-muted">Roles:</dt>
+        <dd class="col-sm-9 text-muted">
+          @if (usuario.rol.length) {
+          @for (r of usuario.rol; track r) {
+          <span class="badge bg-secondary me-1">{{ r.nombre || r }}</span>
+          }
+          } @else { Sin roles asignados }
+        </dd>
+        }
+
+        <!-- Proyectos a los que pertenece (Visible para todos) -->
+        <hr class="my-3">
+        <dt class="col-sm-3">Proyectos ({{ proyectos.length }}):</dt>
+        <dd class="col-sm-9">
+          @if (proyectos.length) {
+          <ul class="list-unstyled">
+            @for (p of proyectos; track p.idProyecto) {
+            <li>
+              {{ p.nombre }}
+            </li>
+            }
+          </ul>
+          } @else {
+          <p class="text-muted">No pertenece a ningún proyecto.</p>
+          }
+        </dd>
+      </dl>
+      }
+
+      <div class="mt-4">
+        <!-- Si es admin, vuelve a la lista de usuarios. Si no, vuelve al inicio. -->
+        <a [routerLink]="esAdmin ? '/usuarios' : '/inicio'" class="btn btn-secondary">Volver</a>
+      </div>
+
+      } @else if (!loading) {
+            <p>Usuario no encontrado.</p>
+            <a routerLink="/usuarios" class="btn btn-secondary">Volver</a>
+          }
+    </div>
   </div>
 </div>

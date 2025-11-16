@@ -230,6 +230,22 @@ public class ProyectoController {
         }
     }
 
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<List<Proyecto>> getProjectsByUserId(@PathVariable Long idUsuario, Authentication auth) {
+        Usuario usuarioActual = getCurrentUser(auth);
+
+        boolean esAdmin = authService.isAdmin(usuarioActual.getEmail());
+        boolean esElMismoUsuario = usuarioActual.getId().equals(idUsuario);
+
+        if (!esAdmin && !esElMismoUsuario) {
+            return ResponseEntity.status(403)
+                    .body(null);
+        }
+
+        List<Proyecto> proyectos = proyectoService.findProjectsByUser(idUsuario);
+        return ResponseEntity.ok(proyectos);
+    }
+
 
     @PostMapping("/invitar")
     public ResponseEntity<?> invitarMiembro(

@@ -4,6 +4,7 @@ import { AuthService } from './services/auth.service';
 import { GlobalTimerComponent } from './components/global-timer/global-timer.component';
 import { CommonModule } from '@angular/common';
 import { LoadingService } from './services/loading.service';
+import { IdCoderService } from './services/id-coder.service';
 import { Proyecto } from '././models/proyecto.model';
 
 @Component({
@@ -18,21 +19,24 @@ export class AppComponent implements OnInit {
   proyecto: Proyecto | null = null;
   usuarioId: number | null = null;
   rolEnProyecto: 'Admin' | 'Lider' | 'Miembro' = 'Miembro';
-  proyectoId: number | null = null;
+  proyectoId: string | null = null;
   loadingService = inject(LoadingService);
 
-  constructor(public router: Router, public auth: AuthService) {}
+  constructor(
+    public router: Router, 
+    public auth: AuthService,
+    private idCoderService: IdCoderService
+  ) {}
 
   ngOnInit(): void {
     this.auth.isLoggedIn$.subscribe(isLoggedIn => {
       this.usuarioLogueado = isLoggedIn;
     });
 
-    // Suscribirse a la información del usuario/rol
     this.auth.currentUser$.subscribe(user => {
       if (user) {
         this.usuarioNombre = user.nombre || 'Usuario';
-        this.usuarioId = user.id ?? null;
+        this.usuarioId = user.id ?? null; // << Aseguramos que usuarioId se actualice
         this.rolUsuario = (user.rol || (user.roles?.length ? user.roles[0] : null))?.toUpperCase() || null;
       } else {
         this.usuarioNombre = 'Invitado';
@@ -49,8 +53,16 @@ export class AppComponent implements OnInit {
 
   private actualizarProyectoId(): void {
     const url = this.router.url;
-    const match = url.match(/\/proyecto\/(\d+)/);
-    this.proyectoId = match ? +match[1] : null;
+    // La expresión regular debería buscar cualquier cosa que no sea '/'
+    const match = url.match(/\/proyecto\/([^\/]+)/);
+    this.proyectoId = match ? match[1] : null; // << Ahora proyectoId guarda la CADENA CODIFICADA
+  }
+
+  getEncodedUserId(): string | null {
+    if (this.usuarioId) {
+      return this.idCoderService.encode(this.usuarioId);
+    }
+    return null;
   }
 
   // rolEnProyecto se calcula en vistas específicas si se requiere

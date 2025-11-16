@@ -134,7 +134,6 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     if (!this.usuario || !this.usuario.rol) return false;
-    console.log('Comparando roles:', this.usuario.rol.toUpperCase(), 'con', role.toUpperCase());
     return this.usuario.rol.toUpperCase() === role.toUpperCase();
   }
 

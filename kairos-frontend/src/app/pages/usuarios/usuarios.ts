@@ -3,6 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UsuariosService } from '../../services/usuarios.service';
 import { AuthService } from '../../services/auth.service';
+import { IdCoderService } from '../../services/id-coder.service';
 
 
  
@@ -18,11 +19,15 @@ export class UsuariosComponent {
   usuarioLogueado: boolean = false;
   rolUsuario: string | null = null;
   private usuariosService = inject(UsuariosService);
+  private idCoderService = inject(IdCoderService);
   usuarios = this.usuariosService.usuarios;
   constructor(
     public router: Router, 
     public auth: AuthService
   ) {
+  }
+  getEncodedId(id: number): string {
+    return this.idCoderService.encode(id);
   }
 
   eliminarUsuario(id: number) {
