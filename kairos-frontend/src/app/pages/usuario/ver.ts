@@ -8,7 +8,7 @@ import { IdCoderService } from '../../services/id-coder.service';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../../models/usuarios';
 import { Proyecto } from '../../models/proyecto.model';
-import { Observable } from 'rxjs'; // Importado Observable
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-usuario-ver',
@@ -29,7 +29,7 @@ export class UsuarioVerComponent implements OnInit {
   proyectos: Proyecto[] = [];
   rolPrincipal: string | null = null;
 
-  // Flags de control
+  //banderas de control
   isEditing = false;
   esAdmin = false;
   esUsuarioActual = false;
@@ -40,6 +40,13 @@ export class UsuarioVerComponent implements OnInit {
     const encodedId = this.route.snapshot.paramMap.get('id');
     this.esAdmin = this.authService.esAdmin();
     this.rolPrincipal = this.authService.usuario?.rol || 'MIEMBRO';
+
+    this.route.queryParamMap.subscribe(params => {
+      console.log(params.get('mode'));
+      if (params.get('mode') === 'edit') {
+        this.isEditing = true;
+      }
+    });
 
     if (encodedId) {
       const idDecodificado = this.idCoderService.decode(encodedId);
@@ -59,15 +66,13 @@ export class UsuarioVerComponent implements OnInit {
         this.loading = false;
         this.usuario = u;
         this.usuarioEdit = { nombre: u.nombre, email: u.email };
-
-        // Validación de acceso (Admin o propio usuario)
         this.esUsuarioActual = this.authService.usuario?.id === u.id;
         if (!this.esAdmin && !this.esUsuarioActual) {
           alert('Acceso no autorizado a este perfil.');
           this.router.navigate(['/inicio']);
         }
       },
-      error: (e: any) => { // Tipado explícito de error
+      error: (e: any) => {
         this.loading = false;
         console.error('No se pudo cargar el usuario', e);
         alert('Usuario no encontrado.');
@@ -77,22 +82,17 @@ export class UsuarioVerComponent implements OnInit {
   }
 
   private cargarProyectos(idUsuario: number): void {
-    // Llama a getProjectsByUser (ahora existe en el servicio)
     const obs: Observable<Proyecto[]> = this.proyectoService.getProjectsByUser(idUsuario);
 
     obs.subscribe({
-      // Tipado explícito de 'proyectos'
       next: (proyectos: Proyecto[]) => (this.proyectos = proyectos || []),
-      // Tipado explícito de 'err'
       error: (err: any) => console.error('Error al cargar proyectos del usuario:', err)
     });
   }
 
-  // Alternar modo edición
   toggleEdit(): void {
     this.isEditing = !this.isEditing;
     this.errorMensaje = null;
-    // Reiniciar el formulario de edición al salir del modo edición
     if (!this.isEditing && this.usuario) {
       this.usuarioEdit = { nombre: this.usuario.nombre, email: this.usuario.email };
     }

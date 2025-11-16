@@ -1,9 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { UsuariosService } from '../../services/usuarios';
-import { Usuario } from '../../models/usuarios';
 
 @Component({
   selector: 'app-usuario-modificar',
@@ -11,31 +9,23 @@ import { Usuario } from '../../models/usuarios';
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './modificar.html'
 })
-export class UsuarioModificarComponent {
+export class UsuarioModificarComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private service = inject(UsuariosService);
   private router = inject(Router);
 
-  usuario?: Usuario;
+  ngOnInit(): void {
+    const encodedId = this.route.snapshot.paramMap.get('id');
 
-  constructor() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    if (id) {
-      this.service.getById(id).subscribe({
-        next: (u) => (this.usuario = u),
-        error: (e) => console.error('No se pudo cargar el usuario', e)
+    if (encodedId) {
+      this.router.navigate(['/usuario/ver', encodedId], {
+        queryParams: { mode: 'edit' }
       });
+    } else {
+      this.router.navigate(['/usuarios']);
     }
   }
 
-  guardar() {
-    if (!this.usuario) return;
-    this.service.update(this.usuario.id, {
-      nombre: this.usuario.nombre,
-      email: this.usuario.email
-    }).subscribe({
-      next: () => this.router.navigate(['/usuarios']),
-      error: (e) => console.error('No se pudo actualizar el usuario', e)
-    });
-  }
+  constructor() { }
+
+  guardar() { }
 }
