@@ -150,9 +150,11 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   goToEtapaId(id: number) {
     if (this.idProyecto) {
       const encodedProyectoId = this.idCoderService.encode(this.idProyecto);
-      this.router.navigate(['/proyecto', encodedProyectoId, 'iteraciones', id]);
+      const encodedEtapaId = this.idCoderService.encode(id);
+      this.router.navigate(['/proyecto', encodedProyectoId, 'iteraciones', encodedEtapaId]);
     } else {
-      this.router.navigate(['/iteraciones/etapa', id]);
+      const encodedId = this.idCoderService.encode(id);
+      this.router.navigate(['/iteraciones/etapa', encodedId]);
     }
   }
 

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 
 import { IdCoderService } from '../../services/id-coder.service';
 import { TaskService } from '../../services/tarea.service';
+import { ProyectoService } from '../../services/proyecto.service';
 import { CategoriaService, CategoriaDTO } from '../../services/categoria.service';
 import { IteracionService } from '../../services/iteracion.service';
 import { UsuariosService } from '../../services/usuarios';
@@ -52,6 +53,7 @@ export class PlanificacionComponent implements OnInit {
   tareas: Tarea[] = [];
   etapas: Etapa[] = [];
   iteracionActual: Iteracion | null = null;
+  proyectoNombre: string | null = null;
 
   // Usuario y comentarios
   usuarios: Usuario[] = [];
@@ -81,7 +83,8 @@ export class PlanificacionComponent implements OnInit {
     private etapaService: EtapaService,
     private route: ActivatedRoute,
     private router: Router,
-    private idCoderService: IdCoderService
+    private idCoderService: IdCoderService,
+    private proyectoService: ProyectoService
   ) {
     effect(() => {
       this.usuarios = this.usuariosService.usuarios();
@@ -96,6 +99,7 @@ export class PlanificacionComponent implements OnInit {
 
       if (id) {
         this.proyectoId = id;
+        this.cargarNombreProyecto(id);
       } else {
         alert('Acceso denegado o ID de proyecto inválido.');
         this.router.navigate(['/inicio']);
@@ -117,6 +121,17 @@ export class PlanificacionComponent implements OnInit {
 
     this.obtenerIteracionActual();
     this.cargarEtapas();
+  }
+  private cargarNombreProyecto(id: number): void {
+    this.proyectoService.getProyectoById(id).subscribe({
+        next: (proyecto) => {
+            this.proyectoNombre = proyecto.nombre;
+        },
+        error: (err) => {
+            console.error('Error al cargar datos del proyecto:', err);
+            this.proyectoNombre = 'Proyecto Desconocido'; 
+        }
+    });
   }
 
   private cargarEtapas(): void {

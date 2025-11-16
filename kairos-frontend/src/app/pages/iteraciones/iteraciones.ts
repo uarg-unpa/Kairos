@@ -78,6 +78,11 @@ export class IteracionesComponent implements OnInit {
         if (decodedEtapaId) {
           this.etapaId = decodedEtapaId;
         } else {
+          if (this.proyectoId) {
+            alert('ID de etapa en URL inválido.');
+            this.router.navigate(['/proyecto', this.encodedProyectoId, 'etapas']);
+            return;
+          }
           this.etapaSlug = etapaParam;
         }
       }

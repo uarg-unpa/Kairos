@@ -89,6 +89,12 @@ export class AppComponent implements OnInit {
   dismissAlert(): void {
     this.showUserAlert = false;
   }
+  inicialesUsuario(nombre?: string): string {
+      if (!nombre) return '?';
+      const partes = nombre.trim().split(/\s+/).filter(Boolean);
+      return partes.slice(0, 2).map(p => p[0]?.toUpperCase() || '').join('') || '?';
+  }
+
 
   esRutaProyecto(): boolean {
     // Comprueba si la URL actual comienza con '/proyecto/'

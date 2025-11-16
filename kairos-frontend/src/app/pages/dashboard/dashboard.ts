@@ -4,8 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { EtapaService } from '../../services/etapa.service';
 import { IteracionService } from '../../services/iteracion.service';
 import { TaskService } from '../../services/tarea.service';
+import { IdCoderService } from '../../services/id-coder.service';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 
 declare const Chart: any;
 
@@ -48,6 +49,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private taskService = inject(TaskService);
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private idCoderService = inject(IdCoderService);
 
   etapas: any[] = [];
   iteraciones: any[] = [];
@@ -55,6 +58,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   filtroIteracion: number | null = null;
   filtroTiempo: 'today' | 'week' | 'month' | 'quarter' | 'all' = 'week';
   proyectoId: number | null = null;
+  encodedProjectId: string | null = null; //para el html
 
   // métricas
   totalTareas = 0;
@@ -79,10 +83,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(pm => {
-      const id = pm.get('id');
-      this.proyectoId = id ? Number(id) : null;
+      const encodedId = pm.get('id');
       const data: any = this.route.snapshot.data;
       this.proyectoNombre = data?.['proyecto']?.nombre || null;
+
+      if (encodedId) {
+        const id = this.idCoderService.decode(encodedId);
+        if (id) {
+          this.proyectoId = id;
+          this.encodedProjectId = encodedId;
+        } else {
+          alert('Acceso denegado o ID de proyecto inválido.');
+          this.router.navigate(['/inicio']);
+          return;
+        }
+      }
+
       if (this.proyectoId) {
         this.etapaService.getEtapasPorProyecto(this.proyectoId).subscribe(e => this.etapas = e || []);
         this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(it => this.iteraciones = it || []);
@@ -90,6 +106,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.etapaService.getEtapas().subscribe(e => this.etapas = e || []);
         this.iteracionService.getIteraciones().subscribe(it => this.iteraciones = it || []);
       }
+
+      this.reload();
     });
   }
 
@@ -111,6 +129,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.iteracionService.getIteraciones().subscribe(it => this.iteraciones = it || []);
     }
+
     // 1) datasets desde backend de tiempos (reales)
     const range = this.computeRange();
     const iterParams = new URLSearchParams();

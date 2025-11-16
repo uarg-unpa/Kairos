@@ -2,7 +2,7 @@
 
   <!-- Encabezado -->
   <div class="d-flex justify-content-between align-items-center mb-1">
-    <h2 class="mb-0">Planificación de Tareas - Kairos</h2>
+    <h2 class="mb-0">Planificación de Tareas - <span *ngIf="proyectoNombre">{{ proyectoNombre }}</span></h2>
     <div class="d-flex gap-2">
       <button type="button" class="btn btn-primary" (click)="onAbrirModalCrear()">
         Nueva Tarea

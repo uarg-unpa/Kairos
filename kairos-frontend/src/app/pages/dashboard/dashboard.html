@@ -78,7 +78,7 @@
         </div>
         <a *ngIf="atrasadasCount > 0"
            class="btn btn-outline-light btn-lg"
-           [routerLink]="['/proyecto', proyectoId, 'planificacion']"
+           [routerLink]="['/proyecto', encodedProjectId, 'planificacion']"
            [queryParams]="{ vencimiento: 'atrasadas' }">
           <i class="bi bi-eye"></i> Ver tareas
         </a>
@@ -100,7 +100,7 @@
         </div>
         <a *ngIf="proximasCount > 0"
            class="btn btn-outline-danger btn-lg"
-           [routerLink]="['/proyecto', proyectoId, 'planificacion']"
+           [routerLink]="['/proyecto', encodedProjectId, 'planificacion']"
            [queryParams]="{ vencimiento: 'proximas' }">
           <i class="bi bi-calendar-event"></i> Ver fechas
         </a>
