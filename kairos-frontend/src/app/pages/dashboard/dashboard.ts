@@ -582,6 +582,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const dayMap = new Map<string, Map<string, number>>();
     const totalPorTarea = new Map<string, number>();
     const totalPorDia = new Map<string, number>();
+    const fechasPorDia = new Map<string, string>(); // Agregar map para fechas
+
     rows.forEach(row => {
       const dia = this.nombreDiaDesdeFecha(row?.fecha);
       if (!dia) return;
@@ -592,6 +594,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       tareasDia.set(tarea, (tareasDia.get(tarea) || 0) + minutos);
       totalPorDia.set(dia, (totalPorDia.get(dia) || 0) + minutos);
       totalPorTarea.set(tarea, (totalPorTarea.get(tarea) || 0) + minutos);
+      if (!fechasPorDia.has(dia)) {
+      fechasPorDia.set(dia, this.formatLocalDate(new Date(`${row?.fecha}T00:00:00`)));
+    }
     });
     if (!totalPorTarea.size) {
       this.destroyChartByCanvasId('chartHorasDiaTarea');
@@ -603,9 +608,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       const minutos = totalPorDia.get(dia) || 0;
       return Math.round(((minutos / 60) * 100)) / 100;
     });
+
+    const labelsConFecha = labelsDias.map(dia => {
+    const fecha = fechasPorDia.get(dia);
+    return fecha ? `${dia}\n${fecha}` : dia;
+  });
+
     this.renderBar(
     'chartHorasDiaTarea',
-    labelsDias,
+    labelsConFecha,
     horasPorDia,
     '#0d6efd',
     '#6ea8fe',
@@ -619,8 +630,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const detalle = this.diasSemanaOrden.map(dia => {
       const tareasDia = dayMap.get(dia);
       const minutos = tareasDia ? Array.from(tareasDia.values()).reduce((acc, val) => acc + val, 0) : 0;
+      const fecha = fechasPorDia.get(dia) || '';
       return {
-        dia,
+        dia: fecha ? `${dia} (${fecha})` : dia,
         minutos,
         horas: Math.round(((minutos / 60) * 100)) / 100
       };
