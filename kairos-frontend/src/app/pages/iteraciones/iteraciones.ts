@@ -31,7 +31,6 @@ export class IteracionesComponent implements OnInit {
   filtroProgreso: 'TODAS' | 'SIN_INICIAR' | 'EN_PROCESO' | 'FINALIZADA' = 'TODAS';
 
   nuevaIteracion: any = {
-    numero: 1,
     descripcion: '',
     fechaInicio: '',
     fechaFin: ''
@@ -103,7 +102,7 @@ export class IteracionesComponent implements OnInit {
   nuevaIteracionValida(): boolean {
     const i = this.nuevaIteracion;
     this.errorNuevaIteracion = null;
-    if (!(i.numero && i.fechaInicio && i.fechaFin)) return false;
+    if (!(i.fechaInicio && i.fechaFin)) return false;
     if (this.fechasDesordenadas()) {
       this.errorNuevaIteracion = 'La fecha de fin no puede ser anterior a la fecha de inicio';
       return false;
@@ -115,7 +114,7 @@ export class IteracionesComponent implements OnInit {
     if (!this.nuevaIteracionValida()) return;
     if (!this.etapaId) { alert('Selecciona una etapa para crear la iteración.'); return; }
     const payload = {
-      numero: Number(this.nuevaIteracion.numero),
+      numero: this.obtenerSiguienteNumero(),
       descripcion: this.nuevaIteracion.descripcion,
       fechaInicio: this.nuevaIteracion.fechaInicio,
       fechaFin: this.nuevaIteracion.fechaFin,
@@ -152,7 +151,19 @@ export class IteracionesComponent implements OnInit {
   }
 
   private resetForm() {
-    this.nuevaIteracion = { numero: 1, descripcion: '', fechaInicio: '', fechaFin: '' };
+    this.nuevaIteracion = { descripcion: '', fechaInicio: '', fechaFin: '' };
+  }
+
+  get proximoNumeroIteracion(): number {
+    return this.obtenerSiguienteNumero();
+  }
+
+  private obtenerSiguienteNumero(): number {
+    const numeros = (this.iteraciones || [])
+      .map(it => Number(it?.numero))
+      .filter(n => Number.isFinite(n));
+    if (!numeros.length) return 1;
+    return Math.max(...numeros) + 1;
   }
 
   // Progreso aproximado en porcentaje basado en fechas
