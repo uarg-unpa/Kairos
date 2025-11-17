@@ -10,7 +10,7 @@ import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 
 declare const Chart: any;
 
-type DetalleTipo = 'horasIteracion' | 'horasCategoria' | 'tareasUsuario' | 'horasDiaTarea';
+type DetalleTipo = 'horasIteracion' | 'horasCategoria' | 'tareasUsuario' | 'horasDiaTarea' | 'horasTarea';
 
 
 interface HorasIteracionDetalle {
@@ -34,6 +34,12 @@ interface TareasUsuarioDetalle {
 
 interface HorasDiaDetalle {
   dia: string;
+  horas: number;
+  minutos: number;
+}
+
+interface HorasTareaDetalle {
+  tarea: string;
   horas: number;
   minutos: number;
 }
@@ -79,10 +85,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   horasCategoriaDetalle: HorasCategoriaDetalle[] = [];
   tareasUsuarioDetalle: TareasUsuarioDetalle[] = [];
   horasDiaDetalle: HorasDiaDetalle[] = [];
+  horasTareaDetalle: HorasTareaDetalle[] = [];
   private horasIteracionRows: any[] = [];
   private horasEstimadasPorIteracion = new Map<number, number>();
   private readonly diasSemanaOrden = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
   private readonly diaPorIndice = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+  private readonly gradientPalette = [
+    { start: '#0d6efd', end: '#6ea8fe' },
+    { start: '#198754', end: '#6cc59d' },
+    { start: '#ffc107', end: '#ffe08a' },
+    { start: '#dc3545', end: '#f28b94' },
+    { start: '#20c997', end: '#7be0c3' },
+    { start: '#6f42c1', end: '#c8a4ff' }
+  ];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(pm => {
@@ -260,6 +275,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const key = (t.usuarioNombre || 'Sin usuario');
         porUserMap.set(key, (porUserMap.get(key) || 0) + 1);
       });
+      const formatTareas = (valor: number) => {
+        const cantidad = Math.round(Number(valor) || 0);
+        return `${cantidad} ${cantidad === 1 ? 'tarea' : 'tareas'}`;
+      };
       this.renderBar(
   'chartTareasUser',
   Array.from(porUserMap.keys()),
@@ -271,7 +290,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   false,
   'Tareas por Usuario',
   'Cantidad de Tareas',
-  'Usuarios'
+  'Usuarios',
+  formatTareas
 );
       this.tareasUsuarioDetalle = Array.from(porUserMap.entries())
         .sort((a, b) => b[1] - a[1])
@@ -314,7 +334,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!orderedIds.length) {
       this.horasIteracionDetalle = [];
       this.destroyChartByCanvasId('chartHorasIter');
-      this.destroyChartByCanvasId('chartHorasIterDistrib');
       this.totalHoras = 0;
       return;
     }
@@ -358,20 +377,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Ejecución', data: realesHoras, colorStart: '#0d6efd', colorEnd: '#6ea8fe', showMinutes: true },
     { label: 'Estimación', data: estimadasHoras, colorStart: '#6610f2', colorEnd: '#c29bfe' }
   ], false, false, 'Estimación vs Ejecución', 'Iteraciones', 'Horas (h)');
-
-  this.renderBar(
-    'chartHorasIterDistrib',
-    labels,
-    realesHoras,
-    '#0d6efd',
-    '#6ea8fe',
-    true,
-    true,
-    false,
-    'Distribución de Horas por Iteración',
-    'Horas (h)',
-    'Iteraciones'
-  );
     this.horasIteracionDetalle = detalleRows;
   }
 
@@ -444,12 +449,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   stacked = false,
   titleChart: string = '',
   labelX: string = '',
-  labelY: string = ''
+  labelY: string = '',
+  valueFormatter?: (value: number) => string
 ) {
   this.renderBarMulti(
     elId,
     labels,
-    [{ label: '', data, colorStart, colorEnd, showMinutes }],
+    [{ label: '', data, colorStart, colorEnd, showMinutes, valueFormatter }],
     horizontal,
     stacked,
     titleChart,
@@ -461,7 +467,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private renderBarMulti(
   elId: string,
   labels: string[],
-  datasetsConfig: Array<{ label: string; data: number[]; colorStart: string; colorEnd: string; showMinutes?: boolean }>,
+  datasetsConfig: Array<{ label: string; data: number[]; colorStart: string; colorEnd: string; showMinutes?: boolean; valueFormatter?: (value: number) => string }>,
   horizontal = false,
   stacked = false,
   titleChart: string = '',
@@ -490,6 +496,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       barPercentage: 0.7
     };
     if (cfg.showMinutes) dataset.showMinutes = true;
+    if (cfg.valueFormatter) dataset.valueFormatter = cfg.valueFormatter;
     return dataset;
   });
   const showLegend = datasetsConfig.some(ds => ds.label && ds.label.trim().length > 0);
@@ -512,9 +519,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           ...this.tooltipStyle(),
           callbacks: {
             label: (ctx: any) => {
-              const value = horizontal ? ctx.parsed.x : ctx.parsed.y;
-              const hours = Math.round((value ?? 0) * 100) / 100;
+              const rawValue = horizontal ? ctx.parsed.x : ctx.parsed.y;
+              const numericValue = Number(rawValue ?? 0);
               const prefix = ctx.dataset?.label ? `${ctx.dataset.label}: ` : '';
+              if (typeof ctx.dataset?.valueFormatter === 'function') {
+                const custom = ctx.dataset.valueFormatter(numericValue);
+                return `${prefix}${custom}`;
+              }
+              const hours = Math.round(numericValue * 100) / 100;
               let formatted = `${prefix}${hours} h`;
               if (ctx.dataset?.showMinutes) {
                 const minutos = Math.round(hours * 60);
@@ -562,11 +574,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private renderHorasPorDiaTareaChart(rows: any[]) {
     if (!rows || !rows.length) {
       this.destroyChartByCanvasId('chartHorasDiaTarea');
+      this.destroyChartByCanvasId('chartHorasIterDistrib');
       this.horasDiaDetalle = [];
+      this.horasTareaDetalle = [];
       return;
     }
     const dayMap = new Map<string, Map<string, number>>();
     const totalPorTarea = new Map<string, number>();
+    const totalPorDia = new Map<string, number>();
     rows.forEach(row => {
       const dia = this.nombreDiaDesdeFecha(row?.fecha);
       if (!dia) return;
@@ -575,47 +590,29 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!dayMap.has(dia)) dayMap.set(dia, new Map());
       const tareasDia = dayMap.get(dia)!;
       tareasDia.set(tarea, (tareasDia.get(tarea) || 0) + minutos);
+      totalPorDia.set(dia, (totalPorDia.get(dia) || 0) + minutos);
       totalPorTarea.set(tarea, (totalPorTarea.get(tarea) || 0) + minutos);
     });
     if (!totalPorTarea.size) {
       this.destroyChartByCanvasId('chartHorasDiaTarea');
+      this.destroyChartByCanvasId('chartHorasIterDistrib');
       return;
     }
-    const labels = this.diasSemanaOrden;
-    const topEntries = Array.from(totalPorTarea.entries()).sort((a, b) => b[1] - a[1]);
-    const maxSeries = 5;
-    const topTareas = topEntries.slice(0, maxSeries).map(entry => entry[0]);
-    const otrasTareas = topEntries.slice(maxSeries).map(entry => entry[0]);
-    const palette = [
-      { start: '#0d6efd', end: '#6ea8fe' },
-      { start: '#198754', end: '#6cc59d' },
-      { start: '#ffc107', end: '#ffe08a' },
-      { start: '#dc3545', end: '#f28b94' },
-      { start: '#20c997', end: '#7be0c3' },
-      { start: '#6f42c1', end: '#c8a4ff' }
-    ];
-    const datasetLabels = otrasTareas.length ? [...topTareas, 'Otros'] : topTareas;
-    const datasets = datasetLabels.map((label, idx) => {
-      const colors = palette[idx % palette.length];
-      const data = labels.map(dia => {
-        const tareasDia = dayMap.get(dia);
-        if (!tareasDia) return 0;
-        if (label === 'Otros' && otrasTareas.length) {
-          const minutosOtros = otrasTareas.reduce((acc, nombre) => acc + (tareasDia.get(nombre) || 0), 0);
-          return Math.round(((minutosOtros / 60) * 100)) / 100;
-        }
-        const minutos = tareasDia.get(label) || 0;
-        return Math.round(((minutos / 60) * 100)) / 100;
-      });
-      return { label, data, colorStart: colors.start, colorEnd: colors.end, showMinutes: true };
+    const labelsDias = this.diasSemanaOrden;
+    const horasPorDia = labelsDias.map(dia => {
+      const minutos = totalPorDia.get(dia) || 0;
+      return Math.round(((minutos / 60) * 100)) / 100;
     });
-    this.renderBarMulti(
+    this.renderBar(
     'chartHorasDiaTarea',
-    labels,
-    datasets,
+    labelsDias,
+    horasPorDia,
+    '#0d6efd',
+    '#6ea8fe',
     false,
     true,
-    'Horas por Día y Tareas',
+    false,
+    'Horas por Día',
     'Días de la Semana',
     'Horas (h)'
   );
@@ -629,6 +626,27 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       };
     });
     this.horasDiaDetalle = detalle;
+    const tareasOrdenadas = Array.from(totalPorTarea.entries()).sort((a, b) => b[1] - a[1]);
+    const tareasLabels = tareasOrdenadas.map(entry => entry[0]);
+    const tareasHoras = tareasOrdenadas.map(entry => Math.round(((entry[1] / 60) * 100)) / 100);
+    this.renderBar(
+    'chartHorasIterDistrib',
+    tareasLabels,
+    tareasHoras,
+    '#20c997',
+    '#7be0c3',
+    true,
+    true,
+    false,
+    'Horas por Tarea',
+    'Horas (h)',
+    'Tareas'
+  );
+    this.horasTareaDetalle = tareasOrdenadas.map(([tarea, minutos]) => ({
+      tarea,
+      minutos,
+      horas: Math.round(((minutos / 60) * 100)) / 100
+    }));
   }
 
   private renderHorasPorEtapaChart(rows: any[]) {
@@ -696,7 +714,27 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   if (!canvas) return;
   this.destroyChartByCanvasId(elId);
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
   const total = data.reduce((a, b) => a + b, 0);
+  const width = canvas.width || canvas.clientWidth || 300;
+  const height = canvas.height || canvas.clientHeight || 300;
+  const gradients = labels.map((_, idx) => {
+    if (!ctx) return '#0d6efd';
+    const colors = this.gradientPalette[idx % this.gradientPalette.length];
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, colors.start);
+    gradient.addColorStop(1, colors.end);
+    return gradient;
+  });
+  const percentages = data.map(value => {
+    const pct = total > 0 ? (value / total) * 100 : 0;
+    return Math.round(pct * 10) / 10;
+  });
+  const labelsWithPercent = labels.map((label, idx) => {
+    const value = percentages[idx] ?? 0;
+    const formatted = Number.isInteger(value) ? value.toString() : value.toFixed(1);
+    return `${label} (${formatted}%)`;
+  });
   const centerText = {
     id: 'centerText',
     afterDraw(c: any) {
@@ -710,13 +748,38 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       ctx.restore();
     }
   };
+  const percentLabels = {
+    id: 'percentLabels',
+    afterDatasetsDraw(c: any) {
+      const { ctx } = c;
+      const meta = c.getDatasetMeta(0);
+      if (!meta?.data?.length) return;
+      ctx.save();
+      ctx.font = '600 12px system-ui, -apple-system, Segoe UI, Roboto';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      meta.data.forEach((arc: any, idx: number) => {
+        const pct = percentages[idx] ?? 0;
+        if (pct <= 0) return;
+        const formatted = pct >= 10 ? Math.round(pct).toString() : (Math.round(pct * 10) / 10).toFixed(1);
+        const text = `${formatted}%`;
+        const { x, y } = arc.tooltipPosition();
+        ctx.fillStyle = '#212529';
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+        ctx.lineWidth = 3;
+        ctx.strokeText(text, x, y);
+        ctx.fillText(text, x, y);
+      });
+      ctx.restore();
+    }
+  };
   const chart = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels,
+      labels: labelsWithPercent,
       datasets: [{
         data,
-        backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1', '#20c997'],
+        backgroundColor: gradients,
         ...(minutos ? { minutosData: minutos } : {})
       }]
     },
@@ -756,7 +819,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       cutout: '60%'
     },
-    plugins: [centerText]
+    plugins: [centerText, percentLabels]
   });
   this.charts.set(elId, chart);
   if (data.some(val => (val || 0) > 0)) {
@@ -819,6 +882,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'horasCategoria': return 'Detalle de horas por categoría';
       case 'tareasUsuario': return 'Tareas por usuario';
       case 'horasDiaTarea': return 'Horas por día (semana actual)';
+      case 'horasTarea': return 'Horas por tarea';
       default: return '';
     }
   }
@@ -906,7 +970,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   tituloGrafico(id: string): string {
     const titulos: any = {
       'chartHorasIter': 'Estimación vs ejecución',
-      'chartHorasIterDistrib': 'Horas por iteración',
+      'chartHorasIterDistrib': 'Horas por tarea',
       'chartTareasUser': 'Tareas por usuario',
       'chartHorasDiaTarea': 'Horas por día',
       'chartHorasCategoria': 'Horas por categoría',
