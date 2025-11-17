@@ -12,6 +12,7 @@ declare const Chart: any;
 
 type DetalleTipo = 'horasIteracion' | 'horasCategoria' | 'tareasUsuario' | 'horasDiaTarea';
 
+
 interface HorasIteracionDetalle {
   etiqueta: string;
   horas: number;
@@ -59,6 +60,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   filtroTiempo: 'today' | 'week' | 'month' | 'quarter' | 'all' = 'week';
   proyectoId: number | null = null;
   encodedProjectId: string | null = null; //para el html
+  detalleGrafico: string | null = null;
+  graficoAmpliado: any = null;
 
   // métricas
   totalTareas = 0;
@@ -69,7 +72,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   atrasadasCount = 0;
   proximasCount = 0;
 
-  private charts: any[] = [];
+  private charts: Map<string, any> = new Map(); // Cambiar de array a Map
   private chartsWithData = new Set<string>();
   detalleAbierto: DetalleTipo | null = null;
   horasIteracionDetalle: HorasIteracionDetalle[] = [];
@@ -155,7 +158,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       const labels = pairs.map(p => p.categoria);
       const dataHoras = pairs.map(p => Math.round(((p.minutos / 60) * 100)) / 100);
       const dataMinutos = pairs.map(p => p.minutos);
-      this.renderPie('chartHorasCategoria', labels, dataHoras, dataMinutos);
+      this.renderPie(
+  'chartHorasCategoria',
+  labels,
+  dataHoras,
+  dataMinutos,
+  'Horas Semanales por Categoría'
+);
       this.horasCategoriaDetalle = pairs.map(p => ({
         categoria: p.categoria,
         horas: Math.round(((p.minutos / 60) * 100)) / 100,
@@ -251,7 +260,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const key = (t.usuarioNombre || 'Sin usuario');
         porUserMap.set(key, (porUserMap.get(key) || 0) + 1);
       });
-      this.renderBar('chartTareasUser', Array.from(porUserMap.keys()), Array.from(porUserMap.values()), '#ffc107', '#ffe08a', true);
+      this.renderBar(
+  'chartTareasUser',
+  Array.from(porUserMap.keys()),
+  Array.from(porUserMap.values()),
+  '#ffc107',
+  '#ffe08a',
+  true,
+  false,
+  false,
+  'Tareas por Usuario',
+  'Cantidad de Tareas',
+  'Usuarios'
+);
       this.tareasUsuarioDetalle = Array.from(porUserMap.entries())
         .sort((a, b) => b[1] - a[1])
         .map(([usuario, cantidad]) => ({ usuario, cantidad }));
@@ -274,7 +295,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             spanEl.textContent = 'No hay tareas próximas a vencer';
           }
         }
-      } catch {}
+      } catch { }
     });
   }
 
@@ -334,10 +355,23 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.totalHoras = Math.round((realesHoras.reduce((a, b) => a + b, 0)) * 10) / 10;
 
     this.renderBarMulti('chartHorasIter', labels, [
-      { label: 'Ejecución', data: realesHoras, colorStart: '#0d6efd', colorEnd: '#6ea8fe', showMinutes: true },
-      { label: 'Estimación', data: estimadasHoras, colorStart: '#6610f2', colorEnd: '#c29bfe' }
-    ]);
-    this.renderBar('chartHorasIterDistrib', labels, realesHoras, '#0d6efd', '#6ea8fe', true, true);
+    { label: 'Ejecución', data: realesHoras, colorStart: '#0d6efd', colorEnd: '#6ea8fe', showMinutes: true },
+    { label: 'Estimación', data: estimadasHoras, colorStart: '#6610f2', colorEnd: '#c29bfe' }
+  ], false, false, 'Estimación vs Ejecución', 'Iteraciones', 'Horas (h)');
+
+  this.renderBar(
+    'chartHorasIterDistrib',
+    labels,
+    realesHoras,
+    '#0d6efd',
+    '#6ea8fe',
+    true,
+    true,
+    false,
+    'Distribución de Horas por Iteración',
+    'Horas (h)',
+    'Iteraciones'
+  );
     this.horasIteracionDetalle = detalleRows;
   }
 
@@ -384,105 +418,146 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private destroyCharts() {
-    this.charts.forEach(c => { try { c.destroy(); } catch {} });
-    this.charts = [];
+    this.charts.forEach(c => { try { c.destroy(); } catch { } });
+    this.charts.clear();
     this.chartsWithData.clear();
   }
 
   private destroyChartByCanvasId(elId: string) {
-    if (!this.charts.length) return;
-    this.charts = this.charts.filter(chart => {
-      const sameCanvas = chart?.canvas?.id === elId;
-      if (sameCanvas) {
-        try { chart.destroy(); } catch {}
-        this.chartsWithData.delete(elId);
-      }
-      return !sameCanvas;
-    });
+    if (this.charts.has(elId)) {
+      try {
+        this.charts.get(elId)?.destroy();
+      } catch { }
+      this.charts.delete(elId);
+      this.chartsWithData.delete(elId);
+    }
   }
 
   private renderBar(
-    elId: string,
-    labels: string[],
-    data: number[],
-    colorStart: string,
-    colorEnd: string,
-    horizontal = false,
-    showMinutes = false,
-    stacked = false
-  ) {
-    this.renderBarMulti(elId, labels, [{ label: '', data, colorStart, colorEnd, showMinutes }], horizontal, stacked);
-  }
+  elId: string,
+  labels: string[],
+  data: number[],
+  colorStart: string,
+  colorEnd: string,
+  horizontal = false,
+  showMinutes = false,
+  stacked = false,
+  titleChart: string = '',
+  labelX: string = '',
+  labelY: string = ''
+) {
+  this.renderBarMulti(
+    elId,
+    labels,
+    [{ label: '', data, colorStart, colorEnd, showMinutes }],
+    horizontal,
+    stacked,
+    titleChart,
+    labelX,
+    labelY
+  );
+}
 
   private renderBarMulti(
-    elId: string,
-    labels: string[],
-    datasetsConfig: Array<{ label: string; data: number[]; colorStart: string; colorEnd: string; showMinutes?: boolean }>,
-    horizontal = false,
-    stacked = false
-  ) {
-    const canvas: any = document.getElementById(elId);
-    if (!canvas) return;
-    this.destroyChartByCanvasId(elId);
-    const ctx = canvas.getContext('2d');
-    const gradientFactory = () => {
-      const gradient = ctx.createLinearGradient(0, 0, horizontal ? 200 : 0, horizontal ? 0 : 200);
-      return gradient;
+  elId: string,
+  labels: string[],
+  datasetsConfig: Array<{ label: string; data: number[]; colorStart: string; colorEnd: string; showMinutes?: boolean }>,
+  horizontal = false,
+  stacked = false,
+  titleChart: string = '',
+  labelX: string = '',
+  labelY: string = ''
+) {
+  const canvas: any = document.getElementById(elId);
+  if (!canvas) return;
+  this.destroyChartByCanvasId(elId);
+  const ctx = canvas.getContext('2d');
+  const gradientFactory = () => {
+    const gradient = ctx.createLinearGradient(0, 0, horizontal ? 200 : 0, horizontal ? 0 : 200);
+    return gradient;
+  };
+  const datasets = datasetsConfig.map(cfg => {
+    const gradient = gradientFactory();
+    gradient.addColorStop(0, cfg.colorStart);
+    gradient.addColorStop(1, cfg.colorEnd);
+    const dataset: any = {
+      label: cfg.label,
+      data: cfg.data,
+      backgroundColor: gradient,
+      borderRadius: 8,
+      maxBarThickness: 36,
+      categoryPercentage: 0.7,
+      barPercentage: 0.7
     };
-    const datasets = datasetsConfig.map(cfg => {
-      const gradient = gradientFactory();
-      gradient.addColorStop(0, cfg.colorStart);
-      gradient.addColorStop(1, cfg.colorEnd);
-      const dataset: any = {
-        label: cfg.label,
-        data: cfg.data,
-        backgroundColor: gradient,
-        borderRadius: 8,
-        maxBarThickness: 36,
-        categoryPercentage: 0.7,
-        barPercentage: 0.7
-      };
-      if (cfg.showMinutes) dataset.showMinutes = true;
-      return dataset;
-    });
-    const showLegend = datasetsConfig.some(ds => ds.label && ds.label.trim().length > 0);
-    const chart = new Chart(ctx, {
-      type: 'bar',
-      data: { labels, datasets },
-      options: {
-        indexAxis: horizontal ? 'y' : 'x',
-        responsive: true,
-        plugins: {
-          legend: { display: showLegend, position: 'top' },
-          tooltip: {
-            ...this.tooltipStyle(),
-            callbacks: {
-              label: (ctx: any) => {
-                const value = horizontal ? ctx.parsed.x : ctx.parsed.y;
-                const hours = Math.round((value ?? 0) * 100) / 100;
-                const prefix = ctx.dataset?.label ? `${ctx.dataset.label}: ` : '';
-                let formatted = `${prefix}${hours} h`;
-                if (ctx.dataset?.showMinutes) {
-                  const minutos = Math.round(hours * 60);
-                  formatted += ` (${minutos} min)`;
-                }
-                return formatted;
+    if (cfg.showMinutes) dataset.showMinutes = true;
+    return dataset;
+  });
+  const showLegend = datasetsConfig.some(ds => ds.label && ds.label.trim().length > 0);
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      indexAxis: horizontal ? 'y' : 'x',
+      responsive: true,
+      plugins: {
+        title: {
+          display: !!titleChart,
+          text: titleChart,
+          font: { size: 14, weight: '600' },
+          color: '#212529',
+          padding: { bottom: 20 }
+        },
+        legend: { display: showLegend, position: 'top' },
+        tooltip: {
+          ...this.tooltipStyle(),
+          callbacks: {
+            label: (ctx: any) => {
+              const value = horizontal ? ctx.parsed.x : ctx.parsed.y;
+              const hours = Math.round((value ?? 0) * 100) / 100;
+              const prefix = ctx.dataset?.label ? `${ctx.dataset.label}: ` : '';
+              let formatted = `${prefix}${hours} h`;
+              if (ctx.dataset?.showMinutes) {
+                const minutos = Math.round(hours * 60);
+                formatted += ` (${minutos} min)`;
               }
+              return formatted;
             }
           }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          ticks: { font: { size: 11 } },
+          stacked,
+          title: {
+            display: !!labelY,
+            text: labelY,
+            font: { size: 12, weight: '600' },
+            color: '#495057'
+          }
         },
-        scales: {
-          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { font: { size: 11 } }, stacked },
-          x: { grid: { display: false }, ticks: { font: { size: 11 } }, stacked }
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 11 } },
+          stacked,
+          title: {
+            display: !!labelX,
+            text: labelX,
+            font: { size: 12, weight: '600' },
+            color: '#495057'
+          }
         }
       }
-    });
-    this.charts.push(chart);
-    const hasData = datasetsConfig.some(cfg => (cfg.data || []).some(val => (val || 0) > 0));
-    if (hasData) {
-      this.chartsWithData.add(elId);
     }
+  });
+  this.charts.set(elId, chart);
+  const hasData = datasetsConfig.some(cfg => (cfg.data || []).some(val => (val || 0) > 0));
+  if (hasData) {
+    this.chartsWithData.add(elId);
   }
+}
 
   private renderHorasPorDiaTareaChart(rows: any[]) {
     if (!rows || !rows.length) {
@@ -534,7 +609,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       return { label, data, colorStart: colors.start, colorEnd: colors.end, showMinutes: true };
     });
-    this.renderBarMulti('chartHorasDiaTarea', labels, datasets, false, true);
+    this.renderBarMulti(
+    'chartHorasDiaTarea',
+    labels,
+    datasets,
+    false,
+    true,
+    'Horas por Día y Tareas',
+    'Días de la Semana',
+    'Horas (h)'
+  );
     const detalle = this.diasSemanaOrden.map(dia => {
       const tareasDia = dayMap.get(dia);
       const minutos = tareasDia ? Array.from(tareasDia.values()).reduce((acc, val) => acc + val, 0) : 0;
@@ -592,74 +676,93 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const labels = ordered.map(e => e.nombre);
     const minutos = ordered.map(e => e.minutos);
     const horas = minutos.map(min => Math.round(((min / 60) * 100)) / 100);
-    this.renderPie('chartHorasEtapa', labels, horas, minutos);
+    this.renderPie(
+  'chartHorasEtapa',
+  labels,
+  horas,
+  minutos,
+  'Horas por Fase (Etapa)'
+);
   }
 
-  private renderPie(elId: string, labels: string[], data: number[], minutos?: number[]) {
-    const canvas: any = document.getElementById(elId);
-    if (!canvas) return;
-    this.destroyChartByCanvasId(elId);
-    const ctx = canvas.getContext('2d');
-    const total = data.reduce((a, b) => a + b, 0);
-    const centerText = {
-      id: 'centerText',
-      afterDraw(c: any) {
-        const { ctx, chartArea: { width, height } } = c;
-        ctx.save();
-        ctx.font = '600 16px system-ui, -apple-system, Segoe UI, Roboto';
-        ctx.fillStyle = '#212529';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(String(total), width / 2, height / 2);
-        ctx.restore();
-      }
-    };
-    const chart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels,
-        datasets: [{
-          data,
-          backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1', '#20c997'],
-          ...(minutos ? { minutosData: minutos } : {})
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'bottom' },
-          tooltip: {
-            ...this.tooltipStyle(),
-            callbacks: {
-              label: (ctx: any) => {
-                const value = ctx.parsed ?? 0;
-                const hours = Math.round(value * 100) / 100;
-                let minutesText = '';
-                const datasetMinutes: number[] | undefined = (ctx.dataset as any)?.minutosData;
-                if (Array.isArray(datasetMinutes)) {
-                  const minVal = datasetMinutes[ctx.dataIndex];
-                  if (typeof minVal === 'number') {
-                    minutesText = ` (${minVal} min)`;
-                  }
-                } else {
-                  const minVal = Math.round(hours * 60);
+  private renderPie(
+  elId: string,
+  labels: string[],
+  data: number[],
+  minutos?: number[],
+  titleChart: string = ''
+) {
+  const canvas: any = document.getElementById(elId);
+  if (!canvas) return;
+  this.destroyChartByCanvasId(elId);
+  const ctx = canvas.getContext('2d');
+  const total = data.reduce((a, b) => a + b, 0);
+  const centerText = {
+    id: 'centerText',
+    afterDraw(c: any) {
+      const { ctx, chartArea: { width, height } } = c;
+      ctx.save();
+      ctx.font = '600 16px system-ui, -apple-system, Segoe UI, Roboto';
+      ctx.fillStyle = '#212529';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(String(total), width / 2, height / 2);
+      ctx.restore();
+    }
+  };
+  const chart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1', '#20c997'],
+        ...(minutos ? { minutosData: minutos } : {})
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: !!titleChart,
+          text: titleChart,
+          font: { size: 14, weight: '600' },
+          color: '#212529',
+          padding: { bottom: 20 }
+        },
+        legend: { position: 'bottom' },
+        tooltip: {
+          ...this.tooltipStyle(),
+          callbacks: {
+            label: (ctx: any) => {
+              const value = ctx.parsed ?? 0;
+              const hours = Math.round(value * 100) / 100;
+              let minutesText = '';
+              const datasetMinutes: number[] | undefined = (ctx.dataset as any)?.minutosData;
+              if (Array.isArray(datasetMinutes)) {
+                const minVal = datasetMinutes[ctx.dataIndex];
+                if (typeof minVal === 'number') {
                   minutesText = ` (${minVal} min)`;
                 }
-                const label = ctx.label ? `${ctx.label}: ` : '';
-                return `${label}${hours} h${minutesText}`;
+              } else {
+                const minVal = Math.round(hours * 60);
+                minutesText = ` (${minVal} min)`;
               }
+              const label = ctx.label ? `${ctx.label}: ` : '';
+              return `${label}${hours} h${minutesText}`;
             }
           }
-        },
-        cutout: '60%'
+        }
       },
-      plugins: [centerText]
-    });
-    this.charts.push(chart);
-    if (data.some(val => (val || 0) > 0)) {
-      this.chartsWithData.add(elId);
-    }
+      cutout: '60%'
+    },
+    plugins: [centerText]
+  });
+  this.charts.set(elId, chart);
+  if (data.some(val => (val || 0) > 0)) {
+    this.chartsWithData.add(elId);
   }
+}
 
   private nombreDiaDesdeFecha(value: any): string | null {
     if (!value) return null;
@@ -732,4 +835,132 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const parsed = Number(raw);
     return Number.isFinite(parsed) ? parsed : null;
   }
+
+
+  abrirGrafico(id: string) {
+  this.detalleGrafico = id;
+
+  setTimeout(() => {
+    const originalChart = this.charts.get(id);
+    if (!originalChart) {
+      console.error(`Gráfico con ID ${id} no encontrado`);
+      return;
+    }
+
+    const canvas = document.getElementById('graficoDetalle') as HTMLCanvasElement;
+    if (!canvas) {
+      console.error('Canvas graficoDetalle no encontrado');
+      return;
+    }
+
+    // Destruir gráfico previo si existe
+    if (this.graficoAmpliado) {
+      try {
+        this.graficoAmpliado.destroy();
+      } catch { }
+      this.graficoAmpliado = null;
+    }
+
+    // Obtener contexto del canvas
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clonar solo los datos, NO la configuración completa
+    const configOriginal = originalChart.config;
+    const configClonada: any = {
+      type: configOriginal.type,
+      data: {
+        labels: [...(configOriginal.data?.labels || [])],
+        datasets: (configOriginal.data?.datasets || []).map((dataset: any) => ({
+          label: dataset.label,
+          data: [...dataset.data],
+          backgroundColor: dataset.backgroundColor,
+          borderColor: dataset.borderColor,
+          borderRadius: dataset.borderRadius,
+          maxBarThickness: dataset.maxBarThickness,
+          categoryPercentage: dataset.categoryPercentage,
+          barPercentage: dataset.barPercentage,
+          showMinutes: dataset.showMinutes,
+          cutout: dataset.cutout
+        }))
+      },
+      options: configOriginal.options,
+      plugins: configOriginal.plugins
+    };
+
+    // Crear gráfico nuevo en el modal
+    this.graficoAmpliado = new Chart(ctx, configClonada);
+  }, 150);
+}
+
+// ...existing code...
+
+  cerrarGrafico() {
+    if (this.graficoAmpliado) {
+      this.graficoAmpliado.destroy();
+      this.graficoAmpliado = null;
+    }
+    this.detalleGrafico = null;
+  }
+
+  tituloGrafico(id: string): string {
+    const titulos: any = {
+      'chartHorasIter': 'Estimación vs ejecución',
+      'chartHorasIterDistrib': 'Horas por iteración',
+      'chartTareasUser': 'Tareas por usuario',
+      'chartHorasDiaTarea': 'Horas por día',
+      'chartHorasCategoria': 'Horas por categoría',
+      'chartHorasEtapa': 'Horas por etapa'
+    };
+    return titulos[id] || 'Gráfico';
+  }
+
+  descargarGrafico(id: string) {
+  const chart = this.charts.get(id);
+  if (!chart) {
+    console.error(`Gráfico con ID ${id} no encontrado`);
+    return;
+  }
+
+  try {
+    // Obtener la imagen en base64
+    const imageUrl = chart.toBase64Image();
+    
+    // Crear un elemento <a> temporal para descargar
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = `grafico-${id}-${this.formatLocalDate(new Date())}.png`;
+    
+    // Disparar la descarga
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error('Error al descargar gráfico:', error);
+  }
+}
+
+descargarGraficoAmpliado() {
+  if (!this.graficoAmpliado) {
+    console.error('No hay gráfico ampliado para descargar');
+    return;
+  }
+
+  try {
+    const imageUrl = this.graficoAmpliado.toBase64Image();
+    
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = `grafico-ampliado-${this.detalleGrafico}-${this.formatLocalDate(new Date())}.png`;
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error('Error al descargar gráfico ampliado:', error);
+  }
+}
+
+
+
 }

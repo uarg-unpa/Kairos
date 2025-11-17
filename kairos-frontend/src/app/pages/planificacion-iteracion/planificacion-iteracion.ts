@@ -70,8 +70,8 @@ export class PlanificacionIteracion implements OnInit {
   constructor(
     private proyectoService: ProyectoService,
     private categoriaService: CategoriaService,
-    private idCoderService: IdCoderService,
     private taskService: TaskService,
+    private idCoderService: IdCoderService,
     private usuariosService: UsuariosService,
     private iteracionService: IteracionService,
     private comentarioService: ComentarioService,
@@ -85,6 +85,7 @@ export class PlanificacionIteracion implements OnInit {
   }
 
   ngOnInit(): void {
+   
   const usuarioGuardado = localStorage.getItem('usuario_data');
   if (usuarioGuardado) {
     this.usuarioActual = JSON.parse(usuarioGuardado);
@@ -109,11 +110,9 @@ export class PlanificacionIteracion implements OnInit {
       return;
     }
 
-    this.getProyectoActual();
-
-  // 🔥 Cargar proyecto e iteracion desde la ruta
+ this.getProyectoActual();
+ 
   this.route.paramMap.subscribe(params => {
-  
     this.filtroIteracionId = Number(params.get('idIteracion'));
     console.log("Proyecto:", this.proyectoId, "Iteración:", this.filtroIteracionId);
 

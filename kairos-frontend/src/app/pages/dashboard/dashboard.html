@@ -3,6 +3,7 @@
     position: relative;
     overflow: visible;
   }
+
   .metric-tooltip {
     position: absolute;
     top: -10px;
@@ -21,6 +22,7 @@
     transition: opacity 0.2s ease, transform 0.2s ease;
     z-index: 2;
   }
+
   .metric-tooltip::after {
     content: '';
     position: absolute;
@@ -30,6 +32,7 @@
     border-style: solid;
     border-color: #1d1f24 transparent transparent transparent;
   }
+
   .tooltip-card:hover .metric-tooltip {
     opacity: 1;
     transform: translateY(calc(-100% - 4px));
@@ -39,7 +42,8 @@
 <main class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h2 class="mb-1">Panel de Control <small *ngIf="proyectoNombre" class="text-muted">– {{ proyectoNombre }}</small></h2>
+      <h2 class="mb-1">Panel de Control <small *ngIf="proyectoNombre" class="text-muted">– {{ proyectoNombre }}</small>
+      </h2>
       <p class="text-muted mb-0">Resumen de iteraciones, tareas y horas</p>
     </div>
     <div class="d-flex gap-2">
@@ -66,20 +70,20 @@
     <!-- Atrasadas -->
     <div class="col-md-6">
       <div class="border-start border-5 p-4 rounded-4 d-flex justify-content-between align-items-center"
-           [ngClass]="atrasadasCount > 0 ? 'bg-danger border-warning shadow-lg' : 'bg-white border shadow-sm'"
-           style="min-height: 160px;">
+        [ngClass]="atrasadasCount > 0 ? 'bg-danger border-warning shadow-lg' : 'bg-white border shadow-sm'"
+        style="min-height: 160px;">
         <div class="d-flex align-items-center">
-          <i class="me-4 fs-1" [ngClass]="atrasadasCount > 0 ? 'bi bi-exclamation-triangle text-white' : 'bi bi-check-circle text-success'"></i>
+          <i class="me-4 fs-1"
+            [ngClass]="atrasadasCount > 0 ? 'bi bi-exclamation-triangle text-white' : 'bi bi-check-circle text-success'"></i>
           <div [ngClass]="atrasadasCount > 0 ? 'text-white fw-bold' : 'fw-bold text-dark'">
             <h4 class="mb-2">Tareas atrasadas</h4>
-            <span class="fs-5" *ngIf="atrasadasCount > 0">{{ atrasadasCount }} {{ atrasadasCount === 1 ? 'tarea atrasada' : 'tareas atrasadas' }}</span>
+            <span class="fs-5" *ngIf="atrasadasCount > 0">{{ atrasadasCount }} {{ atrasadasCount === 1 ? 'tarea
+              atrasada' : 'tareas atrasadas' }}</span>
             <span class="fs-5 text-muted" *ngIf="atrasadasCount === 0">No hay tareas atrasadas</span>
           </div>
         </div>
-        <a *ngIf="atrasadasCount > 0"
-           class="btn btn-outline-light btn-lg"
-           [routerLink]="['/proyecto', encodedProjectId, 'planificacion']"
-           [queryParams]="{ vencimiento: 'atrasadas' }">
+        <a *ngIf="atrasadasCount > 0" class="btn btn-outline-light btn-lg"
+          [routerLink]="['/proyecto', encodedProjectId, 'planificacion']" [queryParams]="{ vencimiento: 'atrasadas' }">
           <i class="bi bi-eye"></i> Ver tareas
         </a>
       </div>
@@ -88,20 +92,20 @@
     <!-- Próximos vencimientos -->
     <div class="col-md-6 d-flex justify-content-end">
       <div class="border-start border-5 p-4 rounded-4 d-flex justify-content-between align-items-center"
-           [ngClass]="proximasCount > 0 ? 'bg-warning border-danger shadow-lg' : 'bg-white border shadow-sm'"
-           style="min-height: 160px; width: 100%;">
+        [ngClass]="proximasCount > 0 ? 'bg-warning border-danger shadow-lg' : 'bg-white border shadow-sm'"
+        style="min-height: 160px; width: 100%;">
         <div class="d-flex align-items-center">
-          <i class="me-4 fs-1" [ngClass]="proximasCount > 0 ? 'bi bi-exclamation-lg text-danger' : 'bi bi-check-circle text-success'"></i>
+          <i class="me-4 fs-1"
+            [ngClass]="proximasCount > 0 ? 'bi bi-exclamation-lg text-danger' : 'bi bi-check-circle text-success'"></i>
           <div class="fw-bold text-dark">
             <h4 class="mb-2">Próximos vencimientos</h4>
-            <span class="fs-5" *ngIf="proximasCount > 0">{{ proximasCount }} {{ proximasCount === 1 ? 'tarea próxima a vencer' : 'tareas próximas a vencer' }}</span>
+            <span class="fs-5" *ngIf="proximasCount > 0">{{ proximasCount }} {{ proximasCount === 1 ? 'tarea próxima a
+              vencer' : 'tareas próximas a vencer' }}</span>
             <span class="fs-5 text-muted" *ngIf="proximasCount === 0">No hay tareas próximas a vencer</span>
           </div>
         </div>
-        <a *ngIf="proximasCount > 0"
-           class="btn btn-outline-danger btn-lg"
-           [routerLink]="['/proyecto', encodedProjectId, 'planificacion']"
-           [queryParams]="{ vencimiento: 'proximas' }">
+        <a *ngIf="proximasCount > 0" class="btn btn-outline-danger btn-lg"
+          [routerLink]="['/proyecto', encodedProjectId, 'planificacion']" [queryParams]="{ vencimiento: 'proximas' }">
           <i class="bi bi-calendar-event"></i> Ver fechas
         </a>
       </div>
@@ -121,15 +125,24 @@
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 class="mb-0">Estimación vs ejecución</h5>
               <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasIteracion')" [disabled]="!horasIteracionDetalle.length">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
+                  (click)="mostrarDetalle('horasIteracion')" [disabled]="!horasIteracionDetalle.length">
                   <i class="bi bi-eye"></i>
                 </button>
-                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"
+                  (click)="descargarGrafico('chartHorasIter')">
+                  <i class="bi bi-download"></i>
+                </button>
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                  (click)="abrirGrafico('chartHorasIter')">
+                  <i class="bi bi-fullscreen"></i>
+                </button>
               </div>
             </div>
             <div class="card-body text-center position-relative">
               <canvas id="chartHorasIter" style="height:240px;"></canvas>
-              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartHorasIter')">
+              <div class="position-absolute top-50 start-50 translate-middle w-100"
+                *ngIf="!chartDataDisponibles('chartHorasIter')">
                 <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
               </div>
             </div>
@@ -137,17 +150,22 @@
 
           <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Horas por iteracón</h5>
+              <h5 class="mb-0">Horas por iteración</h5>
               <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasIteracion')" [disabled]="!horasIteracionDetalle.length">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
+                  (click)="mostrarDetalle('horasIteracion')" [disabled]="!horasIteracionDetalle.length">
                   <i class="bi bi-eye"></i>
                 </button>
-                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"
+                  (click)="descargarGrafico('chartHorasIterDistrib')">
+                  <i class="bi bi-download"></i>
+                </button>
               </div>
             </div>
             <div class="card-body text-center position-relative">
               <canvas id="chartHorasIterDistrib" style="height:240px;"></canvas>
-              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartHorasIterDistrib')">
+              <div class="position-absolute top-50 start-50 translate-middle w-100"
+                *ngIf="!chartDataDisponibles('chartHorasIterDistrib')">
                 <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
               </div>
             </div>
@@ -157,15 +175,24 @@
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 class="mb-0">Tareas por usuario</h5>
               <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('tareasUsuario')" [disabled]="!tareasUsuarioDetalle.length">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
+                  (click)="mostrarDetalle('tareasUsuario')" [disabled]="!tareasUsuarioDetalle.length">
                   <i class="bi bi-eye"></i>
                 </button>
-                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"
+                  (click)="descargarGrafico('chartTareasUser')">
+                  <i class="bi bi-download"></i>
+                </button>
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                  (click)="abrirGrafico('chartTareasUser')">
+                  <i class="bi bi-fullscreen"></i>
+                </button>
               </div>
             </div>
             <div class="card-body text-center position-relative">
               <canvas id="chartTareasUser" style="height:240px;"></canvas>
-              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartTareasUser')">
+              <div class="position-absolute top-50 start-50 translate-middle w-100"
+                *ngIf="!chartDataDisponibles('chartTareasUser')">
                 <p class="mb-0 text-muted small">No se registran tareas asignadas en este rango.</p>
               </div>
             </div>
@@ -175,15 +202,24 @@
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 class="mb-0">Horas por día y tareas</h5>
               <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasDiaTarea')" [disabled]="!horasDiaDetalle.length">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
+                  (click)="mostrarDetalle('horasDiaTarea')" [disabled]="!horasDiaDetalle.length">
                   <i class="bi bi-eye"></i>
                 </button>
-                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"
+                  (click)="descargarGrafico('chartHorasDiaTarea')">
+                  <i class="bi bi-download"></i>
+                </button>
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                  (click)="abrirGrafico('chartHorasDiaTarea')">
+                  <i class="bi bi-fullscreen"></i>
+                </button>
               </div>
             </div>
             <div class="card-body text-center posición relativa">
               <canvas id="chartHorasDiaTarea" style="height:240px;"></canvas>
-              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartHorasDiaTarea')">
+              <div class="position-absolute top-50 start-50 translate-middle w-100"
+                *ngIf="!chartDataDisponibles('chartHorasDiaTarea')">
                 <p class="mb-0 text-muted small">Aún no hay registros semanales de tiempo.</p>
               </div>
             </div>
@@ -195,15 +231,25 @@
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 class="mb-0">Horas semanales por categoría</h5>
               <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary btn-sm" title="Ver detalles" (click)="mostrarDetalle('horasCategoria')" [disabled]="!horasCategoriaDetalle.length">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
+                  (click)="mostrarDetalle('horasCategoria')" [disabled]="!horasCategoriaDetalle.length">
                   <i class="bi bi-eye"></i>
                 </button>
-                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"
+                  (click)="descargarGrafico('chartHorasCategoria')">
+                  <i class="bi bi-download"></i>
+                </button>
+
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                  (click)="abrirGrafico('chartHorasCategoria')">
+                  <i class="bi bi-fullscreen"></i>
+                </button>
               </div>
             </div>
             <div class="card-body text-center posición relativa">
               <canvas id="chartHorasCategoria" style="height:240px;"></canvas>
-              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartHorasCategoria')">
+              <div class="position-absolute top-50 start-50 translate-middle w-100"
+                *ngIf="!chartDataDisponibles('chartHorasCategoria')">
                 <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
               </div>
             </div>
@@ -213,12 +259,20 @@
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 class="mb-0">Horas por fase (etapa)</h5>
               <div class="d-flex gap-2">
-                <button class="btn btn-outline-secondary btn-sm" title="Exportar"><i class="bi bi-download"></i></button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"
+                  (click)="descargarGrafico('chartHorasEtapa')">
+                  <i class="bi bi-download"></i>
+                </button>
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                  (click)="abrirGrafico('chartTareasUser')">
+                  <i class="bi bi-fullscreen"></i>
+                </button>
               </div>
             </div>
             <div class="card-body text-center posición relativa">
               <canvas id="chartHorasEtapa" style="height:240px;"></canvas>
-              <div class="position-absolute top-50 start-50 translate-middle w-100" *ngIf="!chartDataDisponibles('chartHorasEtapa')">
+              <div class="position-absolute top-50 start-50 translate-middle w-100"
+                *ngIf="!chartDataDisponibles('chartHorasEtapa')">
                 <p class="mb-0 text-muted small">Sin horas registradas por etapa.</p>
               </div>
             </div>
@@ -238,7 +292,8 @@
               <i class="bi bi-check-circle fs-1 mb-3 text-success"></i>
               <div class="metric-value fs-3">{{ tareasCompletadas }} / {{ totalTareas }}</div>
               <h6 class="mb-0">Completadas</h6>
-              <small class="text-muted">Porcentaje: {{ totalTareas ? ((tareasCompletadas / totalTareas * 100) | number:'1.0-0') : '0' }}%</small>
+              <small class="text-muted">Porcentaje: {{ totalTareas ? ((tareasCompletadas / totalTareas * 100) |
+                number:'1.0-0') : '0' }}%</small>
             </div>
           </div>
         </div>
@@ -276,6 +331,30 @@
       </div>
     </div>
   </div>
+
+
+  <!-- MODAL PARA GRÁFICO AMPLIADO -->
+  <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" *ngIf="detalleGrafico">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ tituloGrafico(detalleGrafico) }}</h5>
+          <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarGrafico()"></button>
+        </div>
+        <div class="modal-body p-4">
+          <canvas id="graficoDetalle" style="max-height: 500px;"></canvas>
+        </div>
+        <div class="modal-footer">
+  <button type="button" class="btn btn-success" (click)="descargarGraficoAmpliado()">
+    <i class="bi bi-download"></i> Descargar PNG
+  </button>
+  <button type="button" class="btn btn-secondary" (click)="cerrarGrafico()">Cerrar</button>
+</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop fade show" *ngIf="detalleGrafico"></div>
 </main>
 
 <!-- MODAL -->
