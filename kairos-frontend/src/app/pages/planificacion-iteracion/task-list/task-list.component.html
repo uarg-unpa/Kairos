@@ -73,10 +73,7 @@
           <div *ngFor="let c of comentariosPorTarea?.[tarea.idTarea]"
             class="p-2 border-bottom small text-muted d-flex justify-content-between align-items-center">
             <div><i class="bi bi-chat-left-text me-1"></i>{{ c.contenido }}</div>
-            <button class="btn btn-sm btn-outline-danger" title="Eliminar comentario"
-              (click)="onEliminarComentario(c.idComentario, tarea.idTarea)">
-              <i class="bi bi-trash"></i>
-            </button>
+            
           </div>
         </div>
         <ng-template #sinNotas>

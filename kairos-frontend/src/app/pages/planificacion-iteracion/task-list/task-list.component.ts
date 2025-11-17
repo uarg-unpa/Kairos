@@ -50,8 +50,5 @@ export class TaskListComponent {
     return tarea ? tarea.nombre : 'Desconocida';
   }
 
-  onEliminarComentario(comentarioId: number, tareaId: number): void {
-    if (!confirm('¿Seguro que deseas eliminar este comentario?')) return;
-    this.eliminarComentario.emit({ comentarioId, tareaId });
-  }
+ 
 }
