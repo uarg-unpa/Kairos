@@ -64,6 +64,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   filtroEtapa: number | null = null;
   filtroIteracion: number | null = null;
   filtroTiempo: 'today' | 'week' | 'month' | 'quarter' | 'all' = 'week';
+  filtroSemana: number = 0; // 0 = semana actual, -1 = anterior, 1 = siguiente
+  semanaActual: { inicio: string; fin: string } = { inicio: '', fin: '' };
   proyectoId: number | null = null;
   encodedProjectId: string | null = null; //para el html
   detalleGrafico: string | null = null;
@@ -100,6 +102,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   ngOnInit(): void {
+    this.actualizarSemanaActual();
     this.route.paramMap.subscribe(pm => {
       const encodedId = pm.get('id');
       const data: any = this.route.snapshot.data;
@@ -127,7 +130,95 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.reload();
     });
+
+    
   }
+
+  private actualizarSemanaActual() {
+    const range = this.computeWeeklyRangeWithOffset(this.filtroSemana);
+    this.semanaActual = { inicio: range.from, fin: range.to };
+  }
+
+  cambiarSemana(offset: number) {
+    this.filtroSemana += offset;
+    this.actualizarSemanaActual();
+    this.reloadHorasPorDia();
+  }
+
+  private computeWeeklyRangeWithOffset(offset: number = 0): { from: string, to: string } {
+    const today = new Date();
+    const clone = (d: Date) => new Date(d.getTime());
+    const addDays = (d: Date, n: number) => {
+      const result = clone(d);
+      result.setDate(result.getDate() + n);
+      return result;
+    };
+    const startOfWeek = () => {
+      const d = clone(today);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      d.setDate(diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    };
+
+    const weekStart = addDays(startOfWeek(), offset * 7);
+    const weekEnd = addDays(weekStart, 6);
+    
+    const from = this.formatLocalDate(weekStart);
+    const to = this.formatLocalDate(weekEnd);
+    return { from, to };
+  }
+
+  private reloadHorasPorDia() {
+  const diaParams = new URLSearchParams();
+  if (this.proyectoId) diaParams.set('proyectoId', String(this.proyectoId));
+  if (this.filtroEtapa) diaParams.set('etapaId', String(this.filtroEtapa));
+  if (this.filtroIteracion) diaParams.set('iteracionId', String(this.filtroIteracion));
+  const weekRange = this.computeWeeklyRangeWithOffset(this.filtroSemana);
+  diaParams.set('from', weekRange.from);
+  diaParams.set('to', weekRange.to);
+  const paramsDia = diaParams.toString() ? `?${diaParams.toString()}` : '';
+  
+  this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-dia-tarea${paramsDia}`).subscribe(rows => {
+    this.renderHorasPorDiaTareaChart(rows || []);
+    // Si el gráfico ampliado está abierto, recrearlo también
+    if (this.detalleGrafico === 'chartHorasDiaTarea') {
+      setTimeout(() => {
+        this.destroyChartByCanvasId('graficoDetalle');
+        this.renderBar(
+          'graficoDetalle',
+          this.obtenerLabelsGrafico('chartHorasDiaTarea'),
+          this.obtenerDataGrafico('chartHorasDiaTarea'),
+          '#0d6efd',
+          '#6ea8fe',
+          false,
+          true,
+          false,
+          'Horas por Día',
+          'Días de la Semana',
+          'Horas (h)'
+        );
+      }, 100);
+    }
+  }, () => {
+    this.destroyChartByCanvasId('chartHorasDiaTarea');
+    this.horasDiaDetalle = [];
+    if (this.detalleGrafico === 'chartHorasDiaTarea') {
+      this.destroyChartByCanvasId('graficoDetalle');
+    }
+  });
+}
+
+private obtenerLabelsGrafico(canvasId: string): string[] {
+  const chartInstance = this.charts.get(canvasId);
+  return chartInstance?.data?.labels || [];
+}
+
+private obtenerDataGrafico(canvasId: string): number[] {
+  const chartInstance = this.charts.get(canvasId);
+  return chartInstance?.data?.datasets?.[0]?.data || [];
+}
 
   ngAfterViewInit(): void {
     // Cargar datos iniciales
@@ -191,7 +282,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.proyectoId) diaParams.set('proyectoId', String(this.proyectoId));
     if (this.filtroEtapa) diaParams.set('etapaId', String(this.filtroEtapa));
     if (this.filtroIteracion) diaParams.set('iteracionId', String(this.filtroIteracion));
-    const weekRange = this.computeWeeklyRange();
+    const weekRange = this.computeWeeklyRangeWithOffset(this.filtroSemana);
+
     diaParams.set('from', weekRange.from);
     diaParams.set('to', weekRange.to);
     const paramsDia = diaParams.toString() ? `?${diaParams.toString()}` : '';
@@ -407,7 +499,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     return { from: null, to: null };
   }
 
-  private computeWeeklyRange(): { from: string, to: string } {
+ /* private computeWeeklyRange(): { from: string, to: string } {
     const today = new Date();
     const clone = (d: Date) => new Date(d.getTime());
     const addDays = (d: Date, n: number) => { const x = clone(d); x.setDate(x.getDate() + n); return x; };
@@ -420,7 +512,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const from = this.formatLocalDate(startOfWeek());
     const to = this.formatLocalDate(today);
     return { from, to };
-  }
+  }*/
 
   private destroyCharts() {
     this.charts.forEach(c => { try { c.destroy(); } catch { } });

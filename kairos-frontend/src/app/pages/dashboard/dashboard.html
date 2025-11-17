@@ -37,8 +37,6 @@
     opacity: 1;
     transform: translateY(calc(-100% - 4px));
   }
-
-  
 </style>
 
 <main class="container py-4">
@@ -118,9 +116,9 @@
   <div class="row g-4">
     <!-- Columna izquierda: gráficos -->
     <div class="col-lg-8 order-1">
-        <div class="row g-4">
-          <div class="col-lg-6 col-md-12">
-            <div class="card rounded-2 shadow-sm">
+      <div class="row g-4">
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 class="mb-0">Estimación vs ejecución</h5>
               <div class="d-flex gap-2">
@@ -146,68 +144,9 @@
               </div>
             </div>
           </div>
-          </div>
-
-          <div class="col-lg-6 col-md-12">
-            <div class="card rounded-2 shadow-sm">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Horas por tarea</h5>
-              <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
-                  (click)="mostrarDetalle('horasTarea')" [disabled]="!horasTareaDetalle.length">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-outline-secondary btn-sm" title="Exportar"
-                  (click)="descargarGrafico('chartHorasIterDistrib')">
-                  <i class="bi bi-download"></i>
-                </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
-                  (click)="abrirGrafico('chartHorasIterDistrib')">
-                  <i class="bi bi-fullscreen"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body text-center position-relative">
-              <canvas id="chartHorasIterDistrib" style="height:240px;"></canvas>
-              <div class="position-absolute top-50 start-50 translate-middle w-100"
-                *ngIf="!chartDataDisponibles('chartHorasIterDistrib')">
-                <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
-              </div>
-            </div>
-          </div>
-          </div>
-
-          <div class="col-lg-6 col-md-12">
-            <div class="card rounded-2 shadow-sm">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Horas por día</h5>
-              <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
-                  (click)="mostrarDetalle('horasDiaTarea')" [disabled]="!horasDiaDetalle.length">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-outline-secondary btn-sm" title="Exportar"
-                  (click)="descargarGrafico('chartHorasDiaTarea')">
-                  <i class="bi bi-download"></i>
-                </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
-                  (click)="abrirGrafico('chartHorasDiaTarea')">
-                  <i class="bi bi-fullscreen"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body text-center posición relativa">
-              <canvas id="chartHorasDiaTarea" style="height:240px;"></canvas>
-              <div class="position-absolute top-50 start-50 translate-middle w-100"
-                *ngIf="!chartDataDisponibles('chartHorasDiaTarea')">
-                <p class="mb-0 text-muted small">Aún no hay registros semanales de tiempo.</p>
-              </div>
-            </div>
-          </div>
-          </div>
-
-          <div class="col-lg-6 col-md-12">
-            <div class="card rounded-2 shadow-sm">
+        </div>
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 class="mb-0">Tareas por usuario</h5>
               <div class="d-flex gap-2">
@@ -233,10 +172,104 @@
               </div>
             </div>
           </div>
-          </div>
+        </div>
 
-          <div class="col-lg-6 col-md-12">
-            <div class="card rounded-2 shadow-sm">
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Horas por tarea</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
+                  (click)="mostrarDetalle('horasTarea')" [disabled]="!horasTareaDetalle.length">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"
+                  (click)="descargarGrafico('chartHorasIterDistrib')">
+                  <i class="bi bi-download"></i>
+                </button>
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                  (click)="abrirGrafico('chartHorasIterDistrib')">
+                  <i class="bi bi-fullscreen"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body text-center position-relative">
+              <canvas id="chartHorasIterDistrib" style="height:240px;"></canvas>
+              <div class="position-absolute top-50 start-50 translate-middle w-100"
+                *ngIf="!chartDataDisponibles('chartHorasIterDistrib')">
+                <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
+
+            <!-- HEADER -->
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center gap-3">
+                <h5 class="mb-0">Horas por día</h5>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
+                  (click)="mostrarDetalle('horasDiaTarea')" [disabled]="!horasDiaDetalle.length">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" title="Exportar"
+                  (click)="descargarGrafico('chartHorasDiaTarea')">
+                  <i class="bi bi-download"></i>
+                </button>
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                  (click)="abrirGrafico('chartHorasDiaTarea')">
+                  <i class="bi bi-fullscreen"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- BODY -->
+            <div class="card-body text-center position-relative">
+              <canvas id="chartHorasDiaTarea" style="height:240px;"></canvas>
+              <div class="position-absolute top-50 start-50 translate-middle w-100"
+                *ngIf="!chartDataDisponibles('chartHorasDiaTarea')">
+                <p class="mb-0 text-muted small">Aún no hay registros semanales de tiempo.</p>
+              </div>
+            </div>
+
+            <!-- FOOTER: FECHA + BOTONES -->
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+              <!-- FECHA DE LA SEMANA -->
+              <small class="text-black" style="white-space: nowrap;">
+                {{ semanaActual.inicio }} — {{ semanaActual.fin }}
+              </small>
+
+              <!-- BOTONES DE NAVEGACION -->
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary" title="Semana anterior" (click)="cambiarSemana(-1)">
+                  <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <button class="btn btn-sm btn-outline-secondary" title="Semana actual"
+                  (click)="cambiarSemana(-filtroSemana)" [disabled]="filtroSemana === 0">
+                  Hoy
+                </button>
+
+                <button class="btn btn-sm btn-outline-secondary" title="Siguiente semana" (click)="cambiarSemana(1)">
+                  <i class="bi bi-chevron-right"></i>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        
+
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 class="mb-0">Horas semanales por categoría</h5>
               <div class="d-flex gap-2">
@@ -263,10 +296,10 @@
               </div>
             </div>
           </div>
-          </div>
+        </div>
 
-          <div class="col-lg-6 col-md-12">
-            <div class="card rounded-2 shadow-sm">
+        <div class="col-lg-6 col-md-12">
+          <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 class="mb-0">Horas por fase (etapa)</h5>
               <div class="d-flex gap-2">
@@ -288,9 +321,9 @@
               </div>
             </div>
           </div>
-          </div>
-
         </div>
+
+      </div>
     </div>
 
     <!-- Columna derecha: métricas simples -->
@@ -356,11 +389,11 @@
           <canvas id="graficoDetalle" style="max-height: 500px;"></canvas>
         </div>
         <div class="modal-footer">
-  <button type="button" class="btn btn-success" (click)="descargarGraficoAmpliado()">
-    <i class="bi bi-download"></i> Descargar PNG
-  </button>
-  <button type="button" class="btn btn-secondary" (click)="cerrarGrafico()">Cerrar</button>
-</div>
+          <button type="button" class="btn btn-success" (click)="descargarGraficoAmpliado()">
+            <i class="bi bi-download"></i> Descargar PNG
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="cerrarGrafico()">Cerrar</button>
+        </div>
       </div>
     </div>
   </div>
