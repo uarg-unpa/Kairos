@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.nextech.kairos.dto.CategoriaResponse;
 import com.nextech.kairos.dto.TareaRequest;
 import com.nextech.kairos.dto.TareaResponse;
@@ -13,9 +16,6 @@ import com.nextech.kairos.service.ICategoriaService;
 import com.nextech.kairos.service.IIteracionService;
 import com.nextech.kairos.service.ITareaService;
 import com.nextech.kairos.service.UsuarioService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
 public class TareaMapper {

@@ -10,6 +10,7 @@ import { UsuariosService } from '../../services/usuarios';
 import { ComentarioService } from '../../services/comentario.service';
 import { EtapaService } from '../../services/etapa.service';
 import { ProyectoService } from '../../services/proyecto.service';
+import { IdCoderService } from '../../services/id-coder.service';
 
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskFiltersComponent } from './task-filters/task-filters.component';
@@ -69,6 +70,7 @@ export class PlanificacionIteracion implements OnInit {
   constructor(
     private proyectoService: ProyectoService,
     private categoriaService: CategoriaService,
+    private idCoderService: IdCoderService,
     private taskService: TaskService,
     private usuariosService: UsuariosService,
     private iteracionService: IteracionService,
@@ -83,26 +85,46 @@ export class PlanificacionIteracion implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getProyectoActual();
   const usuarioGuardado = localStorage.getItem('usuario_data');
   if (usuarioGuardado) {
     this.usuarioActual = JSON.parse(usuarioGuardado);
   }
 
+  const encodedId = this.route.snapshot.paramMap.get('id');
+
+    if (encodedId) {
+      const decodedId = this.idCoderService.decode(encodedId);
+
+      if (decodedId) {
+        this.proyectoId = decodedId;
+        console.log('Proyecto ID Decodificado:', this.idProyecto);
+      } else {
+        console.error('ID de proyecto inválido en la ruta');
+        alert('Acceso denegado o ID de proyecto inválido.');
+        this.router.navigate(['/inicio']);
+        return;
+      }
+    } else {
+      this.router.navigate(['/inicio']);
+      return;
+    }
+
+    this.getProyectoActual();
+
   // 🔥 Cargar proyecto e iteracion desde la ruta
   this.route.paramMap.subscribe(params => {
-    this.proyectoId = Number(params.get('id'));
+  
     this.filtroIteracionId = Number(params.get('idIteracion'));
     console.log("Proyecto:", this.proyectoId, "Iteración:", this.filtroIteracionId);
 
     // Primero: obtener la iteración actual del proyecto
-    this.iteracionService.getIteracionActualPorProyecto(this.proyectoId).subscribe({
+    this.iteracionService.getIteracionActualPorProyecto(this.proyectoId!).subscribe({
   next: itActual => {
     const idActual = itActual?.idIteracion;
 
     // Si la iteración de la ruta es la actual → redirigir
     if (idActual && idActual === this.filtroIteracionId) {
-      this.router.navigate([`/proyecto/${this.proyectoId}/planificacion`]);
+      this.router.navigate([`/proyecto/${encodedId}/planificacion`]);
       return;
     }
 
