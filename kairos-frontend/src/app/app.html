@@ -63,11 +63,11 @@
                 <ng-container *ngIf="usuarioLogueado && router.url !== '/login'">
                     <li class="nav-item d-flex align-items-center">
                         <a [routerLink]="['/usuario/ver', getEncodedUserId()]" class="navbar-text text-white me-3 d-flex align-items-center">
-                            <i class="bi bi-person-circle" style="font-size: 1.2rem; margin-right: 8px;"></i>
-                            <div class="avatar-circle" style="width: 30px; height: 30px; font-size: 1rem; display: flex; justify-content: center; align-items: center; background-color: #6C63FF; color: white; border-radius: 50%; margin-right: 8px;">
+                            {{ usuarioNombre }} ({{ rolUsuario }}) 
+                            <div class="avatar-circle" style="width: 30px; height: 30px; font-size: 1rem; display: flex; justify-content: center; align-items: center; background-color: #6C63FF; color: white; border-radius: 50%; margin-left: 8px;">
                                 {{ inicialesUsuario(usuarioNombre) }}
                             </div>
-                            Hola, {{ usuarioNombre }}! ({{ rolUsuario }})
+                            <i class="bi bi-person-circle" style="font-size: 1.2rem;"></i>
                         </a>
                     </li>
                     <li class="nav-item">
