@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, effect } from '@angular/core';
+import { Component, OnInit, ViewChild,} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +8,6 @@ import { TaskService } from '../../services/tarea.service';
 import { ProyectoService } from '../../services/proyecto.service';
 import { CategoriaService, CategoriaDTO } from '../../services/categoria.service';
 import { IteracionService } from '../../services/iteracion.service';
-import { UsuariosService } from '../../services/usuarios';
 import { ComentarioService } from '../../services/comentario.service';
 import { EtapaService } from '../../services/etapa.service';
 
@@ -77,7 +76,7 @@ export class PlanificacionComponent implements OnInit {
   constructor(
     private categoriaService: CategoriaService,
     private taskService: TaskService,
-    private usuariosService: UsuariosService,
+
     private iteracionService: IteracionService,
     private comentarioService: ComentarioService,
     private etapaService: EtapaService,
@@ -86,9 +85,7 @@ export class PlanificacionComponent implements OnInit {
     private idCoderService: IdCoderService,
     private proyectoService: ProyectoService
   ) {
-    effect(() => {
-      this.usuarios = this.usuariosService.usuarios();
-    });
+   
   }
 
   ngOnInit(): void {
@@ -100,6 +97,8 @@ export class PlanificacionComponent implements OnInit {
       if (id) {
         this.proyectoId = id;
         this.cargarNombreProyecto(id);
+        this.cargarMiembros();
+        console.log("IdPROYECTO", this.proyectoId)
       } else {
         alert('Acceso denegado o ID de proyecto inválido.');
         this.router.navigate(['/inicio']);
@@ -132,6 +131,18 @@ export class PlanificacionComponent implements OnInit {
             this.proyectoNombre = 'Proyecto Desconocido'; 
         }
     });
+  }
+
+  private cargarMiembros(): void {
+    if(!this.proyectoId) return;
+    this.proyectoService.getMiembros(this.proyectoId).subscribe({
+      next: (data) => {this.usuarios = data, 
+        console.log("Miembros", this.usuarios)
+        
+      },
+      error: (err) => console.error('Error al cargar miembros', err)
+    })
+     
   }
 
   private cargarEtapas(): void {
