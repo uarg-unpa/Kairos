@@ -63,7 +63,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   iteraciones: any[] = [];
   filtroEtapa: number | null = null;
   filtroIteracion: number | null = null;
-  filtroTiempo: 'today' | 'week' | 'month' | 'quarter' | 'all' = 'week';
+  filtroTiempo: 'today' | 'week' | 'month' | 'quarter' | 'all' = 'all';
   filtroSemana: number = 0; // 0 = semana actual, -1 = anterior, 1 = siguiente
   semanaActual: { inicio: string; fin: string } = { inicio: '', fin: '' };
   proyectoId: number | null = null;
@@ -71,7 +71,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   detalleGrafico: string | null = null;
   graficoAmpliado: any = null;
 
-  // métricas
+  // mAtricas
   totalTareas = 0;
   tareasCompletadas = 0;
   totalHoras = 0; // horas reales (minutos agregados / 60)
@@ -100,6 +100,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     { start: '#20c997', end: '#7be0c3' },
     { start: '#6f42c1', end: '#c8a4ff' }
   ];
+  private cacheHorasIteracion = new Map<string, any[]>();
+  private cacheHorasCategoria = new Map<string, { categoria: string; minutos: number }[]>();
+  private cacheHorasDia = new Map<string, any[]>();
+  private cacheHorasEtapa = new Map<string, any[]>();
+  private cacheTareas = new Map<string, any[]>();
+  private iteracionesRangoActual: Set<number> | null = null;
+  private lastIterParamsKey: string | null = null;
+  private lastTareasCacheKey: string | null = null;
+  loadingHorasIteracion = false;
+  loadingHorasCategoria = false;
+  loadingHorasDia = false;
+  loadingHorasEtapa = false;
+  loadingTareasData = false;
 
   ngOnInit(): void {
     this.actualizarSemanaActual();
@@ -114,7 +127,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           this.proyectoId = id;
           this.encodedProjectId = encodedId;
         } else {
-          alert('Acceso denegado o ID de proyecto inválido.');
+          alert('Acceso denegado o ID de proyecto invAlido.');
           this.router.navigate(['/inicio']);
           return;
         }
@@ -182,7 +195,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   
   this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-dia-tarea${paramsDia}`).subscribe(rows => {
     this.renderHorasPorDiaTareaChart(rows || []);
-    // Si el gráfico ampliado está abierto, recrearlo también
+    // Si el grAfico ampliado estA abierto, recrearlo tambiAn
     if (this.detalleGrafico === 'chartHorasDiaTarea') {
       setTimeout(() => {
         this.destroyChartByCanvasId('graficoDetalle');
@@ -195,8 +208,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           false,
           true,
           false,
-          'Horas por Día',
-          'Días de la Semana',
+          'Horas por DAa',
+          'DAas de la Semana',
           'Horas (h)'
         );
       }, 100);
@@ -229,193 +242,169 @@ private obtenerDataGrafico(canvasId: string): number[] {
     this.destroyCharts();
   }
 
-  reload() {
+  reload(forceRefresh = false) {
+    if (forceRefresh) {
+      this.clearDataCaches();
+    }
     this.destroyCharts();
+    this.loadingHorasIteracion = true;
+    this.loadingHorasCategoria = true;
+    this.loadingHorasDia = true;
+    this.loadingHorasEtapa = true;
+    this.loadingTareasData = true;
+
+    const range = this.computeRange();
+    this.actualizarIteracionesRango(range);
+    const actualizarIteraciones = (it: any[] | null | undefined) => {
+      this.iteraciones = it || [];
+      this.actualizarIteracionesRango(range);
+    };
     if (this.filtroEtapa) {
-      this.iteracionService.getIteracionesPorEtapaId(this.filtroEtapa).subscribe(it => this.iteraciones = it || []);
+      this.iteracionService.getIteracionesPorEtapaId(this.filtroEtapa).subscribe(actualizarIteraciones);
     } else if (this.proyectoId) {
-      this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(it => this.iteraciones = it || []);
+      this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(actualizarIteraciones);
     } else {
-      this.iteracionService.getIteraciones().subscribe(it => this.iteraciones = it || []);
+      this.iteracionService.getIteraciones().subscribe(actualizarIteraciones);
     }
 
-    // 1) datasets desde backend de tiempos (reales)
-    const range = this.computeRange();
     const iterParams = new URLSearchParams();
     if (this.filtroEtapa) iterParams.set('etapaId', String(this.filtroEtapa));
     else if (this.proyectoId) iterParams.set('proyectoId', String(this.proyectoId));
     if (this.filtroIteracion) iterParams.set('iteracionId', String(this.filtroIteracion));
     if (range.from && range.to) { iterParams.set('from', range.from); iterParams.set('to', range.to); }
     const paramsIter = iterParams.toString() ? `?${iterParams.toString()}` : '';
-    this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-iteracion${paramsIter}`).subscribe(rows => {
-      const rowsList = rows || [];
-      this.horasIteracionRows = this.filtroIteracion
-        ? rowsList.filter(r => this.obtenerIteracionId(r) === this.filtroIteracion)
-        : rowsList;
-      this.actualizarHorasIteracionChart();
-    });
+    const iterKey = this.cacheKeyFromParams(paramsIter);
+    this.lastIterParamsKey = iterKey;
+    const cachedIterRows = this.cacheHorasIteracion.get(iterKey);
+    if (cachedIterRows) {
+      this.actualizarHorasIteracionDesdeRows(cachedIterRows);
+    } else {
+      this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-iteracion${paramsIter}`).subscribe(rows => {
+        const normalized = Array.isArray(rows) ? rows : [];
+        this.cacheHorasIteracion.set(iterKey, normalized);
+        this.actualizarHorasIteracionDesdeRows(normalized);
+      }, () => {
+        this.cacheHorasIteracion.delete(iterKey);
+        this.horasIteracionRows = [];
+        this.actualizarHorasIteracionChart();
+        this.loadingHorasIteracion = false;
+      });
+    }
 
     const categoriaParams = new URLSearchParams();
     if (this.filtroIteracion) categoriaParams.set('iteracionId', String(this.filtroIteracion));
     else if (this.proyectoId) categoriaParams.set('proyectoId', String(this.proyectoId));
     if (range.from && range.to) { categoriaParams.set('from', range.from); categoriaParams.set('to', range.to); }
     const paramsCategoria = categoriaParams.toString() ? `?${categoriaParams.toString()}` : '';
-    this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-categoria${paramsCategoria}`).subscribe(rows => {
-      const pairs = rows.map(r => ({
-        categoria: r.categoriaNombre || 'Sin categoría',
-        minutos: r.minutos || 0
-      })).sort((a, b) => b.minutos - a.minutos);
+    const categoriaKey = this.cacheKeyFromParams(paramsCategoria);
+    const renderCategoria = (pairs: { categoria: string; minutos: number }[]) => {
       const labels = pairs.map(p => p.categoria);
       const dataHoras = pairs.map(p => Math.round(((p.minutos / 60) * 100)) / 100);
       const dataMinutos = pairs.map(p => p.minutos);
       this.renderPie(
-  'chartHorasCategoria',
-  labels,
-  dataHoras,
-  dataMinutos,
-  'Horas Semanales por Categoría'
-);
+        'chartHorasCategoria',
+        labels,
+        dataHoras,
+        dataMinutos,
+        'Horas Semanales por Categoria'
+      );
       this.horasCategoriaDetalle = pairs.map(p => ({
         categoria: p.categoria,
         horas: Math.round(((p.minutos / 60) * 100)) / 100,
         minutos: p.minutos
       }));
-    });
+      this.loadingHorasCategoria = false;
+    };
+    const cachedCategoria = this.cacheHorasCategoria.get(categoriaKey);
+    if (cachedCategoria) {
+      renderCategoria(cachedCategoria);
+    } else {
+      this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-categoria${paramsCategoria}`).subscribe(rows => {
+        const pairs = (rows || []).map(r => ({
+          categoria: r.categoriaNombre || 'Sin categoria',
+          minutos: r.minutos || 0
+        })).sort((a, b) => b.minutos - a.minutos);
+        this.cacheHorasCategoria.set(categoriaKey, pairs);
+        renderCategoria(pairs);
+      }, () => {
+        this.cacheHorasCategoria.delete(categoriaKey);
+        this.destroyChartByCanvasId('chartHorasCategoria');
+        this.horasCategoriaDetalle = [];
+        this.loadingHorasCategoria = false;
+      });
+    }
 
     const diaParams = new URLSearchParams();
     if (this.proyectoId) diaParams.set('proyectoId', String(this.proyectoId));
     if (this.filtroEtapa) diaParams.set('etapaId', String(this.filtroEtapa));
     if (this.filtroIteracion) diaParams.set('iteracionId', String(this.filtroIteracion));
     const weekRange = this.computeWeeklyRangeWithOffset(this.filtroSemana);
-
     diaParams.set('from', weekRange.from);
     diaParams.set('to', weekRange.to);
     const paramsDia = diaParams.toString() ? `?${diaParams.toString()}` : '';
-    this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-dia-tarea${paramsDia}`).subscribe(rows => {
+    const diaKey = this.cacheKeyFromParams(paramsDia);
+    const renderDia = (rows: any[]) => {
       this.renderHorasPorDiaTareaChart(rows || []);
-    }, () => {
-      this.destroyChartByCanvasId('chartHorasDiaTarea');
-      this.horasDiaDetalle = [];
-    });
+      this.loadingHorasDia = false;
+    };
+    const cachedDia = this.cacheHorasDia.get(diaKey);
+    if (cachedDia) {
+      renderDia(cachedDia);
+    } else {
+      this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-dia-tarea${paramsDia}`).subscribe(rows => {
+        const normalized = Array.isArray(rows) ? rows : [];
+        this.cacheHorasDia.set(diaKey, normalized);
+        renderDia(normalized);
+      }, () => {
+        this.cacheHorasDia.delete(diaKey);
+        this.destroyChartByCanvasId('chartHorasDiaTarea');
+        this.horasDiaDetalle = [];
+        this.loadingHorasDia = false;
+      });
+    }
 
     const etapaParams = new URLSearchParams();
     if (this.proyectoId) etapaParams.set('proyectoId', String(this.proyectoId));
     if (this.filtroIteracion) etapaParams.set('iteracionId', String(this.filtroIteracion));
     if (range.from && range.to) { etapaParams.set('from', range.from); etapaParams.set('to', range.to); }
     const paramsEtapa = etapaParams.toString() ? `?${etapaParams.toString()}` : '';
-    this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-etapa${paramsEtapa}`).subscribe(rows => {
+    const etapaKey = this.cacheKeyFromParams(paramsEtapa);
+    const renderEtapa = (rows: any[]) => {
       this.renderHorasPorEtapaChart(rows || []);
-    }, () => this.destroyChartByCanvasId('chartHorasEtapa'));
-
-    // 2) tareas para métricas y gráficos complementarios
-    const tareas$ = this.proyectoId ? this.taskService.getTareasPorProyecto(this.proyectoId) : this.taskService.getTareas();
-    tareas$.subscribe(ts => {
-      const filtrar = (t: any) => {
-        if (this.filtroIteracion && t.iteracionId !== this.filtroIteracion) return false;
-        if (this.proyectoId && this.iteraciones?.length) {
-          const ids = new Set(this.iteraciones.map(it => it.idIteracion));
-          if (!ids.has(t.iteracionId)) return false;
-        }
-        return true;
-      };
-      const tareas = (ts || []).filter(filtrar);
-      const estimadasMap = new Map<number, number>();
-      tareas.forEach(t => {
-        const iterId = Number(t?.iteracionId);
-        const horas = Number(t?.horasEstimadas || 0);
-        if (!Number.isFinite(iterId) || !horas) return;
-        estimadasMap.set(iterId, (estimadasMap.get(iterId) || 0) + horas);
+      this.loadingHorasEtapa = false;
+    };
+    const cachedEtapa = this.cacheHorasEtapa.get(etapaKey);
+    if (cachedEtapa) {
+      renderEtapa(cachedEtapa);
+    } else {
+      this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-etapa${paramsEtapa}`).subscribe(rows => {
+        const normalized = Array.isArray(rows) ? rows : [];
+        this.cacheHorasEtapa.set(etapaKey, normalized);
+        renderEtapa(normalized);
+      }, () => {
+        this.cacheHorasEtapa.delete(etapaKey);
+        this.destroyChartByCanvasId('chartHorasEtapa');
+        this.loadingHorasEtapa = false;
       });
-      this.horasEstimadasPorIteracion = estimadasMap;
-      this.actualizarHorasIteracionChart();
-      this.totalTareas = tareas.length;
-      const completadas = tareas.filter(t => /completad|finalizad/i.test(t.estado || ''));
-      this.tareasCompletadas = completadas.length;
+    }
 
-      // eficiencia simple: horas reales / estimadas
-      // calcular atrasadas y próximas a vencer (7 días)
-      const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      const hoy = startOfDay(new Date());
-      const limite = new Date(hoy);
-      limite.setDate(limite.getDate() + 7);
-      const esPendiente = (t: any) => !(/completad|finalizad/i.test((t.estado || '').toLowerCase()));
-      const parseFecha = (s: any) => {
-        try {
-          if (!s) return null;
-          const d = new Date(s);
-          return isNaN(d.getTime()) ? null : startOfDay(d);
-        } catch { return null; }
-      };
-      const pendientes = tareas.filter(esPendiente);
-      this.atrasadasCount = pendientes.filter(t => {
-        const f = parseFecha(t.fechaFin);
-        return !!f && f < hoy;
-      }).length;
-      this.proximasCount = pendientes.filter(t => {
-        const f = parseFecha(t.fechaFin);
-        return !!f && f >= hoy && f <= limite;
-      }).length;
-
-      const estimadas = tareas.map(t => t.horasEstimadas || 0).reduce((a: number, b: number) => a + b, 0);
-      const reales = this.totalHoras; // ya en horas
-      if (estimadas > 0) {
-        const rawPct = Math.round((reales / estimadas) * 100);
-        this.eficiencia = Math.max(0, rawPct);
-      } else {
-        this.eficiencia = 0;
-      }
-
-      // tareas por usuario
-      const porUserMap = new Map<string, number>();
-      tareas.forEach(t => {
-        const key = (t.usuarioNombre || 'Sin usuario');
-        porUserMap.set(key, (porUserMap.get(key) || 0) + 1);
+    const tareasKey = this.tareasCacheKey();
+    this.lastTareasCacheKey = tareasKey;
+    const cachedTareas = this.cacheTareas.get(tareasKey);
+    if (cachedTareas) {
+      this.procesarTareasDesdeCache(cachedTareas);
+    } else {
+      const tareas$ = this.proyectoId ? this.taskService.getTareasPorProyecto(this.proyectoId) : this.taskService.getTareas();
+      tareas$.subscribe(ts => {
+        const lista = Array.isArray(ts) ? ts : [];
+        this.cacheTareas.set(tareasKey, lista);
+        this.procesarTareasDesdeCache(lista);
+      }, () => {
+        this.cacheTareas.delete(tareasKey);
+        this.procesarTareasDesdeCache([]);
       });
-      const formatTareas = (valor: number) => {
-        const cantidad = Math.round(Number(valor) || 0);
-        return `${cantidad} ${cantidad === 1 ? 'tarea' : 'tareas'}`;
-      };
-      this.renderBar(
-  'chartTareasUser',
-  Array.from(porUserMap.keys()),
-  Array.from(porUserMap.values()),
-  '#ffc107',
-  '#ffe08a',
-  true,
-  false,
-  false,
-  'Tareas por Usuario',
-  'Cantidad de Tareas',
-  'Usuarios',
-  formatTareas
-);
-      this.tareasUsuarioDetalle = Array.from(porUserMap.entries())
-        .sort((a, b) => b[1] - a[1])
-        .map(([usuario, cantidad]) => ({ usuario, cantidad }));
-
-      // Actualiza el texto del card "Próximos vencimientos" en caso de que la plantilla tenga texto fijo
-      try {
-        const cards = document.querySelectorAll('.row.mb-5.g-4.justify-content-between .col-md-6');
-        const proximasCard = cards && cards.length > 1 ? cards[1] as HTMLElement : null;
-        const titleEl = proximasCard?.querySelector('h4.mb-2');
-        if (titleEl && titleEl.textContent && titleEl.textContent.trim().startsWith('Pr')) {
-          titleEl.textContent = 'Próximos vencimientos';
-        }
-        const spanEl = proximasCard?.querySelector('span.fs-5');
-        if (spanEl) {
-          if (this.proximasCount > 0) {
-            spanEl.classList.remove('text-muted');
-            spanEl.textContent = `${this.proximasCount} ${this.proximasCount === 1 ? 'tarea próxima a vencer' : 'tareas próximas a vencer'}`;
-          } else {
-            spanEl.classList.add('text-muted');
-            spanEl.textContent = 'No hay tareas próximas a vencer';
-          }
-        }
-      } catch { }
-    });
-  }
-
-  private actualizarHorasIteracionChart() {
+    }
+  }  private actualizarHorasIteracionChart() {
     const orderedIds: number[] = [];
     const pushId = (value: number | null | undefined) => {
       if (value === null || value === undefined) return;
@@ -507,6 +496,220 @@ private obtenerDataGrafico(canvasId: string): number[] {
       return { from: f, to };
     }
     return { from: null, to: null };
+  }
+
+  private cacheKeyFromParams(params: string): string {
+    return params && params.length ? params : '__all__';
+  }
+
+  private tareasCacheKey(): string {
+    return this.proyectoId ? `proyecto:${this.proyectoId}` : 'all';
+  }
+
+  private clearDataCaches() {
+    this.cacheHorasIteracion.clear();
+    this.cacheHorasCategoria.clear();
+    this.cacheHorasDia.clear();
+    this.cacheHorasEtapa.clear();
+    this.cacheTareas.clear();
+    this.lastIterParamsKey = null;
+    this.lastTareasCacheKey = null;
+  }
+
+  private parseDateInput(value: any): number | null {
+    if (!value) return null;
+    const date = new Date(value);
+    const time = date.getTime();
+    return Number.isFinite(time) ? time : null;
+  }
+
+  private calcularIteracionesEnRango(range: { from: string | null; to: string | null } | null): Set<number> | null {
+    if (!range || (!range.from && !range.to)) return null;
+    if (!this.iteraciones?.length) return null;
+    const fromTime = range.from ? this.parseDateInput(range.from) : null;
+    const toTime = range.to ? this.parseDateInput(range.to) : null;
+    if (fromTime === null && toTime === null) return null;
+    const result = new Set<number>();
+    this.iteraciones.forEach((it: any) => {
+      const iterId = Number(it?.idIteracion);
+      if (!Number.isFinite(iterId)) return;
+      const startTime = this.parseDateInput(it?.fechaInicio);
+      const endTime = this.parseDateInput(it?.fechaFin);
+      if (startTime === null && endTime === null) {
+        result.add(iterId);
+        return;
+      }
+      const iterStart = startTime ?? endTime ?? null;
+      const iterEnd = endTime ?? startTime ?? null;
+      const overlaps =
+        (!fromTime || (iterEnd !== null && iterEnd >= fromTime)) &&
+        (!toTime || (iterStart !== null && iterStart <= toTime));
+      if (overlaps) result.add(iterId);
+    });
+    return result;
+  }
+
+  private setsIguales(a: Set<number> | null, b: Set<number> | null): boolean {
+    if (a === b) return true;
+    if (!a || !b) return false;
+    if (a.size !== b.size) return false;
+    for (const val of a) {
+      if (!b.has(val)) return false;
+    }
+    return true;
+  }
+
+  private actualizarIteracionesRango(range: { from: string | null; to: string | null }) {
+    const nuevos = this.calcularIteracionesEnRango(range);
+    if (this.setsIguales(this.iteracionesRangoActual, nuevos)) return;
+    this.iteracionesRangoActual = nuevos;
+    this.reapplyIteracionFilters();
+    this.reapplyTareasFilters();
+  }
+
+  private reapplyIteracionFilters() {
+    if (!this.lastIterParamsKey) return;
+    const cached = this.cacheHorasIteracion.get(this.lastIterParamsKey);
+    if (cached) {
+      this.actualizarHorasIteracionDesdeRows(cached);
+    }
+  }
+
+  private reapplyTareasFilters() {
+    if (!this.lastTareasCacheKey) return;
+    const cached = this.cacheTareas.get(this.lastTareasCacheKey);
+    if (cached) {
+      this.procesarTareasDesdeCache(cached);
+    }
+  }
+
+  private filtrarHorasIteracionRows(rows: any[]): any[] {
+    if (!Array.isArray(rows)) return [];
+    let result = rows;
+    if (this.filtroIteracion) {
+      result = result.filter(r => this.obtenerIteracionId(r) === this.filtroIteracion);
+    }
+    const iterSet = this.iteracionesRangoActual;
+    if (iterSet) {
+      result = result.filter(r => {
+        const iterId = this.obtenerIteracionId(r);
+        return iterId !== null && iterSet.has(iterId);
+      });
+    }
+    return result;
+  }
+
+  private actualizarHorasIteracionDesdeRows(rows: any[]) {
+    this.loadingHorasIteracion = false;
+    const filtered = this.filtrarHorasIteracionRows(rows || []);
+    this.horasIteracionRows = filtered;
+    this.actualizarHorasIteracionChart();
+  }
+
+  private procesarTareasDesdeCache(ts: any[]) {
+    const filtrar = (t: any) => {
+      if (this.filtroIteracion && t.iteracionId !== this.filtroIteracion) return false;
+      if (this.proyectoId && this.iteraciones?.length) {
+        const ids = new Set(this.iteraciones.map(it => it.idIteracion));
+        if (!ids.has(t.iteracionId)) return false;
+      }
+      return true;
+    };
+    let tareas = (ts || []).filter(filtrar);
+    const iterSet = this.iteracionesRangoActual;
+    if (iterSet) {
+      tareas = tareas.filter(t => iterSet.has(Number(t?.iteracionId)));
+    }
+    const estimadasMap = new Map<number, number>();
+    tareas.forEach(t => {
+      const iterId = Number(t?.iteracionId);
+      const horas = Number(t?.horasEstimadas || 0);
+      if (!Number.isFinite(iterId) || !horas) return;
+      estimadasMap.set(iterId, (estimadasMap.get(iterId) || 0) + horas);
+    });
+    this.horasEstimadasPorIteracion = estimadasMap;
+    this.actualizarHorasIteracionChart();
+    this.totalTareas = tareas.length;
+    const completadas = tareas.filter(t => /completad|finalizad/i.test(t.estado || ''));
+    this.tareasCompletadas = completadas.length;
+
+    const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const hoy = startOfDay(new Date());
+    const limite = new Date(hoy);
+    limite.setDate(limite.getDate() + 7);
+    const esPendiente = (t: any) => !(/completad|finalizad/i.test((t.estado || '').toLowerCase()));
+    const parseFecha = (s: any) => {
+      try {
+        if (!s) return null;
+        const d = new Date(s);
+        return isNaN(d.getTime()) ? null : startOfDay(d);
+      } catch { return null; }
+    };
+    const pendientes = tareas.filter(esPendiente);
+    this.atrasadasCount = pendientes.filter(t => {
+      const f = parseFecha(t.fechaFin);
+      return !!f && f < hoy;
+    }).length;
+    this.proximasCount = pendientes.filter(t => {
+      const f = parseFecha(t.fechaFin);
+      return !!f && f >= hoy && f <= limite;
+    }).length;
+
+    const estimadas = tareas.map(t => t.horasEstimadas || 0).reduce((a: number, b: number) => a + b, 0);
+    const reales = this.totalHoras;
+    if (estimadas > 0) {
+      const rawPct = Math.round((reales / estimadas) * 100);
+      this.eficiencia = Math.max(0, rawPct);
+    } else {
+      this.eficiencia = 0;
+    }
+
+    const porUserMap = new Map<string, number>();
+    tareas.forEach(t => {
+      const key = (t.usuarioNombre || 'Sin usuario');
+      porUserMap.set(key, (porUserMap.get(key) || 0) + 1);
+    });
+    const formatTareas = (valor: number) => {
+      const cantidad = Math.round(Number(valor) || 0);
+      return `${cantidad} ${cantidad === 1 ? 'tarea' : 'tareas'}`;
+    };
+    this.renderBar(
+      'chartTareasUser',
+      Array.from(porUserMap.keys()),
+      Array.from(porUserMap.values()),
+      '#ffc107',
+      '#ffe08a',
+      true,
+      false,
+      false,
+      'Tareas por Usuario',
+      'Cantidad de Tareas',
+      'Usuarios',
+      formatTareas
+    );
+    this.tareasUsuarioDetalle = Array.from(porUserMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([usuario, cantidad]) => ({ usuario, cantidad }));
+
+    try {
+      const cards = document.querySelectorAll('.row.mb-5.g-4.justify-content-between .col-md-6');
+      const proximasCard = cards && cards.length > 1 ? cards[1] as HTMLElement : null;
+      const titleEl = proximasCard?.querySelector('h4.mb-2');
+        if (titleEl && titleEl.textContent && titleEl.textContent.trim().startsWith('Pr')) {
+          titleEl.textContent = 'Próximos vencimientos';
+      }
+      const spanEl = proximasCard?.querySelector('span.fs-5');
+      if (spanEl) {
+          if (this.proximasCount > 0) {
+            spanEl.classList.remove('text-muted');
+            spanEl.textContent = `${this.proximasCount} ${this.proximasCount === 1 ? 'tarea próxima a vencer' : 'tareas próximas a vencer'}`;
+          } else {
+            spanEl.classList.add('text-muted');
+            spanEl.textContent = 'No hay tareas próximas a vencer';
+        }
+      }
+    } catch { }
+    this.loadingTareasData = false;
   }
 
  /* private computeWeeklyRange(): { from: string, to: string } {
@@ -632,7 +835,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
                  let formattedCustom = `${prefix}${custom}`;
                  if (tooltipExtra) {
                    const extra = tooltipExtra(ctx);
-                   if (extra) formattedCustom += ` – ${extra}`;
+                   if (extra) formattedCustom += ` a ${extra}`;
                  }
                  return formattedCustom;
                }
@@ -644,7 +847,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
                }
                if (tooltipExtra) {
                  const extra = tooltipExtra(ctx);
-                 if (extra) formatted += ` – ${extra}`;
+                 if (extra) formatted += ` a ${extra}`;
                }
                return formatted;
              }
@@ -737,8 +940,8 @@ private obtenerDataGrafico(canvasId: string): number[] {
     false,
     true,
     false,
-    'Horas por Día',
-    'Días de la Semana',
+    'Horas por DAa',
+    'DAas de la Semana',
     'Horas (h)'
   );
     const detalle = this.diasSemanaOrden.map(dia => {
@@ -861,6 +1064,8 @@ private obtenerDataGrafico(canvasId: string): number[] {
     const formatted = Number.isInteger(value) ? value.toString() : value.toFixed(1);
     return `${label} (${formatted}%)`;
   });
+  const totalRounded = Math.round(total * 10) / 10;
+  const totalLabel = Number.isInteger(totalRounded) ? `${totalRounded} h` : `${totalRounded.toFixed(1)} h`;
   const centerText = {
     id: 'centerText',
     afterDraw(c: any) {
@@ -870,7 +1075,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
       ctx.fillStyle = '#212529';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(String(total), width / 2, height / 2);
+      ctx.fillText(totalLabel, width / 2, height / 2);
       ctx.restore();
     }
   };
@@ -1005,9 +1210,9 @@ private obtenerDataGrafico(canvasId: string): number[] {
   detalleTituloActual(): string {
     switch (this.detalleAbierto) {
       case 'horasIteracion': return 'Detalle de estimación vs ejecución';
-      case 'horasCategoria': return 'Detalle de horas por categoría';
+      case 'horasCategoria': return 'Detalle de horas por categorAa';
       case 'tareasUsuario': return 'Tareas por usuario';
-      case 'horasDiaTarea': return 'Horas por día (semana actual)';
+      case 'horasDiaTarea': return 'Horas por dAa (semana actual)';
       case 'horasTarea': return 'Horas por tarea';
       default: return '';
     }
@@ -1026,6 +1231,13 @@ private obtenerDataGrafico(canvasId: string): number[] {
     return Number.isFinite(parsed) ? parsed : null;
   }
 
+  iteracionLabel(item: any): string {
+    if (!item) return 'Todas las iteraciones';
+    const numero = item?.numero ? `Iteracion ${item.numero}` : (item?.nombre || 'Iteracion');
+    const etapa = !this.filtroEtapa && item?.etapaNombre ? ` (${item.etapaNombre})` : '';
+    return `${numero}${etapa}`;
+  }
+
 
   abrirGrafico(id: string) {
   this.detalleGrafico = id;
@@ -1033,7 +1245,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
   setTimeout(() => {
     const originalChart = this.charts.get(id);
     if (!originalChart) {
-      console.error(`Gráfico con ID ${id} no encontrado`);
+      console.error(`GrAfico con ID ${id} no encontrado`);
       return;
     }
 
@@ -1043,7 +1255,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
       return;
     }
 
-    // Destruir gráfico previo si existe
+    // Destruir grAfico previo si existe
     if (this.graficoAmpliado) {
       try {
         this.graficoAmpliado.destroy();
@@ -1078,7 +1290,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
       plugins: configOriginal.plugins
     };
 
-    // Crear gráfico nuevo en el modal
+    // Crear grAfico nuevo en el modal
     this.graficoAmpliado = new Chart(ctx, configClonada);
   }, 150);
 }
@@ -1098,17 +1310,17 @@ private obtenerDataGrafico(canvasId: string): number[] {
       'chartHorasIter': 'Estimación vs ejecución',
       'chartHorasIterDistrib': 'Horas por tarea',
       'chartTareasUser': 'Tareas por usuario',
-      'chartHorasDiaTarea': 'Horas por día',
-      'chartHorasCategoria': 'Horas por categoría',
+      'chartHorasDiaTarea': 'Horas por dAa',
+      'chartHorasCategoria': 'Horas por categorAa',
       'chartHorasEtapa': 'Horas por etapa'
     };
-    return titulos[id] || 'Gráfico';
+    return titulos[id] || 'GrAfico';
   }
 
   descargarGrafico(id: string) {
   const chart = this.charts.get(id);
   if (!chart) {
-    console.error(`Gráfico con ID ${id} no encontrado`);
+    console.error(`GrAfico con ID ${id} no encontrado`);
     return;
   }
 
@@ -1126,13 +1338,13 @@ private obtenerDataGrafico(canvasId: string): number[] {
     link.click();
     document.body.removeChild(link);
   } catch (error) {
-    console.error('Error al descargar gráfico:', error);
+    console.error('Error al descargar grAfico:', error);
   }
 }
 
 descargarGraficoAmpliado() {
   if (!this.graficoAmpliado) {
-    console.error('No hay gráfico ampliado para descargar');
+    console.error('No hay grAfico ampliado para descargar');
     return;
   }
 
@@ -1147,10 +1359,12 @@ descargarGraficoAmpliado() {
     link.click();
     document.body.removeChild(link);
   } catch (error) {
-    console.error('Error al descargar gráfico ampliado:', error);
+    console.error('Error al descargar grAfico ampliado:', error);
   }
 }
 
 
 
 }
+
+

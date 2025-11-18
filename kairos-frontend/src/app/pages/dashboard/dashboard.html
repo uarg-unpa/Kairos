@@ -37,12 +37,24 @@
     opacity: 1;
     transform: translateY(calc(-100% - 4px));
   }
+
+  .loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    backdrop-filter: blur(1px);
+  }
+
 </style>
 
 <main class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h2 class="mb-1">Panel de Control <small *ngIf="proyectoNombre" class="text-muted">– {{ proyectoNombre }}</small>
+      <h2 class="mb-1">Panel de Control <small *ngIf="proyectoNombre" class="text-muted"> {{ proyectoNombre }}</small>
       </h2>
       <p class="text-muted mb-0">Resumen de iteraciones, tareas y horas</p>
     </div>
@@ -54,14 +66,14 @@
       <select class="form-select" style="width:auto" [(ngModel)]="filtroIteracion" (change)="reload()">
         <option [ngValue]="null">Todas las iteraciones</option>
         <option *ngFor="let it of iteraciones" [ngValue]="it.idIteracion">
-          Iteración {{ it.numero }}{{ !filtroEtapa && it.etapaNombre ? ' (' + it.etapaNombre + ')' : '' }}
+          Iteracion {{ it.numero }}{{ !filtroEtapa && it.etapaNombre ? ' (' + it.etapaNombre + ')' : '' }}
         </option>
       </select>
       <select class="form-select" style="width:auto" [(ngModel)]="filtroTiempo" (change)="reload()">
         <option value="today">Hoy</option>
         <option value="week">Esta semana</option>
         <option value="month">Este mes</option>
-        <option value="quarter">Últimos 90 días</option>
+        <option value="quarter">Ultimos 90 dias</option>
         <option value="all">Todo</option>
       </select>
     </div>
@@ -91,7 +103,7 @@
       </div>
     </div>
 
-    <!-- Próximos vencimientos -->
+    <!-- Proximos vencimientos -->
     <div class="col-md-6 d-flex justify-content-end">
       <div class="border-start border-5 p-4 rounded-4 d-flex justify-content-between align-items-center"
         [ngClass]="proximasCount > 0 ? 'bg-warning border-danger shadow-lg' : 'bg-white border shadow-sm'"
@@ -101,13 +113,13 @@
             [ngClass]="proximasCount > 0 ? 'bi bi-exclamation-lg text-danger' : 'bi bi-check-circle text-success'"></i>
           <div class="fw-bold text-dark">
             <h4 class="mb-2">Próximos vencimientos</h4>
-            <span class="fs-5" *ngIf="proximasCount > 0">{{ proximasCount }} {{ proximasCount === 1 ? 'tarea próxima a
-              vencer' : 'tareas próximas a vencer' }}</span>
-            <span class="fs-5 text-muted" *ngIf="proximasCount === 0">No hay tareas próximas a vencer</span>
+            <span class="fs-5" *ngIf="proximasCount > 0">{{ proximasCount }} {{ proximasCount === 1 ? 'tarea pr&oacute;xima a
+              vencer' : 'tareas pr&oacute;ximas a vencer' }}</span>
+            <span class="fs-5 text-muted" *ngIf="proximasCount === 0">No hay tareas pr&oacute;ximas a vencer</span>
           </div>
         </div>
         <a *ngIf="proximasCount > 0" class="btn btn-outline-danger btn-lg"
-          [routerLink]="['/proyecto', encodedProjectId, 'planificacion']" [queryParams]="{ vencimiento: 'proximas' }">
+          [routerLink]="['/proyecto', encodedProjectId, 'planificacion']" [queryParams]="{ vencimiento: 'pr&oacute;ximas' }">
           <i class="bi bi-calendar-event"></i> Ver fechas
         </a>
       </div>
@@ -116,13 +128,13 @@
 
   <!-- Contenido principal -->
   <div class="row g-4">
-    <!-- Columna izquierda: gráficos -->
+    <!-- Columna izquierda: graficos -->
     <div class="col-lg-8 order-1">
       <div class="row g-4">
         <div class="col-lg-6 col-md-12">
           <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Estimación vs ejecución</h5>
+              <h5 class="mb-0">Estimación vs ejecucion</h5>
               <div class="d-flex gap-2">
                 <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
                   (click)="mostrarDetalle('horasIteracion')" [disabled]="!horasIteracionDetalle.length">
@@ -132,7 +144,7 @@
                   (click)="descargarGrafico('chartHorasIter')">
                   <i class="bi bi-download"></i>
                 </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
                   (click)="abrirGrafico('chartHorasIter')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
@@ -140,9 +152,14 @@
             </div>
             <div class="card-body text-center position-relative">
               <canvas id="chartHorasIter" style="height:240px;"></canvas>
+              <div class="loading-overlay" *ngIf="loadingHorasIteracion || loadingTareasData">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+              </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
-                *ngIf="!chartDataDisponibles('chartHorasIter')">
-                <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
+                *ngIf="!loadingHorasIteracion && !loadingTareasData && !chartDataDisponibles('chartHorasIter')">
+                <p class="mb-0 text-muted small">Aun no hay horas registradas para este filtro.</p>
               </div>
             </div>
           </div>
@@ -160,7 +177,7 @@
                   (click)="descargarGrafico('chartTareasUser')">
                   <i class="bi bi-download"></i>
                 </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
                   (click)="abrirGrafico('chartTareasUser')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
@@ -168,8 +185,13 @@
             </div>
             <div class="card-body text-center position-relative">
               <canvas id="chartTareasUser" style="height:240px;"></canvas>
+              <div class="loading-overlay" *ngIf="loadingTareasData">
+                <div class="spinner-border text-warning" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+              </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
-                *ngIf="!chartDataDisponibles('chartTareasUser')">
+                *ngIf="!loadingTareasData && !chartDataDisponibles('chartTareasUser')">
                 <p class="mb-0 text-muted small">No se registran tareas asignadas en este rango.</p>
               </div>
             </div>
@@ -189,7 +211,7 @@
                   (click)="descargarGrafico('chartHorasIterDistrib')">
                   <i class="bi bi-download"></i>
                 </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
                   (click)="abrirGrafico('chartHorasIterDistrib')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
@@ -197,9 +219,14 @@
             </div>
             <div class="card-body text-center position-relative">
               <canvas id="chartHorasIterDistrib" style="height:240px;"></canvas>
+              <div class="loading-overlay" *ngIf="loadingHorasDia">
+                <div class="spinner-border text-success" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+              </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
-                *ngIf="!chartDataDisponibles('chartHorasIterDistrib')">
-                <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
+                *ngIf="!loadingHorasDia && !chartDataDisponibles('chartHorasIterDistrib')">
+                <p class="mb-0 text-muted small">Aun no hay horas registradas para este filtro.</p>
               </div>
             </div>
           </div>
@@ -211,7 +238,7 @@
             <!-- HEADER -->
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <div class="d-flex align-items-center gap-3">
-                <h5 class="mb-0">Horas por día</h5>
+                <h5 class="mb-0">Horas por dia</h5>
               </div>
 
               <div class="d-flex gap-2">
@@ -223,7 +250,7 @@
                   (click)="descargarGrafico('chartHorasDiaTarea')">
                   <i class="bi bi-download"></i>
                 </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
                   (click)="abrirGrafico('chartHorasDiaTarea')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
@@ -233,9 +260,14 @@
             <!-- BODY -->
             <div class="card-body text-center position-relative">
               <canvas id="chartHorasDiaTarea" style="height:240px;"></canvas>
+              <div class="loading-overlay" *ngIf="loadingHorasDia">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+              </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
-                *ngIf="!chartDataDisponibles('chartHorasDiaTarea')">
-                <p class="mb-0 text-muted small">Aún no hay registros semanales de tiempo.</p>
+                *ngIf="!loadingHorasDia && !chartDataDisponibles('chartHorasDiaTarea')">
+                <p class="mb-0 text-muted small">Aun no hay registros semanales de tiempo.</p>
               </div>
             </div>
 
@@ -244,7 +276,7 @@
 
               <!-- FECHA DE LA SEMANA -->
               <small class="text-black" style="white-space: nowrap;">
-                {{ semanaActual.inicio }} — {{ semanaActual.fin }}
+                {{ semanaActual.inicio }}  {{ semanaActual.fin }}
               </small>
 
               <!-- BOTONES DE NAVEGACION -->
@@ -273,7 +305,7 @@
         <div class="col-lg-6 col-md-12">
           <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Horas semanales por categoría</h5>
+              <h5 class="mb-0">Horas semanales por categoria</h5>
               <div class="d-flex gap-2">
                 <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
                   (click)="mostrarDetalle('horasCategoria')" [disabled]="!horasCategoriaDetalle.length">
@@ -284,17 +316,22 @@
                   <i class="bi bi-download"></i>
                 </button>
 
-                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
                   (click)="abrirGrafico('chartHorasCategoria')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
               </div>
             </div>
-            <div class="card-body text-center posición relativa">
+            <div class="card-body text-center posicion relativa">
               <canvas id="chartHorasCategoria" style="height:240px;"></canvas>
+              <div class="loading-overlay" *ngIf="loadingHorasCategoria">
+                <div class="spinner-border text-info" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+              </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
-                *ngIf="!chartDataDisponibles('chartHorasCategoria')">
-                <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
+                *ngIf="!loadingHorasCategoria && !chartDataDisponibles('chartHorasCategoria')">
+                <p class="mb-0 text-muted small">Aun no hay horas registradas para este filtro.</p>
               </div>
             </div>
           </div>
@@ -309,16 +346,21 @@
                   (click)="descargarGrafico('chartHorasEtapa')">
                   <i class="bi bi-download"></i>
                 </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
                   (click)="abrirGrafico('chartHorasEtapa')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
               </div>
             </div>
-            <div class="card-body text-center posición relativa">
+            <div class="card-body text-center posicion relativa">
               <canvas id="chartHorasEtapa" style="height:240px;"></canvas>
+              <div class="loading-overlay" *ngIf="loadingHorasEtapa">
+                <div class="spinner-border text-secondary" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+              </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
-                *ngIf="!chartDataDisponibles('chartHorasEtapa')">
+                *ngIf="!loadingHorasEtapa && !chartDataDisponibles('chartHorasEtapa')">
                 <p class="mb-0 text-muted small">Sin horas registradas por etapa.</p>
               </div>
             </div>
@@ -328,7 +370,7 @@
       </div>
     </div>
 
-    <!-- Columna derecha: métricas simples -->
+    <!-- Columna derecha: metricas simples -->
     <div class="col-lg-4 order-2">
       <div class="row g-3">
 
@@ -366,8 +408,8 @@
 
               <!-- Tooltip estilizado -->
               <div class="metric-tooltip">
-                La eficacia representa la proporción de horas reales respecto de las estimadas.<br>
-                Un 100% indica ejecución dentro del presupuesto planificado.
+                La eficacia representa la proporcion de horas reales respecto de las estimadas.<br>
+                Un 100% indica ejecucion dentro del presupuesto planificado.
               </div>
             </div>
           </div>
@@ -379,7 +421,7 @@
   </div>
 
 
-  <!-- MODAL PARA GRÁFICO AMPLIADO -->
+  <!-- MODAL PARA GRAFICO AMPLIADO -->
   <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" *ngIf="detalleGrafico">
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
@@ -418,10 +460,10 @@
               <table class="table table-sm align-middle">
                 <thead>
                   <tr>
-                    <th>Iteración</th>
+                    <th>Iteracion</th>
                     <th>Etapa</th>
                     <th class="text-end">Estimadas (h)</th>
-                    <th class="text-end">Ejecución (h)</th>
+                    <th class="text-end">Ejecucion (h)</th>
                     <th class="text-end">Minutos</th>
                   </tr>
                 </thead>
@@ -443,14 +485,14 @@
               <table class="table table-sm align-middle">
                 <thead>
                   <tr>
-                    <th>Categoría</th>
+                    <th>Categoria</th>
                     <th class="text-end">Minutos</th>
                     <th class="text-end">Horas (h)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let item of horasCategoriaDetalle">
-                    <td>{{ item.categoria || 'Sin categoría' }}</td>
+                    <td>{{ item.categoria || 'Sin categoria' }}</td>
                     <td class="text-end">{{ item.minutos }}</td>
                     <td class="text-end">{{ item.horas | number:'1.2-2' }} ({{ item.minutos }} min)</td>
                   </tr>
@@ -483,7 +525,7 @@
               <table class="table table-sm align-middle">
                 <thead>
                   <tr>
-                    <th>Día</th>
+                    <th>Dia</th>
                     <th class="text-end">Horas (h)</th>
                     <th class="text-end">Minutos</th>
                   </tr>
@@ -521,7 +563,7 @@
           </div>
 
           <div *ngSwitchDefault>
-            <p class="text-muted mb-0">Selecciona un detalle para ver más información.</p>
+            <p class="text-muted mb-0">Selecciona un detalle para ver mas informacion.</p>
           </div>
         </ng-container>
       </div>
@@ -537,3 +579,4 @@
 <ng-template #sinDatos>
   <p class="text-muted mb-0">No hay datos disponibles para el filtro actual.</p>
 </ng-template>
+
