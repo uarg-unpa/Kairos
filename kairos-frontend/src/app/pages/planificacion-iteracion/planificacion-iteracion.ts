@@ -98,7 +98,7 @@ export class PlanificacionIteracion implements OnInit {
 
       if (decodedId) {
         this.proyectoId = decodedId;
-        console.log('Proyecto ID Decodificado:', this.idProyecto);
+        console.log('Proyecto ID Decodificado:', this.proyectoId);
       } else {
         console.error('ID de proyecto inválido en la ruta');
         alert('Acceso denegado o ID de proyecto inválido.');
