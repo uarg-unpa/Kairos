@@ -21,7 +21,7 @@ public interface ICategoriaService {
     /**
      * Crea una nueva categoría y la asocia a un proyecto, validando la unicidad del nombre.
      */
-    Categoria crearCategoria(Categoria categoria, Long idProyecto); // Nuevo método
+    Categoria crearCategoria(Categoria categoria); // Nuevo método
 
     /**
      * Actualiza una categoría existente, validando la unicidad del nombre si este cambia.
