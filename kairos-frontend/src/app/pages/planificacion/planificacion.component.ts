@@ -371,7 +371,18 @@ export class PlanificacionComponent implements OnInit {
 
     this.categoriaService.createCategoria(categoriaBackend).subscribe({
       next: () => this.cargarCategorias(),
-      error: (err) => console.error('Error al crear categoría:', err)
+      error: (err) => {
+      console.error('Error al crear categoría:', err);
+
+      // mensaje personalizado del backend
+      const mensaje =
+        err?.error?.message ||  // <<--- TU CASO
+        err?.message ||
+        'Ocurrió un error inesperado al crear la categoría.';
+
+      alert('⚠️ ' + mensaje);
+    }
+
     });
   }
 
@@ -380,7 +391,18 @@ export class PlanificacionComponent implements OnInit {
       .updateCategoria(evento.idCategoria, evento.datos)
       .subscribe({
         next: () => this.cargarCategorias(),
-        error: (err) => console.error('Error al editar categoría:', err)
+        error: (err) => {
+      console.error('Error al crear categoría:', err);
+
+      // mensaje personalizado del backend
+      const mensaje =
+        err?.error?.message ||  // <<--- TU CASO
+        err?.message ||
+        'Ocurrió un error inesperado al editar la categoría.';
+
+      alert('⚠️ ' + mensaje);
+    }
+
       });
   }
 
