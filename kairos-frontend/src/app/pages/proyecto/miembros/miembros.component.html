@@ -1,11 +1,17 @@
 <div class="container my-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h3>Miembros del Proyecto</h3>
-    <button *ngIf="rolEnProyecto === 'Admin'" 
-            class="btn btn-primary" 
-            (click)="abrirModalAgregar()">
-      <i class="bi bi-plus-circle"></i> Agregar Miembro
-    </button>
+    <div class="d-flex flex-column">
+      <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto=== 'Líder'" 
+              class="btn btn-primary boton-agregar" 
+              [disabled]="limiteMiembros()"
+              (click)="abrirModalAgregar()">
+        <i class="bi bi-plus-circle"></i> Agregar Miembro
+      </button>
+      <span *ngIf="miembrosLimiteAlcanzado" class="text-danger mt-2">
+        Se alcanzó el límite de 6 miembros en este proyecto.
+      </span>
+    </div>
   </div>
 
   <div class="row g-4">
@@ -25,12 +31,16 @@
 
         <!-- ROL + LÁPIZ -->
         <div class="d-flex align-items-center gap-2 mb-2">
-            <h6 class="mb-0">Rol:</h6>
-            <span class="badge bg-info text-dark">{{ miembro.rolProyecto || 'Sin etiqueta' }}</span>
-            <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder'" class="btn btn-sm btn-link text-muted p-0 ms-1"
-              (click)="abrirModalEditar(miembro)" [disabled]="esLider(miembro)" title="Editar etiqueta">
-              <i class="bi bi-pencil"></i>
-            </button>
+          <h6 class="mb-0">Rol:</h6>
+          <span class="badge bg-info text-dark">{{ miembro.rolProyecto || 'Sin etiqueta' }}</span>
+          <button *ngIf="(rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder') && !esLider(miembro)"
+            class="btn btn-sm btn-link text-muted p-0 ms-1" (click)="abrirModalEditar(miembro)" title="Editar etiqueta">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button *ngIf="esLider(miembro)" class="btn btn-sm btn-link text-muted p-0 ms-1">
+            <i class="bi bi-lock-fill" title="El líder del proyecto no puede editar su propia etiqueta"></i>
+          </button>
+
         </div>
         <!-- ACCIONES -->
         <div class="d-flex gap-2">
@@ -92,23 +102,27 @@
      [style.display]="mostrarModalEditar ? 'block' : 'none'" 
      style="z-index: 1055;" 
      tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Etiqueta de {{ usuarioEdit.nombre }}</h5>
-        <button type="button" class="btn-close" (click)="cerrarModalEditar()"></button>
-      </div>
-      <div class="modal-body">
-        <label class="form-label">Etiqueta (ej: Diseñador, Analista, Programador)</label>
-        <input type="text" 
-               class="form-control" 
-               [(ngModel)]="rolEdit" 
-               [disabled]="esLiderActual"
-               placeholder="Ej: Programador">
-        <small class="text-muted" *ngIf="esLiderActual">
-          El líder del proyecto no puede cambiar su etiqueta.
-        </small>
-      </div>
+     
+     <div class="modal-dialog">
+       <div class="modal-content">
+         <div class="modal-header">
+           <h5 class="modal-title">Etiqueta de {{ usuarioEdit.nombre }}</h5>
+           <button type="button" class="btn-close" (click)="cerrarModalEditar()"></button>
+          </div>
+          <div *ngIf="errorMensaje" class="alert alert-danger py-1">
+            {{ errorMensaje }}
+          </div>
+          <div class="modal-body">
+            <label class="form-label">Etiqueta (ej: Diseñador, Analista, Programador)</label>
+            <input type="text" 
+            class="form-control" 
+            [(ngModel)]="rolEdit" 
+            [disabled]="esLiderActual"
+            placeholder="Ej: Programador">
+            <small class="text-muted" *ngIf="esLiderActual">
+              El líder del proyecto no puede cambiar su etiqueta.
+            </small>
+          </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="cerrarModalEditar()">Cancelar</button>
         <button class="btn btn-primary" 

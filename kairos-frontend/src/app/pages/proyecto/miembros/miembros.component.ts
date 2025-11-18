@@ -40,6 +40,8 @@ export class MiembrosComponent implements OnInit {
   esLiderActual: boolean = false;
   selectedUsuarioId: number | null = null;
   currentUserId: number | null = null;
+  miembrosLimiteAlcanzado: boolean = false;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -74,37 +76,76 @@ export class MiembrosComponent implements OnInit {
   }
 
   private cargarMiembros(): void {
-    this.proyectoService.getMiembros(this.proyectoId!).subscribe({
-      next: (miembros: any[]) => {
+  this.proyectoService.getMiembros(this.proyectoId!).subscribe({
+    next: (miembros: any[]) => {
 
-        this.miembros = miembros.map(m => ({
-          idUsuario: m.idUsuario,
-          nombre: m.nombre || 'Sin nombre',
-          email: m.email || 'Sin email',
-          rolProyecto: m.rolProyecto || 'Miembro',
-          horas: 0,
-          progreso: 0,
-          status: 'offline',
-          usuario: { id: m.idUsuario, nombre: m.nombre, email: m.email }
-        }));
-      },
-      error: (err) => {
-        console.error('Error al cargar miembros', err);
-        this.miembros = [];
+      this.miembros = miembros.map(m => ({
+        idUsuario: m.idUsuario,
+        nombre: m.nombre || 'Sin nombre',
+        email: m.email || 'Sin email',
+        rolProyecto: m.rolProyecto || 'Miembro',
+        horas: 0,
+        progreso: 0,
+        status: 'offline',
+        usuario: { id: m.idUsuario, nombre: m.nombre, email: m.email }
+      }));
+      this.miembrosLimiteAlcanzado = this.miembros.length >= 6;
+      if (this.authService.esAdmin()) {
+          this.rolEnProyecto = 'Admin';
+        }
+
+      const miUsuario = miembros.find(m => m.idUsuario === this.currentUserId);
+
+      if (miUsuario) {
+        const rol = (miUsuario.rolProyecto || '').toLowerCase();
+
+        if (rol.includes('líder') || rol.includes('lider')) {
+          this.rolEnProyecto = 'Líder';
+        } else {
+          this.rolEnProyecto = 'Miembro';
+        }
       }
-    });
-  }
+    },
+    error: (err) => {
+      console.error('Error al cargar miembros', err);
+      this.miembros = [];
+    }
+  });
+}
 
-  private cargarRolEnProyecto(): void {
-    this.authService.currentUser$.subscribe(user => {
-        this.currentUserId = user?.id || null; 
-        
-        const rolRaw = user?.rol || 'Miembro';
-        this.rolEnProyecto = rolRaw.toUpperCase() === 'ADMINISTRADOR' ? 'Admin' : 'Líder';
-    });
-  }
+
+private cargarRolEnProyecto(): void {
+  this.authService.currentUser$.subscribe(user => {
+    this.currentUserId = user?.id || null;
+
+    // Primero: revisar rol global
+    const rolGlobal = user?.rol; // "Administrador" o "Usuario Común"
+
+    if (rolGlobal === "Administrador") {
+      this.rolEnProyecto = "Admin";
+      return;
+    }
+
+    // Si NO es admin → buscar su rol dentro del proyecto
+    if (this.miembros.length > 0 && this.currentUserId) {
+      const yo = this.miembros.find(m => m.idUsuario === this.currentUserId);
+
+      if (yo && yo.rolProyecto?.toLowerCase() === "líder") {
+        this.rolEnProyecto = "Líder";
+      } else {
+        this.rolEnProyecto = "Miembro";
+      }
+    }
+  });
+}
+
+
 
   abrirModalAgregar(): void {
+    if (this.miembrosLimiteAlcanzado) {
+      alert('Este proyecto ya alcanzó el límite de 6 miembros.');
+      return;
+    }
     this.mostrarModalAgregar = true;
     this.searchQuery = '';
     this.usuariosBusqueda = [];
@@ -131,6 +172,10 @@ export class MiembrosComponent implements OnInit {
   }
 
   agregarMiembro(): void {
+    if (this.miembrosLimiteAlcanzado) {
+      this.errorMensaje = 'No se pueden agregar más miembros. Límite: 6.';
+      return;
+    }
     if (!this.proyectoId) return;
 
     // Opción 1: Usuario seleccionado del buscador
@@ -168,8 +213,14 @@ export class MiembrosComponent implements OnInit {
     this.usuariosBusqueda = [];
     this.searchQuery = usuario.nombre;
   }
+  limiteMiembros(): boolean{
+    return this.miembrosLimiteAlcanzado;
+  }
 
   abrirModalEditar(miembro: any): void {
+    if (this.esLider(miembro)) {
+      return;
+    }
     this.usuarioEdit = { ...miembro };
     this.rolEdit = miembro.rolProyecto;
     const esMiUsuario = this.currentUserId === miembro.idUsuario;
@@ -178,7 +229,7 @@ export class MiembrosComponent implements OnInit {
   }
 
   esLider(miembro: any): boolean {
-    return this.currentUserId === miembro.idUsuario && miembro.rolProyecto?.toLowerCase().includes('líder')
+    return this.currentUserId === miembro.idUsuario && this.rolEnProyecto?.toLowerCase().includes('líder')
   }
 
   us(): boolean {
@@ -191,14 +242,29 @@ export class MiembrosComponent implements OnInit {
   }
 
   actualizarRol(): void {
-    this.proyectoService.actualizarRolMiembro(this.proyectoId!, this.usuarioEdit.idUsuario, this.rolEdit).subscribe({
+    const rol = this.rolEdit.trim();
+
+    if (!rol) {
+      this.errorMensaje = 'El rol no puede estar vacío.';
+      return;
+    }
+
+    this.proyectoService.actualizarRolMiembro(
+      this.proyectoId!,
+      this.usuarioEdit.idUsuario,
+      rol
+    ).subscribe({
       next: () => {
         alert('Rol actualizado');
         this.cerrarModalEditar();
         this.cargarMiembros();
+      },
+      error: () => {
+        this.errorMensaje = 'No se pudo actualizar el rol.';
       }
     });
   }
+
 
   limpiarModal(): void {
     this.selectedUsuarioId = null;
