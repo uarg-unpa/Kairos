@@ -78,33 +78,33 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   horasDiaDetalle: HorasDiaDetalle[] = [];
   private horasIteracionRows: any[] = [];
   private horasEstimadasPorIteracion = new Map<number, number>();
+  private iteracionActivaId: number | null = null;
+  private semanaBaseDate: Date | null = null;
+  semanaOffset = 0;
+  semanaLabel = '';
+  semanaMaxOffset = 0;
   private readonly diasSemanaOrden = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
   private readonly diaPorIndice = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+  private readonly mesesCortos = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(pm => {
       const encodedId = pm.get('id');
       const data: any = this.route.snapshot.data;
       this.proyectoNombre = data?.['proyecto']?.nombre || null;
-
-      if (encodedId) {
-        const id = this.idCoderService.decode(encodedId);
-        if (id) {
-          this.proyectoId = id;
-          this.encodedProjectId = encodedId;
-        } else {
-          alert('Acceso denegado o ID de proyecto inválido.');
-          this.router.navigate(['/inicio']);
-          return;
-        }
-      }
-
+      this.cargarIteracionActiva(this.proyectoId);
       if (this.proyectoId) {
         this.etapaService.getEtapasPorProyecto(this.proyectoId).subscribe(e => this.etapas = e || []);
-        this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(it => this.iteraciones = it || []);
+        this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(it => {
+          this.iteraciones = it || [];
+          this.actualizarBaseSemanaPorFiltro();
+        });
       } else {
         this.etapaService.getEtapas().subscribe(e => this.etapas = e || []);
-        this.iteracionService.getIteraciones().subscribe(it => this.iteraciones = it || []);
+        this.iteracionService.getIteraciones().subscribe(it => {
+          this.iteraciones = it || [];
+          this.actualizarBaseSemanaPorFiltro();
+        });
       }
 
       this.reload();
@@ -122,12 +122,24 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   reload() {
     this.destroyCharts();
+    this.semanaOffset = 0;
+    this.semanaLabel = '';
+    this.actualizarBaseSemanaPorFiltro();
     if (this.filtroEtapa) {
-      this.iteracionService.getIteracionesPorEtapaId(this.filtroEtapa).subscribe(it => this.iteraciones = it || []);
+      this.iteracionService.getIteracionesPorEtapaId(this.filtroEtapa).subscribe(it => {
+        this.iteraciones = it || [];
+        this.actualizarBaseSemanaPorFiltro();
+      });
     } else if (this.proyectoId) {
-      this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(it => this.iteraciones = it || []);
+      this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(it => {
+        this.iteraciones = it || [];
+        this.actualizarBaseSemanaPorFiltro();
+      });
     } else {
-      this.iteracionService.getIteraciones().subscribe(it => this.iteraciones = it || []);
+      this.iteracionService.getIteraciones().subscribe(it => {
+        this.iteraciones = it || [];
+        this.actualizarBaseSemanaPorFiltro();
+      });
     }
 
     // 1) datasets desde backend de tiempos (reales)
@@ -163,20 +175,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       }));
     });
 
-    const diaParams = new URLSearchParams();
-    if (this.proyectoId) diaParams.set('proyectoId', String(this.proyectoId));
-    if (this.filtroEtapa) diaParams.set('etapaId', String(this.filtroEtapa));
-    if (this.filtroIteracion) diaParams.set('iteracionId', String(this.filtroIteracion));
-    const weekRange = this.computeWeeklyRange();
-    diaParams.set('from', weekRange.from);
-    diaParams.set('to', weekRange.to);
-    const paramsDia = diaParams.toString() ? `?${diaParams.toString()}` : '';
-    this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-dia-tarea${paramsDia}`).subscribe(rows => {
-      this.renderHorasPorDiaTareaChart(rows || []);
-    }, () => {
-      this.destroyChartByCanvasId('chartHorasDiaTarea');
-      this.horasDiaDetalle = [];
-    });
+    this.fetchHorasPorDiaTarea();
 
     const etapaParams = new URLSearchParams();
     if (this.proyectoId) etapaParams.set('proyectoId', String(this.proyectoId));
@@ -251,7 +250,25 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const key = (t.usuarioNombre || 'Sin usuario');
         porUserMap.set(key, (porUserMap.get(key) || 0) + 1);
       });
-      this.renderBar('chartTareasUser', Array.from(porUserMap.keys()), Array.from(porUserMap.values()), '#ffc107', '#ffe08a', true);
+      const tareasUserLabels = Array.from(porUserMap.keys());
+      const tareasUserData = Array.from(porUserMap.values());
+      const tareasTooltipFormatter = (value: number | null | undefined, ctx: any) => {
+        const cantidad = Math.round(value ?? 0);
+        const label = ctx.label ? `${ctx.label}: ` : '';
+        const sufijo = cantidad === 1 ? 'tarea' : 'tareas';
+        return `${label}${cantidad} ${sufijo}`;
+      };
+      this.renderBar(
+        'chartTareasUser',
+        tareasUserLabels,
+        tareasUserData,
+        '#ffc107',
+        '#ffe08a',
+        true,
+        false,
+        false,
+        tareasTooltipFormatter
+      );
       this.tareasUsuarioDetalle = Array.from(porUserMap.entries())
         .sort((a, b) => b[1] - a[1])
         .map(([usuario, cantidad]) => ({ usuario, cantidad }));
@@ -290,7 +307,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.horasIteracionRows.forEach(row => pushId(this.obtenerIteracionId(row)));
     this.horasEstimadasPorIteracion.forEach((_, iterId) => pushId(iterId));
 
-    if (!orderedIds.length) {
+    const preferId = this.filtroIteracion ?? this.iteracionActivaId;
+    let ids = orderedIds;
+    if (typeof preferId === 'number' && Number.isFinite(preferId)) {
+      const filtered = orderedIds.filter(id => id === preferId);
+      if (filtered.length) {
+        ids = filtered;
+      }
+    }
+
+    if (!ids.length) {
       this.horasIteracionDetalle = [];
       this.destroyChartByCanvasId('chartHorasIter');
       this.destroyChartByCanvasId('chartHorasIterDistrib');
@@ -303,7 +329,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const estimadasHoras: number[] = [];
     const detalleRows: HorasIteracionDetalle[] = [];
 
-    orderedIds.forEach(iterId => {
+    ids.forEach(iterId => {
       const row = this.horasIteracionRows.find(r => this.obtenerIteracionId(r) === iterId) || null;
       const iterInfo = this.iteraciones?.find((it: any) => Number(it?.idIteracion) === iterId);
       const numero = row?.numero ?? iterInfo?.numero;
@@ -368,19 +394,34 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     return { from: null, to: null };
   }
 
-  private computeWeeklyRange(): { from: string, to: string } {
+  private computeWeeklyRange(offsetWeeks = this.semanaOffset): { from: string, to: string, labelFrom: Date, labelTo: Date } {
     const today = new Date();
-    const clone = (d: Date) => new Date(d.getTime());
-    const addDays = (d: Date, n: number) => { const x = clone(d); x.setDate(x.getDate() + n); return x; };
-    const startOfWeek = () => {
-      const d = clone(today);
-      const day = d.getDay();
-      const diff = (day === 0 ? -6 : 1) - day;
-      return addDays(d, diff);
+    const baseSource = this.semanaBaseDate ? new Date(this.semanaBaseDate) : today;
+    const base = new Date(baseSource);
+    if (offsetWeeks > 0) {
+      base.setDate(base.getDate() - (offsetWeeks * 7));
+    } else if (offsetWeeks < 0) {
+      base.setDate(base.getDate() + (Math.abs(offsetWeeks) * 7));
+    }
+    const start = this.startOfWeek(base);
+    const labelEnd = new Date(start);
+    labelEnd.setDate(labelEnd.getDate() + 6);
+    const effectiveEnd = labelEnd.getTime() > today.getTime() ? today : labelEnd;
+    return {
+      from: this.formatLocalDate(start),
+      to: this.formatLocalDate(effectiveEnd),
+      labelFrom: start,
+      labelTo: labelEnd
     };
-    const from = this.formatLocalDate(startOfWeek());
-    const to = this.formatLocalDate(today);
-    return { from, to };
+  }
+
+  private startOfWeek(date: Date): Date {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (day === 0 ? -6 : 1) - day;
+    d.setDate(d.getDate() + diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
   }
 
   private destroyCharts() {
@@ -409,15 +450,29 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     colorEnd: string,
     horizontal = false,
     showMinutes = false,
-    stacked = false
+    stacked = false,
+    valueFormatter?: (value: number | null | undefined, ctx: any) => string
   ) {
-    this.renderBarMulti(elId, labels, [{ label: '', data, colorStart, colorEnd, showMinutes }], horizontal, stacked);
+    this.renderBarMulti(
+      elId,
+      labels,
+      [{ label: '', data, colorStart, colorEnd, showMinutes, valueFormatter }],
+      horizontal,
+      stacked
+    );
   }
 
   private renderBarMulti(
     elId: string,
     labels: string[],
-    datasetsConfig: Array<{ label: string; data: number[]; colorStart: string; colorEnd: string; showMinutes?: boolean }>,
+    datasetsConfig: Array<{
+      label: string;
+      data: number[];
+      colorStart: string;
+      colorEnd: string;
+      showMinutes?: boolean;
+      valueFormatter?: (value: number | null | undefined, ctx: any) => string;
+    }>,
     horizontal = false,
     stacked = false
   ) {
@@ -443,6 +498,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         barPercentage: 0.7
       };
       if (cfg.showMinutes) dataset.showMinutes = true;
+      if (cfg.valueFormatter) dataset.valueFormatter = cfg.valueFormatter;
       return dataset;
     });
     const showLegend = datasetsConfig.some(ds => ds.label && ds.label.trim().length > 0);
@@ -459,6 +515,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             callbacks: {
               label: (ctx: any) => {
                 const value = horizontal ? ctx.parsed.x : ctx.parsed.y;
+                const formatter = ctx.dataset?.valueFormatter;
+                if (typeof formatter === 'function') {
+                  return formatter(value, ctx);
+                }
                 const hours = Math.round((value ?? 0) * 100) / 100;
                 const prefix = ctx.dataset?.label ? `${ctx.dataset.label}: ` : '';
                 let formatted = `${prefix}${hours} h`;
@@ -482,6 +542,37 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (hasData) {
       this.chartsWithData.add(elId);
     }
+  }
+
+  cambiarSemana(delta: number) {
+    if (delta > 0) {
+      if (this.semanaOffset >= this.semanaMaxOffset) return;
+    } else if (delta < 0) {
+      if (this.semanaOffset === 0) return;
+    }
+    const nextOffset = this.semanaOffset + delta;
+    if (nextOffset < 0) return;
+    if (this.semanaMaxOffset >= 0 && nextOffset > this.semanaMaxOffset) return;
+    this.semanaOffset = nextOffset;
+    this.fetchHorasPorDiaTarea();
+  }
+
+  private fetchHorasPorDiaTarea() {
+    const diaParams = new URLSearchParams();
+    if (this.proyectoId) diaParams.set('proyectoId', String(this.proyectoId));
+    if (this.filtroEtapa) diaParams.set('etapaId', String(this.filtroEtapa));
+    if (this.filtroIteracion) diaParams.set('iteracionId', String(this.filtroIteracion));
+    const weekRange = this.computeWeeklyRange();
+    diaParams.set('from', weekRange.from);
+    diaParams.set('to', weekRange.to);
+    const paramsDia = diaParams.toString() ? `?${diaParams.toString()}` : '';
+    this.semanaLabel = this.formatWeekRangeLabel(weekRange.labelFrom, weekRange.labelTo);
+    this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-dia-tarea${paramsDia}`).subscribe(rows => {
+      this.renderHorasPorDiaTareaChart(rows || []);
+    }, () => {
+      this.destroyChartByCanvasId('chartHorasDiaTarea');
+      this.horasDiaDetalle = [];
+    });
   }
 
   private renderHorasPorDiaTareaChart(rows: any[]) {
@@ -600,7 +691,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!canvas) return;
     this.destroyChartByCanvasId(elId);
     const ctx = canvas.getContext('2d');
-    const total = data.reduce((a, b) => a + b, 0);
+    const total = Math.round(data.reduce((a, b) => a + b, 0) * 100) / 100;
     const centerText = {
       id: 'centerText',
       afterDraw(c: any) {
@@ -663,7 +754,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private nombreDiaDesdeFecha(value: any): string | null {
     if (!value) return null;
-    const date = typeof value === 'string' ? new Date(`${value}T00:00:00`) : new Date(value);
+    let date: Date;
+    if (typeof value === 'string') {
+      const normalized = value.includes('T') ? value : `${value}T00:00:00`;
+      date = new Date(normalized);
+    } else {
+      date = new Date(value);
+    }
     if (isNaN(date.getTime())) return null;
     const index = date.getDay();
     return this.diaPorIndice[index] || null;
@@ -696,6 +793,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  private formatWeekRangeLabel(from: Date, to: Date): string {
+    return `Semana ${this.formatShortLabel(from)} - ${this.formatShortLabel(to)}`;
+  }
+
+  private formatShortLabel(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = this.mesesCortos[date.getMonth()] || '';
+    return `${day} ${month} ${date.getFullYear()}`;
   }
 
   chartDataDisponibles(canvasId: string): boolean {
@@ -731,5 +838,70 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     const raw = row.iteracionId ?? row.idIteracion ?? row.id;
     const parsed = Number(raw);
     return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  private actualizarBaseSemanaPorFiltro() {
+    const base = this.obtenerFechaBaseSemana();
+    this.semanaBaseDate = base;
+    this.semanaMaxOffset = this.calcularSemanaMaxOffset(base);
+  }
+
+  private obtenerFechaBaseSemana(): Date | null {
+    if (this.filtroIteracion && this.iteraciones?.length) {
+      const iter = this.iteraciones.find((it: any) => Number(it?.idIteracion) === Number(this.filtroIteracion));
+      if (iter) {
+        const fin = iter?.fechaFin ? new Date(iter.fechaFin) : null;
+        const inicio = iter?.fechaInicio ? new Date(iter.fechaInicio) : null;
+        const candidate = this.getValidDate(fin) || this.getValidDate(inicio);
+        if (candidate) {
+          const today = new Date();
+          return candidate.getTime() > today.getTime() ? today : candidate;
+        }
+      }
+    }
+    return null;
+  }
+
+  private getValidDate(value: Date | null): Date | null {
+    if (!value) return null;
+    return isNaN(value.getTime()) ? null : value;
+  }
+
+  private calcularSemanaMaxOffset(baseDate: Date | null): number {
+    if (!baseDate) return 0;
+    const iterStart = this.obtenerFechaInicioIteracionFiltro();
+    if (!iterStart) return 0;
+    const baseStart = this.startOfWeek(baseDate);
+    const earliestStart = this.startOfWeek(iterStart);
+    const diffMs = baseStart.getTime() - earliestStart.getTime();
+    if (diffMs <= 0) return 0;
+    const weekMs = 7 * 24 * 60 * 60 * 1000;
+    return Math.floor(diffMs / weekMs);
+  }
+
+  private obtenerFechaInicioIteracionFiltro(): Date | null {
+    if (!this.filtroIteracion || !this.iteraciones?.length) return null;
+    const iter = this.iteraciones.find((it: any) => Number(it?.idIteracion) === Number(this.filtroIteracion));
+    if (!iter?.fechaInicio) return null;
+    const inicio = new Date(iter.fechaInicio);
+    return isNaN(inicio.getTime()) ? null : inicio;
+  }
+
+  private cargarIteracionActiva(proyectoId: number | null) {
+    if (!proyectoId) {
+      this.iteracionActivaId = null;
+      return;
+    }
+    this.iteracionService.getIteracionActualPorProyecto(proyectoId).subscribe({
+      next: iter => {
+        const id = Number(iter?.idIteracion);
+        this.iteracionActivaId = Number.isFinite(id) ? id : null;
+        this.actualizarHorasIteracionChart();
+      },
+      error: () => {
+        this.iteracionActivaId = null;
+        this.actualizarHorasIteracionChart();
+      }
+    });
   }
 }
