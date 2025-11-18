@@ -66,7 +66,7 @@
                             <select class="form-select" [(ngModel)]="nuevaTarea.usuarioId" name="usuarioId" required
                                 #usuarioId="ngModel">
                                 <option [ngValue]="null">Seleccionar responsable...</option>
-                                <option *ngFor="let u of usuarios" [value]="u.id">{{ u.nombre }}</option>
+                                <option *ngFor="let u of usuarios" [ngValue]="u.id">{{ u.nombre }}</option>
                             </select>
                             <div *ngIf="usuarioId.invalid && (usuarioId.dirty || usuarioId.touched || form.submitted)"
                                 class="text-danger mt-1">
