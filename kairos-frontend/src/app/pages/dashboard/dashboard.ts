@@ -244,10 +244,14 @@ private obtenerDataGrafico(canvasId: string): number[] {
     const iterParams = new URLSearchParams();
     if (this.filtroEtapa) iterParams.set('etapaId', String(this.filtroEtapa));
     else if (this.proyectoId) iterParams.set('proyectoId', String(this.proyectoId));
+    if (this.filtroIteracion) iterParams.set('iteracionId', String(this.filtroIteracion));
     if (range.from && range.to) { iterParams.set('from', range.from); iterParams.set('to', range.to); }
     const paramsIter = iterParams.toString() ? `?${iterParams.toString()}` : '';
     this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-iteracion${paramsIter}`).subscribe(rows => {
-      this.horasIteracionRows = rows || [];
+      const rowsList = rows || [];
+      this.horasIteracionRows = this.filtroIteracion
+        ? rowsList.filter(r => this.obtenerIteracionId(r) === this.filtroIteracion)
+        : rowsList;
       this.actualizarHorasIteracionChart();
     });
 
@@ -465,10 +469,16 @@ private obtenerDataGrafico(canvasId: string): number[] {
 
     this.totalHoras = Math.round((realesHoras.reduce((a, b) => a + b, 0)) * 10) / 10;
 
+    const tooltipEtapaResolver = (ctx: any) => {
+      const index = Number(ctx?.dataIndex ?? 0);
+      const etapaNombre = detalleRows[index]?.etapa;
+      return etapaNombre ? `Etapa: ${etapaNombre}` : null;
+    };
+
     this.renderBarMulti('chartHorasIter', labels, [
     { label: 'Ejecución', data: realesHoras, colorStart: '#0d6efd', colorEnd: '#6ea8fe', showMinutes: true },
     { label: 'Estimación', data: estimadasHoras, colorStart: '#6610f2', colorEnd: '#c29bfe' }
-  ], false, false, 'Estimación vs Ejecución', 'Iteraciones', 'Horas (h)');
+  ], false, false, 'Estimación vs Ejecución', 'Iteraciones', 'Horas (h)', tooltipEtapaResolver);
     this.horasIteracionDetalle = detalleRows;
   }
 
@@ -542,7 +552,8 @@ private obtenerDataGrafico(canvasId: string): number[] {
   titleChart: string = '',
   labelX: string = '',
   labelY: string = '',
-  valueFormatter?: (value: number) => string
+  valueFormatter?: (value: number, ctx?: any) => string,
+  tooltipExtra?: (ctx: any) => string | null
 ) {
   this.renderBarMulti(
     elId,
@@ -552,19 +563,21 @@ private obtenerDataGrafico(canvasId: string): number[] {
     stacked,
     titleChart,
     labelX,
-    labelY
+    labelY,
+    tooltipExtra
   );
 }
 
   private renderBarMulti(
   elId: string,
   labels: string[],
-  datasetsConfig: Array<{ label: string; data: number[]; colorStart: string; colorEnd: string; showMinutes?: boolean; valueFormatter?: (value: number) => string }>,
+  datasetsConfig: Array<{ label: string; data: number[]; colorStart: string; colorEnd: string; showMinutes?: boolean; valueFormatter?: (value: number, ctx?: any) => string }>,
   horizontal = false,
   stacked = false,
   titleChart: string = '',
   labelX: string = '',
-  labelY: string = ''
+  labelY: string = '',
+  tooltipExtra?: (ctx: any) => string | null
 ) {
   const canvas: any = document.getElementById(elId);
   if (!canvas) return;
@@ -607,27 +620,36 @@ private obtenerDataGrafico(canvasId: string): number[] {
           padding: { bottom: 20 }
         },
         legend: { display: showLegend, position: 'top' },
-        tooltip: {
-          ...this.tooltipStyle(),
-          callbacks: {
-            label: (ctx: any) => {
-              const rawValue = horizontal ? ctx.parsed.x : ctx.parsed.y;
-              const numericValue = Number(rawValue ?? 0);
-              const prefix = ctx.dataset?.label ? `${ctx.dataset.label}: ` : '';
-              if (typeof ctx.dataset?.valueFormatter === 'function') {
-                const custom = ctx.dataset.valueFormatter(numericValue);
-                return `${prefix}${custom}`;
-              }
-              const hours = Math.round(numericValue * 100) / 100;
-              let formatted = `${prefix}${hours} h`;
-              if (ctx.dataset?.showMinutes) {
-                const minutos = Math.round(hours * 60);
-                formatted += ` (${minutos} min)`;
-              }
-              return formatted;
-            }
-          }
-        }
+         tooltip: {
+           ...this.tooltipStyle(),
+           callbacks: {
+             label: (ctx: any) => {
+               const rawValue = horizontal ? ctx.parsed.x : ctx.parsed.y;
+               const numericValue = Number(rawValue ?? 0);
+               const prefix = ctx.dataset?.label ? `${ctx.dataset.label}: ` : '';
+               if (typeof ctx.dataset?.valueFormatter === 'function') {
+                 const custom = ctx.dataset.valueFormatter(numericValue, ctx);
+                 let formattedCustom = `${prefix}${custom}`;
+                 if (tooltipExtra) {
+                   const extra = tooltipExtra(ctx);
+                   if (extra) formattedCustom += ` – ${extra}`;
+                 }
+                 return formattedCustom;
+               }
+               const hours = Math.round(numericValue * 100) / 100;
+               let formatted = `${prefix}${hours} h`;
+               if (ctx.dataset?.showMinutes) {
+                 const minutos = Math.round(hours * 60);
+                 formatted += ` (${minutos} min)`;
+               }
+               if (tooltipExtra) {
+                 const extra = tooltipExtra(ctx);
+                 if (extra) formatted += ` – ${extra}`;
+               }
+               return formatted;
+             }
+           }
+         }
       },
       scales: {
         y: {
