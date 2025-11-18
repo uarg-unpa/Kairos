@@ -61,6 +61,7 @@ export class TaskFormModalComponent implements OnInit {
 
     // ✔ Si es edición → cargar datos
     if (this.tareaEnEdicion) {
+      console.log("tarea en edicion", this.tareaEnEdicion);
       this.nuevaTarea = {
         nombre: this.tareaEnEdicion.nombre,
         descripcion: this.tareaEnEdicion.descripcion,
@@ -82,9 +83,12 @@ export class TaskFormModalComponent implements OnInit {
 
 
   onSubmit(): void {
+
+    // Normalizar a número
+    this.nuevaTarea.dependenciaId =
+      this.nuevaTarea.dependenciaId ? Number(this.nuevaTarea.dependenciaId) : null;
+
     if (!this.nuevaTarea.nombre) return;
-
-
 
     // 2) Validar fechas
     if (this.nuevaTarea.fechaCreacion && this.nuevaTarea.fechaFin) {
@@ -127,9 +131,30 @@ ${this.iteracionActual?.fechaInicio} a ${this.iteracionActual?.fechaFin}.`);
       return;
     }
 
-    if (this.nuevaTarea.iteracionId === null){
+    if (this.nuevaTarea.iteracionId === null) {
       return
     }
+
+
+    // ❌ Validar que no dependa de sí misma
+    if (this.tareaEnEdicion && this.nuevaTarea.dependenciaId === this.tareaEnEdicion.idTarea) {
+      alert("⚠️ Una tarea no puede depender de sí misma asdds.");
+      return;
+    }
+
+    // ❌ Validar ciclos
+    if (this.tareaEnEdicion && this.nuevaTarea.dependenciaId) {
+      const ciclo = this.tieneCicloDependencias(
+        this.tareaEnEdicion.idTarea,
+        this.nuevaTarea.dependenciaId
+      );
+
+      if (ciclo) {
+        alert("⚠️ Dependencia inválida. Se detectó una dependencia circular.");
+        return;
+      }
+    }
+
 
     this.guardarTarea.emit({
       ...this.nuevaTarea,
@@ -174,4 +199,26 @@ ${this.iteracionActual?.fechaInicio} a ${this.iteracionActual?.fechaFin}.`);
     const tarea = this.tareas.find(t => t.idTarea === id);
     return tarea ? tarea.nombre : 'Desconocida';
   }
+
+  // Verifica si existe un ciclo de dependencias
+  private tieneCicloDependencias(tareaId: number, dependenciaId: number): boolean {
+    let actual = this.tareas.find(t => t.idTarea === dependenciaId);
+
+    while (actual) {
+      if (actual.idTarea === tareaId) {
+        return true; // Se detectó ciclo
+      }
+
+      // Tomar la próxima dependencia
+      const nextDepId = actual.dependenciasIds?.[0] || null;
+      if (!nextDepId) break;
+
+      actual = this.tareas.find(t => t.idTarea === nextDepId);
+    }
+
+    return false;
+  }
+
+
+
 }

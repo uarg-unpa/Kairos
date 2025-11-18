@@ -85,6 +85,7 @@ export class PlanificacionIteracion implements OnInit {
   }
 
   ngOnInit(): void {
+   
   const usuarioGuardado = localStorage.getItem('usuario_data');
   if (usuarioGuardado) {
     this.usuarioActual = JSON.parse(usuarioGuardado);
@@ -97,7 +98,7 @@ export class PlanificacionIteracion implements OnInit {
 
       if (decodedId) {
         this.proyectoId = decodedId;
-        console.log('Proyecto ID Decodificado:', this.idProyecto);
+        console.log('Proyecto ID Decodificado:', this.proyectoId);
       } else {
         console.error('ID de proyecto inválido en la ruta');
         alert('Acceso denegado o ID de proyecto inválido.');
@@ -109,11 +110,9 @@ export class PlanificacionIteracion implements OnInit {
       return;
     }
 
-    this.getProyectoActual();
-
-  // 🔥 Cargar proyecto e iteracion desde la ruta
+ this.getProyectoActual();
+ 
   this.route.paramMap.subscribe(params => {
-  
     this.filtroIteracionId = Number(params.get('idIteracion'));
     console.log("Proyecto:", this.proyectoId, "Iteración:", this.filtroIteracionId);
 

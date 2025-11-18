@@ -15,9 +15,19 @@
       </button>
     </div>
   </div>
-  <h4 class="text-muted">
-      Iteración: {{ filtroIteracionId }} – {{ iteracionActual?.etapaNombre }}
+  
+  <ng-container *ngIf="iteracionActual; else noIteracion">
+    <h4 class="text-muted">
+    Iteración: {{ iteracionActual.numero }} – {{ iteracionActual.etapaNombre }}
     </h4>
+  </ng-container>
+
+  <ng-template #noIteracion>
+    <h4 class="text-danger">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>No hay iteración actual
+    </h4>
+  </ng-template>
+
 
   <!-- Filtro vencimiento -->
   <div *ngIf="filtroVencimiento" class="alert alert-info d-flex align-items-center justify-content-between mb-3">
