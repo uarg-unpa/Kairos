@@ -84,9 +84,38 @@
       </div>
         <hr>
         <h6>O invita por email</h6>
-        <input type="email" class="form-control mb-2" placeholder="Email" [(ngModel)]="newEmail">
-        <h6>Ingresar rol</h6>
-        <input type="text" class="form-control mb-3" [(ngModel)]="newRol" placeholder="Ej: Diseñador, Analista, Programador">
+        <div class="mb-2">
+          <input 
+            type="email" 
+            class="form-control" 
+            placeholder="Email" 
+            [(ngModel)]="newEmail"
+            name="newEmail"
+            [class.is-invalid]="validarEmail()"
+          >
+          <div class="invalid-feedback" *ngIf="validarEmail()">
+            {{ validarEmail() }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Etiqueta/Rol</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="newRol" 
+            name="newRol"
+            placeholder="Ej: Diseñador, Analista, Programador"
+            maxlength="20"
+            [class.is-invalid]="validarNewRol() && newEmail.trim()"
+          >
+          <div class="invalid-feedback" *ngIf="validarNewRol()">
+            {{ validarNewRol() }}
+          </div>
+          <small class="text-muted">
+            {{ newRol.length }} / {{ maxRolLength }}
+          </small>
+        </div>
         <button class="btn btn-success w-100" (click)="agregarMiembro()">Invitar</button>
       </div>
     </div>

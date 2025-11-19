@@ -41,6 +41,7 @@ export class MiembrosComponent implements OnInit {
   selectedUsuarioId: number | null = null;
   currentUserId: number | null = null;
   miembrosLimiteAlcanzado: boolean = false;
+  maxRolLength: number = 20;
 
 
   constructor(
@@ -180,6 +181,11 @@ private cargarRolEnProyecto(): void {
 
     // Opción 1: Usuario seleccionado del buscador
     if (this.selectedUsuarioId) {
+      const rolError = this.validarNewRol();
+      if (rolError) {
+          this.errorMensaje = rolError;
+          return;
+      }
       this.proyectoService.agregarMiembro(this.proyectoId, this.selectedUsuarioId, this.newRol).subscribe({
         next: () => {
           alert('Miembro agregado');
@@ -191,6 +197,16 @@ private cargarRolEnProyecto(): void {
     }
     // Opción 2: Invitación por email
     else if (this.newEmail.trim()) {
+    const emailError = this.validarEmail();
+      if (emailError) {
+          this.errorMensaje = emailError;
+          return;
+      }
+      const rolError = this.validarNewRol();
+      if (rolError) {
+          this.errorMensaje = rolError;
+          return;
+      }
       this.proyectoService.invitarMiembro(this.proyectoId, this.newEmail, this.newRol).subscribe({
         next: () => {
           alert('Invitación enviada con éxito');
@@ -216,6 +232,28 @@ private cargarRolEnProyecto(): void {
   limiteMiembros(): boolean{
     return this.miembrosLimiteAlcanzado;
   }
+  validarEmail(): string | null {
+  const email = this.newEmail.trim();
+  if (!email) return null;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  
+  if (!emailRegex.test(email)) {
+    return 'El formato del correo es inválido.';
+  }
+  return null;
+}
+
+validarNewRol(): string | null {
+    const rol = this.newRol.trim();
+
+    if (rol.length > this.maxRolLength) {
+        return `Máximo ${this.maxRolLength} caracteres.`;
+    }
+    if (this.newEmail.trim() && !rol) {
+        return 'El rol es obligatorio para invitaciones por email.';
+    }
+    return null;
+}
 
   abrirModalEditar(miembro: any): void {
     if (this.esLider(miembro)) {
