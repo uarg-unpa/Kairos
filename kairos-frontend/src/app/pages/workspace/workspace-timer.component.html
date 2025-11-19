@@ -67,11 +67,23 @@
           <div class="row g-2 small text-muted">
             <div class="col-md-6">
               <span><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
-              <span><i class="bi bi-briefcase me-1"></i>{{ tarea.usuarioRol || 'Miembro' }}</span>
+              <span><i class="bi bi-calendar me-1" style="margin-left: 10px;"></i>{{ tarea.fechaFin }}</span>
             </div>
             <div class="col-md-6">
               <span><i class="bi bi-hourglass me-1"></i>Estimado: {{ tarea.horasEstimadas ?? 0 }}h</span>
             </div>
+          </div>
+
+          <!-- Acciones Rápidas -->
+          <div class="mt-2 d-flex gap-2" *ngIf="tarea.estado !== 'Completado'">
+            <button class="btn btn-sm btn-outline-primary" (click)="startTimerForTask(tarea.idTarea, tarea.nombre)"
+              title="Iniciar Cronómetro">
+              <i class="bi bi-play-fill"></i> Iniciar
+            </button>
+            <button class="btn btn-sm btn-outline-success" (click)="markAsCompleted(tarea.idTarea)"
+              title="Marcar como Completado">
+              <i class="bi bi-check-lg"></i> Completar
+            </button>
           </div>
 
           <!-- Barra de Progreso -->

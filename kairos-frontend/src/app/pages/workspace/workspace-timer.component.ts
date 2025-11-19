@@ -165,13 +165,15 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
           console.log('Tareas cargadas y ordenadas:', this.tareas);
 
-          this.availableTasks = this.tareas.map(t => ({
-            id: t.idTarea,
-            title: t.nombre,
-            status: t.estado,
-            priority: t.prioridad,
-            description: t.descripcion
-          }));
+          this.availableTasks = this.tareas
+            .filter(t => t.estado !== 'Completado')
+            .map(t => ({
+              id: t.idTarea,
+              title: t.nombre,
+              status: t.estado,
+              priority: t.prioridad,
+              description: t.descripcion
+            }));
           this.updateStats();
         },
         error: (err) => {
@@ -348,6 +350,26 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   handleStop(): void {
     this.timerService.stopTimer();
+  }
+
+  startTimerForTask(taskId: number, taskTitle: string): void {
+    // Si ya está corriendo esta tarea, no hacer nada
+    if (this.timerState.taskId === taskId && !this.timerState.isPaused) {
+      return;
+    }
+    // Si está pausada en esta tarea, reanudar
+    if (this.timerState.taskId === taskId && this.timerState.isPaused) {
+      this.timerService.resumeTimer();
+      return;
+    }
+    // Si es otra tarea o no hay nada, iniciar
+    this.timerService.startTimer(taskId, taskTitle);
+  }
+
+  markAsCompleted(taskId: number): void {
+    if (!confirm('¿Estás seguro de marcar esta tarea como completada?')) return;
+
+    this.cambiarEstado(taskId, 'Completado');
   }
 
   // -------------------------
