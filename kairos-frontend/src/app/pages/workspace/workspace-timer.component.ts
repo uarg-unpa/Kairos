@@ -152,6 +152,17 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
             return 0;
           });
 
+          // Cargar tiempos totales
+          this.timerService.getTiemposTotalesUsuario().subscribe({
+            next: (tiemposMap) => {
+              this.tareas.forEach(t => {
+                const minutos = tiemposMap[t.idTarea] || 0;
+                t.tiempoDedicado = parseFloat((minutos / 60).toFixed(2)); // Convertir a horas
+              });
+            },
+            error: (err) => console.error('Error al cargar tiempos totales', err)
+          });
+
           console.log('Tareas cargadas y ordenadas:', this.tareas);
 
           this.availableTasks = this.tareas.map(t => ({

@@ -176,6 +176,16 @@ public Tiempo updateTime(Long idTiempo, TiempoEditRequestDTO request, Long idUsu
                 .sum();
     }
 
+    @Transactional(readOnly = true)
+    public java.util.Map<Long, Integer> getTiemposTotalesPorUsuario(Long idUsuario) {
+        List<Object[]> results = tiempoRepository.sumHorasPorTareaUsuario(idUsuario);
+        return results.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> ((Number) row[1]).intValue()
+                ));
+    }
+
     // Agregaciones para dashboard
     @Transactional(readOnly = true)
     public java.util.List<Object[]> horasPorIteracionGlobal() {
