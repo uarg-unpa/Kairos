@@ -6,8 +6,8 @@ import { CommonModule } from '@angular/common';
 import { Subscription, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TimerService } from '../../services/timer.service';
-import { TaskService } from '../../services/tarea.service'; 
-import { TimerState, TaskTimerInfo } from '../../models/timer.model'; 
+import { TaskService } from '../../services/tarea.service';
+import { TimerState, TaskTimerInfo } from '../../models/timer.model';
 import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
 import { map } from 'rxjs';
@@ -36,30 +36,30 @@ declare var bootstrap: any;
 
 @Component({
   selector: 'app-workspace-timer',
-  standalone: true, 
+  standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-  ], 
+    CommonModule,
+    FormsModule,
+  ],
   templateUrl: './workspace-timer.component.html',
   styleUrls: ['./workspace-timer.component.css']
 })
 export class WorkspaceTimerComponent implements OnInit, OnDestroy {
-  
+
   elapsedTimeDisplay: string = '00:00:00';
   timerState: TimerState = {} as TimerState;
-  
+
   // Lista para el selector del cron?metro y el modal manual
-  availableTasks: TaskTimerInfo[] = []; 
+  availableTasks: TaskTimerInfo[] = [];
   selectedTaskId: number | null = null;
-  
+
   // ?? Tareas para la lista general (requiere mapeo en loadTasks)
-  tareas: Tarea[] = []; 
+  tareas: Tarea[] = [];
   // Propiedades para estad?sticas (como en el prototipo)
-totalTimeToday: string = '0h 0m';
-tasksCompletedToday: number = 0;
-activeTasks: number = 0;
-recentActivities: { time: string; message: string }[] = [];
+  totalTimeToday: string = '0h 0m';
+  tasksCompletedToday: number = 0;
+  activeTasks: number = 0;
+  recentActivities: { time: string; message: string }[] = [];
 
   // -----------------------
   // ?? Paginaci?n y Filtros (adaptado de PlanificacionComponent)
@@ -71,7 +71,8 @@ recentActivities: { time: string; message: string }[] = [];
   filtroEstado: string = 'Todos';
   filtroFechaDesde: string = '';
   filtroFechaHasta: string = '';
-  
+  filtroPrioridad: string = '';
+
   // ?? Usuarios y usuario actual (solo para referencia, el servicio de tareas ya filtra)
   usuarios: Usuario[] = [];
   usuarioActual: Usuario | null = null;
@@ -88,7 +89,7 @@ recentActivities: { time: string; message: string }[] = [];
   //dia actual
   today: string = new Date().toISOString().split('T')[0]
   private manualTimeModal: any; // Instancia del modal
-  
+
   private subscriptions = new Subscription();
   ultimosTiempos: TiempoResponseDTO[] = [];
   editTimeForm: { idTiempo: any; duracionMinutos: any; fechaRegistro: any; descripcion: any; } | undefined;
@@ -97,7 +98,7 @@ recentActivities: { time: string; message: string }[] = [];
   constructor(
     private timerService: TimerService,
     private TaskService: TaskService // <-- Servicio para la carga HTTP
-  ) {}
+  ) { }
 
   // --- FUNCI?N RESTAURADA ---
   private formatTime(seconds: number): string {
@@ -106,30 +107,30 @@ recentActivities: { time: string; message: string }[] = [];
     const secs = seconds % 60;
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
-  
+
   //metodos para el html
-  
+
   getTimerStatusClass(): string {
     if (this.timerState.startTime === null) {
-        return 'alert-info';
+      return 'alert-info';
     } else if (this.timerState.isPaused) {
-        return 'alert-warning';
+      return 'alert-warning';
     } else {
-        return 'alert-success';
+      return 'alert-success';
     }
   }
 
   getTimerStatusText(): string {
     if (this.timerState.startTime === null) {
-        return 'Selecciona una tarea para comenzar';
+      return 'Selecciona una tarea para comenzar';
     }
-    
+
     const taskTitle = this.timerState.taskTitle || 'Tarea Desconocida';
 
     if (this.timerState.isPaused) {
-        return `Pausado: ${taskTitle}`;
+      return `Pausado: ${taskTitle}`;
     } else {
-        return `Cronometrando: ${taskTitle}`;
+      return `Cronometrando: ${taskTitle}`;
     }
   }
   /**
@@ -144,7 +145,15 @@ recentActivities: { time: string; message: string }[] = [];
     this.subscriptions.add(
       source$.pipe(catchError(() => of([] as Tarea[]))).subscribe({
         next: (tareas: Tarea[]) => {
-          this.tareas = tareas || [];
+          // Ordenar: En Progreso primero
+          this.tareas = (tareas || []).sort((a, b) => {
+            if (a.estado === 'En Progreso' && b.estado !== 'En Progreso') return -1;
+            if (a.estado !== 'En Progreso' && b.estado === 'En Progreso') return 1;
+            return 0;
+          });
+
+          console.log('Tareas cargadas y ordenadas:', this.tareas);
+
           this.availableTasks = this.tareas.map(t => ({
             id: t.idTarea,
             title: t.nombre,
@@ -196,26 +205,26 @@ recentActivities: { time: string; message: string }[] = [];
     return `${year}-${month}-${day}`;
   }
   addRecentActivity(message: string): void {
-  const time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-  this.recentActivities.unshift({ time, message });
-  if (this.recentActivities.length > 5) this.recentActivities.pop();
-}
+    const time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    this.recentActivities.unshift({ time, message });
+    if (this.recentActivities.length > 5) this.recentActivities.pop();
+  }
 
   /**
    * ?? Carga las tareas completas (Tarea[]) para el listado inferior (Asignadas al usuario).
    * Usamos el mismo endpoint /mis-tareas que ya usamos para el selector.
    */
   loadFullTareas(): void {
-     this.subscriptions.add(
-        this.TaskService.getTareasAsignadas().pipe(
-            map(tasks => tasks as unknown as Tarea[])
-        ).subscribe({
-            next: (data) => {
-                this.tareas = data;
-                console.log('Tareas completas cargadas para el listado:', this.tareas);
-            },
-            error: (err) => console.error('Error al cargar tareas completas:', err)
-        })
+    this.subscriptions.add(
+      this.TaskService.getTareasAsignadas().pipe(
+        map(tasks => tasks as unknown as Tarea[])
+      ).subscribe({
+        next: (data) => {
+          this.tareas = data;
+          console.log('Tareas completas cargadas para el listado:', this.tareas);
+        },
+        error: (err) => console.error('Error al cargar tareas completas:', err)
+      })
     );
   }
 
@@ -249,29 +258,22 @@ recentActivities: { time: string; message: string }[] = [];
     this.subscriptions.add(this.timerService.elapsedSeconds$.subscribe(seconds => {
       this.elapsedTimeDisplay = this.formatTime(seconds);
     }));
-    
+
     // ?? 4. Inicializar el modal de Bootstrap para Tiempo Manual
     const modalEl = document.getElementById('manualTimeModal');
     if (modalEl && typeof bootstrap !== 'undefined') {
-        this.manualTimeModal = new bootstrap.Modal(modalEl);
+      this.manualTimeModal = new bootstrap.Modal(modalEl);
     }
   }
 
   // -------------------------
-  // ?? L?gica de Paginaci?n y Filtros (adaptada)
-  // -------------------------
-
-  filtroPrioridad: string = '';
-
-tareasFiltradas(): Tarea[] {
-  return this.tareas.filter(t => {
-    const cumpleEstado = this.filtroEstado === 'Todos' || t.estado === this.filtroEstado;
-    const cumplePrioridad = !this.filtroPrioridad || t.prioridad === this.filtroPrioridad;
-    return cumpleEstado && cumplePrioridad;
-  });
-}
-
-  // M?todo para obtener las tareas visibles en la p?gina actual
+  tareasFiltradas(): Tarea[] {
+    return this.tareas.filter(t => {
+      const cumpleEstado = this.filtroEstado === 'Todos' || t.estado === this.filtroEstado;
+      const cumplePrioridad = !this.filtroPrioridad || t.prioridad === this.filtroPrioridad;
+      return cumpleEstado && cumplePrioridad;
+    });
+  }
   tareasPaginadas(): Tarea[] {
     const inicio = (this.paginaActual - 1) * this.tareasPorPagina;
     const fin = inicio + this.tareasPorPagina;
@@ -289,7 +291,7 @@ tareasFiltradas(): Tarea[] {
       this.paginaActual = pagina;
     }
   }
-  
+
   // Cambiar estado de la tarea
   cambiarEstado(tareaId: number, nuevoEstado: string): void {
     const tarea = this.tareas.find(t => t.idTarea === tareaId);
@@ -298,22 +300,22 @@ tareasFiltradas(): Tarea[] {
     tarea.estado = nuevoEstado; // Actualizaci?n optimista en el frontend
     this.TaskService.updateTarea(tareaId, { estado: nuevoEstado, usuarioId: tarea.usuarioId, iteracionId: tarea.iteracionId }).subscribe({
       next: () => {
-          console.log('Estado actualizado');
-          this.loadTasks(); // Recargar para sincronizar
+        console.log('Estado actualizado');
+        this.loadTasks(); // Recargar para sincronizar
       },
       error: (err) => {
-          console.error('Error al actualizar estado:', err);
-          // Revertir cambio si falla
-          this.loadTasks();
-      } 
+        console.error('Error al actualizar estado:', err);
+        // Revertir cambio si falla
+        this.loadTasks();
+      }
     });
   }
-  
+
   // -------------------------
   // Manejadores CU20: Cron?metro (Existentes)
   // -------------------------
 
-  handleStart(): void { 
+  handleStart(): void {
     if (this.timerState.isPaused) {
       this.timerService.resumeTimer();
       return;
@@ -324,16 +326,16 @@ tareasFiltradas(): Tarea[] {
       console.error("Error: Por favor, selecciona una tarea antes de iniciar.");
       return;
     }
-    this.timerService.startTimer(task.id, task.title); 
+    this.timerService.startTimer(task.id, task.title);
   }
 
   handlePause(): void {
     if (this.timerState.startTime !== null && !this.timerState.isPaused) {
-        this.timerService.pauseTimer();
+      this.timerService.pauseTimer();
     }
   }
 
-  handleStop(): void { 
+  handleStop(): void {
     this.timerService.stopTimer();
   }
 
@@ -361,53 +363,53 @@ tareasFiltradas(): Tarea[] {
   }
   // manejadores de tiempos
   loadLast5Times(): void {
-  this.subscriptions.add(
-    this.timerService.getLast5Times().subscribe({
-      next: (tiempos) => {
-        this.ultimosTiempos = tiempos;
-        this.updateStats(); // actualiza con tiempos reales
-      },
-      error: (err) => {
-        console.error('Error al cargar ?ltimos tiempos', err);
-        this.ultimosTiempos = [];
-      }
-    })
-  );
-}
-openEditModal(tiempo: TiempoResponseDTO): void {
-  this.editTimeForm = {
-    idTiempo: tiempo.idTiempo,
-    duracionMinutos: tiempo.duracionMinutos,
-    fechaRegistro: tiempo.fechaRegistro,
-    descripcion: tiempo.descripcion || ''
-  };
-  this.showEditModal = true;
-}
-
-saveEditedTime(): void {
-  if (!this.editTimeForm || this.editTimeForm.duracionMinutos < 1) {
-    alert('La duraci?n debe ser al menos 1 minuto');
-    return;
+    this.subscriptions.add(
+      this.timerService.getLast5Times().subscribe({
+        next: (tiempos) => {
+          this.ultimosTiempos = tiempos;
+          this.updateStats(); // actualiza con tiempos reales
+        },
+        error: (err) => {
+          console.error('Error al cargar ?ltimos tiempos', err);
+          this.ultimosTiempos = [];
+        }
+      })
+    );
+  }
+  openEditModal(tiempo: TiempoResponseDTO): void {
+    this.editTimeForm = {
+      idTiempo: tiempo.idTiempo,
+      duracionMinutos: tiempo.duracionMinutos,
+      fechaRegistro: tiempo.fechaRegistro,
+      descripcion: tiempo.descripcion || ''
+    };
+    this.showEditModal = true;
   }
 
-  this.subscriptions.add(
-    this.timerService.editTime(this.editTimeForm.idTiempo, {
-      duracionMinutos: this.editTimeForm.duracionMinutos,
-      fechaRegistro: this.editTimeForm.fechaRegistro,
-      descripcion: this.editTimeForm.descripcion
-    }).subscribe({
-      next: () => {
-        this.showEditModal = false;
-        this.loadLast5Times();
-        this.loadTasks(); // opcional: recarga tareas
-      },
-      error: (err) => {
-        console.error('Error al editar tiempo', err);
-        alert('Error al guardar. Verifica los datos.');
-      }
-    })
-  );
-}
+  saveEditedTime(): void {
+    if (!this.editTimeForm || this.editTimeForm.duracionMinutos < 1) {
+      alert('La duraci?n debe ser al menos 1 minuto');
+      return;
+    }
+
+    this.subscriptions.add(
+      this.timerService.editTime(this.editTimeForm.idTiempo, {
+        duracionMinutos: this.editTimeForm.duracionMinutos,
+        fechaRegistro: this.editTimeForm.fechaRegistro,
+        descripcion: this.editTimeForm.descripcion
+      }).subscribe({
+        next: () => {
+          this.showEditModal = false;
+          this.loadLast5Times();
+          this.loadTasks(); // opcional: recarga tareas
+        },
+        error: (err) => {
+          console.error('Error al editar tiempo', err);
+          alert('Error al guardar. Verifica los datos.');
+        }
+      })
+    );
+  }
 
   /** Maneja el env?o del formulario de registro manual. */
   handleManualTimeSubmission(): void {
@@ -415,43 +417,43 @@ saveEditedTime(): void {
 
     // 1. Validaciones b?sicas
     if (!entry.idTarea || (entry.hours === 0 && entry.minutes <= 0 && entry.seconds === 0)) {
-        alert("Debe seleccionar una tarea e ingresar una duraci?n de al menos un minuto.");
-        return; 
+      alert("Debe seleccionar una tarea e ingresar una duraci?n de al menos un minuto.");
+      return;
     }
     if (new Date(entry.fechaRegistro) > new Date()) {
-        alert("No puede registrar tiempo en una fecha futura.");
-        return;
+      alert("No puede registrar tiempo en una fecha futura.");
+      return;
     }
-    
+
     // 2. Calcular duraci?n total en segundos
     const totalSeconds = (entry.hours * 3600) + (entry.minutes * 60) + entry.seconds;
 
     // 3. Preparar payload para TaskService
     const taskTitle = this.availableTasks.find(t => t.id === entry.idTarea)?.title || 'Tarea Desconocida';
-    
+
     const payload = {
-        idTarea: entry.idTarea,
-        durationSeconds: totalSeconds,
-        taskTitle: taskTitle
+      idTarea: entry.idTarea,
+      durationSeconds: totalSeconds,
+      taskTitle: taskTitle
     };
 
     // 4. Enviar al backend
     this.subscriptions.add(
-        this.TaskService.registrarTiempo(payload).subscribe({
-            next: () => {
-                alert('? Tiempo manual registrado exitosamente.');
-                this.loadTasks(); // Recargar para actualizar tiempos registrados en la lista
-                this.closeManualTimeModal();
-            },
-            error: (err) => {
-                console.error('? Error al registrar tiempo manual:', err);
-                const errorMessage = err.error && err.error.message ? err.error.message : 'Error al registrar tiempo. Verifique el estado de la tarea.';
-                alert(`Error de Registro: ${errorMessage}`);
-            }
-        })
+      this.TaskService.registrarTiempo(payload).subscribe({
+        next: () => {
+          alert('? Tiempo manual registrado exitosamente.');
+          this.loadTasks(); // Recargar para actualizar tiempos registrados en la lista
+          this.closeManualTimeModal();
+        },
+        error: (err) => {
+          console.error('? Error al registrar tiempo manual:', err);
+          const errorMessage = err.error && err.error.message ? err.error.message : 'Error al registrar tiempo. Verifique el estado de la tarea.';
+          alert(`Error de Registro: ${errorMessage}`);
+        }
+      })
     );
   }
-  
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
