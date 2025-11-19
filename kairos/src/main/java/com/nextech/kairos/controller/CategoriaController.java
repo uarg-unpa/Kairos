@@ -42,7 +42,7 @@ public class CategoriaController {
 
     @PostMapping
     public ResponseEntity<CategoriaResponse> crearCategoria(@RequestBody CategoriaRequest categoriaRequest) {
-        Categoria nueva = categoriaService.guardarCategoria(categoriaMapper.toEntity(categoriaRequest));
+        Categoria nueva = categoriaService.crearCategoria(categoriaMapper.toEntity(categoriaRequest));
         return ResponseEntity.ok(categoriaMapper.toResponse(nueva));
     }
 

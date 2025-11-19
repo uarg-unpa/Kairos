@@ -49,15 +49,15 @@ public class CategoriaService implements ICategoriaService {
     }
     
     @Override
-    public Categoria crearCategoria(Categoria categoria, Long idProyecto) {
+    public Categoria crearCategoria(Categoria categoria) {
         // Lógica de creación robusta de tu código original
-        Optional<Proyecto> proyectoOpt = proyectoRepository.findById(idProyecto);
+        Optional<Proyecto> proyectoOpt = proyectoRepository.findById(categoria.getProyecto().getIdProyecto());
         if (proyectoOpt.isEmpty()) {
-            throw new RuntimeException("Proyecto no encontrado con ID: " + idProyecto);
+            throw new RuntimeException("Proyecto no encontrado con ID: " + categoria.getProyecto().getIdProyecto());
         }
         
         Proyecto proyecto = proyectoOpt.get();
-        List<Categoria> categoriasExistentes = categoriaRepository.findByProyectoIdProyectoAndNombre(idProyecto, categoria.getNombre());
+        List<Categoria> categoriasExistentes = categoriaRepository.findByProyectoIdProyectoAndNombre(categoria.getProyecto().getIdProyecto(), categoria.getNombre());
         if (!categoriasExistentes.isEmpty()) {
             throw new RuntimeException("Ya existe una categoría con el nombre '" + categoria.getNombre() + "' en este proyecto.");
         }

@@ -133,17 +133,25 @@ export class PlanificacionComponent implements OnInit {
     });
   }
 
-  private cargarMiembros(): void {
-    if(!this.proyectoId) return;
-    this.proyectoService.getMiembros(this.proyectoId).subscribe({
-      next: (data) => {this.usuarios = data, 
-        console.log("Miembros", this.usuarios)
-        
-      },
-      error: (err) => console.error('Error al cargar miembros', err)
-    })
-     
-  }
+ private cargarMiembros(): void {
+  if (!this.proyectoId) return;
+
+  this.proyectoService.getProyectoById(this.proyectoId).subscribe({
+    next: (proyecto) => {
+      this.usuarios = (proyecto.usuariosProyecto ?? []).map(u => ({
+        id: u.idUsuario,
+        nombre: u.nombre,
+        email: u.email,
+        rol: [] // si no manejás roles todavía, dejalo como array vacío
+      }));
+
+      console.log("Usuarios convertidos:", this.usuarios);
+    },
+    error: (err) => console.error("Error al cargar miembros:", err)
+  });
+}
+
+
 
   private cargarEtapas(): void {
     if (!this.proyectoId) return;
