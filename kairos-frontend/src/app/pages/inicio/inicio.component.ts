@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ProyectoService } from '../../services/proyecto.service';
 import { IdCoderService } from '../../services/id-coder.service'; 
+import { UsuariosService } from '../../services/usuarios.service';
 import { Router } from '@angular/router';
 import { Proyecto } from '../../models/proyecto.model';
 import { RouterModule } from '@angular/router';
@@ -45,11 +46,16 @@ export class InicioComponent implements OnInit {
     logo: '' as string | ArrayBuffer | null
   };
 
+  searchLider: string = "";
+  resultadosLider: any[] = [];
+  liderSeleccionado: any = null;
+
   constructor(
     public authService: AuthService,
     private proyectoService: ProyectoService,
     private router: Router,
     private idCoderService: IdCoderService,
+    private usuariosService: UsuariosService
   ) {}
 
   ngOnInit(): void {
@@ -68,6 +74,9 @@ export class InicioComponent implements OnInit {
     this.mostrarModal = false;
     this.nuevoProyecto = { nombre: '', equipo: '', descripcion: '', fechaInicio: '', logo: '' };
     this.liderId = null;
+    this.searchLider = "";
+    this.resultadosLider = [];
+    this.liderSeleccionado = null;
     document.body.classList.remove('modal-open');
     const backdrop = document.querySelector('.modal-backdrop');
     if (backdrop) backdrop.remove();
@@ -125,17 +134,63 @@ export class InicioComponent implements OnInit {
   this.proyectoService.crearProyecto(payload).subscribe({
     next: (nuevo) => {
       this.proyectos.push(nuevo);
-      this.cerrarModal();
       alert('Proyecto creado');
+      this.cerrarModal();
     },
     error: (err) => {
       this.errorMensaje = err.error?.error || 'Error al crear';
     }
   });
 }
+buscarLider(): void {
+  if (this.searchLider.trim().length < 2) {
+    this.resultadosLider = [];
+    return;
+  }
+  
+
+  this.usuariosService.searchByName(this.searchLider).subscribe({
+    next: (usuarios) => {
+      this.resultadosLider = usuarios;
+    },
+    error: () => {
+      this.resultadosLider = [];
+    }
+  });
+
+}
+
+seleccionarLider(usuario: any): void {
+  this.liderSeleccionado = usuario;
+  this.liderId = usuario.id;
+  this.searchLider = `${usuario.nombre} (${usuario.email})`; 
+  this.resultadosLider = [];
+}
+
 get hoyISO(): string {
   return new Date().toISOString().split('T')[0];
 }
+limitarAnio(event: any): void {
+  let valor = event.target.value;
+
+  if (!valor) return;
+
+  const partes = valor.split("-");
+
+  if (partes.length >= 1) {
+    let anio = partes[0];
+
+    if (anio.length > 4) {
+      anio = anio.slice(0, 4);
+    }
+
+    // Reconstruye la fecha
+    partes[0] = anio;
+    event.target.value = partes.join("-");
+    this.nuevoProyecto.fechaInicio = event.target.value;
+  }
+}
+
 
   private cargarUsuarioYProyectos(): void {
     this.authService.getCurrentUser().subscribe({

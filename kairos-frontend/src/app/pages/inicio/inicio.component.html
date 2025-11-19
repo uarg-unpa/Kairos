@@ -174,7 +174,9 @@
                 name="fechaInicio"
                 [class.is-invalid]="validarFecha()"
                 [min]="hoyISO"
+                (input)="limitarAnio($event)"
               >
+
               <div class="invalid-feedback" *ngIf="validarFecha()">
                 {{ validarFecha() }}
               </div>
@@ -182,18 +184,35 @@
 
             <div class="col-md-6">
               <label class="form-label">Líder del Proyecto *</label>
-              <select
-                class="form-select"
-                [(ngModel)]="liderId"
-                name="liderId"
-                required
-              >
-                <option [ngValue]="null">Seleccionar líder...</option>
-                <option *ngFor="let u of usuarios" [ngValue]="u.id">
-                  {{ u.nombre }} ({{ u.email }})
-                </option>
-              </select>
-            </div>
+              <div class="position-relative">
+                  <input 
+                      type="text" 
+                      class="form-control" 
+                      placeholder="Buscar líder..." 
+                      [(ngModel)]="searchLider" 
+                      name="busquedaLider"
+                      [class.is-invalid]="!liderId" 
+                      (input)="buscarLider()"
+                      required
+                  >
+                  
+                  <div class="invalid-feedback" *ngIf="!liderId">
+                      Selecciona un líder
+                  </div>
+
+                  <ul *ngIf="resultadosLider.length > 0" class="list-group position-absolute w-100 shadow"
+                      style="max-height: 180px; overflow-y:auto; z-index: 1000;">
+                      <li *ngFor="let u of resultadosLider" (click)="seleccionarLider(u)" 
+                          class="list-group-item list-group-item-action">
+                          {{ u.nombre }} ({{ u.email }})
+                      </li>
+                  </ul>
+              </div>
+              
+              <div *ngIf="liderSeleccionado" class="mt-1 text-success">
+                  Seleccionado: <strong>{{ liderSeleccionado.nombre }} ({{ liderSeleccionado.email }})</strong>
+              </div>
+          </div>
           </div>
 
           <!-- LOGO -->
