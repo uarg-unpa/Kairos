@@ -271,22 +271,25 @@ private obtenerDataGrafico(canvasId: string): number[] {
     this.loadingHorasEtapa = true;
     this.loadingTareasData = true;
 
-    let range = this.computeRange();
     const actualizarIteraciones = (it: any[] | null | undefined) => {
       this.iteraciones = it || [];
       this.aplicarRestriccionFiltroTiempo();
-      range = this.computeRange();
-      this.actualizarIteracionesRango(range);
+      const finalRange = this.computeRange();
+      this.actualizarIteracionesRango(finalRange);
       this.reloadHorasPorDia();
+      this.cargarDatos(finalRange);
     };
+    const manejarErrorIteraciones = () => actualizarIteraciones([]);
     if (this.filtroEtapa) {
-      this.iteracionService.getIteracionesPorEtapaId(this.filtroEtapa).subscribe(actualizarIteraciones);
+      this.iteracionService.getIteracionesPorEtapaId(this.filtroEtapa).subscribe(actualizarIteraciones, manejarErrorIteraciones);
     } else if (this.proyectoId) {
-      this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(actualizarIteraciones);
+      this.iteracionService.getIteracionesPorProyectoId(this.proyectoId).subscribe(actualizarIteraciones, manejarErrorIteraciones);
     } else {
-      this.iteracionService.getIteraciones().subscribe(actualizarIteraciones);
+      this.iteracionService.getIteraciones().subscribe(actualizarIteraciones, manejarErrorIteraciones);
     }
+  }
 
+  private cargarDatos(range: { from: string | null; to: string | null }) {
     const iterParams = new URLSearchParams();
     if (this.filtroEtapa) iterParams.set('etapaId', String(this.filtroEtapa));
     else if (this.proyectoId) iterParams.set('proyectoId', String(this.proyectoId));
@@ -395,7 +398,9 @@ private obtenerDataGrafico(canvasId: string): number[] {
         this.procesarTareasDesdeCache([]);
       });
     }
-  }  private actualizarHorasIteracionChart() {
+  }
+
+  private actualizarHorasIteracionChart() {
     const orderedIds: number[] = [];
     const pushId = (value: number | null | undefined) => {
       if (value === null || value === undefined) return;
