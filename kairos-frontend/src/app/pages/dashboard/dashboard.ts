@@ -786,7 +786,8 @@ private obtenerDataGrafico(canvasId: string): number[] {
       }
       return true;
     };
-    let tareas = (ts || []).filter(filtrar);
+    const tareasFiltradas = (ts || []).filter(filtrar);
+    let tareas = tareasFiltradas;
     const iterSet = this.iteracionesRangoActual;
     if (iterSet) {
       tareas = tareas.filter(t => iterSet.has(Number(t?.iteracionId)));
@@ -822,6 +823,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
       if (Number.isFinite(id)) iterPorId.set(id, it);
     });
     const pendientes = tareas.filter(esPendiente);
+    const pendientesRecordatorio = tareasFiltradas.filter(esPendiente);
     const iterActivas = (this.iteraciones || []).filter(it => {
       const ini = parseFecha(it?.fechaInicio);
       const fin = parseFecha(it?.fechaFin);
@@ -856,7 +858,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
       this.proximasCount = 0;
     }
 
-    this.tareasNoFinalizadas = pendientes.filter(t => {
+    this.tareasNoFinalizadas = pendientesRecordatorio.filter(t => {
       const iterId = Number(t?.iteracionId);
       const iter = iterPorId.get(iterId);
       const finIter = parseFecha(iter?.fechaFin);

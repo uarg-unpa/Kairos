@@ -286,11 +286,6 @@
                   <i class="bi bi-chevron-left"></i>
                 </button>
 
-                <button class="btn btn-sm btn-outline-secondary" title="Semana actual"
-                  (click)="cambiarSemana(-filtroSemana)" [disabled]="filtroSemana === 0">
-                  Hoy
-                </button>
-
                 <button class="btn btn-sm btn-outline-secondary" title="Siguiente semana" (click)="cambiarSemana(1)"
                   [disabled]="nextSemanaDisabled()">
                   <i class="bi bi-chevron-right"></i>
