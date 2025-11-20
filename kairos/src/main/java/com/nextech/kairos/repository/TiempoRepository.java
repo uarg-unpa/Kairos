@@ -16,6 +16,8 @@ public interface TiempoRepository extends JpaRepository<Tiempo, Long> {
 
     
     List<Tiempo> findByTareaIdTarea(Long idTarea);
+    
+    List<Tiempo> findByTareaPersonal(com.nextech.kairos.model.TareaPersonal tareaPersonal);
 
     @Query("SELECT t FROM Tiempo t WHERE t.usuario.id = :idUsuario")
     List<Tiempo> findByUsuarioId(Long idUsuario);

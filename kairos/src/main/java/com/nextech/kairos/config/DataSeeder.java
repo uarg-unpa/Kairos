@@ -572,13 +572,7 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void addTimeRecords(Tarea tarea, Usuario usuario, LocalDate fechaBase, int numRecords) {
-        java.util.List<String> comentariosActividad = Arrays.asList(
-            "Avance significativo",
-            "En progreso",
-            "Revisión completada",
-            "Pruebas iniciadas",
-            "Integración exitosa"
-        );
+
 
         for (int i = 0; i < numRecords; i++) {
             Tiempo tiempo = new Tiempo();

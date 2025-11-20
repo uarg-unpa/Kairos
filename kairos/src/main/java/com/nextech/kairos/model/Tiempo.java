@@ -1,9 +1,7 @@
 package com.nextech.kairos.model;
 
 import java.time.LocalDate;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,6 +26,9 @@ public class Tiempo {
 
     @Column(name = "fecha_registro", nullable = false)
     private LocalDate fechaRegistro;
+    
+    @Column(name = "descripcion")
+    private String descripcion;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,8 +37,13 @@ public class Tiempo {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "idTarea", nullable = false)
+    @JoinColumn(name = "idTarea", nullable = true)
     private Tarea tarea;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "idTareaPersonal", nullable = true)
+    private TareaPersonal tareaPersonal;
 
     public Tiempo() {}
 
@@ -47,8 +53,12 @@ public class Tiempo {
     public void setDuracion(Integer duracion) { this.duracion = duracion; }
     public LocalDate getFechaRegistro() { return fechaRegistro; }
     public void setFechaRegistro(LocalDate fechaRegistro) { this.fechaRegistro = fechaRegistro; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
     public Tarea getTarea() { return tarea; }
     public void setTarea(Tarea tarea) { this.tarea = tarea; }
+    public TareaPersonal getTareaPersonal() { return tareaPersonal; }
+    public void setTareaPersonal(TareaPersonal tareaPersonal) { this.tareaPersonal = tareaPersonal; }
 }

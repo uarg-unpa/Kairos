@@ -6,7 +6,8 @@ import { map } from 'rxjs/operators';
 import { TaskTimerInfo } from '../models/timer.model';
 
 interface TiempoRegistroRequest {
-  idTarea: number;
+  idTarea: number | null;
+  idTareaPersonal?: number | null;
   duracionSegundos: number;
   fechaRegistro: string;
   descripcion?: string;
@@ -68,10 +69,11 @@ export class TaskService {
   /**
    * Envía el tiempo registrado por el cronómetro al servidor (POST /api/tiempos).
    */
-  registrarTiempo(data: { idTarea: number, durationSeconds: number, taskTitle: string }): Observable<any> {
+  registrarTiempo(data: { idTarea: number | null, idTareaPersonal?: number | null, durationSeconds: number, taskTitle: string }): Observable<any> {
 
     const payload: TiempoRegistroRequest = {
       idTarea: data.idTarea,
+      idTareaPersonal: data.idTareaPersonal,
       duracionSegundos: data.durationSeconds,
       fechaRegistro: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
       descripcion: `Tiempo cronometrado para: ${data.taskTitle}`

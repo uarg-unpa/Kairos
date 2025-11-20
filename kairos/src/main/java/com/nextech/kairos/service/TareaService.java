@@ -3,6 +3,7 @@ package com.nextech.kairos.service;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 import com.nextech.kairos.model.Iteracion;
 import com.nextech.kairos.model.Tarea;
 import com.nextech.kairos.repository.TareaRepository;
+import com.nextech.kairos.repository.TareaPersonalRepository;
+import com.nextech.kairos.repository.TiempoRepository;
+import com.nextech.kairos.repository.CategoriaRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -132,6 +136,55 @@ public class TareaService implements ITareaService {
     @Override
     public List<Tarea> obtenerTareasPorProyectoYIteracion(Long idProyecto, Long idIteracion) {
         return tareaRepository.findByProyectoIdAndIteracionId(idProyecto, idIteracion);
+    }
+
+    @Autowired
+    private TareaPersonalRepository tareaPersonalRepository;
+    @Autowired
+    private TiempoRepository tiempoRepository;
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
+    @Transactional
+    public Tarea acceptPersonalTask(Long personalTaskId, Long iteracionId, Long categoriaId) {
+        com.nextech.kairos.model.TareaPersonal personalTask = tareaPersonalRepository.findById(personalTaskId)
+            .orElseThrow(() -> new IllegalArgumentException("Tarea personal no encontrada"));
+
+        Iteracion iteracion = iteracionService.obtenerPorId(iteracionId)
+            .orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada"));
+            
+        com.nextech.kairos.model.Categoria categoria = categoriaRepository.findById(categoriaId)
+            .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
+
+        Tarea nuevaTarea = new Tarea();
+        nuevaTarea.setNombre(personalTask.getNombre());
+        nuevaTarea.setDescripcion(personalTask.getDescripcion());
+        nuevaTarea.setUsuario(personalTask.getUsuario());
+        nuevaTarea.setFechaCreacion(personalTask.getFechaCreacion());
+        nuevaTarea.setEstado("En Progreso"); 
+        nuevaTarea.setPrioridad("Media"); 
+        nuevaTarea.setIteracion(iteracion);
+        
+        Set<com.nextech.kairos.model.Categoria> categorias = new HashSet<>();
+        categorias.add(categoria);
+        nuevaTarea.setCategorias(categorias);
+        
+        // Save new task
+        nuevaTarea = tareaRepository.save(nuevaTarea);
+        
+        // Move time records
+        List<com.nextech.kairos.model.Tiempo> tiempos = tiempoRepository.findByTareaPersonal(personalTask);
+        for (com.nextech.kairos.model.Tiempo t : tiempos) {
+            t.setTareaPersonal(null);
+            t.setTarea(nuevaTarea);
+            tiempoRepository.save(t);
+        }
+        
+        // Update personal task status
+        personalTask.setEstado("ACEPTADA");
+        tareaPersonalRepository.save(personalTask);
+        
+        return nuevaTarea;
     }
 
 }

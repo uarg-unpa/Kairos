@@ -1,7 +1,9 @@
-import { Component, OnInit, ViewChild,} from '@angular/core';
+import { Component, OnInit, ViewChild, } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
 import { IdCoderService } from '../../services/id-coder.service';
 import { TaskService } from '../../services/tarea.service';
@@ -23,6 +25,7 @@ import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
 import { Comentario } from '../../models/comentario.model';
 import { Etapa } from '../../models/etapa.model';
+import { PersonalTask } from '../../models/personal-task.model';
 
 @Component({
   selector: 'app-planificacion',
@@ -54,6 +57,8 @@ export class PlanificacionComponent implements OnInit {
   iteracionActual: Iteracion | null = null;
   proyectoNombre: string | null = null;
 
+  proposedTasks: PersonalTask[] = [];
+
   // Usuario y comentarios
   usuarios: Usuario[] = [];
   usuarioActual: Usuario | null = null;
@@ -83,10 +88,9 @@ export class PlanificacionComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private idCoderService: IdCoderService,
-    private proyectoService: ProyectoService
-  ) {
-   
-  }
+    private proyectoService: ProyectoService,
+    private http: HttpClient
+  ) { }
 
   ngOnInit(): void {
     const encodedId = this.route.snapshot.paramMap.get('id');
@@ -98,9 +102,9 @@ export class PlanificacionComponent implements OnInit {
         this.proyectoId = id;
         this.cargarNombreProyecto(id);
         this.cargarMiembros();
-        console.log("IdPROYECTO", this.proyectoId)
+        this.loadProposedTasks();
       } else {
-        alert('Acceso denegado o ID de proyecto inválido.');
+        Swal.fire('Error', 'Acceso denegado o ID de proyecto inválido.', 'error');
         this.router.navigate(['/inicio']);
         return;
       }
@@ -123,33 +127,33 @@ export class PlanificacionComponent implements OnInit {
   }
   private cargarNombreProyecto(id: number): void {
     this.proyectoService.getProyectoById(id).subscribe({
-        next: (proyecto) => {
-            this.proyectoNombre = proyecto.nombre;
-        },
-        error: (err) => {
-            console.error('Error al cargar datos del proyecto:', err);
-            this.proyectoNombre = 'Proyecto Desconocido'; 
-        }
+      next: (proyecto) => {
+        this.proyectoNombre = proyecto.nombre;
+      },
+      error: (err) => {
+        console.error('Error al cargar datos del proyecto:', err);
+        this.proyectoNombre = 'Proyecto Desconocido';
+      }
     });
   }
 
- private cargarMiembros(): void {
-  if (!this.proyectoId) return;
+  private cargarMiembros(): void {
+    if (!this.proyectoId) return;
 
-  this.proyectoService.getProyectoById(this.proyectoId).subscribe({
-    next: (proyecto) => {
-      this.usuarios = (proyecto.usuariosProyecto ?? []).map(u => ({
-        id: u.idUsuario,
-        nombre: u.nombre,
-        email: u.email,
-        rol: [] // si no manejás roles todavía, dejalo como array vacío
-      }));
+    this.proyectoService.getProyectoById(this.proyectoId).subscribe({
+      next: (proyecto) => {
+        this.usuarios = (proyecto.usuariosProyecto ?? []).map(u => ({
+          id: u.idUsuario,
+          nombre: u.nombre,
+          email: u.email,
+          rol: [] // si no manejás roles todavía, dejalo como array vacío
+        }));
 
-      console.log("Usuarios convertidos:", this.usuarios);
-    },
-    error: (err) => console.error("Error al cargar miembros:", err)
-  });
-}
+        console.log("Usuarios convertidos:", this.usuarios);
+      },
+      error: (err) => console.error("Error al cargar miembros:", err)
+    });
+  }
 
 
 
@@ -219,13 +223,77 @@ export class PlanificacionComponent implements OnInit {
     });
   }
 
+  private loadProposedTasks(): void {
+    if (!this.proyectoId) return;
+    this.http.get<PersonalTask[]>(`/api/personal-tasks/project/${this.proyectoId}/proposed`)
+      .subscribe({
+        next: (data) => this.proposedTasks = data,
+        error: (err) => console.error('Error loading proposed tasks:', err)
+      });
+  }
+
+  getCategoryName(id: number | undefined): string {
+    if (!id) return 'Sin categoría';
+    const cat = this.categorias.find(c => c.idCategoria === id);
+    return cat ? cat.nombre : 'Desconocida';
+  }
+
+  acceptTask(task: PersonalTask): void {
+    if (!this.iteracionActual) {
+      Swal.fire('Error', 'No active iteration to assign the task to.', 'error');
+      return;
+    }
+
+    const categoryId = task.categoriaPropuestaId;
+    if (!categoryId) {
+      Swal.fire('Error', 'Task has no proposed category.', 'error');
+      return;
+    }
+
+    this.http.post(`/api/personal-tasks/${task.id}/accept`, null, {
+      params: {
+        iteracionId: this.iteracionActual.idIteracion.toString(),
+        categoriaId: categoryId.toString()
+      }
+    }).subscribe({
+      next: () => {
+        Swal.fire('Success', 'Task accepted successfully', 'success');
+        this.loadProposedTasks();
+        this.cargarTareas();
+      },
+      error: (err) => console.error('Error accepting task:', err)
+    });
+  }
+
+  rejectTask(task: PersonalTask): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, reject it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.http.put(`/api/personal-tasks/${task.id}/reject`, {}).subscribe({
+          next: () => {
+            Swal.fire('Rejected!', 'The task has been rejected.', 'success');
+            this.loadProposedTasks();
+          },
+          error: (err) => console.error('Error rejecting task:', err)
+        });
+      }
+    })
+  }
+
   // ===== Manejadores de Eventos =====
 
   onAbrirModalCrear(): void {
-  this.taskFormModal.tareaEnEdicion = null;   // <- Indicar que NO es edición
-  this.taskFormModal.resetModal();            // <- Forzar reinicio de datos
-  this.taskFormModal.abrirModal();            // <- Ahora abrir el modal limpio
-}
+    this.taskFormModal.tareaEnEdicion = null;   // <- Indicar que NO es edición
+    this.taskFormModal.resetModal();            // <- Forzar reinicio de datos
+    this.taskFormModal.abrirModal();            // <- Ahora abrir el modal limpio
+  }
 
 
   onAbrirModalEditar(tarea: Tarea): void {
@@ -282,7 +350,7 @@ export class PlanificacionComponent implements OnInit {
       categoriaIds: datos.categoriaId ? [Number(datos.categoriaId)] : [],
       dependenciasIds: datos.dependenciaId ? [Number(datos.dependenciaId)] : []
     };
-    
+
     console.log('Datos para editar tarea:', tareaParaBackend);
 
     this.taskService.updateTarea(datos.tareaId, tareaParaBackend).subscribe({
@@ -299,22 +367,33 @@ export class PlanificacionComponent implements OnInit {
           err?.error?.message ||   // caso: { message: "mensaje" }
           'Ocurrió un error inesperado.';
 
-        alert('⚠️ ' + mensaje);
+        Swal.fire('Error', mensaje, 'error');
         console.error('Error completo:', err);
 
       }
-   
+
     });
   }
 
   onEliminarTarea(tareaId: number): void {
-    if (!confirm('¿Estás seguro que quieres eliminar esta tarea?')) return;
-
-    this.taskService.deleteTarea(tareaId).subscribe({
-      next: () => {
-        this.tareas = this.tareas.filter(t => t.idTarea !== tareaId);
-      },
-      error: (err) => console.error('Error al eliminar tarea:', err)
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "No podrás revertir esto",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.taskService.deleteTarea(tareaId).subscribe({
+          next: () => {
+            this.tareas = this.tareas.filter(t => t.idTarea !== tareaId);
+            Swal.fire('Eliminado', 'La tarea ha sido eliminada.', 'success');
+          },
+          error: (err) => console.error('Error al eliminar tarea:', err)
+        });
+      }
     });
   }
 
@@ -372,16 +451,16 @@ export class PlanificacionComponent implements OnInit {
     this.categoriaService.createCategoria(categoriaBackend).subscribe({
       next: () => this.cargarCategorias(),
       error: (err) => {
-      console.error('Error al crear categoría:', err);
+        console.error('Error al crear categoría:', err);
 
-      // mensaje personalizado del backend
-      const mensaje =
-        err?.error?.message ||  // <<--- TU CASO
-        err?.message ||
-        'Ocurrió un error inesperado al crear la categoría.';
+        // mensaje personalizado del backend
+        const mensaje =
+          err?.error?.message ||  // <<--- TU CASO
+          err?.message ||
+          'Ocurrió un error inesperado al crear la categoría.';
 
-      alert('⚠️ ' + mensaje);
-    }
+        Swal.fire('Error', mensaje, 'error');
+      }
 
     });
   }
@@ -392,16 +471,16 @@ export class PlanificacionComponent implements OnInit {
       .subscribe({
         next: () => this.cargarCategorias(),
         error: (err) => {
-      console.error('Error al crear categoría:', err);
+          console.error('Error al crear categoría:', err);
 
-      // mensaje personalizado del backend
-      const mensaje =
-        err?.error?.message ||  // <<--- TU CASO
-        err?.message ||
-        'Ocurrió un error inesperado al editar la categoría.';
+          // mensaje personalizado del backend
+          const mensaje =
+            err?.error?.message ||  // <<--- TU CASO
+            err?.message ||
+            'Ocurrió un error inesperado al editar la categoría.';
 
-      alert('⚠️ ' + mensaje);
-    }
+          Swal.fire('Error', mensaje, 'error');
+        }
 
       });
   }
@@ -468,14 +547,14 @@ export class PlanificacionComponent implements OnInit {
   }
 
   onFiltrosChange(filtros: any): void {
-  this.filtroCategoria = filtros.categoria;
-  this.filtroResponsable = filtros.responsable;
-  this.filtroEstado = filtros.estado;
-  this.filtroFechaDesde = filtros.fechaDesde;
-  this.filtroFechaHasta = filtros.fechaHasta;
+    this.filtroCategoria = filtros.categoria;
+    this.filtroResponsable = filtros.responsable;
+    this.filtroEstado = filtros.estado;
+    this.filtroFechaDesde = filtros.fechaDesde;
+    this.filtroFechaHasta = filtros.fechaHasta;
 
-  this.paginaActual = 1; 
-}
+    this.paginaActual = 1;
+  }
 
 
   clearVencimientoFilter(): void {

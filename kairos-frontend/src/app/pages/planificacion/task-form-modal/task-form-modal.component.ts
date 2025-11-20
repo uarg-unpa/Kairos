@@ -5,6 +5,7 @@ import { Tarea } from '../../../models/tarea.model';
 import { CategoriaDTO } from '../../../services/categoria.service';
 import { Iteracion } from '../../../models/iteracion.model';
 import { Usuario } from '../../../models/usuarios';
+import Swal from 'sweetalert2';
 
 declare var bootstrap: any;
 
@@ -97,14 +98,13 @@ export class TaskFormModalComponent implements OnInit {
       const iterInicio = new Date(this.iteracionActual?.fechaInicio || '');
       const iterFin = new Date(this.iteracionActual?.fechaFin || '');
       if (fin < inicio) {
-        alert('⚠️ La fecha de fin no puede ser anterior a la fecha de creación.');
+        Swal.fire('Error', 'La fecha de fin no puede ser anterior a la fecha de creación.', 'error');
         return;
       }
       if (inicio < iterInicio || fin > iterFin ||
         fin < iterInicio || inicio > iterFin) {
 
-        alert(`⚠️ Las fechas deben estar dentro del rango de la iteración actual:
-${this.iteracionActual?.fechaInicio} a ${this.iteracionActual?.fechaFin}.`);
+        Swal.fire('Error', `Las fechas deben estar dentro del rango de la iteración actual: ${this.iteracionActual?.fechaInicio} a ${this.iteracionActual?.fechaFin}.`, 'error');
 
         return;
       }
@@ -119,7 +119,7 @@ ${this.iteracionActual?.fechaInicio} a ${this.iteracionActual?.fechaFin}.`);
     }
 
     if (this.nuevaTarea.horasEstimadas < 0) {
-      alert('⚠️ Las horas estimadas no pueden ser negativas.');
+      Swal.fire('Error', 'Las horas estimadas no pueden ser negativas.', 'error');
       return;
     }
 
@@ -138,7 +138,7 @@ ${this.iteracionActual?.fechaInicio} a ${this.iteracionActual?.fechaFin}.`);
 
     // ❌ Validar que no dependa de sí misma
     if (this.tareaEnEdicion && this.nuevaTarea.dependenciaId === this.tareaEnEdicion.idTarea) {
-      alert("⚠️ Una tarea no puede depender de sí misma asdds.");
+      Swal.fire('Error', 'Una tarea no puede depender de sí misma.', 'error');
       return;
     }
 
@@ -150,7 +150,7 @@ ${this.iteracionActual?.fechaInicio} a ${this.iteracionActual?.fechaFin}.`);
       );
 
       if (ciclo) {
-        alert("⚠️ Dependencia inválida. Se detectó una dependencia circular.");
+        Swal.fire('Error', 'Dependencia inválida. Se detectó una dependencia circular.', 'error');
         return;
       }
     }
