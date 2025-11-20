@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild,} from '@angular/core';
+import { Component, OnInit, ViewChild, } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -85,7 +85,7 @@ export class PlanificacionComponent implements OnInit {
     private idCoderService: IdCoderService,
     private proyectoService: ProyectoService
   ) {
-   
+
   }
 
   ngOnInit(): void {
@@ -123,33 +123,33 @@ export class PlanificacionComponent implements OnInit {
   }
   private cargarNombreProyecto(id: number): void {
     this.proyectoService.getProyectoById(id).subscribe({
-        next: (proyecto) => {
-            this.proyectoNombre = proyecto.nombre;
-        },
-        error: (err) => {
-            console.error('Error al cargar datos del proyecto:', err);
-            this.proyectoNombre = 'Proyecto Desconocido'; 
-        }
+      next: (proyecto) => {
+        this.proyectoNombre = proyecto.nombre;
+      },
+      error: (err) => {
+        console.error('Error al cargar datos del proyecto:', err);
+        this.proyectoNombre = 'Proyecto Desconocido';
+      }
     });
   }
 
- private cargarMiembros(): void {
-  if (!this.proyectoId) return;
+  private cargarMiembros(): void {
+    if (!this.proyectoId) return;
 
-  this.proyectoService.getProyectoById(this.proyectoId).subscribe({
-    next: (proyecto) => {
-      this.usuarios = (proyecto.usuariosProyecto ?? []).map(u => ({
-        id: u.idUsuario,
-        nombre: u.nombre,
-        email: u.email,
-        rol: [] // si no manejás roles todavía, dejalo como array vacío
-      }));
+    this.proyectoService.getProyectoById(this.proyectoId).subscribe({
+      next: (proyecto) => {
+        this.usuarios = (proyecto.usuariosProyecto ?? []).map(u => ({
+          id: u.idUsuario,
+          nombre: u.nombre,
+          email: u.email,
+          rol: [] // si no manejás roles todavía, dejalo como array vacío
+        }));
 
-      console.log("Usuarios convertidos:", this.usuarios);
-    },
-    error: (err) => console.error("Error al cargar miembros:", err)
-  });
-}
+        console.log("Usuarios convertidos:", this.usuarios);
+      },
+      error: (err) => console.error("Error al cargar miembros:", err)
+    });
+  }
 
 
 
@@ -222,10 +222,10 @@ export class PlanificacionComponent implements OnInit {
   // ===== Manejadores de Eventos =====
 
   onAbrirModalCrear(): void {
-  this.taskFormModal.tareaEnEdicion = null;   // <- Indicar que NO es edición
-  this.taskFormModal.resetModal();            // <- Forzar reinicio de datos
-  this.taskFormModal.abrirModal();            // <- Ahora abrir el modal limpio
-}
+    this.taskFormModal.tareaEnEdicion = null;   // <- Indicar que NO es edición
+    this.taskFormModal.resetModal();            // <- Forzar reinicio de datos
+    this.taskFormModal.abrirModal();            // <- Ahora abrir el modal limpio
+  }
 
 
   onAbrirModalEditar(tarea: Tarea): void {
@@ -282,7 +282,7 @@ export class PlanificacionComponent implements OnInit {
       categoriaIds: datos.categoriaId ? [Number(datos.categoriaId)] : [],
       dependenciasIds: datos.dependenciaId ? [Number(datos.dependenciaId)] : []
     };
-    
+
     console.log('Datos para editar tarea:', tareaParaBackend);
 
     this.taskService.updateTarea(datos.tareaId, tareaParaBackend).subscribe({
@@ -303,7 +303,7 @@ export class PlanificacionComponent implements OnInit {
         console.error('Error completo:', err);
 
       }
-   
+
     });
   }
 
@@ -372,16 +372,16 @@ export class PlanificacionComponent implements OnInit {
     this.categoriaService.createCategoria(categoriaBackend).subscribe({
       next: () => this.cargarCategorias(),
       error: (err) => {
-      console.error('Error al crear categoría:', err);
+        console.error('Error al crear categoría:', err);
 
-      // mensaje personalizado del backend
-      const mensaje =
-        err?.error?.message ||  // <<--- TU CASO
-        err?.message ||
-        'Ocurrió un error inesperado al crear la categoría.';
+        // mensaje personalizado del backend
+        const mensaje =
+          err?.error?.message ||  // <<--- TU CASO
+          err?.message ||
+          'Ocurrió un error inesperado al crear la categoría.';
 
-      alert('⚠️ ' + mensaje);
-    }
+        alert('⚠️ ' + mensaje);
+      }
 
     });
   }
@@ -392,16 +392,16 @@ export class PlanificacionComponent implements OnInit {
       .subscribe({
         next: () => this.cargarCategorias(),
         error: (err) => {
-      console.error('Error al crear categoría:', err);
+          console.error('Error al crear categoría:', err);
 
-      // mensaje personalizado del backend
-      const mensaje =
-        err?.error?.message ||  // <<--- TU CASO
-        err?.message ||
-        'Ocurrió un error inesperado al editar la categoría.';
+          // mensaje personalizado del backend
+          const mensaje =
+            err?.error?.message ||  // <<--- TU CASO
+            err?.message ||
+            'Ocurrió un error inesperado al editar la categoría.';
 
-      alert('⚠️ ' + mensaje);
-    }
+          alert('⚠️ ' + mensaje);
+        }
 
       });
   }
@@ -409,7 +409,17 @@ export class PlanificacionComponent implements OnInit {
   onEliminarCategoria(categoriaId: number): void {
     this.categoriaService.deleteCategoria(categoriaId).subscribe({
       next: () => this.cargarCategorias(),
-      error: (err) => console.error('Error al eliminar categoría:', err)
+      error: (err) => {
+        console.error('Error al eliminar categoría:', err);
+
+        // mensaje personalizado del backend
+        const mensaje =
+          err?.error ||  // <<--- TU CASO
+          err?.message ||
+          'Ocurrió un error inesperado al eliminar la categoría.';
+
+        alert('⚠️ ' + mensaje);
+      }
     });
   }
 
@@ -468,14 +478,14 @@ export class PlanificacionComponent implements OnInit {
   }
 
   onFiltrosChange(filtros: any): void {
-  this.filtroCategoria = filtros.categoria;
-  this.filtroResponsable = filtros.responsable;
-  this.filtroEstado = filtros.estado;
-  this.filtroFechaDesde = filtros.fechaDesde;
-  this.filtroFechaHasta = filtros.fechaHasta;
+    this.filtroCategoria = filtros.categoria;
+    this.filtroResponsable = filtros.responsable;
+    this.filtroEstado = filtros.estado;
+    this.filtroFechaDesde = filtros.fechaDesde;
+    this.filtroFechaHasta = filtros.fechaHasta;
 
-  this.paginaActual = 1; 
-}
+    this.paginaActual = 1;
+  }
 
 
   clearVencimientoFilter(): void {

@@ -17,10 +17,12 @@
                   <div class="d-flex justify-content-between align-items-center w-100">
                     <div><i class="bi bi-tag-fill text-primary me-2"></i>{{ cat.nombre }}</div>
                     <div class="btn-group">
-                      <button class="btn btn-sm btn-outline-primary" (click)="seleccionarParaEditar(cat); $event.stopPropagation()">
+                      <button class="btn btn-sm btn-outline-primary"
+                        (click)="seleccionarParaEditar(cat); $event.stopPropagation()">
                         <i class="bi bi-pencil"></i>
                       </button>
-                      <button class="btn btn-sm btn-outline-danger" (click)="onEliminarCategoria(cat.idCategoria); $event.stopPropagation()">
+                      <button class="btn btn-sm btn-outline-danger"
+                        (click)="onEliminarCategoria(cat.idCategoria); $event.stopPropagation()">
                         <i class="bi bi-trash"></i>
                       </button>
                     </div>
@@ -41,8 +43,8 @@
             <form (ngSubmit)="categoriaEdicion ? onEditarCategoria() : onAgregarCategoria()">
               <div class="mb-3">
                 <label class="form-label">Nombre *</label>
-                <input type="text" class="form-control" [(ngModel)]="nuevaCategoria.nombre" name="nombre"
-                  required maxlength="14" placeholder="Ej: Documentación" />
+                <input type="text" class="form-control" [(ngModel)]="nuevaCategoria.nombre" name="nombre" required
+                  maxlength="30" placeholder="Ej: Documentación" />
               </div>
               <div class="mb-3">
                 <label class="form-label">Descripción</label>

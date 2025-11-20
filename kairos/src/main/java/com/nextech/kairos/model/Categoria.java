@@ -1,4 +1,5 @@
 package com.nextech.kairos.model;
+
 import java.util.HashSet;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,12 +25,12 @@ public class Categoria {
     private Long idCategoria;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(max = 30)
     @Column(name = "nombre", nullable = false, length = 255)
     private String nombre;
 
     @Column(name = "descripcion", columnDefinition = "TEXT")
-    @Size(max=50)
+    @Size(max = 50)
     private String descripcion;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,16 +41,46 @@ public class Categoria {
     @JsonIgnore
     private Set<Tarea> tareas = new HashSet<>();
 
-    public Categoria() {}
+    public Categoria() {
+    }
 
-    public Long getIdCategoria() { return idCategoria; }
-    public void setIdCategoria(Long idCategoria) { this.idCategoria = idCategoria; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public Proyecto getProyecto() { return proyecto; }
-    public void setProyecto(Proyecto proyecto) { this.proyecto = proyecto; }
-    public Set<Tarea> getTareas() { return tareas; }
-    public void setTareas(Set<Tarea> tareas) { this.tareas = tareas; }
+    public Long getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(Long idCategoria) {
+        this.idCategoria = idCategoria;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Proyecto getProyecto() {
+        return proyecto;
+    }
+
+    public void setProyecto(Proyecto proyecto) {
+        this.proyecto = proyecto;
+    }
+
+    public Set<Tarea> getTareas() {
+        return tareas;
+    }
+
+    public void setTareas(Set<Tarea> tareas) {
+        this.tareas = tareas;
+    }
 }
