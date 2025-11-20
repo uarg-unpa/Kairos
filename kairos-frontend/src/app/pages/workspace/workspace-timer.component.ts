@@ -8,10 +8,12 @@ import { catchError } from 'rxjs/operators';
 import { TimerService } from '../../services/timer.service';
 import { TaskService } from '../../services/tarea.service';
 import { AlertService } from '../../services/alert.service';
+import { ComentarioService } from '../../services/comentario.service';
 import { TimerState, TaskTimerInfo } from '../../models/timer.model';
 import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
 import { map } from 'rxjs';
+import { Comentario } from '../../models/comentario.model';
 
 
 // Definimos la estructura del payload para registro manual
@@ -96,11 +98,14 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   ultimosTiempos: TiempoResponseDTO[] = [];
   editTimeForm: { idTiempo: any; duracionMinutos: any; fechaRegistro: any; descripcion: any; } | undefined;
   showEditModal: boolean | undefined;
+  comentariosPorTarea: { [idTarea: number]: Comentario[] } = {};
+
 
   constructor(
     private timerService: TimerService,
     private TaskService: TaskService, // <-- Servicio para la carga HTTP
-    private alertService: AlertService
+    private alertService: AlertService,
+    private comentarioService: ComentarioService
   ) { }
 
   // --- FUNCI?N RESTAURADA ---
@@ -156,6 +161,15 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
             priority: t.prioridad,
             description: t.descripcion
           }));
+          this.tareas.forEach((tarea) => {
+            this.comentarioService.getComentariosByTarea(tarea.idTarea).subscribe({
+              next: (data) => (this.comentariosPorTarea[tarea.idTarea] = data || []),
+              error: (err) => {
+                console.error(`Error al cargar comentarios para tarea ${tarea.idTarea}:`, err);
+                this.comentariosPorTarea[tarea.idTarea] = [];
+              }
+            });
+          });
           this.updateStats();
           this.tareasEnProgreso = this.tareas.filter(t => t.estado === 'En Progreso').length;
 
