@@ -1,4 +1,4 @@
-<style>
+﻿<style>
   .tooltip-card {
     position: relative;
     overflow: visible;
@@ -59,23 +59,24 @@
       <p class="text-muted mb-0">Resumen de iteraciones, tareas y horas</p>
     </div>
     <div class="d-flex gap-2">
-      <select class="form-select" style="width:auto" [(ngModel)]="filtroEtapa" (change)="reload()">
+      <select class="form-select" style="width:auto" [(ngModel)]="filtroEtapa" (change)="onFiltroEtapaChange()">
         <option [ngValue]="null">Todas las etapas</option>
         <option *ngFor="let e of etapas" [ngValue]="e.idEtapa">{{ e.nombre }}</option>
       </select>
-      <select class="form-select" style="width:auto" [(ngModel)]="filtroIteracion" (change)="reload()">
+      <select class="form-select" style="width:auto" [(ngModel)]="filtroIteracion" (change)="onFiltroIteracionChange()">
         <option [ngValue]="null">Todas las iteraciones</option>
         <option *ngFor="let it of iteraciones" [ngValue]="it.idIteracion">
           Iteracion {{ it.numero }}{{ !filtroEtapa && it.etapaNombre ? ' (' + it.etapaNombre + ')' : '' }}
         </option>
       </select>
-      <select class="form-select" style="width:auto" [(ngModel)]="filtroTiempo" (change)="reload()">
-        <option value="today">Hoy</option>
-        <option value="week">Esta semana</option>
-        <option value="month">Este mes</option>
-        <option value="quarter">Ultimos 90 dias</option>
+      <select class="form-select" style="width:auto" [(ngModel)]="filtroTiempo" (change)="onFiltroTiempoChange()">
+        <option value="today" [disabled]="soloFiltroTodo">Hoy</option>
+        <option value="week" [disabled]="soloFiltroTodo">Esta semana</option>
+        <option value="month" [disabled]="soloFiltroTodo">Este mes</option>
+        <option value="quarter" [disabled]="soloFiltroTodo">Ultimos 90 dias</option>
         <option value="all">Todo</option>
       </select>
+      <small class="text-muted" *ngIf="soloFiltroTodo">Para iteraciones finalizadas solo se muestran datos historicos.</small>
     </div>
   </div>
 
@@ -112,14 +113,13 @@
           <i class="me-4 fs-1"
             [ngClass]="proximasCount > 0 ? 'bi bi-exclamation-lg text-danger' : 'bi bi-check-circle text-success'"></i>
           <div class="fw-bold text-dark">
-            <h4 class="mb-2">Próximos vencimientos</h4>
-            <span class="fs-5" *ngIf="proximasCount > 0">{{ proximasCount }} {{ proximasCount === 1 ? 'tarea pr&oacute;xima a
-              vencer' : 'tareas pr&oacute;ximas a vencer' }}</span>
-            <span class="fs-5 text-muted" *ngIf="proximasCount === 0">No hay tareas pr&oacute;ximas a vencer</span>
+            <h4 class="mb-2">Proximos vencimientos</h4>
+            <span class="fs-5" *ngIf="proximasCount > 0">{{ proximasCount }} {{ proximasCount === 1 ? 'tarea proxima a vencer' : 'tareas proximas a vencer' }}</span>
+            <span class="fs-5 text-muted" *ngIf="proximasCount === 0">No hay tareas proximas a vencer</span>
           </div>
         </div>
         <a *ngIf="proximasCount > 0" class="btn btn-outline-danger btn-lg"
-          [routerLink]="['/proyecto', encodedProjectId, 'planificacion']" [queryParams]="{ vencimiento: 'pr&oacute;ximas' }">
+          [routerLink]="['/proyecto', encodedProjectId, 'planificacion']" [queryParams]="{ vencimiento: 'proximas' }">
           <i class="bi bi-calendar-event"></i> Ver fechas
         </a>
       </div>
@@ -134,7 +134,7 @@
         <div class="col-lg-6 col-md-12">
           <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Estimación vs ejecucion</h5>
+              <h5 class="mb-0">Estimacion vs ejecucion</h5>
               <div class="d-flex gap-2">
                 <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
                   (click)="mostrarDetalle('horasIteracion')" [disabled]="!horasIteracionDetalle.length">
@@ -281,7 +281,8 @@
 
               <!-- BOTONES DE NAVEGACION -->
               <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-secondary" title="Semana anterior" (click)="cambiarSemana(-1)">
+                <button class="btn btn-sm btn-outline-secondary" title="Semana anterior" (click)="cambiarSemana(-1)"
+                  [disabled]="prevSemanaDisabled()">
                   <i class="bi bi-chevron-left"></i>
                 </button>
 
@@ -290,7 +291,8 @@
                   Hoy
                 </button>
 
-                <button class="btn btn-sm btn-outline-secondary" title="Siguiente semana" (click)="cambiarSemana(1)">
+                <button class="btn btn-sm btn-outline-secondary" title="Siguiente semana" (click)="cambiarSemana(1)"
+                  [disabled]="nextSemanaDisabled()">
                   <i class="bi bi-chevron-right"></i>
                 </button>
               </div>
@@ -415,6 +417,30 @@
           </div>
         </div>
         <!-- ================= FIN TARJETA CORREGIDA ================= -->
+
+        <div class="col-12">
+          <div class="card dashboard-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">Tareas no finalizadas o pendientes de ajustes</h6>
+                <span class="badge bg-secondary">{{ tareasNoFinalizadas.length }}</span>
+              </div>
+              <ng-container *ngIf="tareasNoFinalizadas.length; else sinPendientes">
+                <ul class="list-group list-group-flush small">
+                  <li class="list-group-item px-0 py-1" *ngFor="let t of tareasNoFinalizadas">
+                    <div class="d-flex justify-content-between">
+                      <span class="me-2">{{ t.nombre || t.titulo || 'Tarea sin nombre' }}</span>
+                      <small class="text-muted">Iter {{ t.iteracionId || '-' }}</small>
+                    </div>
+                  </li>
+                </ul>
+              </ng-container>
+              <ng-template #sinPendientes>
+                <small class="text-muted">No hay tareas pendientes fuera de iteraciones activas.</small>
+              </ng-template>
+            </div>
+          </div>
+        </div>
 
       </div>
     </div>
@@ -579,4 +605,8 @@
 <ng-template #sinDatos>
   <p class="text-muted mb-0">No hay datos disponibles para el filtro actual.</p>
 </ng-template>
+
+
+
+
 
