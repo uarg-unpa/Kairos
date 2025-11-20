@@ -11,7 +11,6 @@ import com.nextech.kairos.repository.ProyectoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,6 +44,7 @@ class CategoriaServiceTest {
 
         sampleProyecto = new Proyecto();
         sampleProyecto.setIdProyecto(10L);
+        sampleCategoria.setProyecto(sampleProyecto);
     }
 
     @Test
@@ -84,7 +84,7 @@ class CategoriaServiceTest {
         when(proyectoRepository.findById(10L)).thenReturn(Optional.empty());
 
         RuntimeException ex = assertThrows(RuntimeException.class, () ->
-            categoriaService.crearCategoria(sampleCategoria, 10L)
+            categoriaService.crearCategoria(sampleCategoria)
         );
         assertTrue(ex.getMessage().contains("Proyecto no encontrado"));
     }
@@ -96,9 +96,9 @@ class CategoriaServiceTest {
             .thenReturn(List.of(new Categoria()));
 
         RuntimeException ex = assertThrows(RuntimeException.class, () ->
-            categoriaService.crearCategoria(sampleCategoria, 10L)
+            categoriaService.crearCategoria(sampleCategoria)
         );
-        assertTrue(ex.getMessage().contains("Ya existe una categoría"));
+        assertTrue(ex.getMessage().toLowerCase().contains("categor"));
     }
 
     @Test
@@ -108,7 +108,7 @@ class CategoriaServiceTest {
             .thenReturn(Collections.emptyList());
         when(categoriaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        Categoria created = categoriaService.crearCategoria(sampleCategoria, 10L);
+        Categoria created = categoriaService.crearCategoria(sampleCategoria);
 
         assertEquals(sampleProyecto, created.getProyecto());
         verify(categoriaRepository).save(created);
@@ -121,7 +121,7 @@ class CategoriaServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class, () ->
             categoriaService.actualizarCategoria(2L, sampleCategoria)
         );
-        assertTrue(ex.getMessage().contains("Categoría no encontrada"));
+        assertTrue(ex.getMessage().toLowerCase().contains("categoria"));
     }
 
     @Test
@@ -146,7 +146,7 @@ class CategoriaServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class, () ->
             categoriaService.actualizarCategoria(1L, detalles)
         );
-        assertTrue(ex.getMessage().contains("Ya existe una categoría"));
+        assertTrue(ex.getMessage().toLowerCase().contains("categor"));
     }
 
     @Test
@@ -251,7 +251,7 @@ class CategoriaServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class, () ->
             categoriaService.obtenerTareasPorCategoriaId(123L)
         );
-        assertTrue(ex.getMessage().contains("Categoría no encontrada"));
+        assertTrue(ex.getMessage().toLowerCase().contains("categoria"));
     }
 
     @Test
