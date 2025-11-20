@@ -69,10 +69,11 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   paginaActual = 1;
   filtroCategoria: string = 'Todas';
   filtroResponsable: string = 'Todos';
-  filtroEstado: string = 'Todos';
+  filtroEstado: string = 'En Progreso';
   filtroFechaDesde: string = '';
   filtroFechaHasta: string = '';
   filtroPrioridad: string = '';
+  tareasEnProgreso: number = 0;
 
   // ?? Usuarios y usuario actual (solo para referencia, el servicio de tareas ya filtra)
   usuarios: Usuario[] = [];
@@ -147,12 +148,16 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       source$.pipe(catchError(() => of([] as Tarea[]))).subscribe({
         next: (tareas: Tarea[]) => {
-          // Ordenar: En Progreso primero
-          this.tareas = (tareas || []).sort((a, b) => {
-            if (a.estado === 'En Progreso' && b.estado !== 'En Progreso') return -1;
-            if (a.estado !== 'En Progreso' && b.estado === 'En Progreso') return 1;
-            return 0;
-          });
+          this.tareas = tareas || [];
+          this.availableTasks = this.tareas.map(t => ({
+            id: t.idTarea,
+            title: t.nombre,
+            status: t.estado,
+            priority: t.prioridad,
+            description: t.descripcion
+          }));
+          this.updateStats();
+          this.tareasEnProgreso = this.tareas.filter(t => t.estado === 'En Progreso').length;
 
           // Cargar tiempos totales
           this.timerService.getTiemposTotalesUsuario().subscribe({
@@ -164,8 +169,6 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
             },
             error: (err) => console.error('Error al cargar tiempos totales', err)
           });
-
-          console.log('Tareas cargadas y ordenadas:', this.tareas);
 
           this.availableTasks = this.tareas
             .filter(t => t.estado !== 'Completado')
@@ -374,6 +377,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     if (!confirmed) return;
 
     this.cambiarEstado(taskId, 'Completado');
+    this.alertService.success('Tarea completada', 'La tarea ha sido marcada como completada.');
   }
 
   // -------------------------
@@ -438,7 +442,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
         next: () => {
           this.showEditModal = false;
           this.loadLast5Times();
-          this.loadTasks(); // opcional: recarga tareas
+          this.loadTasks();
         },
         error: (err) => {
           console.error('Error al editar tiempo', err);

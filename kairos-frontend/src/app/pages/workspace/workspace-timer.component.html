@@ -14,10 +14,10 @@
         <div class="row g-3 align-items-center">
           <div class="col-md-4">
             <select class="form-select" [(ngModel)]="filtroEstado" aria-label="Filtrar por estado">
-              <option value="Todos">Todos los estados</option>
               <option>En Progreso</option>
               <option>Planificada</option>
               <option>Completado</option>
+              <option value="Todos">Todos los estados</option>
             </select>
           </div>
           <div class="col-md-4">
@@ -34,8 +34,13 @@
 
     <div class="card planning-card">
       <div class="card-body p-0">
-        <div *ngIf="tareas.length === 0" class="p-4 text-center text-muted">
-          No tienes tareas asignadas.
+        <div *ngIf="(tareasEnProgreso === 0) && filtroEstado === 'En Progreso'" class="p-4 text-center text-muted">
+          <span>
+            No tienes tareas asignadas.
+          </span> <br>
+          <button class="btn btn-sm btn-outline-success" title="Proponer una tarea nueva">
+            <i class="bi bi-send"></i> Proponer una tarea nueva
+          </button>
         </div>
 
         <!-- Listar tareas -->
@@ -65,10 +70,17 @@
                 <i class="bi bi-three-dots"></i>
               </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" *ngIf="tarea.estado !== 'Completado'"
+                <li>
+                  <a class="dropdown-item" *ngIf="tarea.estado !== 'Completado'"
                     (click)="markAsCompleted(tarea.idTarea)" title="Marcar como Completado">
                     <i class="bi bi-check-circle me-2"></i>Completar
-                  </a></li>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" *ngIf="tarea.estado !== 'En Progreso'" title="Reanudar">
+                    <i class="bi bi-play-circle me-2"></i> Reanudar tarea
+                  </a>
+                </li>
                 <li>
                   <hr class="dropdown-divider">
                 </li>
@@ -119,7 +131,7 @@
               <div class="progress-bar" role="progressbar"
                 [style.width.%]="((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) > 100 ? 100 : ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100)"
                 [ngClass]="{'bg-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'bg-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}"
-                aria-valuemin="0" aria-valuemax="100">
+                aria-valuemin="0" aria-valuemax="90">
               </div>
             </div>
           </div>
@@ -277,7 +289,6 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Registrar Tiempo Manual</h5>
-        <button type="button" class="btn-close" (click)="closeManualTimeModal()" aria-label="Cerrar"></button>
       </div>
 
       <form (ngSubmit)="handleManualTimeSubmission()">
