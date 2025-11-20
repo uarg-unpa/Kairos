@@ -2,11 +2,11 @@
 
   <!-- Encabezado -->
   <div class="mb-4">
-  <h2 class="mb-1">Planificación de Tareas - {{proyectoActual?.nombre}}</h2>
-  <h4 class="text-muted">
-    Iteración: {{ iteracionActual?.numero }} – {{ iteracionActual?.etapaNombre }}
-  </h4>
-</div>
+    <h2 class="mb-1">Planificación de Tareas - {{proyectoActual?.nombre}}</h2>
+    <h4 class="text-muted">
+      Iteración: {{ iteracionActual?.numero }} – {{ iteracionActual?.etapaNombre }}
+    </h4>
+  </div>
 
 
   <!-- Filtro vencimiento -->
@@ -21,23 +21,16 @@
     <!-- Panel Principal -->
     <div class="col-lg-9">
       <!-- Filtros -->
-      <app-task-filters 
-  [categorias]="categorias"
-  [usuarios]="usuarios"
-  [filtroCategoria]="filtroCategoria"
-  [filtroResponsable]="filtroResponsable"
-  [filtroEstado]="filtroEstado"
-  [filtroFechaDesde]="filtroFechaDesde"
-  [filtroFechaHasta]="filtroFechaHasta"
-  (filtrosChange)="onFiltrosChange($event)">
-</app-task-filters>
+      <app-task-filters [categorias]="categorias" [usuarios]="usuarios" [filtroCategoria]="filtroCategoria"
+        [filtroResponsable]="filtroResponsable" [filtroEstado]="filtroEstado" [filtroFechaDesde]="filtroFechaDesde"
+        [filtroFechaHasta]="filtroFechaHasta" (filtrosChange)="onFiltrosChange($event)">
+      </app-task-filters>
 
 
 
       <!-- Lista de Tareas -->
       <app-task-list [tareas]="tareasFiltradas()" [comentariosPorTarea]="comentariosPorTarea" [usuarios]="usuarios"
-        [paginaActual]="paginaActual" [tareasPorPagina]="tareasPorPagina" 
-        >
+        [paginaActual]="paginaActual" [tareasPorPagina]="tareasPorPagina" (cambiarPagina)="onCambiarPagina($event)">
       </app-task-list>
     </div>
 
@@ -47,4 +40,3 @@
     </div>
   </div>
 </div>
-

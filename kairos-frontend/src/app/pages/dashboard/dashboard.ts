@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, inject } from '@angular/core';
+﻿import { AfterViewInit, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EtapaService } from '../../services/etapa.service';
@@ -11,6 +11,7 @@ import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 declare const Chart: any;
 
 type DetalleTipo = 'horasIteracion' | 'horasCategoria' | 'tareasUsuario' | 'horasDiaTarea' | 'horasTarea';
+type FiltroTiempo = 'today' | 'week' | 'month' | 'quarter' | 'all';
 
 
 interface HorasIteracionDetalle {
@@ -63,7 +64,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   iteraciones: any[] = [];
   filtroEtapa: number | null = null;
   filtroIteracion: number | null = null;
-  filtroTiempo: 'today' | 'week' | 'month' | 'quarter' | 'all' = 'all';
+  filtroTiempo: FiltroTiempo = 'all';
   filtroSemana: number = 0; // 0 = semana actual, -1 = anterior, 1 = siguiente
   semanaActual: { inicio: string; fin: string } = { inicio: '', fin: '' };
   proyectoId: number | null = null;
@@ -88,6 +89,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   tareasUsuarioDetalle: TareasUsuarioDetalle[] = [];
   horasDiaDetalle: HorasDiaDetalle[] = [];
   horasTareaDetalle: HorasTareaDetalle[] = [];
+  tareasNoFinalizadas: any[] = [];
   private horasIteracionRows: any[] = [];
   private horasEstimadasPorIteracion = new Map<number, number>();
   private readonly diasSemanaOrden = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
@@ -108,6 +110,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private iteracionesRangoActual: Set<number> | null = null;
   private lastIterParamsKey: string | null = null;
   private lastTareasCacheKey: string | null = null;
+  private semanaBase: Date | null = null;
+  soloFiltroTodo = false;
   loadingHorasIteracion = false;
   loadingHorasCategoria = false;
   loadingHorasDia = false;
@@ -154,13 +158,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   cambiarSemana(offset: number) {
+    if (offset < 0 && this.prevSemanaDisabled()) return;
+    if (offset > 0 && this.nextSemanaDisabled()) return;
     this.filtroSemana += offset;
     this.actualizarSemanaActual();
     this.reloadHorasPorDia();
   }
 
   private computeWeeklyRangeWithOffset(offset: number = 0): { from: string, to: string } {
-    const today = new Date();
+    const baseDate = this.semanaBase ? new Date(this.semanaBase.getTime()) : new Date();
     const clone = (d: Date) => new Date(d.getTime());
     const addDays = (d: Date, n: number) => {
       const result = clone(d);
@@ -168,7 +174,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       return result;
     };
     const startOfWeek = () => {
-      const d = clone(today);
+      const d = clone(baseDate);
       const day = d.getDay();
       const diff = d.getDate() - day + (day === 0 ? -6 : 1);
       d.setDate(diff);
@@ -178,51 +184,61 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const weekStart = addDays(startOfWeek(), offset * 7);
     const weekEnd = addDays(weekStart, 6);
-    
-    const from = this.formatLocalDate(weekStart);
-    const to = this.formatLocalDate(weekEnd);
+
+    // Ajustar rango a los limites del filtro (etapa/iteracion) si existen
+    const rango = this.rangoFechasFiltro();
+    const clampInicio = rango.desde ? Math.max(weekStart.getTime(), rango.desde.getTime()) : weekStart.getTime();
+    const clampFin = rango.hasta ? Math.min(weekEnd.getTime(), rango.hasta.getTime()) : weekEnd.getTime();
+    const inicioDate = new Date(clampInicio);
+    const finDate = new Date(clampFin);
+
+    const from = this.formatLocalDate(inicioDate);
+    const to = this.formatLocalDate(finDate);
     return { from, to };
   }
 
   private reloadHorasPorDia() {
-  const diaParams = new URLSearchParams();
-  if (this.proyectoId) diaParams.set('proyectoId', String(this.proyectoId));
-  if (this.filtroEtapa) diaParams.set('etapaId', String(this.filtroEtapa));
-  if (this.filtroIteracion) diaParams.set('iteracionId', String(this.filtroIteracion));
-  const weekRange = this.computeWeeklyRangeWithOffset(this.filtroSemana);
-  diaParams.set('from', weekRange.from);
-  diaParams.set('to', weekRange.to);
-  const paramsDia = diaParams.toString() ? `?${diaParams.toString()}` : '';
-  
-  this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-dia-tarea${paramsDia}`).subscribe(rows => {
-    this.renderHorasPorDiaTareaChart(rows || []);
-    // Si el grAfico ampliado estA abierto, recrearlo tambiAn
-    if (this.detalleGrafico === 'chartHorasDiaTarea') {
-      setTimeout(() => {
+    this.loadingHorasDia = true;
+    const diaParams = new URLSearchParams();
+    if (this.proyectoId) diaParams.set('proyectoId', String(this.proyectoId));
+    if (this.filtroEtapa) diaParams.set('etapaId', String(this.filtroEtapa));
+    if (this.filtroIteracion) diaParams.set('iteracionId', String(this.filtroIteracion));
+    const weekRange = this.computeWeeklyRangeWithOffset(this.filtroSemana);
+    diaParams.set('from', weekRange.from);
+    diaParams.set('to', weekRange.to);
+    const paramsDia = diaParams.toString() ? `?${diaParams.toString()}` : '';
+
+    this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-dia-tarea${paramsDia}`).subscribe(rows => {
+      this.renderHorasPorDiaTareaChart(rows || []);
+      this.loadingHorasDia = false;
+      // Si el grAfico ampliado estA abierto, recrearlo tambiAn
+      if (this.detalleGrafico === 'chartHorasDiaTarea') {
+        setTimeout(() => {
+          this.destroyChartByCanvasId('graficoDetalle');
+          this.renderBar(
+            'graficoDetalle',
+            this.obtenerLabelsGrafico('chartHorasDiaTarea'),
+            this.obtenerDataGrafico('chartHorasDiaTarea'),
+            '#0d6efd',
+            '#6ea8fe',
+            false,
+            true,
+            false,
+            'Horas por dia',
+            'dias de la Semana',
+            'Horas (h)'
+          );
+        }, 100);
+      }
+    }, () => {
+      this.destroyChartByCanvasId('chartHorasDiaTarea');
+      this.horasDiaDetalle = [];
+      this.loadingHorasDia = false;
+      if (this.detalleGrafico === 'chartHorasDiaTarea') {
         this.destroyChartByCanvasId('graficoDetalle');
-        this.renderBar(
-          'graficoDetalle',
-          this.obtenerLabelsGrafico('chartHorasDiaTarea'),
-          this.obtenerDataGrafico('chartHorasDiaTarea'),
-          '#0d6efd',
-          '#6ea8fe',
-          false,
-          true,
-          false,
-          'Horas por DAa',
-          'DAas de la Semana',
-          'Horas (h)'
-        );
-      }, 100);
-    }
-  }, () => {
-    this.destroyChartByCanvasId('chartHorasDiaTarea');
-    this.horasDiaDetalle = [];
-    if (this.detalleGrafico === 'chartHorasDiaTarea') {
-      this.destroyChartByCanvasId('graficoDetalle');
-    }
-  });
-}
+      }
+    });
+  }
 
 private obtenerLabelsGrafico(canvasId: string): string[] {
   const chartInstance = this.charts.get(canvasId);
@@ -246,6 +262,8 @@ private obtenerDataGrafico(canvasId: string): number[] {
   reload(forceRefresh = false) {
     if (forceRefresh) {
       this.clearDataCaches();
+      this.soloFiltroTodo = false;
+      // No borro semana base aquí para permitir usar cache; se reinicia solo cuando cambia filtro.
     }
     this.destroyCharts();
     this.loadingHorasIteracion = true;
@@ -254,11 +272,13 @@ private obtenerDataGrafico(canvasId: string): number[] {
     this.loadingHorasEtapa = true;
     this.loadingTareasData = true;
 
-    const range = this.computeRange();
-    this.actualizarIteracionesRango(range);
+    let range = this.computeRange();
     const actualizarIteraciones = (it: any[] | null | undefined) => {
       this.iteraciones = it || [];
+      this.aplicarRestriccionFiltroTiempo();
+      range = this.computeRange();
       this.actualizarIteracionesRango(range);
+      this.reloadHorasPorDia();
     };
     if (this.filtroEtapa) {
       this.iteracionService.getIteracionesPorEtapaId(this.filtroEtapa).subscribe(actualizarIteraciones);
@@ -335,35 +355,6 @@ private obtenerDataGrafico(canvasId: string): number[] {
       });
     }
 
-    const diaParams = new URLSearchParams();
-    if (this.proyectoId) diaParams.set('proyectoId', String(this.proyectoId));
-    if (this.filtroEtapa) diaParams.set('etapaId', String(this.filtroEtapa));
-    if (this.filtroIteracion) diaParams.set('iteracionId', String(this.filtroIteracion));
-    const weekRange = this.computeWeeklyRangeWithOffset(this.filtroSemana);
-    diaParams.set('from', weekRange.from);
-    diaParams.set('to', weekRange.to);
-    const paramsDia = diaParams.toString() ? `?${diaParams.toString()}` : '';
-    const diaKey = this.cacheKeyFromParams(paramsDia);
-    const renderDia = (rows: any[]) => {
-      this.renderHorasPorDiaTareaChart(rows || []);
-      this.loadingHorasDia = false;
-    };
-    const cachedDia = this.cacheHorasDia.get(diaKey);
-    if (cachedDia) {
-      renderDia(cachedDia);
-    } else {
-      this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-dia-tarea${paramsDia}`).subscribe(rows => {
-        const normalized = Array.isArray(rows) ? rows : [];
-        this.cacheHorasDia.set(diaKey, normalized);
-        renderDia(normalized);
-      }, () => {
-        this.cacheHorasDia.delete(diaKey);
-        this.destroyChartByCanvasId('chartHorasDiaTarea');
-        this.horasDiaDetalle = [];
-        this.loadingHorasDia = false;
-      });
-    }
-
     const etapaParams = new URLSearchParams();
     if (this.proyectoId) etapaParams.set('proyectoId', String(this.proyectoId));
     if (this.filtroIteracion) etapaParams.set('iteracionId', String(this.filtroIteracion));
@@ -434,20 +425,20 @@ private obtenerDataGrafico(canvasId: string): number[] {
       const iterInfo = this.iteraciones?.find((it: any) => Number(it?.idIteracion) === iterId);
       const numero = row?.numero ?? iterInfo?.numero;
       const nombre = row?.nombre;
-      const chartLabel = numero ? `Iter ${numero}` : (nombre || `Iter ${iterId}`);
       const etapa = row?.etapaNombre || row?.etapa || this.nombreEtapaDeIteracion(iterId) || null;
       const minutos = row ? Number(row.minutos || 0) : 0;
       const horasReales = Math.round(((minutos / 60) * 100)) / 100;
       const horasEstimadasRaw = this.horasEstimadasPorIteracion.get(iterId) ?? 0;
       const horasEstimadas = Math.round((horasEstimadasRaw) * 10) / 10;
 
-      labels.push(chartLabel);
+      const baseLabel = numero ? `Iter ${numero}` : (nombre || `Iter ${iterId}`);
+      labels.push(etapa ? `${baseLabel}\n${etapa}` : baseLabel);
       realesHoras.push(horasReales);
       estimadasHoras.push(horasEstimadas);
 
       const etiquetaDetalle = numero
-        ? `Iteración ${numero}${nombre ? ` - ${nombre}` : ''}`
-        : (nombre ? nombre : `Iteración ${iterId}`);
+        ? `Iteracion ${numero}${nombre ? ` - ${nombre}` : ''}`
+        : (nombre ? nombre : `Iteracion ${iterId}`);
       detalleRows.push({
         etiqueta: etiquetaDetalle,
         etapa,
@@ -466,9 +457,9 @@ private obtenerDataGrafico(canvasId: string): number[] {
     };
 
     this.renderBarMulti('chartHorasIter', labels, [
-    { label: 'Ejecución', data: realesHoras, colorStart: '#0d6efd', colorEnd: '#6ea8fe', showMinutes: true },
-    { label: 'Estimación', data: estimadasHoras, colorStart: '#6610f2', colorEnd: '#c29bfe' }
-  ], false, false, 'Estimación vs Ejecución', 'Iteraciones', 'Horas (h)', tooltipEtapaResolver);
+      { label: 'Ejecucion', data: realesHoras, colorStart: '#0d6efd', colorEnd: '#6ea8fe', showMinutes: true },
+      { label: 'Estimacion', data: estimadasHoras, colorStart: '#6610f2', colorEnd: '#c29bfe' }
+    ], false, false, 'Estimacion vs Ejecucion', 'Iteraciones', 'Horas (h)', tooltipEtapaResolver);
     this.horasIteracionDetalle = detalleRows;
   }
 
@@ -499,12 +490,187 @@ private obtenerDataGrafico(canvasId: string): number[] {
     return { from: null, to: null };
   }
 
+  private normalizarFecha(d: Date): Date {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  private fechaDesdeValor(value: any): Date | null {
+    if (!value) return null;
+    const raw = typeof value === 'string' ? `${value}T00:00:00` : value;
+    const parsed = new Date(raw);
+    if (isNaN(parsed.getTime())) return null;
+    return this.normalizarFecha(parsed);
+  }
+
+  private minFecha(...dates: Array<Date | null | undefined>): Date | null {
+    const valores = dates
+      .filter((d): d is Date => d instanceof Date && !isNaN(d.getTime()))
+      .map(d => this.normalizarFecha(d));
+    if (!valores.length) return null;
+    return valores.reduce((min, actual) => actual.getTime() < min.getTime() ? actual : min);
+  }
+
+  private maxFecha(...dates: Array<Date | null | undefined>): Date | null {
+    const valores = dates
+      .filter((d): d is Date => d instanceof Date && !isNaN(d.getTime()))
+      .map(d => this.normalizarFecha(d));
+    if (!valores.length) return null;
+    return valores.reduce((max, actual) => actual.getTime() > max.getTime() ? actual : max);
+  }
+
+  private rangoFechasFiltro(): { desde: Date | null; hasta: Date | null } {
+    const inicioFin: Date[] = [];
+    const agregar = (valor: Date | null) => { if (valor) inicioFin.push(valor); };
+
+    const iteraciones = this.iteraciones || [];
+
+    if (this.filtroIteracion && iteraciones.length) {
+      const iter = iteraciones.find(it => Number(it?.idIteracion) === Number(this.filtroIteracion));
+      agregar(this.fechaDesdeValor(iter?.fechaInicio));
+      agregar(this.fechaDesdeValor(iter?.fechaFin));
+    } else if (this.filtroEtapa) {
+      const etapa = this.etapas?.find(e => Number(e?.idEtapa) === Number(this.filtroEtapa));
+      agregar(this.fechaDesdeValor(etapa?.fechaInicio));
+      agregar(this.fechaDesdeValor(etapa?.fechaFin));
+
+      iteraciones
+        .filter(it => Number(it?.idEtapa ?? it?.etapaId) === Number(this.filtroEtapa))
+        .forEach(it => {
+          agregar(this.fechaDesdeValor(it?.fechaInicio));
+          agregar(this.fechaDesdeValor(it?.fechaFin));
+        });
+    } else {
+      iteraciones.forEach(it => {
+        agregar(this.fechaDesdeValor(it?.fechaInicio));
+        agregar(this.fechaDesdeValor(it?.fechaFin));
+      });
+      (this.etapas || []).forEach(et => {
+        agregar(this.fechaDesdeValor(et?.fechaInicio));
+        agregar(this.fechaDesdeValor(et?.fechaFin));
+      });
+    }
+
+    return {
+      desde: this.minFecha(...inicioFin),
+      hasta: this.maxFecha(...inicioFin)
+    };
+  }
+
+  prevSemanaDisabled(): boolean {
+    const rango = this.rangoFechasFiltro();
+    if (!rango.desde) return false;
+    const actual = this.computeWeeklyRangeWithOffset(this.filtroSemana);
+    const inicioActual = this.fechaDesdeValor(actual.from);
+    return !!(inicioActual && inicioActual.getTime() <= rango.desde.getTime());
+  }
+
+  nextSemanaDisabled(): boolean {
+    const rango = this.rangoFechasFiltro();
+    if (!rango.hasta) return false;
+    const actual = this.computeWeeklyRangeWithOffset(this.filtroSemana);
+    const finActual = this.fechaDesdeValor(actual.to);
+    return !!(finActual && finActual.getTime() >= rango.hasta.getTime());
+  }
+
+  private determinarSemanaBase(iteraciones: any[]): Date | null {
+    if (this.filtroEtapa && this.etapas?.length) {
+      const etapa = this.etapas.find(e => Number(e?.idEtapa) === Number(this.filtroEtapa));
+      const inicioEtapa = this.fechaDesdeValor(etapa?.fechaInicio);
+      if (inicioEtapa) return inicioEtapa;
+      const finEtapa = this.fechaDesdeValor(etapa?.fechaFin);
+      if (finEtapa) return finEtapa;
+    }
+    if (this.filtroIteracion && iteraciones.length) {
+      const iter = iteraciones.find(it => Number(it?.idIteracion) === Number(this.filtroIteracion));
+      const inicio = this.fechaDesdeValor(iter?.fechaInicio);
+      if (inicio) return inicio;
+      const fin = this.fechaDesdeValor(iter?.fechaFin);
+      if (fin) return fin;
+    }
+    if (this.filtroEtapa && iteraciones.length) {
+      const fechasInicio = iteraciones
+        .map(it => this.fechaDesdeValor(it?.fechaInicio))
+        .filter((d): d is Date => !!d)
+        .sort((a, b) => a.getTime() - b.getTime());
+      if (fechasInicio.length) return fechasInicio[0];
+      const fechasFin = iteraciones
+        .map(it => this.fechaDesdeValor(it?.fechaFin))
+        .filter((d): d is Date => !!d)
+        .sort((a, b) => a.getTime() - b.getTime());
+      if (fechasFin.length) return fechasFin[0];
+    }
+    return null;
+  }
+
+  private obtenerSemanaBaseGlobal(iteraciones: any[]): Date | null {
+    const fechas = iteraciones
+      .map(it => this.fechaDesdeValor(it?.fechaInicio))
+      .filter((d): d is Date => !!d)
+      .sort((a, b) => a.getTime() - b.getTime());
+    if (fechas.length) return fechas[0];
+
+    if (this.etapas?.length) {
+      const etapasOrdenadas = [...this.etapas]
+        .map(et => this.fechaDesdeValor(et?.fechaInicio))
+        .filter((d): d is Date => !!d)
+        .sort((a, b) => a.getTime() - b.getTime());
+      if (etapasOrdenadas.length) return etapasOrdenadas[0];
+    }
+    return null;
+  }
+
   private cacheKeyFromParams(params: string): string {
     return params && params.length ? params : '__all__';
   }
 
   private tareasCacheKey(): string {
     return this.proyectoId ? `proyecto:${this.proyectoId}` : 'all';
+  }
+
+  private aplicarRestriccionFiltroTiempo() {
+    const hoy = this.normalizarFecha(new Date());
+    let forzarTodo = false;
+    const iteraciones = this.iteraciones || [];
+    if (this.filtroIteracion && iteraciones.length) {
+      const iter = iteraciones.find(it => Number(it?.idIteracion) === Number(this.filtroIteracion));
+      const fin = this.fechaDesdeValor(iter?.fechaFin);
+      if (fin && fin < hoy) {
+        forzarTodo = true;
+      }
+    } else if (this.filtroEtapa && iteraciones.length) {
+      const fechas = iteraciones
+        .map(it => this.fechaDesdeValor(it?.fechaFin))
+        .filter((fin): fin is Date => !!fin);
+      if (fechas.length && fechas.every(fin => fin < hoy)) {
+        forzarTodo = true;
+      }
+    }
+
+    this.soloFiltroTodo = forzarTodo;
+    if (this.soloFiltroTodo && this.filtroTiempo !== 'all') {
+      this.filtroTiempo = 'all';
+    }
+
+    const esFiltroGlobal = !this.filtroEtapa && !this.filtroIteracion && this.filtroTiempo === 'all';
+    if (this.soloFiltroTodo) {
+      const baseInicial = this.determinarSemanaBase(iteraciones);
+      if (baseInicial && (!this.semanaBase || this.semanaBase.getTime() !== baseInicial.getTime())) {
+        this.semanaBase = baseInicial;
+      }
+      this.filtroSemana = 0;
+      this.actualizarSemanaActual();
+    } else if (esFiltroGlobal) {
+      const baseGlobal = this.obtenerSemanaBaseGlobal(iteraciones);
+      if (baseGlobal && (!this.semanaBase || this.semanaBase.getTime() !== baseGlobal.getTime())) {
+        this.semanaBase = baseGlobal;
+        this.filtroSemana = 0;
+        this.actualizarSemanaActual();
+      }
+    } else {
+      this.semanaBase = null;
+      this.filtroSemana = 0;
+      this.actualizarSemanaActual();
+    }
   }
 
   private clearDataCaches() {
@@ -646,15 +812,52 @@ private obtenerDataGrafico(canvasId: string): number[] {
         return isNaN(d.getTime()) ? null : startOfDay(d);
       } catch { return null; }
     };
+    const iterPorId = new Map<number, any>();
+    (this.iteraciones || []).forEach(it => {
+      const id = Number(it?.idIteracion);
+      if (Number.isFinite(id)) iterPorId.set(id, it);
+    });
     const pendientes = tareas.filter(esPendiente);
-    this.atrasadasCount = pendientes.filter(t => {
-      const f = parseFecha(t.fechaFin);
-      return !!f && f < hoy;
-    }).length;
-    this.proximasCount = pendientes.filter(t => {
-      const f = parseFecha(t.fechaFin);
-      return !!f && f >= hoy && f <= limite;
-    }).length;
+    const iterActivas = (this.iteraciones || []).filter(it => {
+      const ini = parseFecha(it?.fechaInicio);
+      const fin = parseFecha(it?.fechaFin);
+      if (!ini && !fin) return false;
+      const inicioOK = ini ? ini.getTime() <= hoy.getTime() : true;
+      const finOK = fin ? fin.getTime() >= hoy.getTime() : true;
+      return inicioOK && finOK;
+    });
+    const hayIteracionVigente = iterActivas.length > 0;
+    let iteracionesVigentes: Set<number> | null = null;
+    if (this.iteracionesRangoActual) {
+      iteracionesVigentes = this.iteracionesRangoActual;
+    } else if (iterActivas.length) {
+      iteracionesVigentes = new Set(iterActivas.map(it => Number(it?.idIteracion)).filter(id => Number.isFinite(id)));
+    }
+    const perteneceAIterVigente = (t: any) => {
+      if (!iteracionesVigentes) return true;
+      return iteracionesVigentes.has(Number(t?.iteracionId));
+    };
+
+    if (hayIteracionVigente) {
+      this.atrasadasCount = pendientes.filter(t => {
+        const f = parseFecha(t.fechaFin);
+        return !!f && f < hoy && perteneceAIterVigente(t);
+      }).length;
+      this.proximasCount = pendientes.filter(t => {
+        const f = parseFecha(t.fechaFin);
+        return !!f && f >= hoy && f <= limite && perteneceAIterVigente(t);
+      }).length;
+    } else {
+      this.atrasadasCount = 0;
+      this.proximasCount = 0;
+    }
+
+    this.tareasNoFinalizadas = pendientes.filter(t => {
+      const iterId = Number(t?.iteracionId);
+      const iter = iterPorId.get(iterId);
+      const finIter = parseFecha(iter?.fechaFin);
+      return !!finIter && finIter < hoy;
+    });
 
     const estimadas = tareas.map(t => t.horasEstimadas || 0).reduce((a: number, b: number) => a + b, 0);
     const reales = this.totalHoras;
@@ -697,16 +900,16 @@ private obtenerDataGrafico(canvasId: string): number[] {
       const proximasCard = cards && cards.length > 1 ? cards[1] as HTMLElement : null;
       const titleEl = proximasCard?.querySelector('h4.mb-2');
         if (titleEl && titleEl.textContent && titleEl.textContent.trim().startsWith('Pr')) {
-          titleEl.textContent = 'Próximos vencimientos';
+          titleEl.textContent = 'Proximos vencimientos';
       }
       const spanEl = proximasCard?.querySelector('span.fs-5');
       if (spanEl) {
           if (this.proximasCount > 0) {
             spanEl.classList.remove('text-muted');
-            spanEl.textContent = `${this.proximasCount} ${this.proximasCount === 1 ? 'tarea próxima a vencer' : 'tareas próximas a vencer'}`;
+            spanEl.textContent = `${this.proximasCount} ${this.proximasCount === 1 ? 'tarea proxima a vencer' : 'tareas proximas a vencer'}`;
           } else {
             spanEl.classList.add('text-muted');
-            spanEl.textContent = 'No hay tareas próximas a vencer';
+            spanEl.textContent = 'No hay tareas proximas a vencer';
         }
       }
     } catch { }
@@ -853,7 +1056,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
                return formatted;
              }
            }
-         }
+        }
       },
       scales: {
         y: {
@@ -870,7 +1073,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
         },
         x: {
           grid: { display: false },
-          ticks: { font: { size: 11 } },
+          ticks: { font: { size: 11 }, maxRotation: 60, minRotation: 40 },
           stacked,
           title: {
             display: !!labelX,
@@ -941,8 +1144,8 @@ private obtenerDataGrafico(canvasId: string): number[] {
     false,
     true,
     false,
-    'Horas por DAa',
-    'DAas de la Semana',
+    'Horas por dia',
+    'dias de la Semana',
     'Horas (h)'
   );
     const detalle = this.diasSemanaOrden.map(dia => {
@@ -1208,12 +1411,29 @@ private obtenerDataGrafico(canvasId: string): number[] {
     this.detalleAbierto = null;
   }
 
+  onFiltroEtapaChange() {
+    this.filtroIteracion = null;
+    this.filtroSemana = 0;
+    this.semanaBase = null;
+    this.reload();
+  }
+
+  onFiltroIteracionChange() {
+    this.filtroSemana = 0;
+    this.semanaBase = null;
+    this.reload();
+  }
+
+  onFiltroTiempoChange() {
+    this.reload();
+  }
+
   detalleTituloActual(): string {
     switch (this.detalleAbierto) {
-      case 'horasIteracion': return 'Detalle de estimación vs ejecución';
-      case 'horasCategoria': return 'Detalle de horas por categorAa';
+      case 'horasIteracion': return 'Detalle de estimacion vs ejecucion';
+      case 'horasCategoria': return 'Detalle de horas por categoria';
       case 'tareasUsuario': return 'Tareas por usuario';
-      case 'horasDiaTarea': return 'Horas por dAa (semana actual)';
+      case 'horasDiaTarea': return 'Horas por dia (semana actual)';
       case 'horasTarea': return 'Horas por tarea';
       default: return '';
     }
@@ -1268,7 +1488,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Clonar solo los datos, NO la configuración completa
+    // Clonar solo los datos, NO la configuracion completa
     const configOriginal = originalChart.config;
     const configClonada: any = {
       type: configOriginal.type,
@@ -1308,11 +1528,11 @@ private obtenerDataGrafico(canvasId: string): number[] {
 
   tituloGrafico(id: string): string {
     const titulos: any = {
-      'chartHorasIter': 'Estimación vs ejecución',
+      'chartHorasIter': 'Estimacion vs ejecucion',
       'chartHorasIterDistrib': 'Horas por tarea',
       'chartTareasUser': 'Tareas por usuario',
-      'chartHorasDiaTarea': 'Horas por dAa',
-      'chartHorasCategoria': 'Horas por categorAa',
+      'chartHorasDiaTarea': 'Horas por dia',
+      'chartHorasCategoria': 'Horas por categoria',
       'chartHorasEtapa': 'Horas por etapa'
     };
     return titulos[id] || 'GrAfico';
@@ -1367,5 +1587,8 @@ descargarGraficoAmpliado() {
 
 
 }
+
+
+
 
 

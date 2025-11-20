@@ -55,7 +55,10 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UserInfoResponse> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (String) authentication.getPrincipal();
+        String email = safePrincipalEmail(authentication);
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         Optional<Usuario> usuario = authService.getUserForSession(email);
         if (usuario.isPresent()) {
@@ -82,7 +85,10 @@ public class AuthController {
     @GetMapping("/check-permission/{permission}")
     public ResponseEntity<Boolean> checkPermission(@PathVariable String permission) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (String) authentication.getPrincipal();
+        String email = safePrincipalEmail(authentication);
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+        }
 
         boolean hasPermission = authService.hasPermission(email, permission);
         return ResponseEntity.ok(hasPermission);
@@ -94,7 +100,10 @@ public class AuthController {
     @GetMapping("/is-admin")
     public ResponseEntity<Boolean> isAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (String) authentication.getPrincipal();
+        String email = safePrincipalEmail(authentication);
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+        }
 
         boolean isAdmin = authService.isAdmin(email);
         return ResponseEntity.ok(isAdmin);
@@ -158,5 +167,16 @@ return ResponseEntity.ok(new AuthResponse("OK", token, usuario));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new AuthResponse("Error procesando login de Google", null, null));
         }
+    }
+
+    private String safePrincipalEmail(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof String str && !str.isBlank()) {
+            return str;
+        }
+        return null;
     }
 }
