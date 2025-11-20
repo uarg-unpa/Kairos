@@ -418,6 +418,30 @@
         </div>
         <!-- ================= FIN TARJETA CORREGIDA ================= -->
 
+        <div class="col-12">
+          <div class="card dashboard-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">Tareas no finalizadas o pendientes de ajustes</h6>
+                <span class="badge bg-secondary">{{ tareasNoFinalizadas.length }}</span>
+              </div>
+              <ng-container *ngIf="tareasNoFinalizadas.length; else sinPendientes">
+                <ul class="list-group list-group-flush small">
+                  <li class="list-group-item px-0 py-1" *ngFor="let t of tareasNoFinalizadas">
+                    <div class="d-flex justify-content-between">
+                      <span class="me-2">{{ t.nombre || t.titulo || 'Tarea sin nombre' }}</span>
+                      <small class="text-muted">Iter {{ t.iteracionId || '-' }}</small>
+                    </div>
+                  </li>
+                </ul>
+              </ng-container>
+              <ng-template #sinPendientes>
+                <small class="text-muted">No hay tareas pendientes fuera de iteraciones activas.</small>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

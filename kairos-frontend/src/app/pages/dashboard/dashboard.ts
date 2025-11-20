@@ -89,6 +89,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   tareasUsuarioDetalle: TareasUsuarioDetalle[] = [];
   horasDiaDetalle: HorasDiaDetalle[] = [];
   horasTareaDetalle: HorasTareaDetalle[] = [];
+  tareasNoFinalizadas: any[] = [];
   private horasIteracionRows: any[] = [];
   private horasEstimadasPorIteracion = new Map<number, number>();
   private readonly diasSemanaOrden = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
@@ -261,9 +262,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
     if (forceRefresh) {
       this.clearDataCaches();
       this.soloFiltroTodo = false;
-      this.semanaBase = null;
-      this.filtroSemana = 0;
-      this.actualizarSemanaActual();
+      // No borro semana base aquí para permitir usar cache; se reinicia solo cuando cambia filtro.
     }
     this.destroyCharts();
     this.loadingHorasIteracion = true;
@@ -425,14 +424,14 @@ private obtenerDataGrafico(canvasId: string): number[] {
       const iterInfo = this.iteraciones?.find((it: any) => Number(it?.idIteracion) === iterId);
       const numero = row?.numero ?? iterInfo?.numero;
       const nombre = row?.nombre;
-      const chartLabel = numero ? `Iter ${numero}` : (nombre || `Iter ${iterId}`);
       const etapa = row?.etapaNombre || row?.etapa || this.nombreEtapaDeIteracion(iterId) || null;
       const minutos = row ? Number(row.minutos || 0) : 0;
       const horasReales = Math.round(((minutos / 60) * 100)) / 100;
       const horasEstimadasRaw = this.horasEstimadasPorIteracion.get(iterId) ?? 0;
       const horasEstimadas = Math.round((horasEstimadasRaw) * 10) / 10;
 
-      labels.push(chartLabel);
+      const baseLabel = numero ? `Iter ${numero}` : (nombre || `Iter ${iterId}`);
+      labels.push(etapa ? `${baseLabel}\n${etapa}` : baseLabel);
       realesHoras.push(horasReales);
       estimadasHoras.push(horasEstimadas);
 
@@ -812,15 +811,52 @@ private obtenerDataGrafico(canvasId: string): number[] {
         return isNaN(d.getTime()) ? null : startOfDay(d);
       } catch { return null; }
     };
+    const iterPorId = new Map<number, any>();
+    (this.iteraciones || []).forEach(it => {
+      const id = Number(it?.idIteracion);
+      if (Number.isFinite(id)) iterPorId.set(id, it);
+    });
     const pendientes = tareas.filter(esPendiente);
-    this.atrasadasCount = pendientes.filter(t => {
-      const f = parseFecha(t.fechaFin);
-      return !!f && f < hoy;
-    }).length;
-    this.proximasCount = pendientes.filter(t => {
-      const f = parseFecha(t.fechaFin);
-      return !!f && f >= hoy && f <= limite;
-    }).length;
+    const iterActivas = (this.iteraciones || []).filter(it => {
+      const ini = parseFecha(it?.fechaInicio);
+      const fin = parseFecha(it?.fechaFin);
+      if (!ini && !fin) return false;
+      const inicioOK = ini ? ini.getTime() <= hoy.getTime() : true;
+      const finOK = fin ? fin.getTime() >= hoy.getTime() : true;
+      return inicioOK && finOK;
+    });
+    const hayIteracionVigente = iterActivas.length > 0;
+    let iteracionesVigentes: Set<number> | null = null;
+    if (this.iteracionesRangoActual) {
+      iteracionesVigentes = this.iteracionesRangoActual;
+    } else if (iterActivas.length) {
+      iteracionesVigentes = new Set(iterActivas.map(it => Number(it?.idIteracion)).filter(id => Number.isFinite(id)));
+    }
+    const perteneceAIterVigente = (t: any) => {
+      if (!iteracionesVigentes) return true;
+      return iteracionesVigentes.has(Number(t?.iteracionId));
+    };
+
+    if (hayIteracionVigente) {
+      this.atrasadasCount = pendientes.filter(t => {
+        const f = parseFecha(t.fechaFin);
+        return !!f && f < hoy && perteneceAIterVigente(t);
+      }).length;
+      this.proximasCount = pendientes.filter(t => {
+        const f = parseFecha(t.fechaFin);
+        return !!f && f >= hoy && f <= limite && perteneceAIterVigente(t);
+      }).length;
+    } else {
+      this.atrasadasCount = 0;
+      this.proximasCount = 0;
+    }
+
+    this.tareasNoFinalizadas = pendientes.filter(t => {
+      const iterId = Number(t?.iteracionId);
+      const iter = iterPorId.get(iterId);
+      const finIter = parseFecha(iter?.fechaFin);
+      return !!finIter && finIter < hoy;
+    });
 
     const estimadas = tareas.map(t => t.horasEstimadas || 0).reduce((a: number, b: number) => a + b, 0);
     const reales = this.totalHoras;
@@ -1019,7 +1055,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
                return formatted;
              }
            }
-         }
+        }
       },
       scales: {
         y: {
@@ -1036,7 +1072,7 @@ private obtenerDataGrafico(canvasId: string): number[] {
         },
         x: {
           grid: { display: false },
-          ticks: { font: { size: 11 } },
+          ticks: { font: { size: 11 }, maxRotation: 60, minRotation: 40 },
           stacked,
           title: {
             display: !!labelX,
@@ -1378,17 +1414,17 @@ private obtenerDataGrafico(canvasId: string): number[] {
     this.filtroIteracion = null;
     this.filtroSemana = 0;
     this.semanaBase = null;
-    this.reload(true);
+    this.reload();
   }
 
   onFiltroIteracionChange() {
     this.filtroSemana = 0;
     this.semanaBase = null;
-    this.reload(true);
+    this.reload();
   }
 
   onFiltroTiempoChange() {
-    this.reload(true);
+    this.reload();
   }
 
   detalleTituloActual(): string {
