@@ -40,51 +40,56 @@
 
         <!-- Listar tareas -->
         <div *ngFor="let tarea of tareasPaginadas()" class="task-card p-3 border-bottom bg-white task-item">
+          <div class="d-flex mb-3">
+            <h6 class="mb-0">{{ tarea.nombre }}</h6>
+            <div class="ms-auto">
 
-          <h6 class="mb-0">{{ tarea.nombre }}</h6>
+              <span class="badge" [ngClass]="{
+                              'bg-danger': tarea.prioridad === 'Alta',
+                              'bg-warning': tarea.prioridad === 'Media',
+                              'bg-primary': tarea.prioridad === 'Baja'
+                            }">
+                {{ tarea.prioridad }}
+              </span>
+              <span class="badge bg-info ms-1" [ngClass]="{
+                              'bg-success': tarea.estado === 'Completado',
+                              'bg-info': tarea.estado === 'En Progreso',
+                              'bg-secondary': tarea.estado === 'Incompleto'
+                            }">{{ tarea.estado }}</span>
+              <span class="badge bg-secondary ms-1">
+                {{ tarea.categorias && tarea.categorias.length > 0 ? tarea.categorias[0].nombre : 'Sin categoría' }}
+              </span>
+            </div>
+            <button class="btn btn-sm btn-outline-success" *ngIf="tarea.estado !== 'Completado'"
+              (click)="markAsCompleted(tarea.idTarea)" title="Marcar como Completado" style="margin-left: 10px;">
+              <i class="bi bi-check-lg"></i> Completar
+            </button>
+          </div>
 
-          <!-- Prioridad -->
-          <span class="badge" [ngClass]="{
-                          'bg-danger': tarea.prioridad === 'Alta',
-                          'bg-warning': tarea.prioridad === 'Media',
-                          'bg-primary': tarea.prioridad === 'Baja'
-                        }">
-            {{ tarea.prioridad }}
-          </span>
-
-          <!-- Estado -->
-          <span class="badge bg-info ms-1">{{ tarea.estado }}</span>
-
-          <!-- Categoría -->
-          <span class="badge bg-secondary ms-1">
-            {{ tarea.categorias && tarea.categorias.length > 0 ? tarea.categorias[0].nombre : 'Sin categoría' }}
-          </span>
 
           <!-- Descripción -->
           <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
 
           <!-- Miembro y Rol -->
-          <div class="row g-2 small text-muted">
+          <div class="row g-2 small align-items-center text-muted">
             <div class="col-md-6">
               <span><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
               <span><i class="bi bi-calendar me-1" style="margin-left: 10px;"></i>{{ tarea.fechaFin }}</span>
+              <span><i class="bi bi-clock me-1" style="margin-left: 10px;"></i>Estimado: {{ tarea.horasEstimadas ?? 0
+                }}h</span>
             </div>
-            <div class="col-md-6">
-              <span><i class="bi bi-hourglass me-1"></i>Estimado: {{ tarea.horasEstimadas ?? 0 }}h</span>
+            <div class="col-md-2 ms-auto">
+              <div class="mt-2 flex-column d-flex gap-2" *ngIf="tarea.estado !== 'Completado'">
+                <button class="btn btn-sm btn-outline-purple button-iniciar-tarea"
+                  (click)="startTimerForTask(tarea.idTarea, tarea.nombre)" title="Iniciar Cronómetro"
+                  [disabled]="timerState.startTime !== null && !timerState.isPaused">
+                  <i class="bi bi-play-fill"></i>
+                </button>
+              </div>
             </div>
           </div>
 
           <!-- Acciones Rápidas -->
-          <div class="mt-2 d-flex gap-2" *ngIf="tarea.estado !== 'Completado'">
-            <button class="btn btn-sm btn-outline-primary" (click)="startTimerForTask(tarea.idTarea, tarea.nombre)"
-              title="Iniciar Cronómetro">
-              <i class="bi bi-play-fill"></i> Iniciar
-            </button>
-            <button class="btn btn-sm btn-outline-success" (click)="markAsCompleted(tarea.idTarea)"
-              title="Marcar como Completado">
-              <i class="bi bi-check-lg"></i> Completar
-            </button>
-          </div>
 
           <!-- Barra de Progreso -->
           <div class="mt-2" *ngIf="tarea.horasEstimadas && tarea.horasEstimadas > 0">

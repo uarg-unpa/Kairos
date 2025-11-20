@@ -350,6 +350,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   handleStop(): void {
     this.timerService.stopTimer();
+    this.loadTasks();
   }
 
   startTimerForTask(taskId: number, taskTitle: string): void {
@@ -421,7 +422,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   saveEditedTime(): void {
     if (!this.editTimeForm || this.editTimeForm.duracionMinutos < 1) {
-      alert('La duraci?n debe ser al menos 1 minuto');
+      alert('La duración debe ser al menos 1 minuto');
       return;
     }
 
