@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +7,9 @@ import { ProyectoService } from '../../../services/proyecto.service';
 import { AuthService } from '../../../services/auth.service';
 import { EtapaService } from '../../../services/etapa.service';
 import { TaskService } from '../../../services/tarea.service';
-import { IdCoderService } from '../../../services/id-coder.service';  
+import { IdCoderService } from '../../../services/id-coder.service';
+import { AlertService } from '../../../services/alert.service';
+
 
 import { Proyecto } from '../../../models/proyecto.model';
 import { Etapa } from '../../../models/etapa.model';
@@ -36,6 +38,8 @@ export class ProyectoDetalleComponent implements OnInit {
   tareasFinalizadas = 0;
   tareasAsignadasPendientes = 0;
   private avatarPalette = ['#6C63FF', '#0d6efd', '#198754', '#20c997', '#fd7e14', '#6f42c1'];
+  private alertService = inject(AlertService);
+
 
   // === VALIDACIONES ===
   maxNombre = 20;
@@ -52,18 +56,18 @@ export class ProyectoDetalleComponent implements OnInit {
     private taskService: TaskService,
     private idCoderService: IdCoderService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const encodedId = this.route.snapshot.paramMap.get('id');
     if (encodedId) {
-        const id = this.idCoderService.decode(encodedId); 
-        if (id) {
-            this.cargarProyecto(id);
-        } else {
-            alert('Acceso denegado.');
-            this.router.navigate(['/inicio']);
-        }
+      const id = this.idCoderService.decode(encodedId);
+      if (id) {
+        this.cargarProyecto(id);
+      } else {
+        this.alertService.error('Acceso denegado', 'No tiene permiso para acceder a este proyecto o no existe.');
+        this.router.navigate(['/inicio']);
+      }
     }
     this.cargarUsuarioId();
   }
@@ -89,7 +93,10 @@ export class ProyectoDetalleComponent implements OnInit {
         this.determinarRolEnProyecto();
         this.cargarResumenProyecto(id);
       },
-      error: (err) => console.error('Error:', err)
+      error: () => {
+        this.alertService.error('Acceso denegado', 'No tiene permiso para acceder a este proyecto o no existe.');
+        this.router.navigate(['/inicio']);
+      }
     });
   }
 
@@ -192,7 +199,7 @@ export class ProyectoDetalleComponent implements OnInit {
       next: (actualizado) => {
         this.proyecto = actualizado;
         this.cargarResumenProyecto(actualizado.idProyecto);
-        alert('Proyecto actualizado con exito');
+        this.alertService.success('Proyecto actualizado', 'Proyecto actualizado con exito');
         this.cerrarModalEditar();
       },
       error: (err) => {

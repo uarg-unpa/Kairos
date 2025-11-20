@@ -65,9 +65,9 @@
                 <i class="bi bi-three-dots"></i>
               </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item">
-                    <i class="bi bi-check-circle me-2" *ngIf="tarea.estado !== 'Completado'"
-                      (click)="markAsCompleted(tarea.idTarea)" title="Marcar como Completado"></i>Completar
+                <li><a class="dropdown-item" *ngIf="tarea.estado !== 'Completado'"
+                    (click)="markAsCompleted(tarea.idTarea)" title="Marcar como Completado">
+                    <i class="bi bi-check-circle me-2"></i>Completar
                   </a></li>
                 <li>
                   <hr class="dropdown-divider">

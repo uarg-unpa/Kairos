@@ -10,14 +10,16 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { AlertService } from '../services/alert.service';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
 
   constructor(
     private authService: AuthService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private alertService: AlertService
+  ) { }
 
   intercept(
     req: HttpRequest<any>,
@@ -29,13 +31,13 @@ export class ErrorInterceptor implements HttpInterceptor {
         console.error('ERROR HTTP:', error);
 
         if (error.status === 401) {
-          alert('Sesión expirada. Volviendo al login...');
+          this.alertService.warning('Sesión expirada', 'Volviendo al login...');
           this.authService.logout();
           this.router.navigate(['/login']);
         }
 
         if (error.status === 403) {
-          alert('No tenés permisos para realizar esta acción');
+          this.alertService.error('Acceso denegado', 'No tenés permisos para realizar esta acción');
           this.router.navigate(['/inicio']);
         }
 

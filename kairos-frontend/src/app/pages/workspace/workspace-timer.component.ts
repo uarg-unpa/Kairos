@@ -7,6 +7,7 @@ import { Subscription, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TimerService } from '../../services/timer.service';
 import { TaskService } from '../../services/tarea.service';
+import { AlertService } from '../../services/alert.service';
 import { TimerState, TaskTimerInfo } from '../../models/timer.model';
 import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
@@ -97,7 +98,8 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   constructor(
     private timerService: TimerService,
-    private TaskService: TaskService // <-- Servicio para la carga HTTP
+    private TaskService: TaskService, // <-- Servicio para la carga HTTP
+    private alertService: AlertService
   ) { }
 
   // --- FUNCI?N RESTAURADA ---
@@ -367,8 +369,9 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     this.timerService.startTimer(taskId, taskTitle);
   }
 
-  markAsCompleted(taskId: number): void {
-    if (!confirm('¿Estás seguro de marcar esta tarea como completada?')) return;
+  async markAsCompleted(taskId: number): Promise<void> {
+    const confirmed = await this.alertService.confirm('¿Estás seguro?', '¿Estás seguro de marcar esta tarea como completada?');
+    if (!confirmed) return;
 
     this.cambiarEstado(taskId, 'Completado');
   }
@@ -422,7 +425,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   saveEditedTime(): void {
     if (!this.editTimeForm || this.editTimeForm.duracionMinutos < 1) {
-      alert('La duración debe ser al menos 1 minuto');
+      this.alertService.warning('Atención', 'La duración debe ser al menos 1 minuto');
       return;
     }
 
@@ -439,7 +442,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('Error al editar tiempo', err);
-          alert('Error al guardar. Verifica los datos.');
+          this.alertService.error('Error', 'Error al guardar. Verifica los datos.');
         }
       })
     );
@@ -451,11 +454,11 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
     // 1. Validaciones b?sicas
     if (!entry.idTarea || (entry.hours === 0 && entry.minutes <= 0 && entry.seconds === 0)) {
-      alert("Debe seleccionar una tarea e ingresar una duraci?n de al menos un minuto.");
+      this.alertService.warning('Atención', "Debe seleccionar una tarea e ingresar una duración de al menos un minuto.");
       return;
     }
     if (new Date(entry.fechaRegistro) > new Date()) {
-      alert("No puede registrar tiempo en una fecha futura.");
+      this.alertService.warning('Atención', "No puede registrar tiempo en una fecha futura.");
       return;
     }
 
@@ -475,14 +478,14 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.TaskService.registrarTiempo(payload).subscribe({
         next: () => {
-          alert('? Tiempo manual registrado exitosamente.');
+          this.alertService.success('Éxito', 'Tiempo manual registrado exitosamente.');
           this.loadTasks(); // Recargar para actualizar tiempos registrados en la lista
           this.closeManualTimeModal();
         },
         error: (err) => {
           console.error('? Error al registrar tiempo manual:', err);
           const errorMessage = err.error && err.error.message ? err.error.message : 'Error al registrar tiempo. Verifique el estado de la tarea.';
-          alert(`Error de Registro: ${errorMessage}`);
+          this.alertService.error('Error de Registro', errorMessage);
         }
       })
     );
@@ -492,4 +495,3 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 }
-
