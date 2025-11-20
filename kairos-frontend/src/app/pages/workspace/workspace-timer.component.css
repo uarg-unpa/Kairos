@@ -16,11 +16,8 @@
   font-weight: bold;
 }
 
-.button-iniciar-tarea {
-  max-width: 50px;
-  border-radius: 100%;
-  text-align: center;
-  align-items: center;
+.dropdown-item {
+  cursor: pointer;
 }
 
 .button-iniciar-tarea i {

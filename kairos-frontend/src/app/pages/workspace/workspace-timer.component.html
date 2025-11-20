@@ -60,10 +60,25 @@
                 {{ tarea.categorias && tarea.categorias.length > 0 ? tarea.categorias[0].nombre : 'Sin categoría' }}
               </span>
             </div>
-            <button class="btn btn-sm btn-outline-success" *ngIf="tarea.estado !== 'Completado'"
-              (click)="markAsCompleted(tarea.idTarea)" title="Marcar como Completado" style="margin-left: 10px;">
-              <i class="bi bi-check-lg"></i> Completar
-            </button>
+            <div class="dropdown" style="margin-left: 10px;">
+              <button class="btn btn-sm btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-three-dots"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item">
+                    <i class="bi bi-check-circle me-2" *ngIf="tarea.estado !== 'Completado'"
+                      (click)="markAsCompleted(tarea.idTarea)" title="Marcar como Completado"></i>Completar
+                  </a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a class="dropdown-item">
+                    <i class="bi bi-send me-2"></i>Proponer
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
 
 
@@ -83,7 +98,7 @@
                 <button class="btn btn-sm btn-outline-purple button-iniciar-tarea"
                   (click)="startTimerForTask(tarea.idTarea, tarea.nombre)" title="Iniciar Cronómetro"
                   [disabled]="timerState.startTime !== null && !timerState.isPaused">
-                  <i class="bi bi-play-fill"></i>
+                  <i class="bi bi-play-circle"></i>
                 </button>
               </div>
             </div>
