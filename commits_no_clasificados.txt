@@ -1,0 +1,147 @@
+Agregado de nueva estimacion 07, con gráficos
+Limpieza: ignorar target de Maven y Prototipo; mover prototipos fuera del proyecto
+eliminación de botón en graficos de horas x dia
+fix en categorias
+Exportar
+agregado de etiquetas, gráfico estimación vs ejecucion
+Merge branch 'dev-copia' into dev
+eliminacion referencia target
+eliminacion referencia target
+Merge branch 'dev-copia' of https://github.com/uarg-unpa/Kairos into dev-copia
+correcciónd e filtros en dash
+arreglo en el grafico ejecución vs estimación
+prueba de merge
+Merge branch 'dev-copia' of https://github.com/uarg-unpa/Kairos into dev-copia
+cambio
+Filtro por miembros de un proyecto
+Filtro por miembros de un proyecto
+Filtro por semanas en horas por dia
+fechas en el grafico ed dias
+reorganizando gráficos, colores, y datos reflejados
+Graficos del dashboard con ampliacion
+Graficos del dashboard con ampliacion
+nueva rama
+Fix validadciones
+fix en gráficos, problemas con los redondeos en números decimales, y en sintaxis de tareas x usuarios
+Merge branch 'dev' of https://github.com/uarg-unpa/Kairos into dev
+Ultimos cambios/detalles
+Refinando graficos, reorganizado visual, más ayuda lectora en la tarjeta "Eficacia"
+iteraciones por planificacion
+Aplicando cambios solicitados en los gráficos del dashboard
+nuevas opciones para los botones "ver detalles" del dashboard
+fic: vista miembros
+fix
+fix
+fix
+Fix: categorias solo para proyecto donde se crea
+Tareas por iteracion activa
+Endpoint para obtener la iteracion actual (necesario para filtros)
+Endpoint para obtener la etapa actual (necesario para filtros)
+Rediseño en las alertas del dashboard y nuevos mensajes
+Cronometro: ahora refleja las tareas creadas desde la ventana planificacion
+Relacion entre una tarea y una iteracion creada
+Merge branch 'feature/tareas' of https://github.com/uarg-unpa/Kairos into feature/tareas
+frontend: limpiar app.html
+Merge feature/dashboard: resolver conflictos
+Etapas por proyecto y no globales
+Ignorar carpeta target y dejar de rastrear archivos compilados
+fix
+fix
+feature: graficos del dashboard
+fix
+fix
+fix
+fix
+Merge branch 'docs' of https://github.com/uarg-unpa/Kairos into docs
+(docs) nuevo codigo de estimaciones, nuevos gráficos
+Solucionar error de merge por los target
+Añadido ignorar los target
+error en los target
+Ignorar archivos compilados (.class)
+Merge branch 'dev' of https://github.com/NejoBMG/Kairos into dev
+Merge branch 'integracion' into dev
+eliminación de referencias de carpetas de configuracion
+actualizacion gitignore
+Merge pull request  de dev y feature/timer_cronometro
+Merge branch 'dev' into feature/timer_cronometro
+Merge branch 'docs' of https://github.com/uarg-unpa/Kairos into docs
+(docs) Gráfico de Estimación rediseñado V2.0
+feature: Nuevos arreglos
+feature: Dependencias agergadas
+feature: Dependencias
+Fix: arreglando borrado en cascada
+Test: agregados los test unitarios
+feature(integracion): paginacion de tareas
+feature(dev): agregar comentarios añadidos
+feature(integracion): agregando comentarios
+"(dev) comenzando cu07 y cu08"
+fix(dev): clases duplicadas eliminadas
+ntegracion del timer y planificacion
+fix(dev); Integracion del timer con la planificacion
+fix; nuevos servicios
+fix(dev): Arreglando sintaxis
+Merge de timer y planificacion
+Conflictos de merge resueltos
+Integracion de componentes "tareas" y "cronometro"
+feature/tareas(dev): Eliminado la caja azul
+feature/tareas(dev): editar tarea agregado
+feature/tareas(dev); Agregando funcionalidad 'editar'
+"(dev) arreglo archivo constants"
+feature/tareas(dev);finalizacion de funcionalidades
+remover .env archivo
+(docs) nuevo código de estimacion
+Merge branch 'docs' of https://github.com/uarg-unpa/Kairos into docs
+feature/tareas(dev): Funcionalidades nuevas
+feature/tareas(dev);Modelos y repositorios
+feature/tareas(dev); Cambios en las tareas
+dev(kairos-frontend): Actualización de iconos y bootstrap 5
+Merge branch 'docs' of https://github.com/uarg-unpa/Kairos into docs
+(docs) arreglo planillas estimación
+chore(auth): remove legacy Spring OAuth2 login classes; keep token-exchange only
+chore(security): remove OAuth2 redirect flow and switch to token-exchange; tighten .gitignore
+cambios en la autenticación
+docs
+Merge branch 'dev' of https://github.com/uarg-unpa/Kairos into dev
+dev: limpieza del frontend (empezar de 0)
+Merge branch 'docs' of https://github.com/uarg-unpa/Kairos into docs
+actualización
+arreglos
+frontend-con-angular
+cambiando apariencia
+cambios-en-estructura
+estructura-springboot-corregida
+migrandoUARGFLOW-SpringBoot
+docs (Estimacion): codigoEstimacionActualizado
+docs (Estimacion): codigoEstimacion
+actualizacion modelo de negocio
+actualizacion de documentos
+dev: añadir Descripción de rama dev
+dev: creación de rama de desarrollo.
+Docs: creación de rama específica de Documentos.
+Docs: avance Estudio de Factibilidad
+Docs: avance Estudio de Factibilidad
+Resumen de entrevista versión final
+Resumen de entrevista versión final
+Avance de resumen de entrevista
+Avance de resumen de entrevista
+Nomenclatura de documentos: titulo - nombre del proyecto - nombre del equipo
+Nomenclatura de documentos: titulo - nombre del proyecto - nombre del equipo
+Notas
+Notas
+Documentos etapa inicio
+Documentos etapa inicio
+Entrevista y plantillas
+Entrevista y plantillas
+Logos
+Logos
+Estandar de Documentación modificado
+Estandar de Documentación modificado
+Primer entregable - formato PSI
+Primer entregable - formato PSI
+Primer entregable - formato PSI
+Primer entregable - formato PSI
+Add files via upload
+Add files via upload
+Presentacion y recursos
+Creación del repositorio: carpetas Gestión del proyecto, Presentaciones, Recursos
+Creación del repositorio

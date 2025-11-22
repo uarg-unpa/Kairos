@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import Swal from 'sweetalert2';
+
 
 import { IdCoderService } from '../../services/id-coder.service';
 import { TaskService } from '../../services/tarea.service';
@@ -25,7 +25,8 @@ import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
 import { Comentario } from '../../models/comentario.model';
 import { Etapa } from '../../models/etapa.model';
-import { PersonalTask } from '../../models/personal-task.model';
+import { tareaPersonal } from '../../models/personal-task.model';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-planificacion',
@@ -57,7 +58,8 @@ export class PlanificacionComponent implements OnInit {
   iteracionActual: Iteracion | null = null;
   proyectoNombre: string | null = null;
 
-  proposedTasks: PersonalTask[] = [];
+  tareasPropuestas: tareaPersonal[] = [];
+  mostrarTareasPropuestas: boolean = false;
 
   // Usuario y comentarios
   usuarios: Usuario[] = [];
@@ -89,7 +91,8 @@ export class PlanificacionComponent implements OnInit {
     private router: Router,
     private idCoderService: IdCoderService,
     private proyectoService: ProyectoService,
-    private http: HttpClient
+    private http: HttpClient,
+    private alertService: AlertService
   ) { }
 
   ngOnInit(): void {
@@ -102,9 +105,9 @@ export class PlanificacionComponent implements OnInit {
         this.proyectoId = id;
         this.cargarNombreProyecto(id);
         this.cargarMiembros();
-        this.loadProposedTasks();
+        this.cargarTareaPersonal();
       } else {
-        Swal.fire('Error', 'Acceso denegado o ID de proyecto inválido.', 'error');
+        this.alertService.error('Error', 'Acceso denegado o ID de proyecto inválido.');
         this.router.navigate(['/inicio']);
         return;
       }
@@ -146,7 +149,7 @@ export class PlanificacionComponent implements OnInit {
           id: u.idUsuario,
           nombre: u.nombre,
           email: u.email,
-          rol: [] // si no manejás roles todavía, dejalo como array vacío
+          rol: []
         }));
 
         console.log("Usuarios convertidos:", this.usuarios);
@@ -223,13 +226,21 @@ export class PlanificacionComponent implements OnInit {
     });
   }
 
-  private loadProposedTasks(): void {
+  private cargarTareaPersonal(): void {
     if (!this.proyectoId) return;
-    this.http.get<PersonalTask[]>(`/api/personal-tasks/project/${this.proyectoId}/proposed`)
+    this.http.get<tareaPersonal[]>(`/api/personal-tasks/project/${this.proyectoId}/proposed`)
       .subscribe({
-        next: (data) => this.proposedTasks = data,
+        next: (data) => {
+          this.tareasPropuestas = data;
+        },
         error: (err) => console.error('Error loading proposed tasks:', err)
       });
+  }
+
+  toggleTareasPropuestas(): void {
+    this.mostrarTareasPropuestas = !this.mostrarTareasPropuestas;
+    this.cargarTareaPersonal();
+    console.log(this.iteracionActual?.idIteracion);
   }
 
   getCategoryName(id: number | undefined): string {
@@ -238,53 +249,52 @@ export class PlanificacionComponent implements OnInit {
     return cat ? cat.nombre : 'Desconocida';
   }
 
-  acceptTask(task: PersonalTask): void {
+  aceptarTareaPersonal(tareaPersonal: tareaPersonal): void {
     if (!this.iteracionActual) {
-      Swal.fire('Error', 'No active iteration to assign the task to.', 'error');
+      this.alertService.error('Error', 'No existe una iteración activa.');
       return;
     }
 
-    const categoryId = task.categoriaPropuestaId;
+    const categoryId = tareaPersonal.categoriaPropuestaId;
     if (!categoryId) {
-      Swal.fire('Error', 'Task has no proposed category.', 'error');
+      this.alertService.error('Error', 'La tarea no tiene una categoría propuesta.');
+      return;
+    }
+    if (!tareaPersonal.fechaFinAceptada) {
+      this.alertService.error('Error', 'Debes elegir una fecha de fin para la tarea.');
       return;
     }
 
-    this.http.post(`/api/personal-tasks/${task.id}/accept`, null, {
+    this.http.post(`/api/personal-tasks/${tareaPersonal.id}/accept`, null, {
       params: {
         iteracionId: this.iteracionActual.idIteracion.toString(),
-        categoriaId: categoryId.toString()
+        categoriaId: categoryId.toString(),
+        fechaFin: tareaPersonal.fechaFinAceptada
       }
     }).subscribe({
       next: () => {
-        Swal.fire('Success', 'Task accepted successfully', 'success');
-        this.loadProposedTasks();
+        this.alertService.success('Tarea aceptada', 'Se agregó la tarea a la planificación');
+        this.cargarTareaPersonal();
         this.cargarTareas();
       },
-      error: (err) => console.error('Error accepting task:', err)
+      error: () => this.alertService.error('Error', 'Error al aceptar la tarea.')
     });
   }
 
-  rejectTask(task: PersonalTask): void {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, reject it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.http.put(`/api/personal-tasks/${task.id}/reject`, {}).subscribe({
-          next: () => {
-            Swal.fire('Rejected!', 'The task has been rejected.', 'success');
-            this.loadProposedTasks();
-          },
-          error: (err) => console.error('Error rejecting task:', err)
-        });
-      }
-    })
+  rechazarTareaPersonal(tareaPersonal: tareaPersonal): void {
+    this.alertService.confirm('¿Estás seguro de rechazar la tarea?', 'Esta acción no se puede revertir.')
+      .then((result) => {
+        if (result) {
+          this.http.put(`/api/personal-tasks/${tareaPersonal.id}/reject`, {}).subscribe({
+            next: () => {
+              this.alertService.success('Tarea rechazada', 'Se rechazó la tarea');
+              this.cargarTareaPersonal();
+              this.cargarTareas();
+            },
+            error: () => this.alertService.error('Error', 'Error al rechazar la tarea.')
+          });
+        }
+      });
   }
 
   // ===== Manejadores de Eventos =====
@@ -351,8 +361,6 @@ export class PlanificacionComponent implements OnInit {
       dependenciasIds: datos.dependenciaId ? [Number(datos.dependenciaId)] : []
     };
 
-    console.log('Datos para editar tarea:', tareaParaBackend);
-
     this.taskService.updateTarea(datos.tareaId, tareaParaBackend).subscribe({
       next: () => {
         this.cargarTareas();
@@ -366,35 +374,25 @@ export class PlanificacionComponent implements OnInit {
           err?.error?.error ||     // caso: { error: "mensaje" }
           err?.error?.message ||   // caso: { message: "mensaje" }
           'Ocurrió un error inesperado.';
-
-        Swal.fire('Error', mensaje, 'error');
-        console.error('Error completo:', err);
-
+        this.alertService.error('Error', mensaje);
       }
 
     });
   }
 
   onEliminarTarea(tareaId: number): void {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: "No podrás revertir esto",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.taskService.deleteTarea(tareaId).subscribe({
-          next: () => {
-            this.tareas = this.tareas.filter(t => t.idTarea !== tareaId);
-            Swal.fire('Eliminado', 'La tarea ha sido eliminada.', 'success');
-          },
-          error: (err) => console.error('Error al eliminar tarea:', err)
-        });
-      }
-    });
+    this.alertService.confirm('¿Estás seguro?', 'No podrás revertir esto.')
+      .then((result) => {
+        if (result) {
+          this.taskService.deleteTarea(tareaId).subscribe({
+            next: () => {
+              this.tareas = this.tareas.filter(t => t.idTarea !== tareaId);
+              this.alertService.success('Eliminado', 'La tarea ha sido eliminada.');
+            },
+            error: () => this.alertService.error('Error', 'Error al eliminar la tarea.')
+          });
+        }
+      });
   }
 
   onCambiarEstado(evento: { tareaId: number; nuevoEstado: string }): void {
@@ -459,7 +457,7 @@ export class PlanificacionComponent implements OnInit {
           err?.message ||
           'Ocurrió un error inesperado al crear la categoría.';
 
-        Swal.fire('Error', mensaje, 'error');
+        this.alertService.error('Error', mensaje);
       }
 
     });
@@ -478,8 +476,7 @@ export class PlanificacionComponent implements OnInit {
             err?.error?.message ||  // <<--- TU CASO
             err?.message ||
             'Ocurrió un error inesperado al editar la categoría.';
-
-          Swal.fire('Error', mensaje, 'error');
+          this.alertService.error('Error', mensaje);
         }
 
       });

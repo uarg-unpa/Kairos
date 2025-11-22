@@ -16,13 +16,20 @@ public class TareaPersonalService {
     @Autowired
     private TareaPersonalRepository tareaPersonalRepository;
 
-    public TareaPersonal createPersonalTask(Usuario usuario, String nombre, String descripcion) {
-        TareaPersonal tarea = new TareaPersonal(usuario, nombre, descripcion, LocalDate.now(), "BORRADOR");
+    @Autowired
+    private com.nextech.kairos.repository.UsuarioRepository usuarioRepository;
+
+    public TareaPersonal crearTareaPersonal(Usuario usuario, String nombre, String descripcion) {
+        Usuario managedUsuario = usuarioRepository.findById(usuario.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        TareaPersonal tarea = new TareaPersonal(managedUsuario, nombre, descripcion, LocalDate.now(), "BORRADOR");
         return tareaPersonalRepository.save(tarea);
     }
 
-    public TareaPersonal createPersonalTask(TareaPersonal tareaPersonal, Usuario usuario) {
-        tareaPersonal.setUsuario(usuario);
+    public TareaPersonal crearTareaPersonal(TareaPersonal tareaPersonal, Usuario usuario) {
+        Usuario managedUsuario = usuarioRepository.findById(usuario.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        tareaPersonal.setUsuario(managedUsuario);
         tareaPersonal.setFechaCreacion(LocalDate.now());
         if (tareaPersonal.getEstado() == null) {
             tareaPersonal.setEstado("BORRADOR");
@@ -30,11 +37,11 @@ public class TareaPersonalService {
         return tareaPersonalRepository.save(tareaPersonal);
     }
 
-    public List<TareaPersonal> getPersonalTasksByUser(Usuario usuario) {
+    public List<TareaPersonal> getTareasPersonalesPorUsuario(Usuario usuario) {
         return tareaPersonalRepository.findByUsuario(usuario);
     }
 
-    public TareaPersonal proposeTask(Long id, Long proyectoId, Long categoriaId) {
+    public TareaPersonal proponerTarea(Long id, Long proyectoId, Long categoriaId) {
         TareaPersonal tarea = tareaPersonalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Tarea no encontrada"));
         
@@ -45,20 +52,20 @@ public class TareaPersonalService {
         return tareaPersonalRepository.save(tarea);
     }
 
-    public List<TareaPersonal> getProposedTasksByProject(Long projectId) {
+    public List<TareaPersonal> getTareasPropuestasPorProyecto(Long projectId) {
         return tareaPersonalRepository.findByProyectoPropuestoIdAndEstado(projectId, "PROPUESTA");
     }
     
-    public void deletePersonalTask(Long id) {
+    public void eliminarTareaPersonal(Long id) {
         tareaPersonalRepository.deleteById(id);
     }
     
-    public TareaPersonal getPersonalTaskById(Long id) {
+    public TareaPersonal getTareaPersonalPorId(Long id) {
          return tareaPersonalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Tarea no encontrada"));
     }
 
-    public void rejectTask(Long id) {
+    public void rechazarTarea(Long id) {
         TareaPersonal tarea = tareaPersonalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Tarea no encontrada"));
         tarea.setEstado("RECHAZADA");

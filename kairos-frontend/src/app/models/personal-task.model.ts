@@ -1,4 +1,5 @@
-export interface PersonalTask {
+export interface tareaPersonal {
+    fechaFinAceptada: any;
     id: number;
     nombre: string;
     descripcion: string;

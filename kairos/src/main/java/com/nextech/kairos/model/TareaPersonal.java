@@ -42,7 +42,7 @@ public class TareaPersonal {
     private LocalDate fechaCreacion;
 
     @Column(length = 20)
-    private String estado; // "BORRADOR", "PROPUESTA", "RECHAZADA"
+    private String estado;
 
     // Campos para la propuesta
     @Column(name = "proyecto_propuesto_id")

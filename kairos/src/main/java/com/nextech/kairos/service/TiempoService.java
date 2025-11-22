@@ -103,7 +103,7 @@ public class TiempoService {
             }
             tiempo.setTarea(tarea);
         } else if (idTareaPersonal != null) {
-             TareaPersonal tareaPersonal = tareaPersonalService.getPersonalTaskById(idTareaPersonal);
+             TareaPersonal tareaPersonal = tareaPersonalService.getTareaPersonalPorId(idTareaPersonal);
              tiempo.setTareaPersonal(tareaPersonal);
         } else {
             throw new IllegalArgumentException("Debe especificar una Tarea o una Tarea Personal");

@@ -10,8 +10,8 @@
       <button type="button" class="btn btn-primary" (click)="categoriesModal.abrirModal()">
         Categorias
       </button>
-      <!-- Optional: Toggle button for proposed tasks if needed later -->
-      <button class="btn btn-outline-primary">
+      <!-- Toggle button for proposed tasks -->
+      <button class="btn btn-outline-primary" (click)="toggleTareasPropuestas()">
         <i class="bi bi-plus-circle me-2"></i>Tareas propuestas
       </button>
     </div>
@@ -38,14 +38,17 @@
     <button class="btn btn-sm btn-outline-secondary" (click)="clearVencimientoFilter()">Quitar filtro</button>
   </div>
 
-  <!-- Proposed Tasks Section -->
-  <div *ngIf="proposedTasks.length > 0" class="card mb-4 border-warning">
+  <!-- seccion tareas propuestas -->
+  <div *ngIf="mostrarTareasPropuestas" class="card mb-4 border-warning">
     <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
       <h5 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Tareas Propuestas</h5>
-      <span class="badge bg-dark">{{ proposedTasks.length }}</span>
+      <span class="badge bg-dark">{{ tareasPropuestas.length }}</span>
     </div>
     <div class="card-body">
-      <div class="table-responsive">
+      <div *ngIf="tareasPropuestas.length === 0" class="text-center text-muted py-3">
+        No hay tareas propuestas pendientes.
+      </div>
+      <div *ngIf="tareasPropuestas.length > 0" class="table-responsive">
         <table class="table table-hover align-middle mb-0">
           <thead>
             <tr>
@@ -53,22 +56,27 @@
               <th>Descripción</th>
               <th>Categoría Propuesta</th>
               <th>Usuario</th>
+              <th>Fecha Fin Aceptada</th>
               <th class="text-end">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let task of proposedTasks">
-              <td class="fw-bold">{{ task.nombre }}</td>
-              <td>{{ task.descripcion }}</td>
+            <tr *ngFor="let tarea of tareasPropuestas">
+              <td class="fw-bold">{{ tarea.nombre }}</td>
+              <td>{{ tarea.descripcion }}</td>
               <td>
-                <span class="badge bg-secondary">{{ getCategoryName(task.categoriaPropuestaId) }}</span>
+                <span class="badge bg-secondary">{{ getCategoryName(tarea.categoriaPropuestaId) }}</span>
               </td>
-              <td>{{ task.usuario?.nombre }}</td>
+              <td>{{ tarea.usuario?.nombre }}</td>
+              <td>
+                <input type="date" [(ngModel)]="tarea.fechaFinAceptada"
+                  class="form-control form-control-sm d-inline-block w-auto me-2">
+              </td>
               <td class="text-end">
-                <button class="btn btn-sm btn-success me-2" (click)="acceptTask(task)" title="Aceptar">
+                <button class="btn btn-sm btn-success me-2" (click)="aceptarTareaPersonal(tarea)" title="Aceptar">
                   <i class="bi bi-check-lg"></i> Aceptar
                 </button>
-                <button class="btn btn-sm btn-danger" (click)="rejectTask(task)" title="Rechazar">
+                <button class="btn btn-sm btn-danger" (click)="rechazarTareaPersonal(tarea)" title="Rechazar">
                   <i class="bi bi-x-lg"></i> Rechazar
                 </button>
               </td>

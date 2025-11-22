@@ -8,8 +8,11 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.nextech.kairos.model.Categoria;
 import com.nextech.kairos.model.Iteracion;
 import com.nextech.kairos.model.Tarea;
+import com.nextech.kairos.model.TareaPersonal;
+import com.nextech.kairos.model.Tiempo;
 import com.nextech.kairos.repository.TareaRepository;
 import com.nextech.kairos.repository.TareaPersonalRepository;
 import com.nextech.kairos.repository.TiempoRepository;
@@ -146,26 +149,28 @@ public class TareaService implements ITareaService {
     private CategoriaRepository categoriaRepository;
 
     @Transactional
-    public Tarea acceptPersonalTask(Long personalTaskId, Long iteracionId, Long categoriaId) {
-        com.nextech.kairos.model.TareaPersonal personalTask = tareaPersonalRepository.findById(personalTaskId)
+    public Tarea aceptarTareaPersonal(Long tareaPersonalId, Long iteracionId, Long categoriaId, LocalDate fechaFin) {
+        TareaPersonal tareaPersonal = tareaPersonalRepository.findById(tareaPersonalId)
             .orElseThrow(() -> new IllegalArgumentException("Tarea personal no encontrada"));
 
         Iteracion iteracion = iteracionService.obtenerPorId(iteracionId)
             .orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada"));
             
-        com.nextech.kairos.model.Categoria categoria = categoriaRepository.findById(categoriaId)
+        Categoria categoria = categoriaRepository.findById(categoriaId)
             .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
 
         Tarea nuevaTarea = new Tarea();
-        nuevaTarea.setNombre(personalTask.getNombre());
-        nuevaTarea.setDescripcion(personalTask.getDescripcion());
-        nuevaTarea.setUsuario(personalTask.getUsuario());
-        nuevaTarea.setFechaCreacion(personalTask.getFechaCreacion());
+        nuevaTarea.setNombre(tareaPersonal.getNombre());
+        nuevaTarea.setDescripcion(tareaPersonal.getDescripcion());
+        nuevaTarea.setUsuario(tareaPersonal.getUsuario());
+        nuevaTarea.setFechaCreacion(tareaPersonal.getFechaCreacion());
         nuevaTarea.setEstado("En Progreso"); 
         nuevaTarea.setPrioridad("Media"); 
         nuevaTarea.setIteracion(iteracion);
+        nuevaTarea.setFechaFin(fechaFin);
+
         
-        Set<com.nextech.kairos.model.Categoria> categorias = new HashSet<>();
+        Set<Categoria> categorias = new HashSet<>();
         categorias.add(categoria);
         nuevaTarea.setCategorias(categorias);
         
@@ -173,16 +178,15 @@ public class TareaService implements ITareaService {
         nuevaTarea = tareaRepository.save(nuevaTarea);
         
         // Move time records
-        List<com.nextech.kairos.model.Tiempo> tiempos = tiempoRepository.findByTareaPersonal(personalTask);
-        for (com.nextech.kairos.model.Tiempo t : tiempos) {
+        List<Tiempo> tiempos = tiempoRepository.findByTareaPersonal(tareaPersonal);
+        for (Tiempo t : tiempos) {
             t.setTareaPersonal(null);
             t.setTarea(nuevaTarea);
             tiempoRepository.save(t);
         }
         
-        // Update personal task status
-        personalTask.setEstado("ACEPTADA");
-        tareaPersonalRepository.save(personalTask);
+        tareaPersonalRepository.save(tareaPersonal);
+        tareaPersonalRepository.delete(tareaPersonal);
         
         return nuevaTarea;
     }
