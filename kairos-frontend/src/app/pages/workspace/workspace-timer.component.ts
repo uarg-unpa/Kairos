@@ -1,15 +1,13 @@
-// workspace-timer.component.ts
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Subscription, of, forkJoin } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { TimerService } from '../../services/timer.service';
 import { TaskService } from '../../services/tarea.service';
 import { AlertService } from '../../services/alert.service';
 import { ComentarioService } from '../../services/comentario.service';
-import { TimerState, TaskTimerInfo } from '../../models/timer.model';
+import { TimerState } from '../../models/timer.model';
 import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
 import { Comentario } from '../../models/comentario.model';
@@ -26,10 +24,9 @@ interface PersonalTask {
   categoriaPropuestaId?: number;
 }
 
-// Definimos la estructura del payload para registro manual
 interface ManualTimeEntry {
   idTarea: number | null;
-  idTareaPersonal: number | null; // Added for personal tasks
+  idTareaPersonal: number | null;
   hours: number;
   minutes: number;
   seconds: number;
@@ -44,8 +41,6 @@ interface TiempoResponseDTO {
   descripcion: string | null;
 }
 
-
-// Declaraci?n global para Bootstrap Modal
 declare var bootstrap: any;
 
 @Component({
@@ -64,24 +59,18 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   timerState: TimerState = {} as TimerState;
 
   // Lista para el selector del cron?metro y el modal manual
-  availableTasks: TaskTimerInfo[] = [];
+  availableTasks: any[] = [];
   selectedTaskId: number | null = null;
-  selectedTaskType: 'TAREA' | 'PERSONAL' = 'TAREA'; // Track type
 
-  // ?? Tareas para la lista general (requiere mapeo en loadTasks)
   tareas: Tarea[] = [];
-  personalTasks: PersonalTask[] = []; // List of personal tasks
-  combinedTasks: any[] = []; // Combined list for display
+  personalTasks: PersonalTask[] = [];
+  combinedTasks: any[] = [];
 
-  // Propiedades para estad?sticas (como en el prototipo)
   totalTimeToday: string = '0h 0m';
   tasksCompletedToday: number = 0;
   activeTasks: number = 0;
   recentActivities: { time: string; message: string }[] = [];
 
-  // -----------------------
-  // ?? Paginaci?n y Filtros (adaptado de PlanificacionComponent)
-  // -----------------------
   tareasPorPagina = 5;
   paginaActual = 1;
   filtroCategoria: string = 'Todas';
@@ -92,7 +81,6 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   filtroPrioridad: string = '';
   tareasEnProgreso: number = 0;
 
-  // ?? Usuarios y usuario actual (solo para referencia, el servicio de tareas ya filtra)
   usuarios: Usuario[] = [];
   usuarioActual: Usuario | null = null;
 
@@ -110,15 +98,13 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   today: string = new Date().toISOString().split('T')[0]
   private manualTimeModal: any; // Instancia del modal
 
-  // Personal Task Modal
   private personalTaskModal: any;
   newPersonalTask: { nombre: string; descripcion: string } = { nombre: '', descripcion: '' };
 
-  // Propose Task Modal
   private proposeTaskModal: any;
   proposeTaskData: { taskId: number | null; proyectoId: number | null; categoriaId: number | null } = { taskId: null, proyectoId: null, categoriaId: null };
-  proyectos: any[] = []; // Should be loaded from service
-  categorias: any[] = []; // Should be loaded based on project
+  proyectos: any[] = [];
+  categorias: any[] = [];
 
   private subscriptions = new Subscription();
   ultimosTiempos: TiempoResponseDTO[] = [];
@@ -126,16 +112,14 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   showEditModal: boolean | undefined;
   comentariosPorTarea: { [idTarea: number]: Comentario[] } = {};
 
-
   constructor(
     private timerService: TimerService,
-    private TaskService: TaskService, // <-- Servicio para la carga HTTP
+    private TaskService: TaskService,
     private alertService: AlertService,
     private comentarioService: ComentarioService,
-    private http: HttpClient // Inject HttpClient for Personal Tasks (ideally should be in a service)
+    private http: HttpClient
   ) { }
 
-  // --- FUNCI?N RESTAURADA ---
   private formatTime(seconds: number): string {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -168,9 +152,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       return `Cronometrando: ${taskTitle}`;
     }
   }
-  /**
-   * Carga tareas para el Workspace. Si hay proyecto en la URL, usa solo las del proyecto.
-   */
+
   loadTasks(): void {
     const projectId = this.getProjectId();
 
@@ -180,44 +162,69 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       : this.TaskService.getTareasAsignadas();
 
     // Load personal tasks
-    const personalTasks$ = this.http.get<PersonalTask[]>('http://localhost:8080/api/personal-tasks');
+    const personalTasks$ = this.http.get<PersonalTask[]>('/api/personal-tasks').pipe(
+      catchError(() => of([] as PersonalTask[]))
+    );
 
     this.subscriptions.add(
       forkJoin({
         tareas: tasks$.pipe(catchError(() => of([] as Tarea[]))),
-        personalTasks: personalTasks$.pipe(catchError(() => of([] as PersonalTask[])))
-      }).subscribe({
-        next: (result) => {
+        personalTasks: personalTasks$
+      }).pipe(
+        switchMap(result => {
           this.tareas = result.tareas || [];
           this.personalTasks = result.personalTasks || [];
 
-          // Merge for display list
+          return this.timerService.getTiemposTotalesUsuario().pipe(
+            catchError(() => of({} as { [k: number]: number }))
+          );
+        })
+      ).subscribe({
+        next: (tiemposMap) => {
+          (this.tareas || []).forEach(t => {
+            const minutos = (tiemposMap && tiemposMap[t.idTarea]) ? tiemposMap[t.idTarea] : 0;
+            t.tiempoDedicado = parseFloat((minutos / 60).toFixed(2)); // Convertir a horas
+          });
+
           this.combinedTasks = [
             ...this.tareas.map(t => ({ ...t, type: 'TAREA' })),
-            ...this.personalTasks.map(t => ({ ...t, idTarea: t.id, type: 'PERSONAL', prioridad: 'Personal' })) // Map personal task fields to match Tarea structure roughly
-          ];
-
-          // Update available tasks for timer
-          this.availableTasks = [
-            ...this.tareas.map(t => ({
-              id: t.idTarea,
-              title: t.nombre,
-              status: t.estado,
-              priority: t.prioridad,
-              description: t.descripcion,
-              type: 'TAREA'
-            })),
-            ...this.personalTasks.filter(t => t.estado !== 'PROPUESTA').map(t => ({
-              id: t.id,
-              title: t.nombre + ' (Personal)',
-              status: t.estado,
-              priority: 'Personal',
-              description: t.descripcion,
+            ...this.personalTasks.map(p => ({
+              id: p.id,
+              nombre: p.nombre,
+              descripcion: p.descripcion,
+              fechaCreacion: p.fechaCreacion,
+              estado: p.estado,
+              proyectoPropuestoId: p.proyectoPropuestoId,
+              categoriaPropuestaId: p.categoriaPropuestaId,
+              prioridad: 'Personal',
               type: 'PERSONAL'
             }))
           ];
 
-          // Load comments for regular tasks
+          this.availableTasks = [
+            ...this.tareas
+              .filter(t => t.estado !== 'Completado')
+              .map(t => ({
+                id: t.idTarea,
+                title: t.nombre,
+                status: t.estado,
+                priority: t.prioridad,
+                description: t.descripcion,
+                type: 'TAREA'
+              })),
+            ...this.personalTasks
+              .filter(p => p.estado !== 'Completado')
+              .map(p => ({
+                id: p.id,
+                title: `${p.nombre} (Personal)`,
+                status: p.estado,
+                priority: 'Personal',
+                description: p.descripcion,
+                type: 'PERSONAL',
+                proyectoPropuestoId: p.proyectoPropuestoId
+              }))
+          ];
+
           this.tareas.forEach((tarea) => {
             this.comentarioService.getComentariosByTarea(tarea.idTarea).subscribe({
               next: (data) => (this.comentariosPorTarea[tarea.idTarea] = data || []),
@@ -227,26 +234,15 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
               }
             });
           });
-          this.updateStats();
+
           this.tareasEnProgreso = this.tareas.filter(t => t.estado === 'En Progreso').length;
-
-          // Cargar tiempos totales
-          this.timerService.getTiemposTotalesUsuario().subscribe({
-            next: (tiemposMap) => {
-              this.tareas.forEach(t => {
-                const minutos = tiemposMap[t.idTarea] || 0;
-                t.tiempoDedicado = parseFloat((minutos / 60).toFixed(2)); // Convertir a horas
-              });
-            },
-            error: (err) => console.error('Error al cargar tiempos totales', err)
-          });
-
           this.updateStats();
         },
         error: (err) => {
-          console.error('Error al cargar tareas', err);
+          console.error('Error al cargar tareas o tiempos', err);
           this.tareas = [];
           this.personalTasks = [];
+          this.combinedTasks = [];
           this.availableTasks = [];
         }
       })
@@ -265,7 +261,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       .filter(t => t.estado === 'Completado' && new Date(t.fechaCreacion).toDateString() === todayStr)
       .length;
 
-    this.activeTasks = (this.tareas || []).filter(t => t.estado !== 'Completado').length + this.personalTasks.length;
+    this.activeTasks = (this.tareas || []).filter(t => t.estado !== 'Completado').length + this.personalTasks.filter(p => p.estado !== 'Completado').length;
   }
 
   private getProjectId(): number | null {
@@ -291,29 +287,22 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     if (this.recentActivities.length > 5) this.recentActivities.pop();
   }
 
-  /**
-   * ?? Carga las tareas completas (Tarea[]) para el listado inferior (Asignadas al usuario).
-   * Usamos el mismo endpoint /mis-tareas que ya usamos para el selector.
-   */
   loadFullTareas(): void {
-    this.loadTasks(); // Reusing loadTasks as it now handles both
+    this.loadTasks();
   }
 
   ngOnInit(): void {
     this.timerService.resetState();
     this.timerService.refreshFromServer();
 
-    // 1. Cargar tareas (selector y lista)
     this.loadTasks();
     this.loadLast5Times();
 
-    // Cargar usuario actual (simulando desde localStorage como en PlanificacionComponent)
     const usuarioGuardado = localStorage.getItem('usuario_data');
     if (usuarioGuardado) {
       this.usuarioActual = JSON.parse(usuarioGuardado);
     }
 
-    // 2. Suscripci?n al estado del timer
     this.subscriptions.add(this.timerService.timerState$.subscribe(state => {
       this.timerState = state;
       if (state.taskId && this.selectedTaskId === null) {
@@ -325,12 +314,10 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       }
     }));
 
-    // 3. Suscripci?n al display del tiempo
     this.subscriptions.add(this.timerService.elapsedSeconds$.subscribe(seconds => {
       this.elapsedTimeDisplay = this.formatTime(seconds);
     }));
 
-    // ?? 4. Inicializar el modal de Bootstrap para Tiempo Manual
     const modalEl = document.getElementById('manualTimeModal');
     if (modalEl && typeof bootstrap !== 'undefined') {
       this.manualTimeModal = new bootstrap.Modal(modalEl);
@@ -361,12 +348,12 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     return this.tareasFiltradas().slice(inicio, fin);
   }
 
-  // Total de p?ginas
+  // Total de páginas
   totalPaginas(): number {
     return Math.ceil(this.tareasFiltradas().length / this.tareasPorPagina);
   }
 
-  // Cambiar de p?gina
+  // Cambiar de página
   cambiarPagina(pagina: number): void {
     if (pagina >= 1 && pagina <= this.totalPaginas()) {
       this.paginaActual = pagina;
@@ -378,21 +365,20 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     const tarea = this.tareas.find(t => t.idTarea === tareaId);
     if (!tarea) return;
 
-    tarea.estado = nuevoEstado; // Actualizaci?n optimista en el frontend
+    tarea.estado = nuevoEstado;
     this.TaskService.updateTarea(tareaId, { estado: nuevoEstado, usuarioId: tarea.usuarioId, iteracionId: tarea.iteracionId }).subscribe({
       next: () => {
-        this.loadTasks(); // Recargar para sincronizar
+        this.loadTasks();
       },
       error: (err) => {
         console.error('Error al actualizar estado:', err);
-        // Revertir cambio si falla
         this.loadTasks();
       }
     });
   }
 
   // -------------------------
-  // Manejadores CU20: Cron?metro (Existentes)
+  // Manejadores CU20: Cronómetro
   // -------------------------
 
   handleStart(): void {
@@ -401,32 +387,19 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // iniciar a partir del selector (selectedTaskId)
     const task = this.availableTasks.find(t => t.id === this.selectedTaskId);
     if (!task) {
-      console.error("Error: Por favor, selecciona una tarea antes de iniciar.");
+      this.alertService.warning('Atención', 'Seleccioná una tarea válida para iniciar el cronómetro.');
       return;
     }
-    // TODO: Handle Personal Task Timer Start
-    // Currently timerService assumes regular task ID. We might need to pass type.
-    // For now, assuming ID collision is unlikely or handled by backend if we pass a flag.
-    // But wait, TimerService.startTimer only takes ID. We need to update TimerService or pass a composite ID?
-    // Or maybe we just use the same ID and let the backend figure it out? No, IDs can collide.
-    // Let's assume for this iteration we only support timer on regular tasks OR we need to update TimerService.
-    // Given the constraints, I'll update the backend to handle "Personal Task" logic in registerTime, but startTimer might need a flag.
-    // Actually, the user requirement says "Un usuario puede crearse una tarea la cual puede registrar tiempos".
-    // So we MUST support timer on personal tasks.
-    // I will pass a negative ID for personal tasks or something? No, that's hacky.
-    // I'll add a `isPersonal` flag to `startTimer` in TimerService if I could, but I can't see TimerService.
-    // Let's assume I can pass it or I'll just use the ID and hope for the best? No.
-    // I'll modify `startTimer` to accept a type or I'll just use a hack for now: 
-    // If it's personal, I might need to handle it differently.
-    // Wait, `TimerService` calls `timer/start/{taskId}`. I should probably add `timer/start-personal/{taskId}` or similar.
-    // For now, I will just log a warning if it's personal and not implemented, OR I will try to implement it.
 
-    // Check type
-    // const isPersonal = (task as any).type === 'PERSONAL';
-    // this.timerService.startTimer(task.id, task.title, isPersonal); 
+    if (task.type === 'PERSONAL') {
+      this.alertService.warning('No soportado', 'El backend actual no permite registrar tiempos directamente sobre tareas personales. Proponela a un proyecto o convertila a tarea del proyecto para registrar tiempo.');
+      return;
+    }
 
+    // regular task:
     this.timerService.startTimer(task.id, task.title);
   }
 
@@ -441,18 +414,23 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     this.loadTasks();
   }
 
-  startTimerForTask(taskId: number, taskTitle: string): void {
-    // Si ya está corriendo esta tarea, no hacer nada
-    if (this.timerState.taskId === taskId && !this.timerState.isPaused) {
+  startTimerForTask(tarea: any): void {
+    if (!tarea) return;
+
+    if (this.timerState.taskId === tarea.id && !this.timerState.isPaused) {
       return;
     }
-    // Si está pausada en esta tarea, reanudar
-    if (this.timerState.taskId === taskId && this.timerState.isPaused) {
+    if (this.timerState.taskId === tarea.id && this.timerState.isPaused) {
       this.timerService.resumeTimer();
       return;
     }
-    // Si es otra tarea o no hay nada, iniciar
-    this.timerService.startTimer(taskId, taskTitle);
+
+    if (tarea.type === 'PERSONAL') {
+      this.alertService.warning('No soportado', 'El backend actual no permite iniciar cronómetro sobre tareas personales. Proponela a un proyecto o convertila para poder medir tiempo.');
+      return;
+    }
+
+    this.timerService.startTimer(tarea.idTarea || tarea.id, tarea.nombre || tarea.title);
   }
 
   async markAsCompleted(taskId: number): Promise<void> {
@@ -464,12 +442,11 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   }
 
   // -------------------------
-  // ?? Manejadores CU21: Tiempo Manual
+  // Manejadores CU21: Tiempo Manual
   // -------------------------
 
   /** Muestra el modal de registro manual */
   openManualTimeModal(): void {
-    // Reiniciar formulario antes de abrir
     this.manualTimeEntry = {
       idTarea: null,
       idTareaPersonal: null,
@@ -479,6 +456,10 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       descripcion: '',
       fechaRegistro: new Date().toISOString().split('T')[0]
     };
+    if ((this.availableTasks || []).length === 0) {
+      this.alertService.warning('Sin tareas', 'No tenés tareas pendientes para registrar tiempo.');
+      return;
+    }
     this.manualTimeModal?.show();
   }
 
@@ -540,7 +521,6 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   handleManualTimeSubmission(): void {
     const entry = this.manualTimeEntry;
 
-    // 1. Validaciones b?sicas
     if ((!entry.idTarea && !entry.idTareaPersonal) || (entry.hours === 0 && entry.minutes <= 0 && entry.seconds === 0)) {
       this.alertService.warning('Atención', "Debe seleccionar una tarea e ingresar una duración de al menos un minuto.");
       return;
@@ -550,27 +530,29 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // 2. Calcular duraci?n total en segundos
     const totalSeconds = (entry.hours * 3600) + (entry.minutes * 60) + entry.seconds;
 
-    // 3. Preparar payload para TaskService
     const selectedTask = this.availableTasks.find(t => t.id === (entry.idTarea || entry.idTareaPersonal));
     const taskTitle = selectedTask?.title || 'Tarea Desconocida';
     const isPersonal = (selectedTask as any)?.type === 'PERSONAL';
+    if (isPersonal) {
+      this.alertService.warning('No soportado', 'Registro manual sobre tareas personales no está soportado por el backend. Proponela a un proyecto o convertila a tarea del proyecto.');
+      return;
+    }
 
     const payload = {
       idTarea: isPersonal ? null : entry.idTarea,
-      idTareaPersonal: isPersonal ? entry.idTareaPersonal : null,
       durationSeconds: totalSeconds,
-      taskTitle: taskTitle
+      taskTitle: taskTitle,
+      fechaRegistro: entry.fechaRegistro,
+      descripcion: entry.descripcion
     };
 
-    // 4. Enviar al backend
     this.subscriptions.add(
       this.TaskService.registrarTiempo(payload).subscribe({
         next: () => {
           this.alertService.success('Éxito', 'Tiempo manual registrado exitosamente.');
-          this.loadTasks(); // Recargar para actualizar tiempos registrados en la lista
+          this.loadTasks();
           this.closeManualTimeModal();
         },
         error: (err) => {
@@ -581,11 +563,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       })
     );
   }
-
-  // -------------------------
-  // Personal Task Methods
-  // -------------------------
-
+  //metodos tareas personales
   openPersonalTaskModal(): void {
     this.newPersonalTask = { nombre: '', descripcion: '' };
     this.personalTaskModal?.show();
@@ -601,7 +579,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.http.post('http://localhost:8080/api/personal-tasks', this.newPersonalTask).subscribe({
+    this.http.post('/api/personal-tasks', this.newPersonalTask).subscribe({
       next: () => {
         this.alertService.success('Éxito', 'Tarea personal creada.');
         this.loadTasks();
@@ -616,12 +594,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   openProposeTaskModal(taskId: number): void {
     this.proposeTaskData = { taskId, proyectoId: null, categoriaId: null };
-    // Load projects for the user (assuming we have an endpoint or service)
-    // For now, let's assume we can get them from somewhere or we need to fetch them.
-    // I'll use a placeholder or fetch if possible.
-    // this.projectService.getMyProjects()...
-    // Since I don't have ProjectService injected, I'll use HttpClient for now to fetch projects.
-    this.http.get<any[]>('http://localhost:8080/api/proyectos/mis-proyectos').subscribe({
+    this.http.get<any[]>('/api/proyectos/mis-proyectos').subscribe({
       next: (data) => this.proyectos = data,
       error: (err) => console.error('Error loading projects', err)
     });
@@ -635,8 +608,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   onProjectSelect(): void {
     if (this.proposeTaskData.proyectoId) {
-      // Load categories for the project
-      this.http.get<any[]>(`http://localhost:8080/api/categorias/proyecto/${this.proposeTaskData.proyectoId}`).subscribe({
+      this.http.get<any[]>(`/api/categorias/proyecto/${this.proposeTaskData.proyectoId}`).subscribe({
         next: (data) => this.categorias = data,
         error: (err) => console.error('Error loading categories', err)
       });
@@ -651,7 +623,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.http.put(`http://localhost:8080/api/personal-tasks/${this.proposeTaskData.taskId}/propose`, {
+    this.http.put(`/api/personal-tasks/${this.proposeTaskData.taskId}/propose`, {
       proyectoId: this.proposeTaskData.proyectoId,
       categoriaId: this.proposeTaskData.categoriaId
     }).subscribe({
@@ -671,4 +643,3 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 }
-

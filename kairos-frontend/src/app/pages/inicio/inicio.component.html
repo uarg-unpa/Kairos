@@ -42,6 +42,35 @@
 
   <!--proyectos-->
   <div class="row g-4">
+    <div class="col-md-3 mb-4">
+      <a [routerLink]="['/workspace']" class="text-decoration-none d-block h-100">
+        <div class="card project-card border-0 shadow-sm h-100">
+
+          <!-- LOGO -->
+          <div class="workspace d-flex align-items-center justify-content-center p-3">
+            <img [src]="'workspace.png'" width="70" height="70" alt="Espacio de Trabajo" class="img-fluid"
+              style="object-fit: contain;">
+          </div>
+
+          <!-- CONTENIDO -->
+          <div class="card-body">
+            <h5 class="card-title">Mi espacio de trabajo</h5>
+            <!-- <h6 class="text-muted mb-2">{{ p.equipo }}</h6>
+            <p class="card-text">{{ p.descripcion }}</p> -->
+
+            <!-- FOOTER -->
+            <!-- <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span [class]="'badge rounded-pill ' + getEstadoClass(p.estado)">
+                {{ p.estado }}
+              </span>
+              <small class="text-muted">
+                {{ p.fechaCreacion | date:'dd-MM-yyyy' }}
+              </small>
+            </div> -->
+          </div>
+        </div>
+      </a>
+    </div>
     <div class="col-md-3 mb-4" *ngFor="let p of proyectos">
       <a [routerLink]="['/proyecto', getEncodedIdForProject(p)]" class="text-decoration-none d-block h-100">
         <div class="card project-card border-0 shadow-sm h-100">

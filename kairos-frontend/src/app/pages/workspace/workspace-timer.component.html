@@ -9,7 +9,7 @@
   <div class="col-lg-8">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="mb-0">Mis Tareas Asignadas</h2>
+      <h2 class="mb-0">Mis Tareas</h2>
       <div>
         <button class="btn btn btn-outline-primary" style="margin-right:5px;" title="Crear una tarea personal"
           (click)="openPersonalTaskModal()">
@@ -129,9 +129,10 @@
             </div>
             <div class="col-md-2 ms-auto">
               <div class="mt-2 flex-column d-flex gap-2" *ngIf="tarea.estado !== 'Completado'">
-                <button class="btn btn-sm btn-outline-purple button-iniciar-tarea"
-                  (click)="startTimerForTask(tarea.idTarea, tarea.nombre)" title="Iniciar Cronómetro"
-                  [disabled]="timerState.startTime !== null && !timerState.isPaused">
+                <!-- ahora pasamos toda la tarea al handler -->
+                <button class="btn btn-sm btn-outline-purple button-iniciar-tarea" (click)="startTimerForTask(tarea)"
+                  title="Iniciar Cronómetro"
+                  [disabled]="timerState.startTime !== null && !timerState.isPaused || tarea.type === 'PERSONAL'">
                   <i class="bi bi-play-circle"></i>
                 </button>
               </div>
@@ -207,6 +208,7 @@
         <div class="mb-3">
           <select class="form-select" [(ngModel)]="selectedTaskId" [disabled]="timerState.startTime !== null">
             <option [ngValue]="null">Seleccionar tarea...</option>
+            <option *ngIf="availableTasks.length === 0" disabled>No tienes tareas pendientes</option>
             <option *ngFor="let task of availableTasks" [ngValue]="task.id">
               {{ task.title }}
             </option>
@@ -216,7 +218,7 @@
         <div class="d-flex justify-content-center gap-2 mb-3">
           <button class="btn btn-success btn-timer" id="startTimer"
             title="{{ timerState.isPaused ? 'Reanudar' : 'Iniciar' }}" (click)="handleStart()"
-            [disabled]="timerState.startTime !== null && !timerState.isPaused">
+            [disabled]="timerState.startTime !== null && !timerState.isPaused || availableTasks.length === 0">
             <i class="bi bi-play-fill"></i>
           </button>
 
@@ -334,6 +336,7 @@
             <label class="form-label">Seleccionar tarea *</label>
             <select class="form-select" [(ngModel)]="manualTimeEntry.idTarea" name="manualTimeTaskSelect" required>
               <option [ngValue]="null">Seleccionar tarea...</option>
+              <option *ngIf="availableTasks.length === 0" disabled>No tienes tareas pendientes</option>
               <option *ngFor="let task of availableTasks" [ngValue]="task.id">
                 {{ task.title }} ({{ task.status }})
               </option>
@@ -373,7 +376,8 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeManualTimeModal()">Cancelar</button>
-          <button type="submit" class="btn btn-success" (click)="loadTasks()">Registrar Tiempo</button>
+          <button type="submit" class="btn btn-success" (click)="loadTasks()"
+            [disabled]="availableTasks.length === 0">Registrar Tiempo</button>
         </div>
       </form>
     </div>

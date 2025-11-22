@@ -80,3 +80,8 @@
     font-size: 0.9rem;
   }
 }
+
+.bg-purple {
+  background-color: #7d4bff !important;
+  color: white;
+}
