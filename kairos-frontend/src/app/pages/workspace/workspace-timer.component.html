@@ -44,155 +44,163 @@
       </div>
     </div>
 
-    <div class="card planning-card" *ngIf="combinedTasks; else loading">
-      <div class="card-body p-0">
-        <div *ngIf="(combinedTasks.length === 0)" class="p-4 text-center text-muted">
-          <span>
-            No tienes tareas asignadas.
-          </span> <br>
-          <button class="btn btn-sm btn-outline-success" title="Crear una tarea personal"
-            (click)="openPersonalTaskModal()">
-            <i class="bi bi-plus-circle"></i> Crear tarea personal
-          </button>
+    <div *ngIf="(projectTasks || personalTasks) ; else loading">
+
+      <div class="card planning-card mb-3">
+        <div class="card-header bg-light">
+          <strong>Tareas del Proyecto</strong>
+          <span *ngIf="projectIdInView" class="small text-muted ms-2">Mostrando solo este proyecto</span>
         </div>
+        <div class="card-body p-0">
+          <div *ngIf="(projectTasks.length === 0)" class="p-4 text-center text-muted">
+            <span>No hay tareas del proyecto.</span>
+          </div>
 
-        <!-- Listar tareas -->
-        <div *ngFor="let tarea of tareasPaginadas()" class="task-card p-3 border-bottom bg-white task-item">
-          <div class="d-flex mb-3">
-            <h6 class="mb-0">
-              <span *ngIf="tarea.type === 'PERSONAL'" class="badge bg-purple me-2" title="Tarea Personal"><i
-                  class="bi bi-person-fill"></i></span>
-              {{ tarea.nombre }}
-            </h6>
-            <div class="ms-auto">
-
-              <span class="badge" [ngClass]="{
+          <!-- Listar tareas del proyecto -->
+          <div *ngFor="let tarea of projectTasksPaginadas()" class="task-card p-3 border-bottom bg-white task-item">
+            <div class="d-flex mb-3">
+              <h6 class="mb-0">
+                {{ tarea.nombre }}
+                <small *ngIf="tarea.proyectoNombre" class="text-muted ms-2">• {{ tarea.proyectoNombre }}</small>
+              </h6>
+              <div class="ms-auto">
+                <span class="badge" [ngClass]="{
                               'bg-danger': tarea.prioridad === 'Alta',
                               'bg-warning': tarea.prioridad === 'Media',
-                              'bg-primary': tarea.prioridad === 'Baja',
-                              'bg-secondary': tarea.prioridad === 'Personal'
+                              'bg-primary': tarea.prioridad === 'Baja'
                             }">
-                {{ tarea.prioridad || 'Personal' }}
-              </span>
-              <span class="badge bg-info ms-1" [ngClass]="{
+                  {{ tarea.prioridad || 'Media' }}
+                </span>
+                <span class="badge bg-info ms-1" [ngClass]="{
                               'bg-success': tarea.estado === 'Completado',
                               'bg-info': tarea.estado === 'En Progreso' || tarea.estado === 'BORRADOR',
-                              'bg-secondary': tarea.estado === 'Incompleto',
-                              'bg-warning': tarea.estado === 'PROPUESTA'
+                              'bg-secondary': tarea.estado === 'Incompleto'
                             }">{{ tarea.estado }}</span>
-              <span class="badge bg-secondary ms-1" *ngIf="tarea.type === 'TAREA'">
-                {{ tarea.categorias && tarea.categorias.length > 0 ? tarea.categorias[0].nombre : 'Sin categoría' }}
-              </span>
-            </div>
-            <div class="dropdown" style="margin-left: 10px;">
-              <button class="btn btn-sm btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
-                <i class="bi bi-three-dots"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" *ngIf="tarea.estado !== 'Completado'"
-                    (click)="markAsCompleted(tarea.idTarea)" title="Marcar como Completado">
-                    <i class="bi bi-check-circle me-2"></i>Completar
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" *ngIf="tarea.estado !== 'En Progreso' && tarea.estado !== 'BORRADOR'"
-                    title="Reanudar">
-                    <i class="bi bi-play-circle me-2"></i> Reanudar tarea
-                  </a>
-                </li>
-                <li>
-                  <hr class="dropdown-divider">
-                </li>
-                <li *ngIf="tarea.type === 'PERSONAL' && tarea.estado === 'BORRADOR'">
-                  <a class="dropdown-item" (click)="openProposeTaskModal(tarea.id)">
-                    <i class="bi bi-send me-2"></i>Proponer a Proyecto
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-
-          <!-- Descripción -->
-          <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
-
-          <!-- Miembro y Rol -->
-          <div class="row g-2 small align-items-center text-muted">
-            <div class="col-md-6">
-              <span *ngIf="tarea.usuarioNombre"><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
-              <span *ngIf="tarea.fechaFin"><i class="bi bi-calendar me-1" style="margin-left: 10px;"></i>{{
-                tarea.fechaFin }}</span>
-              <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1" style="margin-left: 10px;"></i>Estimado: {{
-                tarea.horasEstimadas ?? 0
-                }}h</span>
-            </div>
-            <div class="col-md-2 ms-auto">
-              <div class="mt-2 flex-column d-flex gap-2" *ngIf="tarea.estado !== 'Completado'">
-                <!-- ahora pasamos toda la tarea al handler -->
-                <button class="btn btn-sm btn-outline-purple button-iniciar-tarea" (click)="startTimerForTask(tarea)"
-                  title="Iniciar Cronómetro"
-                  [disabled]="timerState.startTime !== null && !timerState.isPaused || tarea.type === 'PERSONAL'">
-                  <i class="bi bi-play-circle"></i>
+                <span class="badge bg-secondary ms-1">
+                  {{ tarea.categorias && tarea.categorias.length > 0 ? tarea.categorias[0].nombre : 'Sin categoría' }}
+                </span>
+              </div>
+              <div class="dropdown" style="margin-left: 10px;">
+                <button class="btn btn-sm btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
+                  <i class="bi bi-three-dots"></i>
                 </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Acciones Rápidas -->
-
-          <!-- Barra de Progreso (Solo para Tareas de Proyecto por ahora) -->
-          <div class="mt-2" *ngIf="tarea.type === 'TAREA' && tarea.horasEstimadas && tarea.horasEstimadas > 0">
-            <div class="d-flex justify-content-between small mb-1">
-              <span class="text-muted">Progreso: {{ tarea.tiempoDedicado || 0 }}h / {{ tarea.horasEstimadas }}h</span>
-              <span
-                [ngClass]="{'text-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'text-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}">
-                {{ ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) | number:'1.0-0' }}%
-              </span>
-            </div>
-            <div class="progress" style="height: 6px;">
-              <div class="progress-bar" role="progressbar"
-                [style.width.%]="((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) > 100 ? 100 : ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100)"
-                [ngClass]="{'bg-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'bg-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}"
-                aria-valuemin="0" aria-valuemax="90">
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" *ngIf="tarea.estado !== 'Completado'"
+                      (click)="markAsCompleted(tarea.idTarea)" title="Marcar como Completado">
+                      <i class="bi bi-check-circle me-2"></i>Completar
+                    </a>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                </ul>
               </div>
             </div>
 
-            <div class="mt-3 p-3 bg-light rounded border"
-              *ngIf="(comentariosPorTarea?.[tarea.idTarea]?.length || 0) > 0;">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <strong><i class="bi bi-sticky me-2"></i>Comentarios</strong>
+            <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
+
+            <div class="row g-2 small align-items-center text-muted">
+              <div class="col-md-6">
+                <span *ngIf="tarea.usuarioNombre"><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
+                <span *ngIf="tarea.fechaFin"><i class="bi bi-calendar me-1" style="margin-left: 10px;"></i>{{
+                  tarea.fechaFin }}</span>
+                <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1" style="margin-left: 10px;"></i>Estimado:
+                  {{
+                  tarea.horasEstimadas ?? 0
+                  }}h</span>
               </div>
-              <div>
-                <div *ngFor="let c of comentariosPorTarea?.[tarea.idTarea]"
-                  class="p-2 border-bottom small text-muted d-flex justify-content-between align-items-center">
-                  <div><i class="bi bi-chat-left-text me-1"></i>{{ c.contenido }}</div>
+              <div class="col-md-2 ms-auto">
+                <div class="mt-2 flex-column d-flex gap-2" *ngIf="tarea.estado !== 'Completado'">
+                  <button class="btn btn-sm btn-outline-purple button-iniciar-tarea" (click)="startTimerForTask(tarea)"
+                    title="Iniciar Cronómetro" [disabled]="timerState.startTime !== null && !timerState.isPaused">
+                    <i class="bi bi-play-circle"></i>
+                  </button>
                 </div>
               </div>
-
             </div>
 
+            <!-- Barra de Progreso -->
+            <div class="mt-2" *ngIf="tarea.horasEstimadas && tarea.horasEstimadas > 0">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="text-muted">Progreso: {{ tarea.tiempoDedicado || 0 }}h / {{ tarea.horasEstimadas }}h</span>
+                <span
+                  [ngClass]="{'text-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'text-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}">
+                  {{ ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) | number:'1.0-0' }}%
+                </span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar" role="progressbar"
+                  [style.width.%]="((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) > 100 ? 100 : ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100)"
+                  [ngClass]="{'bg-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'bg-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}"
+                  aria-valuemin="0" aria-valuemax="100">
+                </div>
+              </div>
+            </div>
           </div>
+
+          <!-- Paginación -->
+          <nav class="mt-3 mb-2" *ngIf="totalPaginas() > 1">
+            <ul class="pagination justify-content-center mb-0">
+              <li class="page-item" [class.disabled]="paginaActual === 1">
+                <a class="page-link" (click)="cambiarPagina(paginaActual - 1)" aria-label="Anterior">Anterior</a>
+              </li>
+              <li class="page-item" *ngFor="let num of [].constructor(totalPaginas()); let i = index"
+                [class.active]="paginaActual === i + 1">
+                <a class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</a>
+              </li>
+              <li class="page-item" [class.disabled]="paginaActual === totalPaginas()">
+                <a class="page-link" (click)="cambiarPagina(paginaActual + 1)" aria-label="Siguiente">Siguiente</a>
+              </li>
+            </ul>
+          </nav>
         </div>
-
-        <!-- Paginación -->
-        <nav class="mt-3 mb-2" *ngIf="totalPaginas() > 1">
-          <ul class="pagination justify-content-center mb-0">
-            <li class="page-item" [class.disabled]="paginaActual === 1">
-              <a class="page-link" (click)="cambiarPagina(paginaActual - 1)" aria-label="Anterior">Anterior</a>
-            </li>
-            <li class="page-item" *ngFor="let num of [].constructor(totalPaginas()); let i = index"
-              [class.active]="paginaActual === i + 1">
-              <a class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</a>
-            </li>
-            <li class="page-item" [class.disabled]="paginaActual === totalPaginas()">
-              <a class="page-link" (click)="cambiarPagina(paginaActual + 1)" aria-label="Siguiente">Siguiente</a>
-            </li>
-          </ul>
-        </nav>
-
       </div>
+
+      <div class="card planning-card mb-3" *ngIf="!projectIdInView">
+        <div class="card-header bg-light">
+          <strong>Tareas Personales</strong>
+        </div>
+        <div class="card-body p-0">
+          <div *ngIf="(personalTasks.length === 0)" class="p-4 text-center text-muted">
+            <span>No tenés tareas personales.</span>
+          </div>
+
+          <div *ngFor="let tarea of personalTasksPaginadas()" class="task-card p-3 border-bottom bg-white task-item">
+            <div class="d-flex mb-3">
+              <h6 class="mb-0">
+                <span class="badge bg-purple me-2" title="Tarea Personal"><i class="bi bi-person-fill"></i></span>
+                {{ tarea.nombre }}
+              </h6>
+              <div class="ms-auto">
+                <span class="badge bg-secondary ms-1">Personal</span>
+                <span class="badge bg-info ms-1" [ngClass]="{
+                              'bg-warning': tarea.estado === 'BORRADOR',
+                              'bg-info': tarea.estado === 'En Progreso'
+                            }">{{ tarea.estado }}</span>
+              </div>
+              <div class="dropdown" style="margin-left: 10px;">
+                <button class="btn btn-sm btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
+                  <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li *ngIf="tarea.estado === 'BORRADOR'">
+                    <a class="dropdown-item" (click)="openProposeTaskModal(tarea.id)">
+                      <i class="bi bi-send me-2"></i>Proponer a Proyecto
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
+          </div>
+
+        </div>
+      </div>
+
     </div>
+
   </div>
 
   <div class="col-lg-4">

@@ -1,19 +1,20 @@
+
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Subscription, of, forkJoin } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { Subscription, of, forkJoin, Observable } from 'rxjs';
+import { catchError, switchMap, map } from 'rxjs/operators';
 import { TimerService } from '../../services/timer.service';
 import { TaskService } from '../../services/tarea.service';
+import { ProyectoService } from '../../services/proyecto.service';
 import { AlertService } from '../../services/alert.service';
 import { ComentarioService } from '../../services/comentario.service';
 import { TimerState } from '../../models/timer.model';
 import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
 import { Comentario } from '../../models/comentario.model';
-import { HttpClient } from '@angular/common/http'; // Import HttpClient
+import { HttpClient } from '@angular/common/http';
 
-// Interface for Personal Task
 interface PersonalTask {
   id: number;
   nombre: string;
@@ -26,7 +27,7 @@ interface PersonalTask {
 
 interface ManualTimeEntry {
   idTarea: number | null;
-  idTareaPersonal: number | null;
+  idTareaPersonal: number | null; // Added for personal tasks
   hours: number;
   minutes: number;
   seconds: number;
@@ -58,13 +59,17 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   elapsedTimeDisplay: string = '00:00:00';
   timerState: TimerState = {} as TimerState;
 
-  // Lista para el selector del cron?metro y el modal manual
   availableTasks: any[] = [];
   selectedTaskId: number | null = null;
 
   tareas: Tarea[] = [];
   personalTasks: PersonalTask[] = [];
+
   combinedTasks: any[] = [];
+  projectTasks: any[] = [];
+  projectIdInView: number | null = null;
+
+  private proyectoNameCache: { [id: number]: string } = {};
 
   totalTimeToday: string = '0h 0m';
   tasksCompletedToday: number = 0;
@@ -84,7 +89,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   usuarios: Usuario[] = [];
   usuarioActual: Usuario | null = null;
 
-  // ?? Propiedades para el CU21 (Registro Manual)
+  //Propiedades para el CU21 (Registro Manual)
   manualTimeEntry: ManualTimeEntry = {
     idTarea: null,
     idTareaPersonal: null,
@@ -96,7 +101,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   };
   //dia actual
   today: string = new Date().toISOString().split('T')[0]
-  private manualTimeModal: any; // Instancia del modal
+  private manualTimeModal: any;
 
   private personalTaskModal: any;
   newPersonalTask: { nombre: string; descripcion: string } = { nombre: '', descripcion: '' };
@@ -115,181 +120,12 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   constructor(
     private timerService: TimerService,
     private TaskService: TaskService,
+    private proyectoService: ProyectoService,
     private alertService: AlertService,
     private comentarioService: ComentarioService,
     private http: HttpClient
   ) { }
 
-  private formatTime(seconds: number): string {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  }
-
-  //metodos para el html
-
-  getTimerStatusClass(): string {
-    if (this.timerState.startTime === null) {
-      return 'alert-info';
-    } else if (this.timerState.isPaused) {
-      return 'alert-warning';
-    } else {
-      return 'alert-success';
-    }
-  }
-
-  getTimerStatusText(): string {
-    if (this.timerState.startTime === null) {
-      return 'Selecciona una tarea para comenzar';
-    }
-
-    const taskTitle = this.timerState.taskTitle || 'Tarea Desconocida';
-
-    if (this.timerState.isPaused) {
-      return `Pausado: ${taskTitle}`;
-    } else {
-      return `Cronometrando: ${taskTitle}`;
-    }
-  }
-
-  loadTasks(): void {
-    const projectId = this.getProjectId();
-
-    // Load regular tasks
-    const tasks$ = projectId
-      ? this.TaskService.getTareasPorProyecto(projectId)
-      : this.TaskService.getTareasAsignadas();
-
-    // Load personal tasks
-    const personalTasks$ = this.http.get<PersonalTask[]>('/api/personal-tasks').pipe(
-      catchError(() => of([] as PersonalTask[]))
-    );
-
-    this.subscriptions.add(
-      forkJoin({
-        tareas: tasks$.pipe(catchError(() => of([] as Tarea[]))),
-        personalTasks: personalTasks$
-      }).pipe(
-        switchMap(result => {
-          this.tareas = result.tareas || [];
-          this.personalTasks = result.personalTasks || [];
-
-          return this.timerService.getTiemposTotalesUsuario().pipe(
-            catchError(() => of({} as { [k: number]: number }))
-          );
-        })
-      ).subscribe({
-        next: (tiemposMap) => {
-          (this.tareas || []).forEach(t => {
-            const minutos = (tiemposMap && tiemposMap[t.idTarea]) ? tiemposMap[t.idTarea] : 0;
-            t.tiempoDedicado = parseFloat((minutos / 60).toFixed(2)); // Convertir a horas
-          });
-
-          this.combinedTasks = [
-            ...this.tareas.map(t => ({ ...t, type: 'TAREA' })),
-            ...this.personalTasks.map(p => ({
-              id: p.id,
-              nombre: p.nombre,
-              descripcion: p.descripcion,
-              fechaCreacion: p.fechaCreacion,
-              estado: p.estado,
-              proyectoPropuestoId: p.proyectoPropuestoId,
-              categoriaPropuestaId: p.categoriaPropuestaId,
-              prioridad: 'Personal',
-              type: 'PERSONAL'
-            }))
-          ];
-
-          this.availableTasks = [
-            ...this.tareas
-              .filter(t => t.estado !== 'Completado')
-              .map(t => ({
-                id: t.idTarea,
-                title: t.nombre,
-                status: t.estado,
-                priority: t.prioridad,
-                description: t.descripcion,
-                type: 'TAREA'
-              })),
-            ...this.personalTasks
-              .filter(p => p.estado !== 'Completado')
-              .map(p => ({
-                id: p.id,
-                title: `${p.nombre} (Personal)`,
-                status: p.estado,
-                priority: 'Personal',
-                description: p.descripcion,
-                type: 'PERSONAL',
-                proyectoPropuestoId: p.proyectoPropuestoId
-              }))
-          ];
-
-          this.tareas.forEach((tarea) => {
-            this.comentarioService.getComentariosByTarea(tarea.idTarea).subscribe({
-              next: (data) => (this.comentariosPorTarea[tarea.idTarea] = data || []),
-              error: (err) => {
-                console.error(`Error al cargar comentarios para tarea ${tarea.idTarea}:`, err);
-                this.comentariosPorTarea[tarea.idTarea] = [];
-              }
-            });
-          });
-
-          this.tareasEnProgreso = this.tareas.filter(t => t.estado === 'En Progreso').length;
-          this.updateStats();
-        },
-        error: (err) => {
-          console.error('Error al cargar tareas o tiempos', err);
-          this.tareas = [];
-          this.personalTasks = [];
-          this.combinedTasks = [];
-          this.availableTasks = [];
-        }
-      })
-    );
-  }
-
-  private updateStats(): void {
-    const today = this.formatLocalDate(new Date());
-    const hoyMinutos = (this.ultimosTiempos || [])
-      .filter(t => (t.fechaRegistro || '').startsWith(today))
-      .reduce((sum, t) => sum + (t.duracionMinutos || 0), 0);
-    this.totalTimeToday = this.formatHours(hoyMinutos);
-
-    const todayStr = new Date().toDateString();
-    this.tasksCompletedToday = (this.tareas || [])
-      .filter(t => t.estado === 'Completado' && new Date(t.fechaCreacion).toDateString() === todayStr)
-      .length;
-
-    this.activeTasks = (this.tareas || []).filter(t => t.estado !== 'Completado').length + this.personalTasks.filter(p => p.estado !== 'Completado').length;
-  }
-
-  private getProjectId(): number | null {
-    const m = window.location.pathname.match(/\/proyecto\/(\d+)/);
-    return m && m[1] ? Number(m[1]) : null;
-  }
-
-  private formatHours(totalMinutos: number): string {
-    const h = Math.floor(totalMinutos / 60);
-    const m = totalMinutos % 60;
-    return `${h}h ${m}m`;
-  }
-
-  private formatLocalDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-  addRecentActivity(message: string): void {
-    const time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-    this.recentActivities.unshift({ time, message });
-    if (this.recentActivities.length > 5) this.recentActivities.pop();
-  }
-
-  loadFullTareas(): void {
-    this.loadTasks();
-  }
 
   ngOnInit(): void {
     this.timerService.resetState();
@@ -334,33 +170,243 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     }
   }
 
-  // -------------------------
-  tareasFiltradas(): any[] {
-    return this.combinedTasks.filter(t => {
-      const cumpleEstado = this.filtroEstado === 'Todos' || t.estado === this.filtroEstado;
-      const cumplePrioridad = !this.filtroPrioridad || t.prioridad === this.filtroPrioridad || (this.filtroPrioridad === 'Personal' && t.type === 'PERSONAL');
-      return cumpleEstado && cumplePrioridad;
-    });
+  // --- FUNCIÓN RESTAURADA ---
+  private formatTime(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
-  tareasPaginadas(): any[] {
+
+  //metodos para el html
+
+  getTimerStatusClass(): string {
+    if (this.timerState.startTime === null) {
+      return 'alert-info';
+    } else if (this.timerState.isPaused) {
+      return 'alert-warning';
+    } else {
+      return 'alert-success';
+    }
+  }
+
+  getTimerStatusText(): string {
+    if (this.timerState.startTime === null) {
+      return 'Selecciona una tarea para comenzar';
+    }
+
+    const taskTitle = this.timerState.taskTitle || 'Tarea Desconocida';
+
+    if (this.timerState.isPaused) {
+      return `Pausado: ${taskTitle}`;
+    } else {
+      return `Cronometrando: ${taskTitle}`;
+    }
+  }
+
+  loadTasks(): void {
+    const projectId = this.getProjectId();
+    this.projectIdInView = projectId;
+
+    const tasks$ = projectId
+      ? this.TaskService.getTareasPorProyecto(projectId).pipe(
+        map(tareas => tareas.filter(t => t.usuarioId === this.usuarioActual?.id))
+      )
+      : this.TaskService.getTareasAsignadas();
+
+
+    const personalTasks$ = projectId
+      ? of([] as PersonalTask[])
+      : this.http.get<PersonalTask[]>('/api/personal-tasks').pipe(catchError(() => of([] as PersonalTask[])));
+
+    this.subscriptions.add(
+      forkJoin({
+        tareas: tasks$.pipe(catchError(() => of([] as Tarea[]))),
+        personalTasks: personalTasks$
+      }).pipe(
+        switchMap(result => {
+          this.tareas = result.tareas || [];
+          this.personalTasks = result.personalTasks || [];
+
+          return this.timerService.getTiemposTotalesUsuario().pipe(
+            catchError(() => of({} as { [k: number]: number }))
+          );
+        })
+      ).subscribe({
+        next: (tiemposMap) => {
+          (this.tareas || []).forEach(t => {
+            const minutos = (tiemposMap && tiemposMap[t.idTarea]) ? tiemposMap[t.idTarea] : 0;
+            t.tiempoDedicado = parseFloat((minutos / 60).toFixed(2)); // Convertir a horas
+          });
+
+          const proyectoIds = Array.from(new Set(
+            (this.tareas || []).map(t => (t.proyectoId ? Number(t.proyectoId) : null)).filter(id => id !== null) as number[]
+          ));
+
+          const loadNames$: Observable<any> = proyectoIds.length === 0 ? of([]) : forkJoin(
+            proyectoIds.map(pid => {
+              if (this.proyectoNameCache[pid]) {
+                return of({ id: pid, nombre: this.proyectoNameCache[pid] });
+              }
+              return this.proyectoService.getProyectoById(pid).pipe(
+                map(p => ({ id: pid, nombre: p.nombre })),
+                catchError(() => of({ id: pid, nombre: 'Proyecto desconocido' }))
+              );
+            })
+          );
+
+          loadNames$.subscribe((projArr: any[]) => {
+            projArr.forEach(x => { if (x && x.id) this.proyectoNameCache[x.id] = x.nombre; });
+
+            this.projectTasks = (this.tareas || []).map(t => ({
+              ...t,
+              type: 'TAREA',
+              proyectoNombre: t.proyectoId ? this.proyectoNameCache[Number(t.proyectoId)] : null
+            }));
+            this.projectTasks = this.projectTasks.filter(t => t.estado !== 'Completado');
+
+            this.combinedTasks = [
+              ...this.projectTasks,
+              ...this.personalTasks.map(p => ({
+                id: p.id,
+                nombre: p.nombre,
+                descripcion: p.descripcion,
+                fechaCreacion: p.fechaCreacion,
+                estado: p.estado,
+                proyectoPropuestoId: p.proyectoPropuestoId,
+                categoriaPropuestaId: p.categoriaPropuestaId,
+                prioridad: 'Personal',
+                type: 'PERSONAL'
+              }))
+            ];
+
+            const projectSelector = this.projectTasks
+              .filter(t => t.estado !== 'Completado')
+              .map(t => ({
+                id: t.idTarea,
+                title: `${t.nombre} ${t.proyectoNombre ? '• ' + t.proyectoNombre : ''}`,
+                status: t.estado,
+                priority: t.prioridad,
+                description: t.descripcion,
+                type: 'TAREA',
+                proyectoNombre: t.proyectoNombre
+              }));
+
+            const personalSelector = this.personalTasks
+              .filter(p => p.estado !== 'Completado')
+              .map(p => ({
+                id: p.id,
+                title: `${p.nombre} (Personal)`,
+                status: p.estado,
+                priority: 'Personal',
+                description: p.descripcion,
+                type: 'PERSONAL',
+                proyectoPropuestoId: p.proyectoPropuestoId
+              }));
+
+            this.availableTasks = projectId ? projectSelector : [...projectSelector, ...personalSelector];
+
+            this.tareas.forEach((tarea) => {
+              this.comentarioService.getComentariosByTarea(tarea.idTarea).subscribe({
+                next: (data) => (this.comentariosPorTarea[tarea.idTarea] = data || []),
+                error: (err) => {
+                  console.error(`Error al cargar comentarios para tarea ${tarea.idTarea}:`, err);
+                  this.comentariosPorTarea[tarea.idTarea] = [];
+                }
+              });
+            });
+
+            this.tareasEnProgreso = this.tareas.filter(t => t.estado === 'En Progreso').length;
+            this.updateStats();
+          });
+        },
+        error: (err) => {
+          console.error('Error al cargar tareas o tiempos', err);
+          this.tareas = [];
+          this.personalTasks = [];
+          this.combinedTasks = [];
+          this.availableTasks = [];
+          this.projectTasks = [];
+        }
+      })
+    );
+  }
+
+  private updateStats(): void {
+    const today = this.formatLocalDate(new Date());
+    const hoyMinutos = (this.ultimosTiempos || [])
+      .filter(t => (t.fechaRegistro || '').startsWith(today))
+      .reduce((sum, t) => sum + (t.duracionMinutos || 0), 0);
+    this.totalTimeToday = this.formatHours(hoyMinutos);
+
+    const todayStr = new Date().toDateString();
+    this.tasksCompletedToday = (this.tareas || [])
+      .filter(t => t.estado === 'Completado' && new Date(t.fechaCreacion).toDateString() === todayStr)
+      .length;
+
+    this.activeTasks = (this.tareas || []).filter(t => t.estado !== 'Completado').length + this.personalTasks.filter(p => p.estado !== 'Completado').length;
+  }
+  private getProjectId(): number | null {
+    const m = window.location.pathname.match(/\/proyecto\/([^\/]+)/);
+    if (!m || !m[1]) return null;
+    try {
+      const raw = decodeURIComponent(m[1]);
+      const num = Number(raw);
+      if (!isNaN(num)) return num;
+      try {
+        const decoded = atob(raw);
+        const num2 = Number(decoded);
+        if (!isNaN(num2)) return num2;
+      } catch (e) {
+        this.alertService.error('Error al decodificar el ID del proyecto');
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  private formatHours(totalMinutos: number): string {
+    const h = Math.floor(totalMinutos / 60);
+    const m = totalMinutos % 60;
+    return `${h}h ${m}m`;
+  }
+
+  private formatLocalDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  addRecentActivity(message: string): void {
+    const time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    this.recentActivities.unshift({ time, message });
+    if (this.recentActivities.length > 5) this.recentActivities.pop();
+  }
+
+  projectTasksPaginadas(): any[] {
+    const source = this.projectTasks || [];
     const inicio = (this.paginaActual - 1) * this.tareasPorPagina;
-    const fin = inicio + this.tareasPorPagina;
-    return this.tareasFiltradas().slice(inicio, fin);
+    return source.slice(inicio, inicio + this.tareasPorPagina);
   }
 
-  // Total de páginas
+  personalTasksPaginadas(): any[] {
+    const source = this.personalTasks || [];
+    const inicio = 0;
+    return source.slice(inicio, inicio + 1000);
+  }
+
   totalPaginas(): number {
-    return Math.ceil(this.tareasFiltradas().length / this.tareasPorPagina);
+    const len = (this.projectTasks || []).length;
+    return Math.ceil(len / this.tareasPorPagina);
   }
 
-  // Cambiar de página
   cambiarPagina(pagina: number): void {
     if (pagina >= 1 && pagina <= this.totalPaginas()) {
       this.paginaActual = pagina;
     }
   }
 
-  // Cambiar estado de la tarea
   cambiarEstado(tareaId: number, nuevoEstado: string): void {
     const tarea = this.tareas.find(t => t.idTarea === tareaId);
     if (!tarea) return;
@@ -387,7 +433,6 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // iniciar a partir del selector (selectedTaskId)
     const task = this.availableTasks.find(t => t.id === this.selectedTaskId);
     if (!task) {
       this.alertService.warning('Atención', 'Seleccioná una tarea válida para iniciar el cronómetro.');
@@ -399,7 +444,6 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // regular task:
     this.timerService.startTimer(task.id, task.title);
   }
 
@@ -442,7 +486,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   }
 
   // -------------------------
-  // Manejadores CU21: Tiempo Manual
+  //Manejadores CU21: Tiempo Manual
   // -------------------------
 
   /** Muestra el modal de registro manual */
@@ -476,7 +520,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
           this.updateStats(); // actualiza con tiempos reales
         },
         error: (err) => {
-          console.error('Error al cargar ?ltimos tiempos', err);
+          console.error('Error al cargar últimos tiempos', err);
           this.ultimosTiempos = [];
         }
       })
@@ -517,7 +561,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     );
   }
 
-  /** Maneja el env?o del formulario de registro manual. */
+  /** Maneja el envío del formulario de registro manual. */
   handleManualTimeSubmission(): void {
     const entry = this.manualTimeEntry;
 
@@ -535,6 +579,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     const selectedTask = this.availableTasks.find(t => t.id === (entry.idTarea || entry.idTareaPersonal));
     const taskTitle = selectedTask?.title || 'Tarea Desconocida';
     const isPersonal = (selectedTask as any)?.type === 'PERSONAL';
+
     if (isPersonal) {
       this.alertService.warning('No soportado', 'Registro manual sobre tareas personales no está soportado por el backend. Proponela a un proyecto o convertila a tarea del proyecto.');
       return;
@@ -556,14 +601,15 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
           this.closeManualTimeModal();
         },
         error: (err) => {
-          console.error('? Error al registrar tiempo manual:', err);
+          console.error(' Error al registrar tiempo manual:', err);
           const errorMessage = err.error && err.error.message ? err.error.message : 'Error al registrar tiempo. Verifique el estado de la tarea.';
           this.alertService.error('Error de Registro', errorMessage);
         }
       })
     );
   }
-  //metodos tareas personales
+  // metodos de tareas personales
+
   openPersonalTaskModal(): void {
     this.newPersonalTask = { nombre: '', descripcion: '' };
     this.personalTaskModal?.show();
