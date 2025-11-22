@@ -381,7 +381,6 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     tarea.estado = nuevoEstado; // Actualizaci?n optimista en el frontend
     this.TaskService.updateTarea(tareaId, { estado: nuevoEstado, usuarioId: tarea.usuarioId, iteracionId: tarea.iteracionId }).subscribe({
       next: () => {
-        console.log('Estado actualizado');
         this.loadTasks(); // Recargar para sincronizar
       },
       error: (err) => {

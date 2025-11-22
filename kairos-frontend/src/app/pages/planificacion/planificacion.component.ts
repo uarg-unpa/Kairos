@@ -151,8 +151,6 @@ export class PlanificacionComponent implements OnInit {
           email: u.email,
           rol: []
         }));
-
-        console.log("Usuarios convertidos:", this.usuarios);
       },
       error: (err) => console.error("Error al cargar miembros:", err)
     });
@@ -178,7 +176,6 @@ export class PlanificacionComponent implements OnInit {
           this.iteraciones = [iteracionActual];
           this.filtroIteracionId = iteracionActual.idIteracion;
         }
-        console.log('Iteración actual:', this.iteracionActual);
         this.cargarTareas();
         this.cargarCategorias();
       },
@@ -240,7 +237,6 @@ export class PlanificacionComponent implements OnInit {
   toggleTareasPropuestas(): void {
     this.mostrarTareasPropuestas = !this.mostrarTareasPropuestas;
     this.cargarTareaPersonal();
-    console.log(this.iteracionActual?.idIteracion);
   }
 
   getCategoryName(id: number | undefined): string {
@@ -335,7 +331,6 @@ export class PlanificacionComponent implements OnInit {
       categoriaIds: datos.categoriaId ? [Number(datos.categoriaId)] : [],
       dependenciasIds: datos.dependenciaId ? [Number(datos.dependenciaId)] : []
     };
-    console.log('Datos para crear tarea:', tareaParaBackend);
 
     this.taskService.createTarea(tareaParaBackend).subscribe({
       next: () => {
@@ -400,8 +395,13 @@ export class PlanificacionComponent implements OnInit {
     if (tarea) {
       tarea.estado = evento.nuevoEstado;
       this.taskService.updateTarea(evento.tareaId, { estado: evento.nuevoEstado }).subscribe({
-        next: () => console.log('Estado actualizado'),
-        error: (err) => console.error('Error al actualizar estado:', err)
+        next: () => {
+          this.cargarTareas();
+          this.alertService.success('Estado actualizado', 'El estado de la tarea ha sido actualizado.');
+        },
+        error: () => {
+          this.alertService.error('Error', 'Error al actualizar el estado de la tarea.');
+        }
       });
     }
   }
