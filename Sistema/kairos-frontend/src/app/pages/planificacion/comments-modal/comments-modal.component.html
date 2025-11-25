@@ -1,0 +1,25 @@
+<div class="modal fade" id="addComentarioModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Agregar Comentario</h5>
+        <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+      </div>
+
+      <form (ngSubmit)="onAgregarComentario()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Comentario *</label>
+            <textarea class="form-control" [(ngModel)]="nuevoComentarioModal.contenido" name="contenido"
+              rows="3" required maxlength="90"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

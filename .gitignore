@@ -1,0 +1,77 @@
+# === Node.js ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log
+
+# === Environment variables ===
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# === Logs ===
+logs
+*.log
+*.log.*
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# === Coverage reports ===
+coverage/
+*.lcov
+
+# === Build output ===
+dist/
+build/
+out/
+.next/
+.nuxt/
+.svelte-kit/
+
+# === IDEs & editors ===
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# === OS generated files ===
+.DS_Store
+Thumbs.db
+
+# === Temporary files ===
+tmp/
+temp/
+.cache/
+.parcel-cache/
+.eslintcache
+# No versionar archivos locales sensibles
+# Constants.java debe migrarse a config/properties o plantillas, no ignorarse
+# === Misc ===
+*.tgz
+*.zip
+
+<<<<<<< HEAD
+/kairos/target/
+target/
+
+kairos/target
+.vscode/
+.mvn/
+.mvn/wrapper/
+=======
+/target/
+kairos/target/
+.vscode/
+.mvn/
+.mvn/wrapper//target/
+target/
+>>>>>>> origin/feature/categorias

@@ -1,0 +1,101 @@
+<div class="card planning-card">
+  <div class="card-header bg-white">
+    <h5 class="mb-0">Lista de Tareas</h5>
+  </div>
+
+  <div class="card-body p-0">
+    <!-- Iteración sobre tareas paginadas -->
+    <div *ngFor="let tarea of tareasPaginadas()" class="task-card p-3 border-bottom bg-white" [ngClass]="{
+           'card-prioridad-baja': tarea.prioridad === 'Baja',
+           'card-prioridad-media': tarea.prioridad === 'Media',
+           'card-prioridad-alta': tarea.prioridad === 'Alta'
+         }">
+
+      <!-- Cabecera tarea: título, badges y acciones -->
+      <div class="d-flex justify-content-between align-items-start">
+        <div class="flex-grow-1">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <h6 class="mb-0">{{ tarea.nombre }}</h6>
+            <span class="badge bg-danger" *ngIf="tarea.prioridad === 'Alta'">Alta</span>
+            <span class="badge bg-warning" *ngIf="tarea.prioridad === 'Media'">Media</span>
+            <span class="badge bg-primary" *ngIf="tarea.prioridad === 'Baja'">Baja</span>
+            <span class="badge bg-info ms-1">{{ tarea.estado }}</span>
+            <span class="badge bg-secondary ms-1">{{ tarea.categorias[0]?.nombre || 'Sin categoría' }}</span>
+          </div>
+
+          <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
+
+          <!-- Metadatos tarea -->
+          <div class="row g-2 small text-muted">
+            <div class="col-md-6">
+              <div class="d-flex align-items-center gap-3">
+                <span><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
+                <span><i class="bi bi-briefcase me-1"></i>{{ tarea.usuarioRol }}</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex align-items-center gap-3">
+                <span><i class="bi bi-calendar me-1"></i>{{ tarea.fechaCreacion }} / {{ tarea.fechaFin }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-2 small text-muted mt-1">
+            <div class="col-md-6">
+              <span><i class="bi bi-hourglass me-1"></i>Estimado: {{ tarea.horasEstimadas }}h</span>
+            </div>
+            <div class="col-md-6">
+              <div>
+                <i class="bi bi-link me-1"></i>Dependencias:
+                <ng-container *ngIf="tarea.dependenciasIds?.length; else sinDeps">
+                  <span *ngFor="let depId of tarea.dependenciasIds" class="badge bg-secondary me-1">
+                    {{ getNombreTareaPorId(depId) }}
+                  </span>
+                </ng-container>
+                <ng-template #sinDeps><span class="text-muted">Ninguna</span></ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones de tarea -->
+        
+      </div>
+
+      <!-- SECCIÓN: Comentarios de la tarea -->
+      <div class="mt-3 p-3 bg-light rounded border">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <strong><i class="bi bi-sticky me-2"></i>Comentarios</strong>
+          
+        </div>
+
+        <div *ngIf="(comentariosPorTarea?.[tarea.idTarea]?.length || 0) > 0; else sinNotas">
+          <div *ngFor="let c of comentariosPorTarea?.[tarea.idTarea]"
+            class="p-2 border-bottom small text-muted d-flex justify-content-between align-items-center">
+            <div><i class="bi bi-chat-left-text me-1"></i>{{ c.contenido }}</div>
+            
+          </div>
+        </div>
+        <ng-template #sinNotas>
+          <p class="text-muted small fst-italic m-0">Sin notas adicionales.</p>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- PAGINACIÓN -->
+    <nav class="mt-3 mb-2">
+      <ul class="pagination justify-content-center mb-0">
+        <li class="page-item" [class.disabled]="paginaActual === 1">
+          <a class="page-link" (click)="onCambiarPagina(paginaActual - 1)" aria-label="Anterior">Anterior</a>
+        </li>
+        <li class="page-item" *ngFor="let num of [].constructor(totalPaginas()); let i = index"
+          [class.active]="paginaActual === i + 1">
+          <a class="page-link" (click)="onCambiarPagina(i + 1)">{{ i + 1 }}</a>
+        </li>
+        <li class="page-item" [class.disabled]="paginaActual === totalPaginas()">
+          <a class="page-link" (click)="onCambiarPagina(paginaActual + 1)" aria-label="Siguiente">Siguiente</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

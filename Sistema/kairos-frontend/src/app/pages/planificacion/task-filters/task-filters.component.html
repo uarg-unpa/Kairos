@@ -1,0 +1,40 @@
+<div class="card planning-card mb-4">
+  <div class="card-body">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-3">
+        <select class="form-select" [(ngModel)]="filtroCategoria" (change)="onFiltroChange()"
+          aria-label="Filtrar por categoría">
+          <option value="Todas">Todas las categorías</option>
+          <option *ngFor="let cat of categorias" [value]="cat.nombre">{{ cat.nombre }}</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <select class="form-select" [(ngModel)]="filtroResponsable" (change)="onFiltroChange()"
+          aria-label="Filtrar por responsable">
+          <option value="Todos">Todos los responsables</option>
+          <option *ngFor="let u of usuarios" [value]="u.nombre">{{ u.nombre }}</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <select class="form-select" [(ngModel)]="filtroEstado" (change)="onFiltroChange()"
+          aria-label="Filtrar por estado">
+          <option value="Todos">Todos los estados</option>
+          <option>En Progreso</option>
+          <option>Completado</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <input type="date" class="form-control" [(ngModel)]="filtroFechaDesde" (change)="onFiltroChange()"
+          aria-label="Fecha desde">
+      </div>
+
+      <div class="col-md-2">
+        <input type="date" class="form-control" [(ngModel)]="filtroFechaHasta" (change)="onFiltroChange()"
+          aria-label="Fecha hasta">
+      </div>
+    </div>
+  </div>
+</div>

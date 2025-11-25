@@ -1,0 +1,53 @@
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4><span class="bi bi-graph-up"></span> Roles</h4>
+            <a routerLink="/roles/crear" class="btn btn-success">
+                <span class="bi bi-plus"></span> Crear Rol
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">ID</th>
+                            <th style="width: 20%;">Nombre</th>
+                            <th style="width: 55%;">Permisos</th>
+                            <th style="width: 20%;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (rol of roles(); track rol.id) {
+                            <tr>
+                                <td>{{ rol.id }}</td>
+                                <td>{{ rol.nombre }}</td>
+                                <td>
+                                    {{ rol.permisos.join(', ') }}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a [routerLink]="['/rol/ver', rol.id]" class="btn btn-info btn-sm">
+                                            <span class="bi bi-eye"></span>
+                                        </a>
+                                        <a [routerLink]="['/rol/modificar', rol.id]" class="btn btn-warning btn-sm">
+                                            <span class="bi bi-pencil"></span>
+                                        </a>
+                                        <button (click)="eliminar(rol.id, rol.nombre)" class="btn btn-danger btn-sm">
+                                            <span class="bi bi-trash"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        @empty {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No hay roles definidos.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

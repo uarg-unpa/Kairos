@@ -1,0 +1,196 @@
+<main class="container my-5">
+  <div class="row g-3 mb-4" *ngIf="usuario?.admin">
+    <div class="col-md-4">
+      <div class="card text-center bg-light shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted">Proyectos Totales</h6>
+          <h4 class="fw-bold text-primary">{{ totalProyectos }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center bg-light shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted">En Progreso</h6>
+          <h4 class="fw-bold text-warning">{{ enProgreso }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center bg-light shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted">Completados</h6>
+          <h4 class="fw-bold text-success">{{ completados }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--filtros-->
+  <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm">
+    <div class="d-flex gap-2 flex-wrap">
+      <select class="form-select" style="width: 200px;">
+        <option>Todos</option>
+        <option>En progreso</option>
+        <option>Completados</option>
+      </select>
+      <input type="text" class="form-control" placeholder="Buscar..." style="width: 250px;">
+    </div>
+    <button *ngIf="usuario?.admin" class="btn btn-primary bi bi-plus" (click)="abrirModal()">
+      <span class="d-none d-md-inline">Nuevo Proyecto</span>
+    </button>
+  </div>
+
+  <!--proyectos-->
+  <div class="row g-4">
+    <div class="col-md-3 mb-4" *ngFor="let p of proyectos">
+      <a [routerLink]="['/proyecto', getEncodedIdForProject(p)]" class="text-decoration-none d-block h-100">
+        <div class="card project-card border-0 shadow-sm h-100">
+
+          <!-- LOGO -->
+          <div class="project-preview d-flex align-items-center justify-content-center p-3">
+            <img [src]="p.logo || 'UNPA-UARG.png'" width="70" height="70" [alt]="p.nombre" class="img-fluid"
+              style="object-fit: contain;">
+          </div>
+
+          <!-- CONTENIDO -->
+          <div class="card-body">
+            <h5 class="card-title">{{ p.nombre }}</h5>
+            <h6 class="text-muted mb-2">{{ p.equipo }}</h6>
+            <p class="card-text">{{ p.descripcion }}</p>
+
+            <!-- FOOTER -->
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span [class]="'badge rounded-pill ' + getEstadoClass(p.estado)">
+                {{ p.estado }}
+              </span>
+              <small class="text-muted">
+                {{ p.fechaCreacion | date:'dd-MM-yyyy' }}
+              </small>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div *ngIf="proyectos.length === 0" class="col-12 text-center text-muted">
+      No hay proyectos para mostrar.
+    </div>
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="modal fade" [class.show]="mostrarModal" [style.display]="mostrarModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Crear Nuevo Proyecto</h5>
+      </div>
+
+      <!-- FORMULARIO -->
+      <form (ngSubmit)="crearProyecto()">
+        <div class="modal-body">
+          <div *ngIf="errorMensaje" class="alert alert-danger" role="alert">
+            {{ errorMensaje }}
+          </div>
+
+          <!-- NOMBRE Y EQUIPO -->
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nombre del Proyecto *</label>
+              <input type="text" class="form-control" [(ngModel)]="nuevoProyecto.nombre" name="nombre"
+                [class.is-invalid]="validarNombre()" maxlength="20" required>
+              <div class="invalid-feedback" *ngIf="validarNombre()">
+                {{ validarNombre() }}
+              </div>
+              <small class="text-muted">
+                {{ nuevoProyecto.nombre.length }} / {{ maxNombre }}
+              </small>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Equipo *</label>
+              <input type="text" class="form-control" [(ngModel)]="nuevoProyecto.equipo" name="equipo"
+                [class.is-invalid]="validarEquipo()" maxlength="20" required>
+              <div class="invalid-feedback" *ngIf="validarEquipo()">
+                {{ validarEquipo() }}
+              </div>
+              <small class="text-muted">
+                {{ nuevoProyecto.equipo.length }} / {{ maxEquipo }}
+              </small>
+            </div>
+          </div>
+
+          <!-- DESCRIPCIÓN -->
+          <div class="mb-3 mt-3">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-control" [(ngModel)]="nuevoProyecto.descripcion" name="descripcion" rows="3"
+              [class.is-invalid]="validarDescripcion()" maxlength="140"></textarea>
+            <div class="invalid-feedback" *ngIf="validarDescripcion()">
+              {{ validarDescripcion() }}
+            </div>
+            <small class="text-muted">
+              {{ nuevoProyecto.descripcion.length }} / {{ maxDescripcion }}
+            </small>
+          </div>
+
+          <!-- FECHA Y LÍDER -->
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Fecha de Inicio</label>
+              <input type="date" class="form-control" [(ngModel)]="nuevoProyecto.fechaInicio" name="fechaInicio"
+                [class.is-invalid]="validarFecha()" [min]="hoyISO" (input)="limitarAnio($event)">
+
+              <div class="invalid-feedback" *ngIf="validarFecha()">
+                {{ validarFecha() }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Líder del Proyecto *</label>
+              <div class="position-relative">
+                <input type="text" class="form-control" placeholder="Buscar líder..." [(ngModel)]="searchLider"
+                  name="busquedaLider" [class.is-invalid]="!liderId" (input)="buscarLider()" required>
+
+                <div class="invalid-feedback" *ngIf="!liderId">
+                  Selecciona un líder
+                </div>
+
+                <ul *ngIf="resultadosLider.length > 0" class="list-group position-absolute w-100 shadow"
+                  style="max-height: 180px; overflow-y:auto; z-index: 1000;">
+                  <li *ngFor="let u of resultadosLider" (click)="seleccionarLider(u)"
+                    class="list-group-item list-group-item-action">
+                    {{ u.nombre }} ({{ u.email }})
+                  </li>
+                </ul>
+              </div>
+
+              <div *ngIf="liderSeleccionado" class="mt-1 text-success">
+                Seleccionado: <strong>{{ liderSeleccionado.nombre }} ({{ liderSeleccionado.email }})</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOGO -->
+          <div class="mb-3 mt-3">
+            <label class="form-label">Logo del Proyecto (máx. 2MB)</label>
+            <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
+            <div *ngIf="nuevoProyecto.logo" class="mt-2 text-center">
+              <img [src]="nuevoProyecto.logo" class="img-thumbnail" style="max-height: 100px;">
+            </div>
+          </div>
+        </div>
+        <!-- CIERRA modal-body -->
+
+        <!-- BOTONES -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-success">Crear Proyecto</button>
+        </div>
+      </form>
+      <!-- CIERRA form -->
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="mostrarModal" (click)="cerrarModal()"></div>

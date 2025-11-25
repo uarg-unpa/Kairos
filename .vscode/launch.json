@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-KairosApplication<kairos>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.nextech.kairos.KairosApplication",
+            "projectName": "kairos",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

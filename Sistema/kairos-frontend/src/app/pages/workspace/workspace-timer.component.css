@@ -1,0 +1,82 @@
+.floating-timer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  padding: 15px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  font-family: 'Courier New', monospace;
+}
+
+.timer-display {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.dropdown-item {
+  cursor: pointer;
+}
+
+.button-iniciar-tarea i {
+  font-size: 26px;
+}
+
+.btn-outline-purple {
+  color: #7d4bff;
+  border-color: #7d4bff;
+}
+
+.btn-outline-purple:hover {
+  background-color: #7d4bff;
+  color: #fff;
+  border-color: #7d4bff;
+}
+
+.btn-outline-purple:focus {
+  box-shadow: 0 0 0 0.2rem rgba(125, 75, 255, 0.4);
+}
+
+@media (max-width: 576px) {
+  .timer-display {
+    font-size: 1.4rem;
+  }
+
+  .workspace-card .card-body,
+  .planning-card .card-body {
+    padding: 12px;
+  }
+
+  .task-item {
+    padding: 12px !important;
+  }
+
+  .task-item h6 {
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+  }
+
+  .btn-timer {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .alert {
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+  }
+}

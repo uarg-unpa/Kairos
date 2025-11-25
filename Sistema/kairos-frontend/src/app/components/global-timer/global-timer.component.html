@@ -1,0 +1,15 @@
+ <div class="floating-timer" *ngIf="timerState.startTime && !timerState.isPaused">
+        <div class="d-flex align-items-center gap-3 text-white">
+            <div>
+                <div class="small">Cronometrando</div>
+                <div class="fw-bold">{{ timerState.taskTitle }}</div>
+            </div>
+            <div class="timer-display">{{ elapsedTimeDisplay }}</div>
+            <button class="btn btn-light btn-sm" (click)="handlePause()">
+                <i class="bi bi-pause-fill"></i>
+            </button>
+            <button class="btn btn-light btn-sm" (click)="handleStop()">
+                <i class="bi bi-stop-fill"></i>
+            </button>
+        </div>
+    </div>

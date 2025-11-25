@@ -1,0 +1,66 @@
+.textKairos{
+    font-family: 'Megrim', sans-serif;
+}
+.navbar .bi {
+    font-size: 1.2rem;
+}
+.navbar .navbar-text {
+    display: flex;
+    align-items: center;
+}
+
+.avatar-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+    background-color: #6C63FF;
+    color: white;
+    margin-right: 8px;
+}
+
+
+/* Shared styles for Etapas/Iteraciones prototypes */
+.stage-card {
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+.stage-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+.stats-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.stage-progress {
+  height: 8px;
+  border-radius: 4px;
+}
+
+/* Allow full card click when badges are inside links */
+.stage-card .badge {
+  pointer-events: none;
+}
+
+/* Textarea that auto-grows for Descripción in Etapas */
+.descripcion-textarea {
+  overflow: hidden;
+  resize: none;
+  min-height: 96px;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}

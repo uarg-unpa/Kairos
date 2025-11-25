@@ -1,0 +1,49 @@
+body {
+  background-color: #f8fafc;
+}
+
+.card-section {
+  border: none;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.card-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.icon-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.progress {
+  height: 6px;
+}
+
+.textKairos {
+  font-family: 'Megrim', sans-serif;
+}
+
+.bgAzul {
+  background-color: #e0e7ff;
+}
+
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
