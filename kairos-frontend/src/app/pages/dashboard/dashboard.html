@@ -287,8 +287,6 @@
               <small class="text-black" style="white-space: nowrap;">
                 {{ semanaActual.inicio }} {{ semanaActual.fin }}
               </small>
-
-              <!-- BOTONES DE NAVEGACION -->
               <div class="d-flex gap-2">
                 <button class="btn btn-sm btn-outline-secondary" title="Semana anterior" (click)="cambiarSemana(-1)"
                   [disabled]="prevSemanaDisabled()">
@@ -310,7 +308,6 @@
 
           </div>
         </div>
-
 
 
         <div class="col-lg-6 col-md-12">

@@ -49,6 +49,16 @@ export class DashboardExportComponent {
             const kairosLogo = await this.loadImage('Kairos Logo.png');
             const unpaLogo = await this.loadImage('UNPA-UARG.png');
 
+            // Cargar logo del proyecto si existe
+            let projectLogo: HTMLImageElement | null = null;
+            if (this.proyecto && this.proyecto.logo) {
+                try {
+                    projectLogo = await this.loadImage(this.proyecto.logo);
+                } catch (e) {
+                    console.warn('No se pudo cargar el logo del proyecto', e);
+                }
+            }
+
             // Aplicar encabezado en primera página
             this.agregarEncabezado(doc, kairosLogo, unpaLogo);
 
@@ -58,6 +68,16 @@ export class DashboardExportComponent {
 
             // ----- TÍTULO DEL PROYECTO -----
             if (this.proyecto && this.proyecto.nombre) {
+
+                // Si hay logo del proyecto, mostrarlo
+                if (projectLogo) {
+                    const logoW = 25;
+                    const logoH = 25;
+                    const x = (pageWidth - logoW) / 2;
+                    doc.addImage(projectLogo, 'PNG', x, y, logoW, logoH);
+                    y += logoH + 5;
+                }
+
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(18);
 
@@ -376,9 +396,10 @@ export class DashboardExportComponent {
         switch (chartId) {
             case 'chartHorasIter':
                 doc.text('Etiqueta', margin + 2, textY);
-                doc.text('Estimadas', margin + 60, textY);
-                doc.text('Reales', margin + 100, textY);
-                doc.text('Diferencia', margin + 140, textY);
+                doc.text('Etapa', margin + 50, textY); // Nueva columna
+                doc.text('Estimadas', margin + 90, textY);
+                doc.text('Reales', margin + 120, textY);
+                doc.text('Diferencia', margin + 150, textY);
                 break;
 
             case 'chartHorasCategoria':
@@ -430,10 +451,11 @@ export class DashboardExportComponent {
                 printRows(this.horasIteracionDetalle, (d, currentY) => {
                     const diff = d.horas - d.estimadas;
                     doc.text(d.etiqueta, margin + 2, currentY);
-                    doc.text(d.estimadas.toFixed(1), margin + 60, currentY);
-                    doc.text(`${d.horas}h ${d.minutos}m`, margin + 100, currentY);
+                    doc.text(d.etapa || '-', margin + 50, currentY); // Mostrar etapa
+                    doc.text(d.estimadas.toFixed(1), margin + 90, currentY);
+                    doc.text(`${d.horas}h ${d.minutos}m`, margin + 120, currentY);
                     doc.setTextColor(diff > 0 ? 200 : 0, diff > 0 ? 0 : 150, 0);
-                    doc.text(diff.toFixed(1), margin + 140, currentY);
+                    doc.text(diff.toFixed(1), margin + 150, currentY);
                     doc.setTextColor(0, 0, 0);
                 });
                 break;
@@ -483,6 +505,12 @@ export class DashboardExportComponent {
 
         if (unpaLogo)
             doc.addImage(unpaLogo, 'PNG', pageWidth - 15 - logoW, 10, logoW, logoH);
+
+        // Fecha de generación centrada
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        const fechaStr = `Generado: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+        doc.text(fechaStr, pageWidth / 2, 20, { align: 'center' });
 
         // Línea separadora
         doc.setDrawColor(180);

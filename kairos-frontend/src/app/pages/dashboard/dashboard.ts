@@ -98,8 +98,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   tareasNoFinalizadas: any[] = [];
   private horasIteracionRows: any[] = [];
   private horasEstimadasPorIteracion = new Map<number, number>();
-  private readonly diasSemanaOrden = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
-  private readonly diaPorIndice = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+
   private readonly gradientPalette = [
     { start: '#0d6efd', end: '#6ea8fe' },
     { start: '#198754', end: '#6cc59d' },
@@ -123,6 +122,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   loadingHorasDia = false;
   loadingHorasEtapa = false;
   loadingTareasData = false;
+  navegacionManual = false;
 
   ngOnInit(): void {
     this.actualizarSemanaActual();
@@ -175,6 +175,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (offset < 0 && this.prevSemanaDisabled()) return;
     if (offset > 0 && this.nextSemanaDisabled()) return;
     this.filtroSemana += offset;
+    this.navegacionManual = true;
     this.actualizarSemanaActual();
     this.reloadHorasPorDia();
   }
@@ -217,9 +218,23 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.proyectoId) diaParams.set('proyectoId', String(this.proyectoId));
     if (this.filtroEtapa) diaParams.set('etapaId', String(this.filtroEtapa));
     if (this.filtroIteracion) diaParams.set('iteracionId', String(this.filtroIteracion));
-    const weekRange = this.computeWeeklyRangeWithOffset(this.filtroSemana);
-    diaParams.set('from', weekRange.from);
-    diaParams.set('to', weekRange.to);
+    let fromParam = '';
+    let toParam = '';
+
+    if (this.filtroTiempo === 'week' || this.filtroTiempo === 'today' || this.navegacionManual) {
+      const weekRange = this.computeWeeklyRangeWithOffset(this.filtroSemana);
+      fromParam = weekRange.from;
+      toParam = weekRange.to;
+    } else {
+      // Para otros filtros (all, month, quarter), usamos el rango calculado general
+      const range = this.computeRange();
+      if (range.from) fromParam = range.from;
+      if (range.to) toParam = range.to;
+    }
+
+    if (fromParam) diaParams.set('from', fromParam);
+    if (toParam) diaParams.set('to', toParam);
+
     const paramsDia = diaParams.toString() ? `?${diaParams.toString()}` : '';
 
     this.http.get<any[]>(`http://localhost:8080/api/tiempos/horas-por-dia-tarea${paramsDia}`).subscribe(rows => {
@@ -277,6 +292,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (forceRefresh) {
       this.clearDataCaches();
       this.soloFiltroTodo = false;
+      this.navegacionManual = false;
       // No borro semana base aquí para permitir usar cache; se reinicia solo cuando cambia filtro.
     }
     this.destroyCharts();
@@ -1114,68 +1130,123 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       this.horasTareaDetalle = [];
       return;
     }
-    const dayMap = new Map<string, Map<string, number>>();
+
+    // 1. Determinar rango de fechas para decidir si agrupar por SEMANA o por DIA
+    const dates = rows.map(r => new Date(r.fecha).getTime()).filter(t => !isNaN(t));
+    const minTime = Math.min(...dates);
+    const maxTime = Math.max(...dates);
+    const diffDays = (maxTime - minTime) / (1000 * 3600 * 24);
+
+    // Agrupar por semana si el rango es mayor a 14 dias, O si el filtro NO es 'week'/'today' explícitamente
+    // (Aunque si hay pocos datos en 'all' igual podria querer ver dias, pero la regla general pedida es agrupar)
+    // Y SI NO estamos en navegacion manual
+    const isWeekly = !this.navegacionManual && (diffDays > 14 || (this.filtroTiempo !== 'week' && this.filtroTiempo !== 'today'));
+
+    const periodMap = new Map<string, number>(); // Key -> Minutos
+    const periodLabelMap = new Map<string, string>(); // Key -> Label legible
     const totalPorTarea = new Map<string, number>();
-    const totalPorDia = new Map<string, number>();
-    const fechasPorDia = new Map<string, string>(); // Agregar map para fechas
+
+    // Auxiliar para formatear fecha corta dd/MM
+    const fmtDate = (d: Date) => {
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      return `${day}/${month}`;
+    };
+
+    // Auxiliar para obtener lunes de la semana
+    const getMonday = (d: Date) => {
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+      return new Date(d.setDate(diff));
+    };
 
     rows.forEach(row => {
-      const dia = this.nombreDiaDesdeFecha(row?.fecha);
-      if (!dia) return;
+      const d = new Date(`${row.fecha}T00:00:00`);
+      if (isNaN(d.getTime())) return;
+
       const tarea = row?.tareaNombre || 'Sin tarea';
       const minutos = Number(row?.minutos || 0);
-      if (!dayMap.has(dia)) dayMap.set(dia, new Map());
-      const tareasDia = dayMap.get(dia)!;
-      tareasDia.set(tarea, (tareasDia.get(tarea) || 0) + minutos);
-      totalPorDia.set(dia, (totalPorDia.get(dia) || 0) + minutos);
+
+      // Agregacion por Tarea (Global)
       totalPorTarea.set(tarea, (totalPorTarea.get(tarea) || 0) + minutos);
-      if (!fechasPorDia.has(dia)) {
-        fechasPorDia.set(dia, this.formatLocalDate(new Date(`${row?.fecha}T00:00:00`)));
+
+      // Agregacion Temporal
+      let key = '';
+      let label = '';
+
+      if (isWeekly) {
+        const monday = getMonday(new Date(d));
+        key = monday.toISOString().split('T')[0]; // YYYY-MM-DD del lunes
+        label = `Semana ${fmtDate(monday)}`;
+      } else {
+        key = row.fecha; // YYYY-MM-DD
+        label = fmtDate(d); // dd/MM
       }
+
+      periodMap.set(key, (periodMap.get(key) || 0) + minutos);
+      periodLabelMap.set(key, label);
     });
+
     if (!totalPorTarea.size) {
       this.destroyChartByCanvasId('chartHorasDiaTarea');
       this.destroyChartByCanvasId('chartHorasIterDistrib');
       return;
     }
-    const labelsDias = this.diasSemanaOrden;
-    const horasPorDia = labelsDias.map(dia => {
-      const minutos = totalPorDia.get(dia) || 0;
-      return Math.round(((minutos / 60) * 100)) / 100;
-    });
 
-    const labelsConFecha = labelsDias.map(dia => {
-      const fecha = fechasPorDia.get(dia);
-      return fecha ? `${dia}\n${fecha}` : dia;
+    // --- CHART 1: HORAS POR TIEMPO (Dia o Semana) ---
+    // Ordenar keys cronologicamente
+    const sortedKeys = Array.from(periodMap.keys()).sort();
+    const labelsTiempo = sortedKeys.map(k => periodLabelMap.get(k) || k);
+    const dataTiempo = sortedKeys.map(k => {
+      const mins = periodMap.get(k) || 0;
+      return Math.round(((mins / 60) * 100)) / 100;
     });
 
     this.renderBar(
       'chartHorasDiaTarea',
-      labelsConFecha,
-      horasPorDia,
+      labelsTiempo,
+      dataTiempo,
       '#0d6efd',
       '#6ea8fe',
       false,
       true,
       false,
-      'Horas por dia',
-      'dias de la Semana',
+      isWeekly ? 'Horas por Semana' : 'Horas por Día',
+      isWeekly ? 'Semanas' : 'Días',
       'Horas (h)'
     );
-    const detalle = this.diasSemanaOrden.map(dia => {
-      const tareasDia = dayMap.get(dia);
-      const minutos = tareasDia ? Array.from(tareasDia.values()).reduce((acc, val) => acc + val, 0) : 0;
-      const fecha = fechasPorDia.get(dia) || '';
+
+    // Detalle para tabla
+    this.horasDiaDetalle = sortedKeys.map(k => {
+      const mins = periodMap.get(k) || 0;
       return {
-        dia: fecha ? `${dia} (${fecha})` : dia,
-        minutos,
-        horas: Math.round(((minutos / 60) * 100)) / 100
+        dia: periodLabelMap.get(k) || k,
+        minutos: mins,
+        horas: Math.round(((mins / 60) * 100)) / 100
       };
     });
-    this.horasDiaDetalle = detalle;
+
+
+    // --- CHART 2: HORAS POR TAREA (TOP 10 + OTROS) ---
     const tareasOrdenadas = Array.from(totalPorTarea.entries()).sort((a, b) => b[1] - a[1]);
-    const tareasLabels = tareasOrdenadas.map(entry => entry[0]);
-    const tareasHoras = tareasOrdenadas.map(entry => Math.round(((entry[1] / 60) * 100)) / 100);
+
+    let tareasFinales = tareasOrdenadas;
+    let otrosMinutos = 0;
+
+    if (tareasOrdenadas.length > 10) {
+      tareasFinales = tareasOrdenadas.slice(0, 10);
+      const otros = tareasOrdenadas.slice(10);
+      otrosMinutos = otros.reduce((acc, curr) => acc + curr[1], 0);
+    }
+
+    const tareasLabels = tareasFinales.map(entry => entry[0]);
+    const tareasHoras = tareasFinales.map(entry => Math.round(((entry[1] / 60) * 100)) / 100);
+
+    if (otrosMinutos > 0) {
+      tareasLabels.push('Otros');
+      tareasHoras.push(Math.round(((otrosMinutos / 60) * 100)) / 100);
+    }
+
     this.renderBar(
       'chartHorasIterDistrib',
       tareasLabels,
@@ -1185,10 +1256,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       true,
       true,
       false,
-      'Horas por Tarea',
+      'Horas por Tarea (Top 10)',
       'Horas (h)',
       'Tareas'
     );
+
+    // Detalle tabla: mostrar todas o top? Mejor todas en tabla, pero grafico top.
+    // El usuario pidio "que horas por tarea se vea bien", la tabla puede tener scroll.
+    // Dejamos la tabla con TODAS para detalle completo.
     this.horasTareaDetalle = tareasOrdenadas.map(([tarea, minutos]) => ({
       tarea,
       minutos,
@@ -1374,14 +1449,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (data.some(val => (val || 0) > 0)) {
       this.chartsWithData.add(elId);
     }
-  }
-
-  private nombreDiaDesdeFecha(value: any): string | null {
-    if (!value) return null;
-    const date = typeof value === 'string' ? new Date(`${value}T00:00:00`) : new Date(value);
-    if (isNaN(date.getTime())) return null;
-    const index = date.getDay();
-    return this.diaPorIndice[index] || null;
   }
 
   private toNumber(value: any): number | null {
