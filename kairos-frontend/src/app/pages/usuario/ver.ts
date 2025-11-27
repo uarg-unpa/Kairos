@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { Usuario } from '../../models/usuarios';
 import { Proyecto } from '../../models/proyecto.model';
 import { Observable } from 'rxjs';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-usuario-ver',
@@ -23,6 +24,7 @@ export class UsuarioVerComponent implements OnInit {
   private authService = inject(AuthService);
   private proyectoService = inject(ProyectoService);
   private idCoderService = inject(IdCoderService);
+  private alertService = inject(AlertService);
 
   usuario?: Usuario;
   usuarioEdit: { nombre: string; email: string } = { nombre: '', email: '' };
@@ -54,7 +56,7 @@ export class UsuarioVerComponent implements OnInit {
         this.cargarUsuario(idDecodificado);
         this.cargarProyectos(idDecodificado);
       } else {
-        alert('Acceso denegado o ID de usuario inválido.');
+        this.alertService.error('Error', 'Acceso denegado o ID de usuario inválido.');
         this.router.navigate(['/inicio']);
       }
     }
@@ -68,14 +70,14 @@ export class UsuarioVerComponent implements OnInit {
         this.usuarioEdit = { nombre: u.nombre, email: u.email };
         this.esUsuarioActual = this.authService.usuario?.id === u.id;
         if (!this.esAdmin && !this.esUsuarioActual) {
-          alert('Acceso no autorizado a este perfil.');
+          this.alertService.error('Acceso denegado', 'Acceso no autorizado a este perfil.');
           this.router.navigate(['/inicio']);
         }
       },
       error: (e: any) => {
         this.loading = false;
         console.error('No se pudo cargar el usuario', e);
-        alert('Usuario no encontrado.');
+        this.alertService.error('Error', 'Usuario no encontrado.');
         this.router.navigate(['/inicio']);
       }
     });
@@ -114,7 +116,7 @@ export class UsuarioVerComponent implements OnInit {
     }).subscribe({
       // Tipar 'u' explícitamente como el objeto de respuesta
       next: (u: any) => {
-        alert('Usuario actualizado con éxito.');
+        this.alertService.success('Éxito', 'Usuario actualizado con éxito.');
         // Actualizar el modelo local, tipando correctamente las propiedades
         this.usuario = { ...this.usuario!, nombre: u.nombre, email: u.email };
         this.toggleEdit();

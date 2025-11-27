@@ -1,5 +1,5 @@
 <main class="container my-5">
-    <div class="row g-3 mb-4" *ngIf="usuario?.admin">
+  <div class="row g-3 mb-4" *ngIf="usuario?.admin">
     <div class="col-md-4">
       <div class="card text-center bg-light shadow-sm">
         <div class="card-body">
@@ -35,11 +35,8 @@
       </select>
       <input type="text" class="form-control" placeholder="Buscar..." style="width: 250px;">
     </div>
-    <button 
-    *ngIf="usuario?.admin" 
-    class="btn btn-primary bi bi-plus"
-    (click)="abrirModal()">
-    <span class="d-none d-md-inline">Nuevo Proyecto</span>
+    <button *ngIf="usuario?.admin" class="btn btn-primary bi bi-plus" (click)="abrirModal()">
+      <span class="d-none d-md-inline">Nuevo Proyecto</span>
     </button>
   </div>
 
@@ -48,17 +45,11 @@
     <div class="col-md-3 mb-4" *ngFor="let p of proyectos">
       <a [routerLink]="['/proyecto', getEncodedIdForProject(p)]" class="text-decoration-none d-block h-100">
         <div class="card project-card border-0 shadow-sm h-100">
-          
+
           <!-- LOGO -->
           <div class="project-preview d-flex align-items-center justify-content-center p-3">
-            <img 
-              [src]="p.logo || 'UNPA-UARG.png'" 
-              width="70" 
-              height="70" 
-              [alt]="p.nombre"
-              class="img-fluid"
-              style="object-fit: contain;"
-            >
+            <img [src]="p.logo || 'UNPA-UARG.png'" width="70" height="70" [alt]="p.nombre" class="img-fluid"
+              style="object-fit: contain;">
           </div>
 
           <!-- CONTENIDO -->
@@ -93,7 +84,6 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Crear Nuevo Proyecto</h5>
-        <button type="button" class="btn-close" (click)="cerrarModal()"></button>
       </div>
 
       <!-- FORMULARIO -->
@@ -107,15 +97,8 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Nombre del Proyecto *</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="nuevoProyecto.nombre"
-                name="nombre"
-                [class.is-invalid]="validarNombre()"
-                maxlength="20"
-                required
-              >
+              <input type="text" class="form-control" [(ngModel)]="nuevoProyecto.nombre" name="nombre"
+                [class.is-invalid]="validarNombre()" maxlength="20" required>
               <div class="invalid-feedback" *ngIf="validarNombre()">
                 {{ validarNombre() }}
               </div>
@@ -126,15 +109,8 @@
 
             <div class="col-md-6">
               <label class="form-label">Equipo *</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="nuevoProyecto.equipo"
-                name="equipo"
-                [class.is-invalid]="validarEquipo()"
-                maxlength="20"
-                required
-              >
+              <input type="text" class="form-control" [(ngModel)]="nuevoProyecto.equipo" name="equipo"
+                [class.is-invalid]="validarEquipo()" maxlength="20" required>
               <div class="invalid-feedback" *ngIf="validarEquipo()">
                 {{ validarEquipo() }}
               </div>
@@ -147,14 +123,8 @@
           <!-- DESCRIPCIÓN -->
           <div class="mb-3 mt-3">
             <label class="form-label">Descripción</label>
-            <textarea
-              class="form-control"
-              [(ngModel)]="nuevoProyecto.descripcion"
-              name="descripcion"
-              rows="3"
-              [class.is-invalid]="validarDescripcion()"
-              maxlength="140"
-            ></textarea>
+            <textarea class="form-control" [(ngModel)]="nuevoProyecto.descripcion" name="descripcion" rows="3"
+              [class.is-invalid]="validarDescripcion()" maxlength="140"></textarea>
             <div class="invalid-feedback" *ngIf="validarDescripcion()">
               {{ validarDescripcion() }}
             </div>
@@ -167,14 +137,9 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Fecha de Inicio</label>
-              <input
-                type="date"
-                class="form-control"
-                [(ngModel)]="nuevoProyecto.fechaInicio"
-                name="fechaInicio"
-                [class.is-invalid]="validarFecha()"
-                [min]="hoyISO"
-              >
+              <input type="date" class="form-control" [(ngModel)]="nuevoProyecto.fechaInicio" name="fechaInicio"
+                [class.is-invalid]="validarFecha()" [min]="hoyISO" (input)="limitarAnio($event)">
+
               <div class="invalid-feedback" *ngIf="validarFecha()">
                 {{ validarFecha() }}
               </div>
@@ -182,29 +147,33 @@
 
             <div class="col-md-6">
               <label class="form-label">Líder del Proyecto *</label>
-              <select
-                class="form-select"
-                [(ngModel)]="liderId"
-                name="liderId"
-                required
-              >
-                <option [ngValue]="null">Seleccionar líder...</option>
-                <option *ngFor="let u of usuarios" [ngValue]="u.id">
-                  {{ u.nombre }} ({{ u.email }})
-                </option>
-              </select>
+              <div class="position-relative">
+                <input type="text" class="form-control" placeholder="Buscar líder..." [(ngModel)]="searchLider"
+                  name="busquedaLider" [class.is-invalid]="!liderId" (input)="buscarLider()" required>
+
+                <div class="invalid-feedback" *ngIf="!liderId">
+                  Selecciona un líder
+                </div>
+
+                <ul *ngIf="resultadosLider.length > 0" class="list-group position-absolute w-100 shadow"
+                  style="max-height: 180px; overflow-y:auto; z-index: 1000;">
+                  <li *ngFor="let u of resultadosLider" (click)="seleccionarLider(u)"
+                    class="list-group-item list-group-item-action">
+                    {{ u.nombre }} ({{ u.email }})
+                  </li>
+                </ul>
+              </div>
+
+              <div *ngIf="liderSeleccionado" class="mt-1 text-success">
+                Seleccionado: <strong>{{ liderSeleccionado.nombre }} ({{ liderSeleccionado.email }})</strong>
+              </div>
             </div>
           </div>
 
           <!-- LOGO -->
           <div class="mb-3 mt-3">
             <label class="form-label">Logo del Proyecto (máx. 2MB)</label>
-            <input
-              type="file"
-              class="form-control"
-              (change)="onFileSelected($event)"
-              accept="image/*"
-            >
+            <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
             <div *ngIf="nuevoProyecto.logo" class="mt-2 text-center">
               <img [src]="nuevoProyecto.logo" class="img-thumbnail" style="max-height: 100px;">
             </div>

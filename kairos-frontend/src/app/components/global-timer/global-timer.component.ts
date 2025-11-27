@@ -60,7 +60,7 @@ export class GlobalTimerComponent implements OnInit, OnDestroy {
 
   private subs = new Subscription();
 
-  constructor(private timerService: TimerService) {}
+  constructor(private timerService: TimerService) { }
 
   ngOnInit() {
     this.subs.add(

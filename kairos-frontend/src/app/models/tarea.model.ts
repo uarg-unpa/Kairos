@@ -21,4 +21,5 @@ export interface Tarea {
   categorias: Categoria[];
   dependenciasIds?: number[];
   notas?: string;
+  tiempoDedicado?: number; // Horas dedicadas (calculado en frontend)
 }

@@ -5,6 +5,10 @@
   font-weight: bold;
   font-size: 1.2rem;
 }
+.boton-agregar{
+  max-width: fit-content;
+  align-self: flex-end;
+}
 
 .member-card {
   transition: transform 0.2s;

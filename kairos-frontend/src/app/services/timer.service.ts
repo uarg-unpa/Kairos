@@ -201,13 +201,17 @@ export class TimerService {
     );
   }
   // GET: últimos 5 tiempos del usuario
-getLast5Times(): Observable<TiempoResponseDTO[]> {
-  return this.http.get<TiempoResponseDTO[]>(`${this.apiBaseUrl}/api/tiempos/ultimos`);
-}
+  getLast5Times(): Observable<TiempoResponseDTO[]> {
+    return this.http.get<TiempoResponseDTO[]>(`${this.apiBaseUrl}/api/tiempos/ultimos`);
+  }
 
-// PUT: editar un registro de tiempo
-editTime(idTiempo: number, data: TiempoEditRequestDTO): Observable<any> {
-  return this.http.put(`${this.apiBaseUrl}/api/tiempos/${idTiempo}`, data);
-}
+  getTiemposTotalesUsuario(): Observable<{ [key: number]: number }> {
+    return this.http.get<{ [key: number]: number }>(`${this.apiBaseUrl}/api/tiempos/totales-usuario`);
+  }
+
+  // PUT: editar un registro de tiempo
+  editTime(idTiempo: number, data: TiempoEditRequestDTO): Observable<any> {
+    return this.http.put(`${this.apiBaseUrl}/api/tiempos/${idTiempo}`, data);
+  }
 }
 

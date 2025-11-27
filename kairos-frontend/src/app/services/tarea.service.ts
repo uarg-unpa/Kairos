@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tarea } from '../models/tarea.model';
-import { map } from 'rxjs/operators'; 
-import { TaskTimerInfo } from '../models/timer.model'; 
+import { map } from 'rxjs/operators';
+import { TaskTimerInfo } from '../models/timer.model';
 
 interface TiempoRegistroRequest {
-    idTarea: number;
-    duracionSegundos: number;
-    fechaRegistro: string;
-    descripcion?: string; 
+  idTarea: number;
+  duracionSegundos: number;
+  fechaRegistro: string;
+  descripcion?: string;
 }
 
 @Injectable({
@@ -19,7 +19,7 @@ export class TaskService {
   private baseUrl = 'http://localhost:8080/api/tareas';
   private tiempoUrl = 'http://localhost:8080/api/tiempos';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Obtener todas las tareas
   getTareas(): Observable<Tarea[]> {
@@ -50,9 +50,9 @@ export class TaskService {
   }
 
   getTareasAsignadas(): Observable<Tarea[]> {
-      // Llama al endpoint seguro
-      return this.http.get<Tarea[]>(`${this.baseUrl}/mis-tareas`);
-    }
+    // Llama al endpoint seguro
+    return this.http.get<Tarea[]>(`${this.baseUrl}/mis-tareas`);
+  }
   getTareasAsignadasParaTimer(): Observable<TaskTimerInfo[]> {
     return this.getTareasAsignadas().pipe(
       map(tareas => tareas.map(t => ({
@@ -63,31 +63,31 @@ export class TaskService {
         description: t.descripcion
       })))
     );
-  }  
-  
-    /**
-     * Envía el tiempo registrado por el cronómetro al servidor (POST /api/tiempos).
-     */
-    registrarTiempo(data: { idTarea: number, durationSeconds: number, taskTitle: string }): Observable<any> {
-        
-        const payload: TiempoRegistroRequest = {
-            idTarea: data.idTarea,
-            duracionSegundos: data.durationSeconds,
-            fechaRegistro: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
-            descripcion: `Tiempo cronometrado para: ${data.taskTitle}`
-        };
-  
-        return this.http.post(this.tiempoUrl, payload);
-    }
+  }
 
-    getTareasPorProyectoEIteracion(idProyecto: number, idIteracion: number): Observable<Tarea[]> {
-      return this.http.get<Tarea[]>(`${this.baseUrl}/proyecto/${idProyecto}/iteracion/${idIteracion}`, {
-        params: {
-          idProyecto: idProyecto.toString(),
-          idIteracion: idIteracion.toString()
-        }
-      });
-    }
+  /**
+   * Envía el tiempo registrado por el cronómetro al servidor (POST /api/tiempos).
+   */
+  registrarTiempo(data: { idTarea: number, durationSeconds: number, taskTitle: string }): Observable<any> {
+
+    const payload: TiempoRegistroRequest = {
+      idTarea: data.idTarea,
+      duracionSegundos: data.durationSeconds,
+      fechaRegistro: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
+      descripcion: `Tiempo cronometrado para: ${data.taskTitle}`
+    };
+
+    return this.http.post(this.tiempoUrl, payload);
+  }
+
+  getTareasPorProyectoEIteracion(idProyecto: number, idIteracion: number): Observable<Tarea[]> {
+    return this.http.get<Tarea[]>(`${this.baseUrl}/proyecto/${idProyecto}/iteracion/${idIteracion}`, {
+      params: {
+        idProyecto: idProyecto.toString(),
+        idIteracion: idIteracion.toString()
+      }
+    });
+  }
 
 }
 
