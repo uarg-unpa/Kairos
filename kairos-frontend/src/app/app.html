@@ -1,73 +1,89 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        
+
         <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/inicio">
             <img src="Kairos Logo.png" width="40" height="40" alt="">
             <span class="fw-bold fs-4 textKairos">Kairos</span>
         </a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fullNavbarContent" 
-                aria-controls="fullNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span> 
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fullNavbarContent"
+            aria-controls="fullNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
         </button>
-        
+
         <div class="collapse navbar-collapse" id="fullNavbarContent">
-            
+
             <ul class="navbar-nav me-auto" *ngIf="usuarioLogueado && router.url !== '/login'">
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/inicio" routerLinkActive="active"><span class="bi bi-house-door"></span> Inicio</a>
+                    <a class="nav-link" routerLink="/inicio" routerLinkActive="active"><span
+                            class="bi bi-house-door"></span> Inicio</a>
                 </li>
 
                 <li class="nav-item" *ngIf="esRutaProyecto() && proyectoId">
-                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'planificacion']" routerLinkActive="active"><span class="bi bi-calendar4-week"></span> Planificacion</a>
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'planificacion']"
+                        routerLinkActive="active"><span class="bi bi-calendar4-week"></span> Planificación</a>
                 </li>
 
                 <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
-                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'etapas']" routerLinkActive="active"><span class="bi bi-diagram-2"></span> Etapas</a>
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'etapas']"
+                        routerLinkActive="active"><span class="bi bi-diagram-2"></span> Etapas</a>
                 </li>
-                <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
+                <!-- <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'iteraciones']" routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a> 
-                </li>
-
+                </li> 
                 <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
-                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'workspace']" routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a> 
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'iteraciones']"
+                        routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a>
+                </li>
+-->
+                <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'workspace']"
+                        routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a>
                 </li>
                 <li class="nav-item" *ngIf="esRutaProyecto() && proyectoId">
-                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'dashboard']" routerLinkActive="active"><span class="bi bi-graph-up"></span> Reportes</a>
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'dashboard']"
+                        routerLinkActive="active"><span class="bi bi-graph-up"></span> Reportes</a>
                 </li>
                 <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
                     <a class="nav-link" routerLink="/usuarios"><span class="bi bi-people"></span> Usuarios</a>
                 </li>
                 <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
-                    <a class="nav-link" routerLink="/roles" routerLinkActive="active"><span class="bi bi-person-check"></span> Roles</a>
+                    <a class="nav-link" routerLink="/roles" routerLinkActive="active"><span
+                            class="bi bi-person-check"></span> Roles</a>
                 </li>
                 <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
-                    <a class="nav-link" routerLink="/permisos" routerLinkActive="active"><span class="bi bi-key"></span> Permisos</a>
+                    <a class="nav-link" routerLink="/permisos" routerLinkActive="active"><span class="bi bi-key"></span>
+                        Permisos</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"><span class="bi bi-question-lg"></span> Ayuda</a>
+                    <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"><span
+                            class="bi bi-question-lg"></span> Ayuda</a>
                 </li>
             </ul>
 
             <ul class="navbar-nav ms-auto">
-                
+
                 <li class="nav-item" *ngIf="!usuarioLogueado || router.url === '/login'">
-                    <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"><span class="bi bi-question-lg"></span> Ayuda</a>
+                    <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"><span
+                            class="bi bi-question-lg"></span> Ayuda</a>
                 </li>
-                
+
                 <li class="nav-item" *ngIf="!usuarioLogueado">
-                    <a class="nav-link" routerLink="/login" routerLinkActive="active"><span class="bi bi-box-arrow-in-right"></span> Login</a>
+                    <a class="nav-link" routerLink="/login" routerLinkActive="active"><span
+                            class="bi bi-box-arrow-in-right"></span> Login</a>
                 </li>
-                
+
                 <ng-container *ngIf="usuarioLogueado && router.url !== '/login'">
                     <li class="nav-item d-flex align-items-center">
-                        <a [routerLink]="['/usuario/ver', getEncodedUserId()]" class="navbar-text text-white me-3 d-flex align-items-center">
-                            {{ usuarioNombre }} ({{ rolUsuario }}) 
-                            <div class="avatar-circle" style="width: 30px; height: 30px; font-size: 1rem; display: flex; justify-content: center; align-items: center; background-color: #6C63FF; color: white; border-radius: 50%; margin-left: 8px;">
+                        <a [routerLink]="['/usuario/ver', getEncodedUserId()]"
+                            class="navbar-text text-white me-3 d-flex align-items-center">
+                            {{ usuarioNombre }}
+                            <div class="avatar-circle"
+                                style="width: 30px; height: 30px; font-size: 1rem; display: flex; justify-content: center; align-items: center; background-color: #6C63FF; color: white; border-radius: 50%; margin-left: 8px;">
                                 {{ inicialesUsuario(usuarioNombre) }}
                             </div>
-                            <i class="bi bi-person-circle" style="font-size: 1.2rem;"></i>
+                            <!-- <i class="bi bi-person-circle" style="font-size: 1.2rem;"></i> -->
                         </a>
                     </li>
                     <li class="nav-item">
@@ -94,8 +110,8 @@
     </div>
 </footer>
 <div class="loading-overlay" *ngIf="loadingService.loading$ | async">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Cargando...</span>
-  </div>
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
 </div>
 <app-global-timer *ngIf="usuarioLogueado && router.url !== '/login'"></app-global-timer>

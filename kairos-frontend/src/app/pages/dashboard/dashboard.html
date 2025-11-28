@@ -55,7 +55,7 @@
     <div>
       <h2 class="mb-1">Panel de Control <small *ngIf="proyectoNombre" class="text-muted"> {{ proyectoNombre }}</small>
       </h2>
-      <p class="text-muted mb-0">Resumen de iteraciones, tareas y horas</p>
+      <p class="text-muted mb-0">Resumen de iteraciones, tareas y horas.</p>
     </div>
     <div class="d-flex gap-2">
       <select class="form-select" style="width:auto" [(ngModel)]="filtroEtapa" (change)="onFiltroEtapaChange()">
@@ -65,14 +65,14 @@
       <select class="form-select" style="width:auto" [(ngModel)]="filtroIteracion" (change)="onFiltroIteracionChange()">
         <option [ngValue]="null">Todas las iteraciones</option>
         <option *ngFor="let it of iteraciones" [ngValue]="it.idIteracion">
-          Iteracion {{ it.numero }}{{ !filtroEtapa && it.etapaNombre ? ' (' + it.etapaNombre + ')' : '' }}
+          Iteración {{ it.numero }}{{ !filtroEtapa && it.etapaNombre ? ' (' + it.etapaNombre + ')' : '' }}
         </option>
       </select>
       <select class="form-select" style="width:auto" [(ngModel)]="filtroTiempo" (change)="onFiltroTiempoChange()">
         <option value="today" [disabled]="soloFiltroTodo">Hoy</option>
         <option value="week" [disabled]="soloFiltroTodo">Esta semana</option>
         <option value="month" [disabled]="soloFiltroTodo">Este mes</option>
-        <option value="quarter" [disabled]="soloFiltroTodo">Ultimos 90 dias</option>
+        <option value="quarter" [disabled]="soloFiltroTodo">Últimos 90 días</option>
         <option value="all">Todo</option>
       </select>
       <app-dashboard-export [proyecto]="proyecto" [semanaActual]="semanaActual" [tareasCompletadas]="tareasCompletadas"
@@ -83,7 +83,7 @@
         [horasDiaDetalle]="horasDiaDetalle" [horasTareaDetalle]="horasTareaDetalle" [filtroTiempo]="filtroTiempo">
       </app-dashboard-export>
       <small class="text-muted" *ngIf="soloFiltroTodo">Para iteraciones finalizadas solo se muestran datos
-        historicos.</small>
+        históricos.</small>
     </div>
   </div>
 
@@ -120,11 +120,11 @@
           <i class="me-4 fs-1"
             [ngClass]="proximasCount > 0 ? 'bi bi-exclamation-lg text-danger' : 'bi bi-check-circle text-success'"></i>
           <div class="fw-bold text-dark">
-            <h4 class="mb-2">Proximos vencimientos</h4>
+            <h4 class="mb-2">Próximos vencimientos</h4>
             <span class="fs-5" *ngIf="proximasCount > 0">{{ proximasCount }} {{ proximasCount === 1 ? 'tarea
-              proxima a
-              vencer' : 'tareas proximas a vencer' }}</span>
-            <span class="fs-5 text-muted" *ngIf="proximasCount === 0">No hay tareas proximas a vencer</span>
+              próxima a
+              vencer' : 'tareas próximas a vencer' }}</span>
+            <span class="fs-5 text-muted" *ngIf="proximasCount === 0">No hay tareas próximas a vencer</span>
           </div>
         </div>
         <a *ngIf="proximasCount > 0" class="btn btn-outline-danger btn-lg"
@@ -143,7 +143,7 @@
         <div class="col-lg-6 col-md-12">
           <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Estimacion vs ejecucion</h5>
+              <h5 class="mb-0">Estimación vs ejecución</h5>
               <div class="d-flex gap-2">
                 <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
                   (click)="mostrarDetalle('horasIteracion')" [disabled]="!horasIteracionDetalle.length">
@@ -153,7 +153,7 @@
                   (click)="descargarGrafico('chartHorasIter')">
                   <i class="bi bi-download"></i>
                 </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
                   (click)="abrirGrafico('chartHorasIter')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
@@ -168,7 +168,7 @@
               </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
                 *ngIf="!loadingHorasIteracion && !loadingTareasData && !chartDataDisponibles('chartHorasIter')">
-                <p class="mb-0 text-muted small">Aun no hay horas registradas para este filtro.</p>
+                <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
               </div>
             </div>
           </div>
@@ -186,7 +186,7 @@
                   (click)="descargarGrafico('chartTareasUser')">
                   <i class="bi bi-download"></i>
                 </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
                   (click)="abrirGrafico('chartTareasUser')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
@@ -201,7 +201,7 @@
               </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
                 *ngIf="!loadingTareasData && !chartDataDisponibles('chartTareasUser')">
-                <p class="mb-0 text-muted small">No se registran tareas asignadas en este rango.</p>
+                <p class="mb-0 text-muted small">No existen tareas asignadas en este rango.</p>
               </div>
             </div>
           </div>
@@ -220,7 +220,7 @@
                   (click)="descargarGrafico('chartHorasIterDistrib')">
                   <i class="bi bi-download"></i>
                 </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
                   (click)="abrirGrafico('chartHorasIterDistrib')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
@@ -235,7 +235,7 @@
               </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
                 *ngIf="!loadingHorasDia && !chartDataDisponibles('chartHorasIterDistrib')">
-                <p class="mb-0 text-muted small">Aun no hay horas registradas para este filtro.</p>
+                <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
               </div>
             </div>
           </div>
@@ -247,7 +247,7 @@
             <!-- HEADER -->
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <div class="d-flex align-items-center gap-3">
-                <h5 class="mb-0">Horas por dia</h5>
+                <h5 class="mb-0">Horas por día</h5>
               </div>
 
               <div class="d-flex gap-2">
@@ -259,7 +259,7 @@
                   (click)="descargarGrafico('chartHorasDiaTarea')">
                   <i class="bi bi-download"></i>
                 </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
                   (click)="abrirGrafico('chartHorasDiaTarea')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
@@ -276,7 +276,7 @@
               </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
                 *ngIf="!loadingHorasDia && !chartDataDisponibles('chartHorasDiaTarea')">
-                <p class="mb-0 text-muted small">Aun no hay registros semanales de tiempo.</p>
+                <p class="mb-0 text-muted small">Aún no hay registros semanales de tiempo.</p>
               </div>
             </div>
 
@@ -308,7 +308,7 @@
         <div class="col-lg-6 col-md-12">
           <div class="card rounded-2 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Horas semanales por categoria</h5>
+              <h5 class="mb-0">Horas semanales por categoría</h5>
               <div class="d-flex gap-2">
                 <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
                   (click)="mostrarDetalle('horasCategoria')" [disabled]="!horasCategoriaDetalle.length">
@@ -319,7 +319,7 @@
                   <i class="bi bi-download"></i>
                 </button>
 
-                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
                   (click)="abrirGrafico('chartHorasCategoria')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
@@ -334,7 +334,7 @@
               </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
                 *ngIf="!loadingHorasCategoria && !chartDataDisponibles('chartHorasCategoria')">
-                <p class="mb-0 text-muted small">Aun no hay horas registradas para este filtro.</p>
+                <p class="mb-0 text-muted small">Aún no hay horas registradas para este filtro.</p>
               </div>
             </div>
           </div>
@@ -349,7 +349,7 @@
                   (click)="descargarGrafico('chartHorasEtapa')">
                   <i class="bi bi-download"></i>
                 </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver grafico ampliado"
+                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
                   (click)="abrirGrafico('chartHorasEtapa')">
                   <i class="bi bi-fullscreen"></i>
                 </button>
@@ -407,12 +407,12 @@
               <i class="bi bi-speedometer fs-1 mb-3 text-danger"></i>
               <div class="metric-value fs-3">{{ eficiencia }}%</div>
               <h6 class="mb-0">Eficiencia</h6>
-              <small class="text-muted">Estimado vs real</small>
+              <small class="text-muted">Estimado vs Real</small>
 
               <!-- Tooltip estilizado -->
               <div class="metric-tooltip">
-                La eficacia representa la proporcion de horas reales respecto de las estimadas.<br>
-                Un 100% indica ejecucion dentro del presupuesto planificado.
+                La eficacia representa la proporción de horas reales respecto de las estimadas.<br>
+                Un 100% indica ejecución dentro del presupuesto planificado.
               </div>
             </div>
           </div>
@@ -487,10 +487,10 @@
               <table class="table table-sm align-middle">
                 <thead>
                   <tr>
-                    <th>Iteracion</th>
+                    <th>Iteración</th>
                     <th>Etapa</th>
                     <th class="text-end">Estimadas (h)</th>
-                    <th class="text-end">Ejecucion (h)</th>
+                    <th class="text-end">Ejecución (h)</th>
                     <th class="text-end">Minutos</th>
                   </tr>
                 </thead>
@@ -512,7 +512,7 @@
               <table class="table table-sm align-middle">
                 <thead>
                   <tr>
-                    <th>Categoria</th>
+                    <th>Categoría</th>
                     <th class="text-end">Minutos</th>
                     <th class="text-end">Horas (h)</th>
                   </tr>

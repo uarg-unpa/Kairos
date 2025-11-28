@@ -489,9 +489,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.renderBarMulti('chartHorasIter', labels, [
-      { label: 'Ejecucion', data: realesHoras, colorStart: '#0d6efd', colorEnd: '#6ea8fe', showMinutes: true },
-      { label: 'Estimacion', data: estimadasHoras, colorStart: '#6610f2', colorEnd: '#c29bfe' }
-    ], false, false, 'Estimacion vs Ejecucion', 'Iteraciones', 'Horas (h)', tooltipEtapaResolver);
+      { label: 'Ejecución', data: realesHoras, colorStart: '#0d6efd', colorEnd: '#6ea8fe', showMinutes: true },
+      { label: 'Estimación', data: estimadasHoras, colorStart: '#6610f2', colorEnd: '#c29bfe' }
+    ], false, false, 'Estimación vs Ejecución', 'Iteraciones', 'Horas (h)', tooltipEtapaResolver);
     this.horasIteracionDetalle = detalleRows;
   }
 
@@ -934,16 +934,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       const proximasCard = cards && cards.length > 1 ? cards[1] as HTMLElement : null;
       const titleEl = proximasCard?.querySelector('h4.mb-2');
       if (titleEl && titleEl.textContent && titleEl.textContent.trim().startsWith('Pr')) {
-        titleEl.textContent = 'Proximos vencimientos';
+        titleEl.textContent = 'Próximos vencimientos';
       }
       const spanEl = proximasCard?.querySelector('span.fs-5');
       if (spanEl) {
         if (this.proximasCount > 0) {
           spanEl.classList.remove('text-muted');
-          spanEl.textContent = `${this.proximasCount} ${this.proximasCount === 1 ? 'tarea proxima a vencer' : 'tareas proximas a vencer'}`;
+          spanEl.textContent = `${this.proximasCount} ${this.proximasCount === 1 ? 'tarea próxima a vencer' : 'tareas próximas a vencer'}`;
         } else {
           spanEl.classList.add('text-muted');
-          spanEl.textContent = 'No hay tareas proximas a vencer';
+          spanEl.textContent = 'No hay tareas próximas a vencer';
         }
       }
     } catch { }
@@ -1515,10 +1515,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   detalleTituloActual(): string {
     switch (this.detalleAbierto) {
-      case 'horasIteracion': return 'Detalle de estimacion vs ejecucion';
-      case 'horasCategoria': return 'Detalle de horas por categoria';
+      case 'horasIteracion': return 'Detalle de estimación vs ejecución';
+      case 'horasCategoria': return 'Detalle de horas por categoría';
       case 'tareasUsuario': return 'Tareas por usuario';
-      case 'horasDiaTarea': return 'Horas por dia (semana actual)';
+      case 'horasDiaTarea': return 'Horas por día (semana actual)';
       case 'horasTarea': return 'Horas por tarea';
       default: return '';
     }
@@ -1613,20 +1613,20 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   tituloGrafico(id: string): string {
     const titulos: any = {
-      'chartHorasIter': 'Estimacion vs ejecucion',
+      'chartHorasIter': 'Estimación vs Ejecución',
       'chartHorasIterDistrib': 'Horas por tarea',
       'chartTareasUser': 'Tareas por usuario',
-      'chartHorasDiaTarea': 'Horas por dia',
-      'chartHorasCategoria': 'Horas por categoria',
+      'chartHorasDiaTarea': 'Horas por día',
+      'chartHorasCategoria': 'Horas por categoría',
       'chartHorasEtapa': 'Horas por etapa'
     };
-    return titulos[id] || 'GrAfico';
+    return titulos[id] || 'Gráfico';
   }
 
   descargarGrafico(id: string) {
     const chart = this.charts.get(id);
     if (!chart) {
-      console.error(`GrAfico con ID ${id} no encontrado`);
+      console.error(`Gráfico con ID ${id} no encontrado`);
       return;
     }
 
@@ -1644,13 +1644,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error al descargar grAfico:', error);
+      console.error('Error al descargar gráfico:', error);
     }
   }
 
   descargarGraficoAmpliado() {
     if (!this.graficoAmpliado) {
-      console.error('No hay grAfico ampliado para descargar');
+      console.error('No hay gráfico ampliado para descargar');
       return;
     }
 
@@ -1665,7 +1665,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error al descargar grAfico ampliado:', error);
+      console.error('Error al descargar gráfico ampliado:', error);
     }
   }
 

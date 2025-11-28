@@ -8,23 +8,23 @@
         Nueva Tarea
       </button>
       <button type="button" class="btn btn-primary" (click)="categoriesModal.abrirModal()">
-        Categorias
+        Categorías
       </button>
       <button class="btn btn-outline-primary">
         <i class="bi bi-plus-circle me-2"></i>Tareas propuestas
       </button>
     </div>
   </div>
-  
+
   <ng-container *ngIf="iteracionActual; else noIteracion">
     <h4 class="text-muted">
-    Iteración: {{ iteracionActual.numero }} – {{ iteracionActual.etapaNombre }}
+      Iteración: {{ iteracionActual.numero }} – {{ iteracionActual.etapaNombre }}
     </h4>
   </ng-container>
 
   <ng-template #noIteracion>
     <h4 class="text-danger">
-    <i class="bi bi-exclamation-triangle-fill me-2"></i>No hay iteración actual
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>No hay iteración actual
     </h4>
   </ng-template>
 
