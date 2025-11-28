@@ -10,7 +10,7 @@ describe('PlanificacionIteracion', () => {
     await TestBed.configureTestingModule({
       imports: [PlanificacionIteracion]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(PlanificacionIteracion);
     component = fixture.componentInstance;

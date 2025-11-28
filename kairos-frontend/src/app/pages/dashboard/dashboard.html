@@ -48,7 +48,6 @@
     z-index: 5;
     backdrop-filter: blur(1px);
   }
-
 </style>
 
 <main class="container py-4">
@@ -76,7 +75,15 @@
         <option value="quarter" [disabled]="soloFiltroTodo">Ultimos 90 dias</option>
         <option value="all">Todo</option>
       </select>
-      <small class="text-muted" *ngIf="soloFiltroTodo">Para iteraciones finalizadas solo se muestran datos historicos.</small>
+      <app-dashboard-export [proyecto]="proyecto" [semanaActual]="semanaActual" [tareasCompletadas]="tareasCompletadas"
+        [totalTareas]="totalTareas" [totalHoras]="totalHoras" [eficiencia]="eficiencia"
+        [atrasadasCount]="atrasadasCount" [proximasCount]="proximasCount" [charts]="charts"
+        [chartsWithData]="chartsWithData" [horasIteracionDetalle]="horasIteracionDetalle"
+        [horasCategoriaDetalle]="horasCategoriaDetalle" [tareasUsuarioDetalle]="tareasUsuarioDetalle"
+        [horasDiaDetalle]="horasDiaDetalle" [horasTareaDetalle]="horasTareaDetalle" [filtroTiempo]="filtroTiempo">
+      </app-dashboard-export>
+      <small class="text-muted" *ngIf="soloFiltroTodo">Para iteraciones finalizadas solo se muestran datos
+        historicos.</small>
     </div>
   </div>
 
@@ -114,7 +121,9 @@
             [ngClass]="proximasCount > 0 ? 'bi bi-exclamation-lg text-danger' : 'bi bi-check-circle text-success'"></i>
           <div class="fw-bold text-dark">
             <h4 class="mb-2">Proximos vencimientos</h4>
-            <span class="fs-5" *ngIf="proximasCount > 0">{{ proximasCount }} {{ proximasCount === 1 ? 'tarea proxima a vencer' : 'tareas proximas a vencer' }}</span>
+            <span class="fs-5" *ngIf="proximasCount > 0">{{ proximasCount }} {{ proximasCount === 1 ? 'tarea
+              proxima a
+              vencer' : 'tareas proximas a vencer' }}</span>
             <span class="fs-5 text-muted" *ngIf="proximasCount === 0">No hay tareas proximas a vencer</span>
           </div>
         </div>
@@ -276,10 +285,8 @@
 
               <!-- FECHA DE LA SEMANA -->
               <small class="text-black" style="white-space: nowrap;">
-                {{ semanaActual.inicio }}  {{ semanaActual.fin }}
+                {{ semanaActual.inicio }} {{ semanaActual.fin }}
               </small>
-
-              <!-- BOTONES DE NAVEGACION -->
               <div class="d-flex gap-2">
                 <button class="btn btn-sm btn-outline-secondary" title="Semana anterior" (click)="cambiarSemana(-1)"
                   [disabled]="prevSemanaDisabled()">
@@ -297,7 +304,6 @@
           </div>
         </div>
 
-        
 
         <div class="col-lg-6 col-md-12">
           <div class="card rounded-2 shadow-sm">
@@ -600,8 +606,3 @@
 <ng-template #sinDatos>
   <p class="text-muted mb-0">No hay datos disponibles para el filtro actual.</p>
 </ng-template>
-
-
-
-
-
