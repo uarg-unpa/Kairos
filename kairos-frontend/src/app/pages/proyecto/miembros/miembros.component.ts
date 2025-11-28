@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { ProyectoService } from '../../../services/proyecto.service';
 import { AuthService } from '../../../services/auth.service';
 import { UsuariosService } from '../../../services/usuarios.service';
 import { IdCoderService } from '../../../services/id-coder.service'
+import { AlertService } from '../../../services/alert.service';
 // import { Proyecto } from '../../../models/proyecto.model';
 
 @Component({
@@ -40,6 +41,11 @@ export class MiembrosComponent implements OnInit {
   esLiderActual: boolean = false;
   selectedUsuarioId: number | null = null;
   currentUserId: number | null = null;
+  miembrosLimiteAlcanzado: boolean = false;
+  maxRolLength: number = 20;
+  private alertService = inject(AlertService);
+
+
 
   constructor(
     private route: ActivatedRoute,
@@ -60,12 +66,12 @@ export class MiembrosComponent implements OnInit {
         this.proyectoId = id;
         this.cargarMiembros();
       } else {
-        alert('Acceso denegado o ID de proyecto inválido.');
+        this.alertService.error('Acceso denegado o ID de proyecto inválido.');
         this.router.navigate(['/inicio']);
         return;
       }
     } else {
-      alert('ID de proyecto faltante.');
+      this.alertService.error('ID de proyecto faltante.');
       this.router.navigate(['/inicio']);
       return;
     }
@@ -87,6 +93,22 @@ export class MiembrosComponent implements OnInit {
           status: 'offline',
           usuario: { id: m.idUsuario, nombre: m.nombre, email: m.email }
         }));
+        this.miembrosLimiteAlcanzado = this.miembros.length >= 6;
+        if (this.authService.esAdmin()) {
+          this.rolEnProyecto = 'Admin';
+        }
+
+        const miUsuario = miembros.find(m => m.idUsuario === this.currentUserId);
+
+        if (miUsuario) {
+          const rol = (miUsuario.rolProyecto || '').toLowerCase();
+
+          if (rol.includes('líder') || rol.includes('lider')) {
+            this.rolEnProyecto = 'Líder';
+          } else {
+            this.rolEnProyecto = 'Miembro';
+          }
+        }
       },
       error: (err) => {
         console.error('Error al cargar miembros', err);
@@ -95,16 +117,39 @@ export class MiembrosComponent implements OnInit {
     });
   }
 
+
   private cargarRolEnProyecto(): void {
     this.authService.currentUser$.subscribe(user => {
-        this.currentUserId = user?.id || null; 
-        
-        const rolRaw = user?.rol || 'Miembro';
-        this.rolEnProyecto = rolRaw.toUpperCase() === 'ADMINISTRADOR' ? 'Admin' : 'Líder';
+      this.currentUserId = user?.id || null;
+
+      // Primero: revisar rol global
+      const rolGlobal = user?.rol; // "Administrador" o "Usuario Común"
+
+      if (rolGlobal === "Administrador") {
+        this.rolEnProyecto = "Admin";
+        return;
+      }
+
+      // Si NO es admin → buscar su rol dentro del proyecto
+      if (this.miembros.length > 0 && this.currentUserId) {
+        const yo = this.miembros.find(m => m.idUsuario === this.currentUserId);
+
+        if (yo && yo.rolProyecto?.toLowerCase() === "líder") {
+          this.rolEnProyecto = "Líder";
+        } else {
+          this.rolEnProyecto = "Miembro";
+        }
+      }
     });
   }
 
+
+
   abrirModalAgregar(): void {
+    if (this.miembrosLimiteAlcanzado) {
+      this.alertService.warning('Este proyecto ya alcanzó el límite de 6 miembros.');
+      return;
+    }
     this.mostrarModalAgregar = true;
     this.searchQuery = '';
     this.usuariosBusqueda = [];
@@ -131,14 +176,23 @@ export class MiembrosComponent implements OnInit {
   }
 
   agregarMiembro(): void {
+    if (this.miembrosLimiteAlcanzado) {
+      this.errorMensaje = 'No se pueden agregar más miembros. Límite: 6.';
+      return;
+    }
     if (!this.proyectoId) return;
 
     // Opción 1: Usuario seleccionado del buscador
     if (this.selectedUsuarioId) {
+      const rolError = this.validarNewRol();
+      if (rolError) {
+        this.errorMensaje = rolError;
+        return;
+      }
       this.proyectoService.agregarMiembro(this.proyectoId, this.selectedUsuarioId, this.newRol).subscribe({
         next: () => {
-          alert('Miembro agregado');
           this.limpiarModal();
+          this.alertService.success('Miembro agregado');
           this.cargarMiembros();
         },
         error: () => this.errorMensaje = 'Error al agregar miembro'
@@ -146,10 +200,20 @@ export class MiembrosComponent implements OnInit {
     }
     // Opción 2: Invitación por email
     else if (this.newEmail.trim()) {
+      const emailError = this.validarEmail();
+      if (emailError) {
+        this.errorMensaje = emailError;
+        return;
+      }
+      const rolError = this.validarNewRol();
+      if (rolError) {
+        this.errorMensaje = rolError;
+        return;
+      }
       this.proyectoService.invitarMiembro(this.proyectoId, this.newEmail, this.newRol).subscribe({
         next: () => {
-          alert('Invitación enviada con éxito');
           this.limpiarModal();
+          this.alertService.success('Invitación enviada con éxito');
           this.cargarMiembros();
         },
         error: (err) => {
@@ -168,8 +232,36 @@ export class MiembrosComponent implements OnInit {
     this.usuariosBusqueda = [];
     this.searchQuery = usuario.nombre;
   }
+  limiteMiembros(): boolean {
+    return this.miembrosLimiteAlcanzado;
+  }
+  validarEmail(): string | null {
+    const email = this.newEmail.trim();
+    if (!email) return null;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+    if (!emailRegex.test(email)) {
+      return 'El formato del correo es inválido.';
+    }
+    return null;
+  }
+
+  validarNewRol(): string | null {
+    const rol = this.newRol.trim();
+
+    if (rol.length > this.maxRolLength) {
+      return `Máximo ${this.maxRolLength} caracteres.`;
+    }
+    if (this.newEmail.trim() && !rol) {
+      return 'El rol es obligatorio para invitaciones por email.';
+    }
+    return null;
+  }
 
   abrirModalEditar(miembro: any): void {
+    if (this.esLider(miembro)) {
+      return;
+    }
     this.usuarioEdit = { ...miembro };
     this.rolEdit = miembro.rolProyecto;
     const esMiUsuario = this.currentUserId === miembro.idUsuario;
@@ -178,7 +270,7 @@ export class MiembrosComponent implements OnInit {
   }
 
   esLider(miembro: any): boolean {
-    return this.currentUserId === miembro.idUsuario && miembro.rolProyecto?.toLowerCase().includes('líder')
+    return this.currentUserId === miembro.idUsuario && this.rolEnProyecto?.toLowerCase().includes('líder')
   }
 
   us(): boolean {
@@ -191,14 +283,29 @@ export class MiembrosComponent implements OnInit {
   }
 
   actualizarRol(): void {
-    this.proyectoService.actualizarRolMiembro(this.proyectoId!, this.usuarioEdit.idUsuario, this.rolEdit).subscribe({
+    const rol = this.rolEdit.trim();
+
+    if (!rol) {
+      this.errorMensaje = 'El rol no puede estar vacío.';
+      return;
+    }
+
+    this.proyectoService.actualizarRolMiembro(
+      this.proyectoId!,
+      this.usuarioEdit.idUsuario,
+      rol
+    ).subscribe({
       next: () => {
-        alert('Rol actualizado');
         this.cerrarModalEditar();
+        this.alertService.success('Rol actualizado');
         this.cargarMiembros();
+      },
+      error: () => {
+        this.errorMensaje = 'No se pudo actualizar el rol.';
       }
     });
   }
+
 
   limpiarModal(): void {
     this.selectedUsuarioId = null;

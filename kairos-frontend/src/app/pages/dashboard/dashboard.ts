@@ -129,7 +129,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.route.paramMap.subscribe(pm => {
       const encodedId = pm.get('id');
 
-
       if (encodedId) {
         const id = this.idCoderService.decode(encodedId);
         if (id) {

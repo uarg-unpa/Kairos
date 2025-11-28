@@ -91,18 +91,27 @@ body {
 
 .kairos-brand-text {
   /* **Fuente Wittgenstein** */
-  font-family: 'Wittgenstein', serif; 
+  font-family: 'Wittgenstein', serif;
   font-size: 1.8rem;
   font-weight: 700;
   letter-spacing: 1px;
-  color: #FFF; 
+  color: #FFF;
 }
 
 /* 2. Estilo para la Línea de Degradado */
 .navbar-separator {
-  height: 5px; /* Altura de la línea de color */
-  /* Degradado de Verde a Cian */
-  background: linear-gradient(to right, #61e38b 0%, #00c7f2 100%);
-  /* Opcional: añade margen para separar el contenido */
-  /* margin-bottom: 20px; */ 
+  height: 7px;
+  background: linear-gradient(90deg, #61e38b, #00c7f2, #61e38b);
+  background-size: 200% 100%;
+  animation: moveGradient 1s ease-in-out infinite alternate;
+}
+
+@keyframes moveGradient {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
 }

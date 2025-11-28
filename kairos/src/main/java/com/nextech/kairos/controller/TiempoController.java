@@ -79,6 +79,16 @@ public class TiempoController {
         return ResponseEntity.ok(ultimos);
     }
 
+    @GetMapping("/totales-usuario")
+    public ResponseEntity<java.util.Map<Long, Integer>> getTiemposTotalesUsuario(Authentication authentication) {
+        String email = (String) authentication.getPrincipal();
+        Usuario usuario = usuarioService.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        java.util.Map<Long, Integer> totales = tiempoService.getTiemposTotalesPorUsuario(usuario.getId());
+        return ResponseEntity.ok(totales);
+    }
+
     @PutMapping("/{idTiempo}")
     public ResponseEntity<Tiempo> editarTiempo(
             @PathVariable Long idTiempo,

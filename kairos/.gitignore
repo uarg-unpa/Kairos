@@ -66,3 +66,7 @@ temp/
 .mvn/
 .mvn/wrapper/
 /target/
+target/
+target/classes/
+target/*.jar
+

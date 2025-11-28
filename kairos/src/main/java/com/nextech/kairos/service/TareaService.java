@@ -7,11 +7,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.nextech.kairos.model.Iteracion;
 import com.nextech.kairos.model.Tarea;
 import com.nextech.kairos.repository.TareaRepository;
-import com.nextech.kairos.service.IIteracionService;
-import com.nextech.kairos.model.Iteracion;
-import com.nextech.kairos.service.ITareaService;
 
 import jakarta.transaction.Transactional;
 

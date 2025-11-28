@@ -1,4 +1,4 @@
-import { Component, OnInit, effect } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { TaskService } from '../../services/tarea.service';
 import { CategoriaService, CategoriaDTO } from '../../services/categoria.service';
 import { IteracionService } from '../../services/iteracion.service';
-import { UsuariosService } from '../../services/usuarios';
+
 import { ComentarioService } from '../../services/comentario.service';
 import { EtapaService } from '../../services/etapa.service';
 import { ProyectoService } from '../../services/proyecto.service';
@@ -34,10 +34,10 @@ import { Proyecto } from '../../models/proyecto.model';
     FormsModule,
     TaskListComponent,
     TaskFiltersComponent,
-    StatsPanelComponent  ]
+    StatsPanelComponent]
 })
 export class PlanificacionIteracion implements OnInit {
-  
+
 
   // Datos principales
   idProyecto!: number;
@@ -70,34 +70,31 @@ export class PlanificacionIteracion implements OnInit {
   constructor(
     private proyectoService: ProyectoService,
     private categoriaService: CategoriaService,
-    private taskService: TaskService,
     private idCoderService: IdCoderService,
-    private usuariosService: UsuariosService,
+    private taskService: TaskService,
     private iteracionService: IteracionService,
     private comentarioService: ComentarioService,
     private etapaService: EtapaService,
     private route: ActivatedRoute,
     private router: Router
   ) {
-    effect(() => {
-      this.usuarios = this.usuariosService.usuarios();
-    });
   }
 
   ngOnInit(): void {
-   
-  const usuarioGuardado = localStorage.getItem('usuario_data');
-  if (usuarioGuardado) {
-    this.usuarioActual = JSON.parse(usuarioGuardado);
-  }
 
-  const encodedId = this.route.snapshot.paramMap.get('id');
+    const usuarioGuardado = localStorage.getItem('usuario_data');
+    if (usuarioGuardado) {
+      this.usuarioActual = JSON.parse(usuarioGuardado);
+    }
+
+    const encodedId = this.route.snapshot.paramMap.get('id');
 
     if (encodedId) {
       const decodedId = this.idCoderService.decode(encodedId);
 
       if (decodedId) {
         this.proyectoId = decodedId;
+        this.cargarMiembros();
         console.log('Proyecto ID Decodificado:', this.proyectoId);
       } else {
         console.error('ID de proyecto inválido en la ruta');
@@ -110,54 +107,72 @@ export class PlanificacionIteracion implements OnInit {
       return;
     }
 
- this.getProyectoActual();
- 
-  this.route.paramMap.subscribe(params => {
-    this.filtroIteracionId = Number(params.get('idIteracion'));
-    console.log("Proyecto:", this.proyectoId, "Iteración:", this.filtroIteracionId);
+    this.getProyectoActual();
 
-    // Primero: obtener la iteración actual del proyecto
-    this.iteracionService.getIteracionActualPorProyecto(this.proyectoId!).subscribe({
-  next: itActual => {
-    const idActual = itActual?.idIteracion;
+    this.route.paramMap.subscribe(params => {
+      this.filtroIteracionId = Number(params.get('idIteracion'));
+      console.log("Proyecto:", this.proyectoId, "Iteración:", this.filtroIteracionId);
 
-    // Si la iteración de la ruta es la actual → redirigir
-    if (idActual && idActual === this.filtroIteracionId) {
-      this.router.navigate([`/proyecto/${encodedId}/planificacion`]);
-      return;
-    }
+      // Primero: obtener la iteración actual del proyecto
+      this.iteracionService.getIteracionActualPorProyecto(this.proyectoId!).subscribe({
+        next: itActual => {
+          const idActual = itActual?.idIteracion;
 
-    // Si NO es la actual, cargar normalmente
-    this.cargarIteracionSeleccionada();
-    this.cargarEtapas();
-    this.cargarCategorias();
-  },
+          // Si la iteración de la ruta es la actual → redirigir
+          if (idActual && idActual === this.filtroIteracionId) {
+            this.router.navigate([`/proyecto/${encodedId}/planificacion`]);
+            return;
+          }
 
-  error: err => {
-    // Si NO existe iteración actual → BACKEND retorna 404
-    if (err.status === 404) {
-      console.warn("No existe iteración actual. Continuando normalmente...");
-      
-      this.cargarIteracionSeleccionada();
-      this.cargarEtapas();
-      this.cargarCategorias();
-      return;
-    }
+          // Si NO es la actual, cargar normalmente
+          this.cargarIteracionSeleccionada();
+          this.cargarEtapas();
+          this.cargarCategorias();
+        },
 
-    console.error("Error inesperado al obtener iteración actual:", err);
+        error: err => {
+          // Si NO existe iteración actual → BACKEND retorna 404
+          if (err.status === 404) {
+            console.warn("No existe iteración actual. Continuando normalmente...");
+
+            this.cargarIteracionSeleccionada();
+            this.cargarEtapas();
+            this.cargarCategorias();
+            return;
+          }
+
+          console.error("Error inesperado al obtener iteración actual:", err);
+        }
+      });
+
+
+    });
+
+
+    // Filtros por query params
+    this.route.queryParamMap.subscribe(params => {
+      const venc = params.get('vencimiento');
+      this.filtroVencimiento = (venc === 'proximas' || venc === 'atrasadas') ? venc : null;
+    });
   }
-});
 
+  private cargarMiembros(): void {
+    if (!this.proyectoId) return;
 
-  });
+    this.proyectoService.getProyectoById(this.proyectoId).subscribe({
+      next: (proyecto) => {
+        this.usuarios = (proyecto.usuariosProyecto ?? []).map(u => ({
+          id: u.idUsuario,
+          nombre: u.nombre,
+          email: u.email,
+          rol: [] // si no manejás roles todavía, dejalo como array vacío
+        }));
 
-
-  // Filtros por query params
-  this.route.queryParamMap.subscribe(params => {
-    const venc = params.get('vencimiento');
-    this.filtroVencimiento = (venc === 'proximas' || venc === 'atrasadas') ? venc : null;
-  });
-}
+        console.log("Usuarios convertidos:", this.usuarios);
+      },
+      error: (err) => console.error("Error al cargar miembros:", err)
+    });
+  }
 
   private cargarEtapas(): void {
     if (!this.proyectoId) return;
@@ -168,32 +183,32 @@ export class PlanificacionIteracion implements OnInit {
   }
 
   private cargarIteracionSeleccionada(): void {
-  if (!this.proyectoId || !this.filtroIteracionId) return;
+    if (!this.proyectoId || !this.filtroIteracionId) return;
 
-  this.iteracionService.getIteracionPorId(this.filtroIteracionId).subscribe({
-    next: iter => {
-      this.iteracionActual = iter;
-      this.iteraciones = [iter]; // Para que el filtro funcione igual que antes
-      this.cargarTareas();
-      this.cargarCategorias();
-    },
-    error: err => {
-      console.error("Error al cargar iteración:", err);
-      this.iteracionActual = null;
-      this.tareas = [];
-    }
-  });
-}
+    this.iteracionService.getIteracionPorId(this.filtroIteracionId).subscribe({
+      next: iter => {
+        this.iteracionActual = iter;
+        this.iteraciones = [iter]; // Para que el filtro funcione igual que antes
+        this.cargarTareas();
+        this.cargarCategorias();
+      },
+      error: err => {
+        console.error("Error al cargar iteración:", err);
+        this.iteracionActual = null;
+        this.tareas = [];
+      }
+    });
+  }
 
 
   private cargarTareas(): void {
     const obs = this.proyectoId
-  ? this.taskService.getTareasPorProyectoEIteracion(
-      this.proyectoId,
-      this.filtroIteracionId!
-    )
-  : this.taskService.getTareas();
-  
+      ? this.taskService.getTareasPorProyectoEIteracion(
+        this.proyectoId,
+        this.filtroIteracionId!
+      )
+      : this.taskService.getTareas();
+
 
     obs.subscribe({
       next: (data) => {
@@ -202,7 +217,7 @@ export class PlanificacionIteracion implements OnInit {
       },
       error: (err) => console.error('Error al cargar tareas:', err)
     });
-    
+
   }
 
   private cargarCategorias(): void {
@@ -229,9 +244,9 @@ export class PlanificacionIteracion implements OnInit {
 
   // ===== Manejadores de Eventos =====
 
-  
 
-  
+
+
   onCambiarPagina(pagina: number): void {
     if (pagina >= 1 && pagina <= Math.ceil(this.tareasFiltradas().length / this.tareasPorPagina)) {
       this.paginaActual = pagina;
@@ -295,31 +310,31 @@ export class PlanificacionIteracion implements OnInit {
   }
 
   onFiltrosChange(filtros: any): void {
-  this.filtroCategoria = filtros.categoria;
-  this.filtroResponsable = filtros.responsable;
-  this.filtroEstado = filtros.estado;
-  this.filtroFechaDesde = filtros.fechaDesde;
-  this.filtroFechaHasta = filtros.fechaHasta;
+    this.filtroCategoria = filtros.categoria;
+    this.filtroResponsable = filtros.responsable;
+    this.filtroEstado = filtros.estado;
+    this.filtroFechaDesde = filtros.fechaDesde;
+    this.filtroFechaHasta = filtros.fechaHasta;
 
-  this.paginaActual = 1; 
-}
+    this.paginaActual = 1;
+  }
 
 
 
-  getEtapaIteracionActual(){
+  getEtapaIteracionActual() {
     return this.iteracionActual?.etapaNombre;
   }
 
-  getProyectoActual(){
+  getProyectoActual() {
     this.proyectoService.getProyectoById(this.proyectoId!).subscribe({
       next: proy => {
         this.proyectoActual = proy;
       },
       error: err => {
-      console.error("Error al cargar proyecto:", err);
-      this.iteracionActual = null;
-      this.tareas = [];
-    }
+        console.error("Error al cargar proyecto:", err);
+        this.iteracionActual = null;
+        this.tareas = [];
+      }
     })
   }
 }

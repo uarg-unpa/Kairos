@@ -3,7 +3,7 @@ package com.nextech.kairos.repository;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,8 +30,16 @@ public interface TiempoRepository extends JpaRepository<Tiempo, Long> {
     List<Tiempo> findByUsuarioIsNull();
 
     // metodo nuevo
-    @Query("SELECT t FROM Tiempo t WHERE t.usuario.id = :idUsuario ORDER BY t.fechaRegistro DESC, t.idTiempo DESC")
-    List<Tiempo> findLast5ByUsuarioId(@Param("idUsuario") Long idUsuario, PageRequest pageable);
+    @Query("""
+    SELECT t FROM Tiempo t
+    WHERE t.usuario.id = :idUsuario
+    ORDER BY t.fechaRegistro DESC, t.idTiempo DESC
+""")
+List<Tiempo> findLast5ByUsuarioId(@Param("idUsuario") Long idUsuario, Pageable pageable);
+
+
+    @Query("SELECT t.tarea.idTarea, SUM(t.duracion) FROM Tiempo t WHERE t.usuario.id = :idUsuario GROUP BY t.tarea.idTarea")
+    List<Object[]> sumHorasPorTareaUsuario(@Param("idUsuario") Long idUsuario);
 
     // Horas por iteración (t.duracion está en minutos)
     @Query("SELECT i.idIteracion, i.numero, COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
