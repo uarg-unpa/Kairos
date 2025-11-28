@@ -4,10 +4,10 @@
   <div class="d-flex justify-content-between align-items-center mb-1">
     <h2 class="mb-0">Planificación de Tareas - <span *ngIf="proyectoNombre">{{ proyectoNombre }}</span></h2>
     <div class="d-flex gap-2">
-      <button type="button" class="btn btn-primary" (click)="onAbrirModalCrear()">
+      <button *ngIf="esLider()" type="button" class="btn btn-primary" (click)="onAbrirModalCrear()">
         Nueva Tarea
       </button>
-      <button type="button" class="btn btn-primary" (click)="categoriesModal.abrirModal()">
+      <button *ngIf="esLider()" type="button" class="btn btn-primary" (click)="categoriesModal.abrirModal()">
         Categorias
       </button>
       <button class="btn btn-outline-primary">
@@ -15,16 +15,16 @@
       </button>
     </div>
   </div>
-  
+
   <ng-container *ngIf="iteracionActual; else noIteracion">
     <h4 class="text-muted">
-    Iteración: {{ iteracionActual.numero }} – {{ iteracionActual.etapaNombre }}
+      Iteración: {{ iteracionActual.numero }} – {{ iteracionActual.etapaNombre }}
     </h4>
   </ng-container>
 
   <ng-template #noIteracion>
     <h4 class="text-danger">
-    <i class="bi bi-exclamation-triangle-fill me-2"></i>No hay iteración actual
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>No hay iteración actual
     </h4>
   </ng-template>
 
@@ -50,10 +50,10 @@
 
       <!-- Lista de Tareas -->
       <app-task-list [tareas]="tareasFiltradas()" [comentariosPorTarea]="comentariosPorTarea" [usuarios]="usuarios"
-        [paginaActual]="paginaActual" [tareasPorPagina]="tareasPorPagina" (editarTarea)="onAbrirModalEditar($event)"
-        (eliminarTarea)="onEliminarTarea($event)" (cambiarEstado)="onCambiarEstado($event)"
-        (abrirComentarios)="onAbrirComentarios($event)" (cambiarPagina)="onCambiarPagina($event)"
-        (eliminarComentario)="onEliminarComentario($event)">
+        [paginaActual]="paginaActual" [tareasPorPagina]="tareasPorPagina" [esLider]="esLider()"
+        (editarTarea)="onAbrirModalEditar($event)" (eliminarTarea)="onEliminarTarea($event)"
+        (cambiarEstado)="onCambiarEstado($event)" (abrirComentarios)="onAbrirComentarios($event)"
+        (cambiarPagina)="onCambiarPagina($event)" (eliminarComentario)="onEliminarComentario($event)">
       </app-task-list>
     </div>
 

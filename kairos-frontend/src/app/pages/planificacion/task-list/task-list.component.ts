@@ -18,6 +18,7 @@ export class TaskListComponent {
   @Input() usuarios: Usuario[] = [];
   @Input() paginaActual = 1;
   @Input() tareasPorPagina = 5;
+  @Input() esLider: boolean = false;
 
   @Output() editarTarea = new EventEmitter<Tarea>();
   @Output() eliminarTarea = new EventEmitter<number>();
