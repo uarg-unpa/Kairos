@@ -10,6 +10,7 @@ import { CategoriaService, CategoriaDTO } from '../../services/categoria.service
 import { IteracionService } from '../../services/iteracion.service';
 import { ComentarioService } from '../../services/comentario.service';
 import { EtapaService } from '../../services/etapa.service';
+/*import { AuthService } from '../../services/auth.service';*/
 
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskFiltersComponent } from './task-filters/task-filters.component';
@@ -59,6 +60,9 @@ export class PlanificacionComponent implements OnInit {
   usuarioActual: Usuario | null = null;
   comentariosPorTarea: { [idTarea: number]: Comentario[] } = {};
 
+  // Rol del usuario en el proyecto
+  rolEnProyecto: 'Admin' | 'Lider' | 'Miembro' = 'Miembro';
+
   // Paginación
   tareasPorPagina = 5;
   paginaActual = 1;
@@ -83,7 +87,8 @@ export class PlanificacionComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private idCoderService: IdCoderService,
-    private proyectoService: ProyectoService
+    private proyectoService: ProyectoService,
+    /*private authService: AuthService*/
   ) {
 
   }
@@ -146,6 +151,9 @@ export class PlanificacionComponent implements OnInit {
         }));
 
         console.log("Usuarios convertidos:", this.usuarios);
+
+        // Determinar rol del usuario actual en el proyecto
+        this.determinarRolEnProyecto(proyecto);
       },
       error: (err) => console.error("Error al cargar miembros:", err)
     });
@@ -494,5 +502,35 @@ export class PlanificacionComponent implements OnInit {
       queryParams: { vencimiento: null },
       queryParamsHandling: 'merge'
     });
+  }
+
+  // ===== Control de Permisos =====
+
+  private determinarRolEnProyecto(proyecto: any): void {
+    if (!proyecto || !this.usuarioActual) {
+      this.rolEnProyecto = 'Miembro';
+      return;
+    }
+
+    /* 1. ¿Es admin global?
+    if (this.authService.esAdmin()) {
+      this.rolEnProyecto = 'Admin';
+      return;
+  }*/
+
+    // 2. ¿Es lider del proyecto? (normalizado sin tildes)
+    const esLider = proyecto.usuariosProyecto?.some((up: any) => {
+      const rolNorm = (up.rolProyecto || '')
+        .toUpperCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+      return up.idUsuario === this.usuarioActual?.id && rolNorm.includes('LIDER');
+    }) || false;
+
+    this.rolEnProyecto = esLider ? 'Lider' : 'Miembro';
+  }
+
+  esLider(): boolean {
+    return this.rolEnProyecto === 'Admin' || this.rolEnProyecto === 'Lider';
   }
 }
