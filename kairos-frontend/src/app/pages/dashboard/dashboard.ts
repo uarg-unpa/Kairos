@@ -129,10 +129,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.route.paramMap.subscribe(pm => {
       const encodedId = pm.get('id');
 
-      const data: any = this.route.snapshot.data;
-      this.proyectoNombre = data?.['proyecto']?.nombre || null;
-      // this.cargarIteracionActiva(this.proyectoId);
-
       if (encodedId) {
         const id = this.idCoderService.decode(encodedId);
         if (id) {
@@ -432,9 +428,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.procesarTareasDesdeCache([]);
       });
     }
-  }
-
-  private actualizarHorasIteracionChart() {
+  } private actualizarHorasIteracionChart() {
     const orderedIds: number[] = [];
     const pushId = (value: number | null | undefined) => {
       if (value === null || value === undefined) return;
