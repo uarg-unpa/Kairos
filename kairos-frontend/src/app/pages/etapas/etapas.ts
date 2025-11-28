@@ -4,7 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { UsuariosService } from '../../services/usuarios';
 import { EtapaService } from '../../services/etapa.service';
 import { IdCoderService } from '../../services/id-coder.service';
+import { AuthService } from '../../services/auth.service';
+import { ProyectoService } from '../../services/proyecto.service';
 import { Etapa } from '../../models/etapa.model';
+import { Proyecto } from '../../models/proyecto.model';
 import { Router, RouterModule } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 
@@ -20,6 +23,7 @@ declare const bootstrap: any;
 export class EtapasComponent implements OnInit, AfterViewInit {
   idProyecto!: number;
   proyectoNombre?: string;
+  proyecto?: Proyecto;
   private addStageModal: any;
 
   private usuariosService = inject(UsuariosService);
@@ -27,12 +31,14 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   usuarios = this.usuariosService.usuarios; // usable si agregamos responsable en el futuro
   private router = inject(Router);
   private idCoderService = inject(IdCoderService);
+  private authService = inject(AuthService);
+  private proyectoService = inject(ProyectoService);
 
   nuevaEtapa: any = {
     nombre: '',
     descripcion: '',
     fechaInicio: '',
-    fechaFin: '', 
+    fechaFin: '',
     proyectoId: this.idProyecto,
   };
   errorNuevaEtapa: string | null = null;
@@ -40,7 +46,7 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   etapas: Etapa[] = [];
   filtroEstado: 'TODAS' | 'PENDIENTE' | 'EN_PROGRESO' | 'FINALIZADA' = 'TODAS';
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     const el = document.getElementById('addStageModal');
@@ -55,6 +61,7 @@ export class EtapasComponent implements OnInit, AfterViewInit {
         this.idProyecto = decodedId;
         console.log('Proyecto ID Decodificado:', this.idProyecto);
         this.nuevaEtapa.proyectoId = this.idProyecto;
+        this.cargarProyecto();
         this.cargarEtapas();
       } else {
         console.error('ID de proyecto inválido en la ruta');
@@ -77,6 +84,16 @@ export class EtapasComponent implements OnInit, AfterViewInit {
         console.error('Error cargando etapas', err);
         alert('No se pudieron cargar las etapas del proyecto');
       }
+    });
+  }
+
+  private cargarProyecto(): void {
+    this.proyectoService.getProyectoById(this.idProyecto).subscribe({
+      next: (p) => {
+        this.proyecto = p;
+        this.proyectoNombre = p.nombre;
+      },
+      error: (err) => console.error('Error cargando proyecto', err)
     });
   }
 
@@ -196,9 +213,9 @@ export class EtapasComponent implements OnInit, AfterViewInit {
     try {
       const list = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]')) as any[];
       list.forEach((el: any) => {
-        try { new bootstrap.Tooltip(el); } catch {}
+        try { new bootstrap.Tooltip(el); } catch { }
       });
-    } catch {}
+    } catch { }
   }
 
   // Etiqueta legible para estado
@@ -253,5 +270,19 @@ export class EtapasComponent implements OnInit, AfterViewInit {
     if (!el) return;
     el.style.height = 'auto';
     el.style.height = `${el.scrollHeight}px`;
+  }
+
+  get isLider(): boolean {
+    const user = this.authService.usuario;
+    if (!user || !this.proyecto || !this.proyecto.usuariosProyecto) return false;
+
+    // Si es admin global, también podría considerarse líder (opcional, pero seguro)
+    //if (user.admin) return true;
+
+    const miembro = this.proyecto.usuariosProyecto.find(u => u.idUsuario === user.id);
+    if (!miembro) return false;
+
+    const rol = miembro.rolProyecto;
+    return rol === 'LIDER' || rol === 'Líder';
   }
 }

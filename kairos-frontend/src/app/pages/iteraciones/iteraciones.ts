@@ -3,8 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { IteracionService } from '../../services/iteracion.service';
-import { IdCoderService } from '../../services/id-coder.service'; // << Importado
+import { IdCoderService } from '../../services/id-coder.service';
+import { AuthService } from '../../services/auth.service';
+import { ProyectoService } from '../../services/proyecto.service';
 import { Iteracion } from '../../models/iteracion.model';
+import { Proyecto } from '../../models/proyecto.model';
 
 declare const bootstrap: any;
 
@@ -22,11 +25,14 @@ export class IteracionesComponent implements OnInit {
   private router = inject(Router);
   private iteracionService = inject(IteracionService);
   private idCoderService = inject(IdCoderService);
+  private authService = inject(AuthService);
+  private proyectoService = inject(ProyectoService);
 
   etapaSlug: string | null = null;
   etapaId: number | null = null;
   proyectoId: number | null = null;
   proyectoNombre: string | null = null;
+  proyecto?: Proyecto;
   backLink: string | any[] = '/inicio';
   private encodedProyectoId: string | null = null;
 
@@ -64,6 +70,7 @@ export class IteracionesComponent implements OnInit {
             this.proyectoId = decodedId;
             this.encodedProyectoId = idParam;
             this.backLink = ['/proyecto', idParam, 'etapas'];
+            this.cargarProyecto();
           } else {
             alert('ID de proyecto inválido o manipulado.');
             this.router.navigate(['/inicio']);
@@ -110,6 +117,17 @@ export class IteracionesComponent implements OnInit {
       }
 
       this.iteracionService.getIteraciones().subscribe(all => this.iteraciones = all);
+    });
+  }
+
+  private cargarProyecto(): void {
+    if (!this.proyectoId) return;
+    this.proyectoService.getProyectoById(this.proyectoId).subscribe({
+      next: (p) => {
+        this.proyecto = p;
+        this.proyectoNombre = p.nombre;
+      },
+      error: (err) => console.error('Error cargando proyecto', err)
     });
   }
 
@@ -225,38 +243,36 @@ export class IteracionesComponent implements OnInit {
     });
   }
 
-
-  //anterior
-  /*verTareasDeIteracion(it: Iteracion) {
+  verTareasDeIteracion(it: Iteracion) {
     const iterId = (it as any)?.idIteracion;
     if (!iterId) return;
+
     const pidEncoded = this.encodedProyectoId;
 
     if (pidEncoded) {
-      this.router.navigate(['/proyecto', pidEncoded, 'planificacion'], { queryParams: { iteracionId: iterId } });
+      this.router.navigate([
+        '/proyecto',
+        pidEncoded,
+        'iteracion',
+        iterId,
+        'planificacion'
+      ]);
     } else {
       this.router.navigate(['/planificacion'], { queryParams: { iteracionId: iterId } });
     }
-  }*/
-
-
-  verTareasDeIteracion(it: Iteracion) {
-  const iterId = (it as any)?.idIteracion;
-  if (!iterId) return;
-
-  const pidEncoded = this.encodedProyectoId;
-
-  if (pidEncoded) {
-    this.router.navigate([
-      '/proyecto',
-      pidEncoded,
-      'iteracion',
-      iterId,
-      'planificacion'
-    ]);
-  } else {
-  
-    this.router.navigate(['/planificacion'], { queryParams: { iteracionId: iterId } });
   }
-}
+
+  get isLider(): boolean {
+    const user = this.authService.usuario;
+    if (!user || !this.proyecto || !this.proyecto.usuariosProyecto) return false;
+
+    // Si es admin global, también podría considerarse líder?
+    //if (user.admin) return true;
+
+    const miembro = this.proyecto.usuariosProyecto.find(u => u.idUsuario === user.id);
+    if (!miembro) return false;
+
+    const rol = miembro.rolProyecto;
+    return rol === 'LIDER' || rol === 'Líder';
+  }
 }

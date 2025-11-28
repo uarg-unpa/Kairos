@@ -3,7 +3,7 @@
     <h2 class="mb-0">Etapas <small *ngIf="proyectoNombre" class="text-muted">– {{ proyectoNombre }}</small></h2>
   </div>
 
-  
+
 
   <!-- Resumen de Etapas -->
   <div class="row g-3 mb-1">
@@ -79,7 +79,7 @@
           </div>
         </div>
         <div class="col-md-4 text-end ms-auto">
-          <button class="btn btn-success" (click)="abrirModalEtapa()">
+          <button class="btn btn-success" (click)="abrirModalEtapa()" *ngIf="isLider">
             <i class="bi bi-plus-circle me-2"></i>Crear etapa
           </button>
         </div>
@@ -89,75 +89,71 @@
 
   <div class="row g-4">
     @for (e of etapasFiltradas(); track e.idEtapa) {
-      <div class="col-lg-6 col-md-12">
-        <div role="button" (click)="goToEtapaId(e.idEtapa)" class="text-decoration-none text-dark">
-          <div class="card stage-card h-100">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                  <h5 class="card-title mb-2">{{ e.nombre }}</h5>
-                  <p class="text-muted mb-2" *ngIf="e.descripcion">{{ e.descripcion }}</p>
-                  <div class="d-flex align-items-center gap-3 mb-2">
-                    <span class="badge"
-                          [ngClass]="{
+    <div class="col-lg-6 col-md-12">
+      <div role="button" (click)="goToEtapaId(e.idEtapa)" class="text-decoration-none text-dark">
+        <div class="card stage-card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h5 class="card-title mb-2">{{ e.nombre }}</h5>
+                <p class="text-muted mb-2" *ngIf="e.descripcion">{{ e.descripcion }}</p>
+                <div class="d-flex align-items-center gap-3 mb-2">
+                  <span class="badge" [ngClass]="{
                             'bg-success': colorEstado(e)==='success',
                             'bg-warning bg-opacity-50 text-dark': colorEstado(e)==='warning',
                             'bg-secondary': colorEstado(e)==='secondary',
                             'bg-danger': colorEstado(e)==='danger'
-                          }"
-                          [attr.title]="tooltipFinalizadaPendiente(e)"
-                          [attr.data-bs-toggle]="colorEstado(e)==='danger' ? 'tooltip' : null">
-                          {{ estadoLabel(e) }}</span>
-                    <small class="text-muted"><i class="bi bi-calendar"></i> {{ e.fechaInicio || '-' }} - {{ e.fechaFin || '-' }}</small>
-                    
-                  </div>
+                          }" [attr.title]="tooltipFinalizadaPendiente(e)"
+                    [attr.data-bs-toggle]="colorEstado(e)==='danger' ? 'tooltip' : null">
+                    {{ estadoLabel(e) }}</span>
+                  <small class="text-muted"><i class="bi bi-calendar"></i> {{ e.fechaInicio || '-' }} - {{ e.fechaFin ||
+                    '-' }}</small>
+
                 </div>
-                <div class="text-end">
-                  <h4 class="mb-0"
-                      [ngClass]="{
+              </div>
+              <div class="text-end">
+                <h4 class="mb-0" [ngClass]="{
                         'text-success': colorEstado(e)==='success',
                         'text-warning': colorEstado(e)==='warning',
                         'text-secondary': colorEstado(e)==='secondary',
                         'text-danger': colorEstado(e)==='danger'
-                      }"
-                      [attr.title]="tooltipFinalizadaPendiente(e)"
-                      [attr.data-bs-toggle]="colorEstado(e)==='danger' ? 'tooltip' : null">{{ progressValue(e) }}%</h4>
-                </div>
+                      }" [attr.title]="tooltipFinalizadaPendiente(e)"
+                  [attr.data-bs-toggle]="colorEstado(e)==='danger' ? 'tooltip' : null">{{ progressValue(e) }}%</h4>
               </div>
-              <div class="mb-3">
-                <div class="progress stage-progress mb-2">
-                  <div class="progress-bar" 
-                       [ngClass]="{
+            </div>
+            <div class="mb-3">
+              <div class="progress stage-progress mb-2">
+                <div class="progress-bar" [ngClass]="{
                          'bg-success': colorEstado(e)==='success',
                          'bg-warning': colorEstado(e)==='warning',
                          'bg-secondary': colorEstado(e)==='secondary',
                          'bg-danger': colorEstado(e)==='danger'
-                       }"
-                       [attr.title]="tooltipFinalizadaPendiente(e)"
-                       [attr.data-bs-toggle]="colorEstado(e)==='danger' ? 'tooltip' : null"
-                       [style.width]="progressValue(e) + '%' "></div>
-                </div>
+                       }" [attr.title]="tooltipFinalizadaPendiente(e)"
+                  [attr.data-bs-toggle]="colorEstado(e)==='danger' ? 'tooltip' : null"
+                  [style.width]="progressValue(e) + '%' "></div>
               </div>
-
-              <div class="mb-3">
-                <h6 class="mb-2">Iteraciones: {{ e.iteraciones ?? 0 }}</h6>
-                <div class="d-flex flex-wrap gap-1" *ngIf="(e.iteraciones ?? 0) > 0">
-                  <span class="badge bg-light text-dark border">
-                    {{ (e.iteraciones ?? 0) === 1 ? '1 iteración' : (e.iteraciones ?? 0) + ' iteraciones' }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-end mt-2">
-                <button class="btn btn-outline-danger btn-sm" title="Eliminar etapa" (click)="eliminarEtapa(e, $event)">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </div>
-
             </div>
+
+            <div class="mb-3">
+              <h6 class="mb-2">Iteraciones: {{ e.iteraciones ?? 0 }}</h6>
+              <div class="d-flex flex-wrap gap-1" *ngIf="(e.iteraciones ?? 0) > 0">
+                <span class="badge bg-light text-dark border">
+                  {{ (e.iteraciones ?? 0) === 1 ? '1 iteración' : (e.iteraciones ?? 0) + ' iteraciones' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-2">
+              <button class="btn btn-outline-danger btn-sm" title="Eliminar etapa" (click)="eliminarEtapa(e, $event)"
+                *ngIf="isLider">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+
           </div>
         </div>
       </div>
+    </div>
     }
   </div>
 </main>
@@ -168,7 +164,8 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="addStageModalLabel">Crear etapa</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cerrarModalEtapa()"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          (click)="cerrarModalEtapa()"></button>
       </div>
       <div class="modal-body">
         <div *ngIf="errorNuevaEtapa" class="alert alert-danger" role="alert">{{ errorNuevaEtapa }}</div>
@@ -180,18 +177,23 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">Descripción</label>
-              <textarea class="form-control descripcion-textarea" [(ngModel)]="nuevaEtapa.descripcion" name="descripcion" rows="3" (input)="autoGrow($event)"></textarea>
+              <textarea class="form-control descripcion-textarea" [(ngModel)]="nuevaEtapa.descripcion"
+                name="descripcion" rows="3" (input)="autoGrow($event)"></textarea>
             </div>
             <div class="col-md-6">
               <label class="form-label">Fecha de inicio *</label>
-              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()" [(ngModel)]="nuevaEtapa.fechaInicio" (ngModelChange)="onFechaInicioChange($event)" name="fechaInicio" required />
+              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()"
+                [(ngModel)]="nuevaEtapa.fechaInicio" (ngModelChange)="onFechaInicioChange($event)" name="fechaInicio"
+                required />
               <div class="invalid-feedback" *ngIf="fechasDesordenadas()">
                 La fecha de fin no puede ser anterior a la fecha de inicio
               </div>
             </div>
             <div class="col-md-6">
               <label class="form-label">Fecha de fin *</label>
-              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()" [attr.min]="nuevaEtapa.fechaInicio || null" [(ngModel)]="nuevaEtapa.fechaFin" name="fechaFin" required />
+              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()"
+                [attr.min]="nuevaEtapa.fechaInicio || null" [(ngModel)]="nuevaEtapa.fechaFin" name="fechaFin"
+                required />
               <div class="invalid-feedback" *ngIf="fechasDesordenadas()">
                 La fecha de fin no puede ser anterior a la fecha de inicio
               </div>
@@ -201,7 +203,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="cerrarModalEtapa()">Cancelar</button>
-        <button type="button" class="btn btn-success" [disabled]="!nuevaEtapaValida()" (click)="crearEtapa()">Crear etapa</button>
+        <button type="button" class="btn btn-success" [disabled]="!nuevaEtapaValida()" (click)="crearEtapa()">Crear
+          etapa</button>
       </div>
     </div>
   </div>
