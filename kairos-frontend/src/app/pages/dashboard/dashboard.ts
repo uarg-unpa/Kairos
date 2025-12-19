@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { ProyectoService } from '../../services/proyecto.service';
 import { Proyecto } from '../../models/proyecto.model';
+import { Iteracion } from '../../models/iteracion.model';
 
 declare const Chart: any;
 
@@ -67,6 +68,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   etapas: any[] = [];
   iteraciones: any[] = [];
+  iteracionActual: Iteracion | null = null;
   filtroEtapa: number | null = null;
   filtroIteracion: number | null = null;
   filtroTiempo: FiltroTiempo = 'all';
@@ -144,7 +146,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           this.proyectoNombre = this.proyecto?.nombre || null;
           console.log("Proyecto cargado:", this.proyecto);
         });
+        this.iteracionService.getIteracionActualPorProyecto(this.proyectoId!).subscribe(it => { this.iteracionActual = it || null; console.log("Iteracion actual:", this.iteracionActual); this.mostarIteracion(); });
+
       }
+
 
       if (this.proyectoId) {
         this.etapaService.getEtapasPorProyecto(this.proyectoId).subscribe(e => this.etapas = e || []);
@@ -162,6 +167,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
+  }
+  private mostarIteracion() {
+    console.log("Iteracion actual:", this.iteracionActual);
+    console.log("Proyecto:", this.proyecto);
   }
 
 

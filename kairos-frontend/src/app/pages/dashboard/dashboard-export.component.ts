@@ -33,6 +33,7 @@ export class DashboardExportComponent {
     @Input() tareasUsuarioDetalle: TareasUsuarioDetalle[] = [];
     @Input() horasDiaDetalle: HorasDiaDetalle[] = [];
     @Input() horasTareaDetalle: HorasTareaDetalle[] = [];
+    @Input() iteracionActual: any | null = null;
 
     isExporting = false;
 
@@ -97,7 +98,7 @@ export class DashboardExportComponent {
             if (this.proyecto) {
                 if (y + 50 > pageHeight) { doc.addPage(); this.agregarEncabezado(doc, kairosLogo, unpaLogo); y = margin + 30; }
                 this.agregarInformacionProyecto(doc, margin, y);
-                y += 55;
+                y += 70;
             }
 
             // Resumen General (Diseño Grid con Cajas de Color)
@@ -227,7 +228,7 @@ export class DashboardExportComponent {
     private agregarInformacionProyecto(doc: jsPDF, margin: number, startY: number) {
         const pageWidth = doc.internal.pageSize.getWidth();
         const boxWidth = pageWidth - margin * 2;
-        const boxHeight = 45;
+        const boxHeight = 60;
 
         // Fondo suave para la "tarjeta"
         doc.setFillColor(252, 252, 252);
@@ -253,7 +254,10 @@ export class DashboardExportComponent {
             { label: 'Estado:', value: this.proyecto.estado || 'Activo' },
             { label: 'Inicio:', value: this.proyecto.fechaInicio ? new Date(this.proyecto.fechaInicio).toLocaleDateString() : '-' },
             { label: 'Fin:', value: this.proyecto.fechaFin ? new Date(this.proyecto.fechaFin).toLocaleDateString() : '-' },
-            { label: 'Descripción:', value: this.proyecto.descripcion || 'Sin descripción' }
+            { label: 'Iteración Actual:', value: (this.iteracionActual?.numero && this.iteracionActual?.etapaNombre) ? this.iteracionActual.numero + ' - ' + this.iteracionActual.etapaNombre : 'Ninguna' },
+            { label: 'Descripción:', value: this.proyecto.descripcion || 'Sin descripción' },
+
+
         ];
 
         info.forEach(item => {
