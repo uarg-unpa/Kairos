@@ -14,9 +14,16 @@
         <div class="collapse navbar-collapse" id="fullNavbarContent">
 
             <ul class="navbar-nav me-auto" *ngIf="usuarioLogueado && router.url !== '/login'">
-                <li class="nav-item">
+                <li class="nav-item" *ngIf="!esRutaProyecto()">
                     <a class="nav-link" routerLink="/inicio" routerLinkActive="active"><span
                             class="bi bi-house-door"></span> Inicio</a>
+                </li>
+                <li class="nav-item" *ngIf="esRutaProyecto() && proyectoId">
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId]" routerLinkActive="active"><span
+                            class="bi bi-house-door"></span> Inicio</a>
+                </li>
+                <li class="nav-item" *ngIf="esRutaProyecto()">
+                    <a class="nav-link" routerLink="/inicio"><span class="bi bi-box-arrow-left"></span> Salir</a>
                 </li>
 
                 <li class="nav-item" *ngIf="esRutaProyecto() && proyectoId">
@@ -75,21 +82,30 @@
                 </li>
 
                 <ng-container *ngIf="usuarioLogueado && router.url !== '/login'">
-                    <li class="nav-item d-flex align-items-center">
-                        <a [routerLink]="['/usuario/ver', getEncodedUserId()]"
-                            class="navbar-text text-white me-3 d-flex align-items-center">
-                            {{ usuarioNombre }}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                            <span class="me-2">{{ usuarioNombre }}</span>
                             <div class="avatar-circle"
-                                style="width: 30px; height: 30px; font-size: 1rem; display: flex; justify-content: center; align-items: center; background-color: #6C63FF; color: white; border-radius: 50%; margin-left: 8px;">
+                                style="width: 30px; height: 30px; font-size: 1rem; display: flex; justify-content: center; align-items: center; background-color: #6C63FF; color: white; border-radius: 50%;">
                                 {{ inicialesUsuario(usuarioNombre) }}
                             </div>
-                            <!-- <i class="bi bi-person-circle" style="font-size: 1.2rem;"></i> -->
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" (click)="logout()" style="cursor: pointer;">
-                            <span class="bi bi-box-arrow-right"></span> Salir
-                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" [routerLink]="['/usuario/ver', getEncodedUserId()]">
+                                    <i class="bi bi-person me-2"></i>Ver perfil
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item" (click)="logout()" style="cursor: pointer;">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ng-container>
 

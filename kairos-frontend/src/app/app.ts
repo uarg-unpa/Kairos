@@ -23,10 +23,10 @@ export class AppComponent implements OnInit {
   loadingService = inject(LoadingService);
 
   constructor(
-    public router: Router, 
+    public router: Router,
     public auth: AuthService,
     private idCoderService: IdCoderService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.auth.isLoggedIn$.subscribe(isLoggedIn => {
@@ -88,14 +88,19 @@ export class AppComponent implements OnInit {
   successMessage: string = '';
   errorMessage: string = '';
   rolUsuario: string | null = null;
+  dropdownOpen: boolean = false;
 
   dismissAlert(): void {
     this.showUserAlert = false;
   }
+
+  toggleDropdown(): void {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
   inicialesUsuario(nombre?: string): string {
-      if (!nombre) return '?';
-      const partes = nombre.trim().split(/\s+/).filter(Boolean);
-      return partes.slice(0, 2).map(p => p[0]?.toUpperCase() || '').join('') || '?';
+    if (!nombre) return '?';
+    const partes = nombre.trim().split(/\s+/).filter(Boolean);
+    return partes.slice(0, 2).map(p => p[0]?.toUpperCase() || '').join('') || '?';
   }
 
 
