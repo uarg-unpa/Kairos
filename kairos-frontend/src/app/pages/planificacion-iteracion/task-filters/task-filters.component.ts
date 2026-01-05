@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CategoriaDTO } from '../../../services/categoria.service';
 import { Usuario } from '../../../models/usuarios';
+import { Iteracion } from '../../../models/iteracion.model';
 
 @Component({
   selector: 'app-task-filters',
@@ -12,6 +13,7 @@ import { Usuario } from '../../../models/usuarios';
   imports: [CommonModule, FormsModule]
 })
 export class TaskFiltersComponent {
+  @Input() iteracionActual: Iteracion | null = null;
   @Input() categorias: CategoriaDTO[] = [];
   @Input() usuarios: Usuario[] = [];
   @Input() filtroCategoria = 'Todas';
@@ -23,12 +25,12 @@ export class TaskFiltersComponent {
   @Output() filtrosChange = new EventEmitter<any>();
 
   onFiltroChange(): void {
-  this.filtrosChange.emit({
-    categoria: this.filtroCategoria,
-    responsable: this.filtroResponsable,
-    estado: this.filtroEstado,
-    fechaDesde: this.filtroFechaDesde,
-    fechaHasta: this.filtroFechaHasta
-  });
-}
+    this.filtrosChange.emit({
+      categoria: this.filtroCategoria,
+      responsable: this.filtroResponsable,
+      estado: this.filtroEstado,
+      fechaDesde: this.filtroFechaDesde,
+      fechaHasta: this.filtroFechaHasta
+    });
+  }
 }

@@ -16,7 +16,7 @@
             <ul class="navbar-nav me-auto" *ngIf="usuarioLogueado && router.url !== '/login'">
                 <li class="nav-item" *ngIf="!esRutaProyecto()">
                     <a class="nav-link" routerLink="/inicio" routerLinkActive="active"><span
-                            class="bi bi-house-door"></span> Inicio</a>
+                            class="bi bi-house-door"></span> Proyectos </a>
                 </li>
                 <li class="nav-item" *ngIf="esRutaProyecto() && proyectoId">
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId]" routerLinkActive="active"><span

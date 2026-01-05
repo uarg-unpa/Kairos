@@ -28,12 +28,12 @@
 
       <div class="col-md-2">
         <input type="date" class="form-control" [(ngModel)]="filtroFechaDesde" (change)="onFiltroChange()"
-          aria-label="Fecha desde">
+          aria-label="Fecha desde" [min]="iteracionActual?.fechaInicio" [max]="iteracionActual?.fechaFin">
       </div>
 
       <div class="col-md-2">
         <input type="date" class="form-control" [(ngModel)]="filtroFechaHasta" (change)="onFiltroChange()"
-          aria-label="Fecha hasta">
+          aria-label="Fecha hasta" [min]="iteracionActual?.fechaInicio" [max]="iteracionActual?.fechaFin">
       </div>
     </div>
   </div>
