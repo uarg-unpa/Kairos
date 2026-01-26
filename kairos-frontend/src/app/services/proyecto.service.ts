@@ -37,8 +37,8 @@ export class ProyectoService {
 
   // Mis proyectos (para miembro)
   getMisProyectos(): Observable<Proyecto[]> {
-  return this.http.get<Proyecto[]>(`${this.baseUrl}/mis-proyectos`, { headers: this.getHeaders() });
-}
+    return this.http.get<Proyecto[]>(`${this.baseUrl}/mis-proyectos`, { headers: this.getHeaders() });
+  }
 
   // Todos los proyectos (para admin)
   getAllProyectos(): Observable<Proyecto[]> {
@@ -85,6 +85,15 @@ export class ProyectoService {
       .set('idUsuario', idUsuario.toString())
       .set('nuevoRol', rol);
     return this.http.put(`${this.config.get('apiBaseUrl')}/api/usuario-proyecto/editar-rol`, null, {
+      headers: this.getHeaders(), params
+    });
+  }
+
+  eliminarMiembro(idProyecto: number, idUsuario: number): Observable<any> {
+    const params = new HttpParams()
+      .set('idProyecto', idProyecto.toString())
+      .set('idUsuario', idUsuario.toString());
+    return this.http.delete(`${this.config.get('apiBaseUrl')}/api/usuario-proyecto/eliminar`, {
       headers: this.getHeaders(), params
     });
   }

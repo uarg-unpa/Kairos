@@ -93,11 +93,15 @@ export class MiembrosComponent implements OnInit {
           status: 'offline',
           usuario: { id: m.idUsuario, nombre: m.nombre, email: m.email }
         }));
-        this.miembrosLimiteAlcanzado = this.miembros.length >= 6;
+        // Límite de miembros removido
+
+        // Verificar si es admin global PRIMERO - esto tiene prioridad
         if (this.authService.esAdmin()) {
           this.rolEnProyecto = 'Admin';
+          return; // No sobrescribir el rol de Admin
         }
 
+        // Solo para usuarios no-admin, verificar su rol en el proyecto
         const miUsuario = miembros.find(m => m.idUsuario === this.currentUserId);
 
         if (miUsuario) {
@@ -122,34 +126,14 @@ export class MiembrosComponent implements OnInit {
     this.authService.currentUser$.subscribe(user => {
       this.currentUserId = user?.id || null;
 
-      // Primero: revisar rol global
-      const rolGlobal = user?.rol; // "Administrador" o "Usuario Común"
-
-      if (rolGlobal === "Administrador") {
-        this.rolEnProyecto = "Admin";
-        return;
-      }
-
-      // Si NO es admin → buscar su rol dentro del proyecto
-      if (this.miembros.length > 0 && this.currentUserId) {
-        const yo = this.miembros.find(m => m.idUsuario === this.currentUserId);
-
-        if (yo && yo.rolProyecto?.toLowerCase() === "líder") {
-          this.rolEnProyecto = "Líder";
-        } else {
-          this.rolEnProyecto = "Miembro";
-        }
-      }
+      // La asignación de rol se maneja completamente en cargarMiembros()
+      // Este método solo obtiene el currentUserId para usarlo después
     });
   }
 
 
 
   abrirModalAgregar(): void {
-    if (this.miembrosLimiteAlcanzado) {
-      this.alertService.warning('Este proyecto ya alcanzó el límite de 6 miembros.');
-      return;
-    }
     this.mostrarModalAgregar = true;
     this.searchQuery = '';
     this.usuariosBusqueda = [];
@@ -176,10 +160,6 @@ export class MiembrosComponent implements OnInit {
   }
 
   agregarMiembro(): void {
-    if (this.miembrosLimiteAlcanzado) {
-      this.errorMensaje = 'No se pueden agregar más miembros. Límite: 6.';
-      return;
-    }
     if (!this.proyectoId) return;
 
     // Opción 1: Usuario seleccionado del buscador
@@ -314,5 +294,25 @@ export class MiembrosComponent implements OnInit {
     this.usuariosBusqueda = [];
     this.mostrarModalAgregar = false;
     this.errorMensaje = null;
+  }
+
+  eliminarMiembro(miembro: any): void {
+    if (!this.proyectoId) return;
+
+    // Confirmar eliminación
+    if (!confirm(`¿Estás seguro de que deseas eliminar a ${miembro.nombre} del proyecto?`)) {
+      return;
+    }
+
+    this.proyectoService.eliminarMiembro(this.proyectoId, miembro.idUsuario).subscribe({
+      next: () => {
+        this.alertService.success('Miembro eliminado del proyecto');
+        this.cargarMiembros();
+      },
+      error: (err) => {
+        console.error('Error al eliminar miembro', err);
+        this.alertService.error('No se pudo eliminar al miembro');
+      }
+    });
   }
 }

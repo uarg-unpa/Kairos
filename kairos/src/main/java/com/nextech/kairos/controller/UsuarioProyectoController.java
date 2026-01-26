@@ -53,10 +53,10 @@ public class UsuarioProyectoController {
     @GetMapping("/proyecto/{idProyecto}/miembros")
     public ResponseEntity<List<UsuarioProyectoResponse>> getMiembros(@PathVariable Long idProyecto) {
         List<UsuarioProyecto> relaciones = usuarioProyectoService.listarPorProyecto(idProyecto);
-        
+
         List<UsuarioProyectoResponse> response = relaciones.stream()
-            .map(UsuarioProyectoResponse::new)
-            .collect(Collectors.toList());
+                .map(UsuarioProyectoResponse::new)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
     }
@@ -68,7 +68,7 @@ public class UsuarioProyectoController {
         UsuarioProyectoId id = new UsuarioProyectoId(idUsuario, idProyecto);
         Optional<UsuarioProyecto> relacion = usuarioProyectoService.obtenerPorId(id);
         return relacion.map(ResponseEntity::ok)
-                       .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/agregar")
@@ -112,11 +112,13 @@ public class UsuarioProyectoController {
 
         try {
             // Se elimina toda la lógica de validación/creación/asignación de rol.
-            // Se llama directamente al método del ProyectoService que hace todo (incluyendo la lógica del rol).
+            // Se llama directamente al método del ProyectoService que hace todo (incluyendo
+            // la lógica del rol).
             UsuarioProyecto guardado = proyectoService.invitarUsuario(idProyecto, email, rolProyecto);
             return ResponseEntity.ok(guardado);
 
-        } catch (RuntimeException e) { // Cambiado de Exception a RuntimeException para capturar las excepciones del Service
+        } catch (RuntimeException e) { // Cambiado de Exception a RuntimeException para capturar las excepciones del
+                                       // Service
             return ResponseEntity.badRequest()
                     .body("Error al invitar: " + e.getMessage());
         } catch (Exception e) {
@@ -146,6 +148,33 @@ public class UsuarioProyectoController {
         } catch (Exception e) {
             return ResponseEntity.status(500)
                     .body("Error al editar rol: " + e.getMessage());
+        }
+    }
+
+    // ========================================
+    // ELIMINAR MIEMBRO DE PROYECTO
+    // ========================================
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<?> eliminarMiembro(
+            @RequestParam Long idProyecto,
+            @RequestParam Long idUsuario) {
+
+        try {
+            UsuarioProyectoId id = new UsuarioProyectoId(idUsuario, idProyecto);
+
+            // Verificar que existe la relación
+            if (!usuarioProyectoService.obtenerPorId(id).isPresent()) {
+                return ResponseEntity.badRequest()
+                        .body(java.util.Collections.singletonMap("error", "El usuario no pertenece al proyecto"));
+            }
+
+            usuarioProyectoService.eliminar(id);
+            return ResponseEntity
+                    .ok(java.util.Collections.singletonMap("mensaje", "Miembro eliminado del proyecto exitosamente"));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(java.util.Collections.singletonMap("error", "Error al eliminar miembro: " + e.getMessage()));
         }
     }
 
