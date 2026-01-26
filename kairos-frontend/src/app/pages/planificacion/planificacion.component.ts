@@ -10,6 +10,7 @@ import { CategoriaService, CategoriaDTO } from '../../services/categoria.service
 import { IteracionService } from '../../services/iteracion.service';
 import { ComentarioService } from '../../services/comentario.service';
 import { EtapaService } from '../../services/etapa.service';
+import { AlertService } from '../../services/alert.service';
 /*import { AuthService } from '../../services/auth.service';*/
 
 import { TaskListComponent } from './task-list/task-list.component';
@@ -88,6 +89,7 @@ export class PlanificacionComponent implements OnInit {
     private router: Router,
     private idCoderService: IdCoderService,
     private proyectoService: ProyectoService,
+    private alertService: AlertService
     /*private authService: AuthService*/
   ) {
 
@@ -315,14 +317,25 @@ export class PlanificacionComponent implements OnInit {
     });
   }
 
-  onEliminarTarea(tareaId: number): void {
-    if (!confirm('¿Estás seguro que quieres eliminar esta tarea?')) return;
+  async onEliminarTarea(tareaId: number): Promise<void> {
+    // Confirmar eliminación con SweetAlert2
+    const confirmado = await this.alertService.confirm(
+      '¿Eliminar tarea?',
+      '¿Estás seguro de que deseas eliminar esta tarea? Esta acción no se puede deshacer.',
+      'Sí, eliminar'
+    );
+
+    if (!confirmado) return;
 
     this.taskService.deleteTarea(tareaId).subscribe({
       next: () => {
         this.tareas = this.tareas.filter(t => t.idTarea !== tareaId);
+        this.alertService.success('Tarea eliminada exitosamente');
       },
-      error: (err) => console.error('Error al eliminar tarea:', err)
+      error: (err) => {
+        console.error('Error al eliminar tarea:', err);
+        this.alertService.error('No se pudo eliminar la tarea');
+      }
     });
   }
 

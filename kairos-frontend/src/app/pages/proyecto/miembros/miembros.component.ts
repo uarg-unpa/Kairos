@@ -296,11 +296,17 @@ export class MiembrosComponent implements OnInit {
     this.errorMensaje = null;
   }
 
-  eliminarMiembro(miembro: any): void {
+  async eliminarMiembro(miembro: any): Promise<void> {
     if (!this.proyectoId) return;
 
-    // Confirmar eliminación
-    if (!confirm(`¿Estás seguro de que deseas eliminar a ${miembro.nombre} del proyecto?`)) {
+    // Confirmar eliminación con SweetAlert2
+    const confirmado = await this.alertService.confirm(
+      '¿Eliminar miembro?',
+      `¿Estás seguro de que deseas eliminar a ${miembro.nombre} del proyecto?`,
+      'Sí, eliminar'
+    );
+
+    if (!confirmado) {
       return;
     }
 

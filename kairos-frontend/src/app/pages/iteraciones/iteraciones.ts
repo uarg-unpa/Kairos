@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { ProyectoService } from '../../services/proyecto.service';
 import { Iteracion } from '../../models/iteracion.model';
 import { Proyecto } from '../../models/proyecto.model';
+import { AlertService } from '../../services/alert.service';
 
 declare const bootstrap: any;
 
@@ -27,6 +28,7 @@ export class IteracionesComponent implements OnInit {
   private idCoderService = inject(IdCoderService);
   private authService = inject(AuthService);
   private proyectoService = inject(ProyectoService);
+  private alertService = inject(AlertService);
 
   etapaSlug: string | null = null;
   etapaId: number | null = null;
@@ -229,16 +231,26 @@ export class IteracionesComponent implements OnInit {
     });
   }
 
-  eliminarIteracion(it: Iteracion, ev?: Event) {
+  async eliminarIteracion(it: Iteracion, ev?: Event): Promise<void> {
     if (ev) ev.stopPropagation();
-    if (!confirm(`¿Eliminar la iteración ${it.numero}?`)) return;
+
+    // Confirmar eliminación con SweetAlert2
+    const confirmado = await this.alertService.confirm(
+      '¿Eliminar iteración?',
+      `¿Estás seguro de que deseas eliminar la iteración ${it.numero}? Esta acción no se puede deshacer y perderás toda la información de las tareas que se encuentran en esta iteración.`,
+      'Sí, eliminar'
+    );
+
+    if (!confirmado) return;
+
     this.iteracionService.deleteIteracion(it.idIteracion).subscribe({
       next: () => {
         this.iteraciones = this.iteraciones.filter((x: Iteracion) => x.idIteracion !== it.idIteracion);
+        this.alertService.success('Iteración eliminada exitosamente');
       },
       error: (err) => {
         console.error('Error eliminando iteración', err);
-        alert('No se pudo eliminar la iteración');
+        this.alertService.error('No se pudo eliminar la iteración');
       }
     });
   }

@@ -1,7 +1,8 @@
 <!-- ============================
      MODAL: Crear / Editar Tarea
      ============================ -->
-<div class="modal fade" id="addTaskModal" tabindex="-1" aria-hidden="true" aria-labelledby="addTaskModalLabel" #modalElement>
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-hidden="true" aria-labelledby="addTaskModalLabel"
+    #modalElement>
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
@@ -62,6 +63,7 @@
                         </div>
 
                         <div class="col-md-6">
+
                             <label class="form-label">Responsable *</label>
                             <select class="form-select" [(ngModel)]="nuevaTarea.usuarioId" name="usuarioId" required
                                 #usuarioId="ngModel">

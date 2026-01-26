@@ -10,6 +10,7 @@ import { Etapa } from '../../models/etapa.model';
 import { Proyecto } from '../../models/proyecto.model';
 import { Router, RouterModule } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
+import { AlertService } from '../../services/alert.service';
 
 declare const bootstrap: any;
 
@@ -33,6 +34,7 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   private idCoderService = inject(IdCoderService);
   private authService = inject(AuthService);
   private proyectoService = inject(ProyectoService);
+  private alertService = inject(AlertService);
 
   nuevaEtapa: any = {
     nombre: '',
@@ -231,17 +233,27 @@ export class EtapasComponent implements OnInit, AfterViewInit {
     return this.etapas.filter(e => this.estadoVisible(e) === this.filtroEstado);
   }
 
-  eliminarEtapa(e: Etapa, ev?: Event) {
+  async eliminarEtapa(e: Etapa, ev?: Event): Promise<void> {
     if (ev) ev.stopPropagation();
-    if (!confirm(`¿Eliminar la etapa "${e.nombre}"?`)) return;
+
+    // Confirmar eliminación con SweetAlert2
+    const confirmado = await this.alertService.confirm(
+      '¿Eliminar etapa?',
+      `¿Estás seguro de que deseas eliminar la etapa "${e.nombre}"? Esta acción no se puede deshacer y perderas toda la información de las iteraciones que se encuentran en esta etapa.`,
+      'Sí, eliminar'
+    );
+
+    if (!confirmado) return;
+
     this.etapaService.deleteEtapa(e.idEtapa).subscribe({
       next: () => {
         this.etapas = this.etapas.filter(x => x.idEtapa !== e.idEtapa);
+        this.alertService.success('Etapa eliminada exitosamente');
         setTimeout(() => this.enableTooltips(), 0);
       },
       error: (err) => {
         console.error('Error eliminando etapa', err);
-        alert('No se pudo eliminar la etapa');
+        this.alertService.error('No se pudo eliminar la etapa');
       }
     });
   }

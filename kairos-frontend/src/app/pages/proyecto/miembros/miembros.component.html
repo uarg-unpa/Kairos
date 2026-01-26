@@ -2,8 +2,7 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h3>Miembros del Proyecto</h3>
     <div>
-      <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto=== 'Líder'" class="btn btn-primary boton-agregar"
-        (click)="abrirModalAgregar()">
+      <button *ngIf="rolEnProyecto === 'Admin'" class="btn btn-primary boton-agregar" (click)="abrirModalAgregar()">
         <i class="bi bi-plus-circle"></i> Agregar Miembro
       </button>
     </div>
@@ -28,7 +27,7 @@
         <div class="d-flex align-items-center gap-2 mb-2">
           <h6 class="mb-0">Rol:</h6>
           <span class="badge bg-info text-dark">{{ miembro.rolProyecto || 'Sin etiqueta' }}</span>
-          <button *ngIf="(rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder') && !esLider(miembro)"
+          <button *ngIf="(rolEnProyecto === 'Líder') && !esLider(miembro)"
             class="btn btn-sm btn-link text-muted p-0 ms-1" (click)="abrirModalEditar(miembro)" title="Editar etiqueta">
             <i class="bi bi-pencil"></i>
           </button>

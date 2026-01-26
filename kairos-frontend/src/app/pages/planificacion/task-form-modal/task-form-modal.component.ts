@@ -123,11 +123,13 @@ ${this.iteracionActual?.fechaInicio} a ${this.iteracionActual?.fechaFin}.`);
       return;
     }
 
-    if (this.nuevaTarea.usuarioId === null) {
+    if (this.nuevaTarea.usuarioId === 0 || this.nuevaTarea.usuarioId === null) {
+      alert('⚠️ Debes asignar un usuario a la tarea.');
       return;
     }
 
-    if (this.nuevaTarea.categoriaId === null) {
+    if (this.nuevaTarea.categoriaId === null || this.nuevaTarea.categoriaId === 0) {
+      alert('⚠️ Debes asignar una categoría a la tarea.');
       return;
     }
 
