@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Tarea } from '../../../models/tarea.model';
 import { Comentario } from '../../../models/comentario.model';
 import { Usuario } from '../../../models/usuarios';
+import { AlertService } from '../../../services/alert.service';
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-task-list',
@@ -13,6 +15,7 @@ import { Usuario } from '../../../models/usuarios';
   imports: [CommonModule, FormsModule]
 })
 export class TaskListComponent {
+  private alertService = inject(AlertService);
   @Input() tareas: Tarea[] = [];
   @Input() comentariosPorTarea: { [idTarea: number]: Comentario[] } = {};
   @Input() usuarios: Usuario[] = [];
@@ -51,8 +54,15 @@ export class TaskListComponent {
     return tarea ? tarea.nombre : 'Desconocida';
   }
 
-  onEliminarComentario(comentarioId: number, tareaId: number): void {
-    if (!confirm('¿Seguro que deseas eliminar este comentario?')) return;
+  async onEliminarComentario(comentarioId: number, tareaId: number): Promise<void> {
+    const confirmado = await this.alertService.confirm(
+      '¿Eliminar comentario?',
+      '¿Estás seguro de que deseas eliminar este comentario?',
+      'Sí, eliminar'
+    );
+
+    if (!confirmado) return;
+
     this.eliminarComentario.emit({ comentarioId, tareaId });
   }
 }

@@ -2,6 +2,8 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CategoriaDTO } from '../../../services/categoria.service';
+import { AlertService } from '../../../services/alert.service';
+import { inject } from '@angular/core';
 
 declare var bootstrap: any;
 
@@ -13,6 +15,7 @@ declare var bootstrap: any;
   imports: [CommonModule, FormsModule]
 })
 export class CategoriesModalComponent implements OnInit {
+  private alertService = inject(AlertService);
   @Input() categorias: CategoriaDTO[] = [];
   @Output() agregarCategoria = new EventEmitter<any>();
   @Output() editarCategoria = new EventEmitter<{ idCategoria: number; datos: any }>();
@@ -73,8 +76,15 @@ export class CategoriesModalComponent implements OnInit {
     this.resetModal();
   }
 
-  onEliminarCategoria(id: number): void {
-    if (!confirm('¿Estás seguro?')) return;
+  async onEliminarCategoria(id: number): Promise<void> {
+    const confirmado = await this.alertService.confirm(
+      '¿Eliminar categoría?',
+      '¿Estás seguro de que deseas eliminar esta categoría?',
+      'Sí, eliminar'
+    );
+
+    if (!confirmado) return;
+
     this.eliminarCategoria.emit(id);
   }
 
