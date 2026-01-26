@@ -1,4 +1,4 @@
-import { Component, inject} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UsuariosService } from '../../services/usuarios.service';
@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { IdCoderService } from '../../services/id-coder.service';
 
 
- 
+
 @Component({
   selector: 'app-usuarios',
   standalone: true,
@@ -22,7 +22,7 @@ export class UsuariosComponent {
   private idCoderService = inject(IdCoderService);
   usuarios = this.usuariosService.usuarios;
   constructor(
-    public router: Router, 
+    public router: Router,
     public auth: AuthService
   ) {
   }
@@ -31,6 +31,7 @@ export class UsuariosComponent {
   }
 
   eliminarUsuario(id: number) {
+    alert('Eliminar usuario ' + id);
     this.usuariosService.eliminarUsuario(id).subscribe({
       next: () => {
         this.usuarios.update(usuarios => usuarios.filter(u => u.id !== id));
