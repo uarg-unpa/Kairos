@@ -68,6 +68,7 @@ export class TaskFormModalComponent implements OnInit {
         categoriaId: this.tareaEnEdicion.categorias?.[0]?.idCategoria || null,
         prioridad: this.tareaEnEdicion.prioridad,
         estado: this.tareaEnEdicion.estado,
+        // ✅ Extraer solo la fecha (YYYY-MM-DD) para que el input type="date" funcione
         fechaCreacion: this.tareaEnEdicion.fechaCreacion?.split('T')[0] || '',
         fechaFin: this.tareaEnEdicion.fechaFin?.split('T')[0] || '',
         horasEstimadas: Number(this.tareaEnEdicion.horasEstimadas),

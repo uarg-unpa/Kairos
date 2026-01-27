@@ -52,7 +52,6 @@ public class TareaController {
     @Autowired
     private TareaMapper tareaMapper;
 
-
     private static final Logger logger = LoggerFactory.getLogger(TareaController.class);
 
     @GetMapping
@@ -106,56 +105,54 @@ public class TareaController {
             dto.setUsuarioNombre(t.getUsuario().getNombre());
             dto.setIteracionId(t.getIteracion() != null ? t.getIteracion().getIdIteracion() : null);
             dto.setCategorias(t.getCategorias().stream()
-                .map(c -> new CategoriaResponse(c.getIdCategoria(), c.getNombre(), c.getDescripcion(),
-                        c.getProyecto().getIdProyecto()))
-                .collect(Collectors.toSet()));
+                    .map(c -> new CategoriaResponse(c.getIdCategoria(), c.getNombre(), c.getDescripcion(),
+                            c.getProyecto().getIdProyecto()))
+                    .collect(Collectors.toSet()));
             dto.setDependenciasIds(
-                t.getDependencias().stream()
-                        .map(Tarea::getIdTarea)
-                        .collect(Collectors.toSet())
-            );
+                    t.getDependencias().stream()
+                            .map(Tarea::getIdTarea)
+                            .collect(Collectors.toSet()));
             return dto;
         }).toList();
     }
 
     @GetMapping("/proyecto/{idProyecto}/iteracion/{idIteracion}")
-public List<TareaResponse> getTareasPorProyectoEIteracion(
-        @PathVariable Long idProyecto,
-        @PathVariable Long idIteracion) {
+    public List<TareaResponse> getTareasPorProyectoEIteracion(
+            @PathVariable Long idProyecto,
+            @PathVariable Long idIteracion) {
 
-    List<Tarea> tareas = tareaService.obtenerTareasPorProyectoYIteracion(idProyecto, idIteracion);
+        List<Tarea> tareas = tareaService.obtenerTareasPorProyectoYIteracion(idProyecto, idIteracion);
 
-    return tareas.stream().map(t -> {
-        TareaResponse dto = new TareaResponse();
-        dto.setIdTarea(t.getIdTarea());
-        dto.setNombre(t.getNombre());
-        dto.setDescripcion(t.getDescripcion());
-        dto.setEstado(t.getEstado());
-        dto.setPrioridad(t.getPrioridad());
-        dto.setFechaCreacion(t.getFechaCreacion());
-        dto.setFechaFin(t.getFechaFin());
-        dto.setHorasEstimadas(t.getHorasEstimadas());
-        dto.setUsuarioId(t.getUsuario().getId());
-        dto.setUsuarioNombre(t.getUsuario().getNombre());
-        dto.setIteracionId(t.getIteracion() != null ? t.getIteracion().getIdIteracion() : null);
+        return tareas.stream().map(t -> {
+            TareaResponse dto = new TareaResponse();
+            dto.setIdTarea(t.getIdTarea());
+            dto.setNombre(t.getNombre());
+            dto.setDescripcion(t.getDescripcion());
+            dto.setEstado(t.getEstado());
+            dto.setPrioridad(t.getPrioridad());
+            dto.setFechaCreacion(t.getFechaCreacion());
+            dto.setFechaFin(t.getFechaFin());
+            dto.setHorasEstimadas(t.getHorasEstimadas());
+            dto.setUsuarioId(t.getUsuario().getId());
+            dto.setUsuarioNombre(t.getUsuario().getNombre());
+            dto.setIteracionId(t.getIteracion() != null ? t.getIteracion().getIdIteracion() : null);
 
-        dto.setCategorias(t.getCategorias().stream()
-                .map(c -> new CategoriaResponse(
-                        c.getIdCategoria(),
-                        c.getNombre(),
-                        c.getDescripcion(),
-                        c.getProyecto().getIdProyecto()))
-                .collect(Collectors.toSet()));
+            dto.setCategorias(t.getCategorias().stream()
+                    .map(c -> new CategoriaResponse(
+                            c.getIdCategoria(),
+                            c.getNombre(),
+                            c.getDescripcion(),
+                            c.getProyecto().getIdProyecto()))
+                    .collect(Collectors.toSet()));
 
-        dto.setDependenciasIds(
-                t.getDependencias().stream()
-                        .map(Tarea::getIdTarea)
-                        .collect(Collectors.toSet()));
+            dto.setDependenciasIds(
+                    t.getDependencias().stream()
+                            .map(Tarea::getIdTarea)
+                            .collect(Collectors.toSet()));
 
-        return dto;
-    }).toList();
-}
-
+            return dto;
+        }).toList();
+    }
 
     @GetMapping("/{id}")
     public Tarea obtener(@PathVariable Long id) {
@@ -182,7 +179,8 @@ public List<TareaResponse> getTareasPorProyectoEIteracion(
         tarea.setUsuario(usuario);
 
         // 3️⃣ Asociar Iteración
-        Iteracion iteracion = iteracionService.obtenerPorId(dto.getIteracionId()).orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada con id "));
+        Iteracion iteracion = iteracionService.obtenerPorId(dto.getIteracionId())
+                .orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada con id "));
         if (iteracion == null) {
             throw new RuntimeException("Iteración no encontrada con id: " + dto.getIteracionId());
         }
@@ -234,8 +232,6 @@ public List<TareaResponse> getTareasPorProyectoEIteracion(
         return dtoResponse;
     }
 
-    
-
     @Transactional(rollbackOn = Exception.class)
     @PutMapping("/{id}")
     public TareaResponse actualizarTarea(@PathVariable Long id, @RequestBody TareaRequest cambios) {
@@ -270,7 +266,8 @@ public List<TareaResponse> getTareasPorProyectoEIteracion(
         }
 
         if (cambios.getIteracionId() != null) {
-            Iteracion iteracion = iteracionService.obtenerPorId(cambios.getIteracionId()).orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada con id "));
+            Iteracion iteracion = iteracionService.obtenerPorId(cambios.getIteracionId())
+                    .orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada con id "));
             if (iteracion != null)
                 tarea.setIteracion(iteracion);
         }
@@ -283,25 +280,32 @@ public List<TareaResponse> getTareasPorProyectoEIteracion(
             tarea.setCategorias(categorias);
         }
 
+        if (cambios.getFechaCreacion() != null) {
+            tarea.setFechaCreacion(cambios.getFechaCreacion());
+        }
+
+        if (cambios.getFechaFin() != null) {
+            tarea.setFechaFin(cambios.getFechaFin());
+        }
+
         if (cambios.getDependenciasIds() != null) {
             // 🚫 Validar auto-dependencia
             // 🚫 Validar auto-dependencia (con chequeo fuerte de tipo)
-boolean tieneAutoDependencia = cambios.getDependenciasIds().stream()
-        .filter(Objects::nonNull)
-        .map(depId -> {
-            try {
-                return Long.valueOf(depId);
-            } catch (Exception e) {
-                return null;
+            boolean tieneAutoDependencia = cambios.getDependenciasIds().stream()
+                    .filter(Objects::nonNull)
+                    .map(depId -> {
+                        try {
+                            return Long.valueOf(depId);
+                        } catch (Exception e) {
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .anyMatch(depId -> depId.equals(id));
+
+            if (tieneAutoDependencia) {
+                throw new IllegalArgumentException("Una tarea no puede depender de sí misma.");
             }
-        })
-        .filter(Objects::nonNull)
-        .anyMatch(depId -> depId.equals(id));
-
-if (tieneAutoDependencia) {
-    throw new IllegalArgumentException("Una tarea no puede depender de sí misma.");
-}
-
 
             // 🔄 Validar dependencias circulares
             tareaService.validarDependenciasCirculares(id, new ArrayList<>(cambios.getDependenciasIds()));
