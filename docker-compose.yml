@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   mysql:
     image: mysql:8.0
@@ -15,7 +17,7 @@ services:
     networks:
       - kairos-network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,9 +26,10 @@ services:
     image: guill3r/kairos:backend
     container_name: kairos-backend
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/kairos
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
       SPRING_PROFILES_ACTIVE: prod
     ports:
       - "8080:8080"
@@ -54,3 +57,4 @@ volumes:
 
 networks:
   kairos-network:
+    driver: bridge
