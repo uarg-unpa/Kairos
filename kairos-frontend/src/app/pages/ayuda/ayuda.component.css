@@ -1,0 +1,23 @@
+.ayuda-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.ayuda-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.ayuda-container section {
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 1.5rem;
+}
+
+.ayuda-container video {
+  display: block;
+  margin: 1rem auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}

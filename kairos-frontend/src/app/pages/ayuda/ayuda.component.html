@@ -1,0 +1,22 @@
+<div class="ayuda-container">
+  <h1>Manual del Usuario - Kairos</h1>
+  <section *ngFor="let paso of pasos">
+    <h2>{{ paso.titulo }}</h2>
+    <p>{{ paso.descripcion }}</p>
+    <ul *ngIf="paso.pasos">
+      <li *ngFor="let item of paso.pasos">{{ item }}</li>
+    </ul>
+    <p *ngIf="paso.cierre">{{ paso.cierre }}</p>
+    <div *ngIf="paso.videoUrl">
+      <ng-container *ngIf="paso.videoUrl.includes('youtube.com') || paso.videoUrl.includes('youtu.be'); else localVideo">
+        <iframe width="480" height="270" [src]="paso.videoUrl | safeUrl" frameborder="0" allowfullscreen></iframe>
+      </ng-container>
+      <ng-template #localVideo>
+        <video width="480" controls>
+          <source [src]="paso.videoUrl" type="video/mp4">
+          Tu navegador no soporta la reproducción de video.
+        </video>
+      </ng-template>
+    </div>
+  </section>
+</div>

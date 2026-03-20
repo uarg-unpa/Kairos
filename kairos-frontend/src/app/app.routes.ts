@@ -21,6 +21,7 @@ import { RolVerComponent } from './pages/roles/rol-ver';
 import { RolModificarComponent } from './pages/roles/rol-modificar';
 import { AdminGuard } from './guards/admin.guard';
 import { MiembrosComponent } from './pages/proyecto/miembros/miembros.component';
+import { AyudaComponent } from './pages/ayuda/ayuda.component';
 // import { PermisoVerComponent } from './pages/roles/permiso-ver';
 
 
@@ -106,6 +107,7 @@ export const routes: Routes = [
   { path: 'proyecto/:id/miembros', component: MiembrosComponent, canActivate: [authGuard] },
   { path: 'iteraciones/etapa/:id', component: IteracionesComponent, canActivate: [authGuard] },
   { path: 'iteraciones', component: IteracionesComponent, canActivate: [authGuard] },
+  { path: 'ayuda', component: AyudaComponent, canActivate: [authGuard] },
   
   { path: '**', redirectTo: '' } // mantener este siempre al final
 ];
