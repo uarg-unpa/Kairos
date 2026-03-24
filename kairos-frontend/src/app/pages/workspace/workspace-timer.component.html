@@ -21,35 +21,31 @@
       </div>
     </div>
 
-    <div class="card planning-card mb-3">
-      <div class="card-body py-2">
-        <div class="row g-3 align-items-center">
-          <div class="col-md-4">
-            <select class="form-select" [(ngModel)]="filtroEstado" aria-label="Filtrar por estado">
-              <option>En Progreso</option>
-              <option>Completado</option>
-              <option value="Todos">Todos los estados</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <select class="form-select" [(ngModel)]="filtroPrioridad">
-              <option value="">Todas las prioridades</option>
-              <option value="Alta">Alta</option>
-              <option value="Media">Media</option>
-              <option value="Baja">Baja</option>
-              <option value="Personal">Personal</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
+
 
     <div *ngIf="(projectTasks || personalTasks) ; else loading">
 
       <div class="card planning-card mb-3">
-        <div class="card-header bg-light">
-          <strong>Tareas de proyecto</strong>
-          <span *ngIf="projectIdInView" class="small text-muted ms-2">Mostrando solo este proyecto</span>
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <div>
+            <strong>Tareas de proyecto</strong>
+            <span *ngIf="projectIdInView" class="small text-muted ms-2">Mostrando solo este proyecto</span>
+          </div>
+          <div class="d-flex gap-2">
+            <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="filtroEstado"
+              (ngModelChange)="paginaActual = 1">
+              <option value="Todos">Todos los estados</option>
+              <option value="En Progreso">En Progreso</option>
+              <option value="Completado">Completado</option>
+            </select>
+            <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="filtroPrioridad"
+              (ngModelChange)="paginaActual = 1">
+              <option value="Todas">Todas las prioridades</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+          </div>
         </div>
         <div class="card-body p-0">
           <div *ngIf="(projectTasks.length === 0)" class="p-4 text-center text-muted">
@@ -158,8 +154,14 @@
       </div>
 
       <div class="card planning-card mb-3" *ngIf="!projectIdInView">
-        <div class="card-header bg-light">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
           <strong>Tareas Personales</strong>
+          <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="filtroEstadoPersonal">
+            <option value="Todos">Todas las tareas</option>
+            <option value="PROPUESTA">Propuesta</option>
+            <option value="RECHAZADA">Rechazada</option>
+            <option value="BORRADOR">Borrador</option>
+          </select>
         </div>
         <div class="card-body p-0">
           <div *ngIf="(personalTasks.length === 0)" class="p-4 text-center text-muted">
@@ -199,7 +201,8 @@
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item text-danger" style="cursor: pointer;" (click)="deletePersonalTask(tarea.id)">
+                    <a class="dropdown-item text-danger" style="cursor: pointer;"
+                      (click)="deletePersonalTask(tarea.id)">
                       <i class="bi bi-trash me-2"></i>Eliminar Tarea
                     </a>
                   </li>
@@ -208,7 +211,7 @@
             </div>
 
             <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
-            
+
             <div class="row g-2 small align-items-center text-muted">
               <div class="col-md-6">
                 <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1"></i>Estimado:
@@ -217,7 +220,7 @@
               </div>
               <div class="col-md-2 ms-auto">
                 <div class="mt-2 flex-column d-flex gap-2" *ngIf="tarea.estado !== 'Completado'">
-                  <button class="btn btn-sm btn-outline-purple button-iniciar-tarea" 
+                  <button class="btn btn-sm btn-outline-purple button-iniciar-tarea"
                     (click)="startTimerForTask({ id: tarea.id, nombre: tarea.nombre + ' (Personal)', type: 'PERSONAL' })"
                     title="Iniciar Cronómetro" [disabled]="timerState.startTime !== null && !timerState.isPaused">
                     <i class="bi bi-play-circle"></i>
@@ -461,12 +464,14 @@
         </div>
         <div class="mb-3">
           <label class="form-label">Horas Estimadas (opcional)</label>
-          <input type="number" class="form-control" [(ngModel)]="newPersonalTask.horasEstimadas" min="0" step="0.5" placeholder="Ej: 2.5">
+          <input type="number" class="form-control" [(ngModel)]="newPersonalTask.horasEstimadas" min="0" step="0.5"
+            placeholder="Ej: 2.5">
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closePersonalTaskModal()">Cancelar</button>
-        <button type="button" class="btn btn-purple" (click)="createPersonalTask()">{{ editingPersonalTaskId ? 'Guardar Cambios' : 'Guardar' }}</button>
+        <button type="button" class="btn btn-purple" (click)="createPersonalTask()">{{ editingPersonalTaskId ? 'Guardar
+          Cambios' : 'Guardar' }}</button>
       </div>
     </div>
   </div>

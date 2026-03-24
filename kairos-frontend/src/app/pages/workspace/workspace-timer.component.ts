@@ -29,18 +29,18 @@ interface PersonalTask {
 
 interface ManualTimeEntry {
   idTarea: number | null;
-  idTareaPersonal: number | null; // Added for personal tasks
+  idTareaPersonal: number | null;
   hours: number;
   minutes: number;
   seconds: number;
   descripcion: string;
-  fechaRegistro: string; // YYYY-MM-DD
+  fechaRegistro: string;
 }
 interface TiempoResponseDTO {
   idTiempo: number;
   nombreTarea: string;
   duracionMinutos: number;
-  fechaRegistro: string; // formato 'YYYY-MM-DD'
+  fechaRegistro: string;
   descripcion: string | null;
 }
 
@@ -83,9 +83,10 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   filtroCategoria: string = 'Todas';
   filtroResponsable: string = 'Todos';
   filtroEstado: string = 'En Progreso';
+  filtroEstadoPersonal: string = 'Todos';
   filtroFechaDesde: string = '';
   filtroFechaHasta: string = '';
-  filtroPrioridad: string = '';
+  filtroPrioridad: string = 'Todas';
   tareasEnProgreso: number = 0;
 
   usuarios: Usuario[] = [];
@@ -241,7 +242,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
           });
         })
       ).subscribe({
-        next: ({totales, totalesPersonales}) => {
+        next: ({ totales, totalesPersonales }) => {
           (this.tareas || []).forEach(t => {
             const minutos = (totales && totales[t.idTarea]) ? totales[t.idTarea] : 0;
             t.tiempoDedicado = parseFloat((minutos / 60).toFixed(2)); // Convertir a horas
@@ -276,7 +277,6 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
               type: 'TAREA',
               proyectoNombre: t.proyectoId ? this.proyectoNameCache[Number(t.proyectoId)] : null
             }));
-            this.projectTasks = this.projectTasks.filter(t => t.estado !== 'Completado');
 
             this.combinedTasks = [
               ...this.projectTasks,
@@ -400,20 +400,35 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     if (this.recentActivities.length > 5) this.recentActivities.pop();
   }
 
+  private getFilteredProjectTasks(source: any[]): any[] {
+    return source.filter(t => {
+      const matchEstado = this.filtroEstado === 'Todos' || t.estado === this.filtroEstado;
+      const tPrioridad = t.prioridad || 'Media';
+      const matchPrioridad = this.filtroPrioridad === 'Todas' || tPrioridad === this.filtroPrioridad;
+      return matchEstado && matchPrioridad;
+    });
+  }
+
+  private getFilteredPersonalTasks(source: any[]): any[] {
+    return source.filter(t => {
+      return this.filtroEstadoPersonal === 'Todos' || t.estado === this.filtroEstadoPersonal;
+    });
+  }
+
   projectTasksPaginadas(): any[] {
-    const source = this.projectTasks || [];
+    const source = this.getFilteredProjectTasks(this.projectTasks || []);
     const inicio = (this.paginaActual - 1) * this.tareasPorPagina;
     return source.slice(inicio, inicio + this.tareasPorPagina);
   }
 
   personalTasksPaginadas(): any[] {
-    const source = this.personalTasks || [];
+    const source = this.getFilteredPersonalTasks(this.personalTasks || []);
     const inicio = 0;
     return source.slice(inicio, inicio + 1000);
   }
 
   totalPaginas(): number {
-    const len = (this.projectTasks || []).length;
+    const len = this.getFilteredProjectTasks(this.projectTasks || []).length;
     return Math.ceil(len / this.tareasPorPagina);
   }
 
@@ -685,7 +700,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   async deletePersonalTask(id: number): Promise<void> {
     const isConfirmed = await this.alertService.confirm(
-      '¿Eliminar Tarea Personal?', 
+      '¿Eliminar Tarea Personal?',
       '¿Estás seguro de que deseas eliminar esta tarea personal? Se eliminarán todos los tiempos vinculados a ella.',
       'Sí, eliminar'
     );
