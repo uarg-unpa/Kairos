@@ -467,8 +467,18 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   }
 
   handleStop(): void {
-    this.timerService.stopTimer();
-    this.loadTasks();
+    this.subscriptions.add(
+      this.timerService.stop().subscribe({
+        next: () => {
+          this.loadTasks();
+          this.loadLast5Times();
+        },
+        error: (err) => {
+          console.error('Error al detener cronómetro', err);
+          this.loadTasks();
+        }
+      })
+    );
   }
 
   startTimerForTask(tarea: any): void {
@@ -595,14 +605,14 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     const payload = {
       idTarea: isPersonal ? null : (entry.idTarea || entry.idTareaPersonal),
       idTareaPersonal: isPersonal ? (entry.idTareaPersonal || entry.idTarea) : null,
-      durationSeconds: totalSeconds,
+      duracionSegundos: totalSeconds,
       taskTitle: taskTitle,
       fechaRegistro: entry.fechaRegistro,
       descripcion: entry.descripcion
     };
 
     this.subscriptions.add(
-      this.TaskService.registrarTiempo(payload).subscribe({
+      this.http.post('/api/tiempos', payload).subscribe({
         next: () => {
           this.alertService.success('Éxito', 'Tiempo manual registrado exitosamente.');
           this.loadTasks();

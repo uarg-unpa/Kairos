@@ -3,10 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, map, catchError } from 'rxjs';
 import { ConfigService } from './config.service';
 import { TimerState, initialTimerState } from '../models/timer.model';
-import { TaskService } from './tarea.service';
+// import { TaskService } from './tarea.service';
 
-// Nota: Este tipo se usa solo para comunicar "hay un timer activo" a componentes
-// como SalirComponent. No representa ningÃºn endpoint del backend.
 export interface TiempoActivoDTO {
   idTiempoActivo: number;
   idUsuario: number;
@@ -31,7 +29,6 @@ interface TiempoEditRequestDTO {
 export class TimerService {
   private http = inject(HttpClient);
   private config = inject(ConfigService);
-  private taskData = inject(TaskService);
 
   private timerStateSubject = new BehaviorSubject<TimerState>({ ...initialTimerState });
   readonly timerState$ = this.timerStateSubject.asObservable();
@@ -176,12 +173,12 @@ export class TimerService {
     const secs = this.computeEffectiveSeconds();
     const st = this.timerStateSubject.getValue();
     if (!st.taskId) { this.clearState(); return; }
-    
-    const payload = st.isPersonal
-      ? { idTarea: null, idTareaPersonal: st.taskId, durationSeconds: secs, taskTitle: st.taskTitle || '' }
-      : { idTarea: st.taskId, idTareaPersonal: null, durationSeconds: secs, taskTitle: st.taskTitle || '' };
 
-    this.taskData.registrarTiempo(payload).subscribe({
+    const payload = st.isPersonal
+      ? { idTarea: null, idTareaPersonal: st.taskId, duracionSegundos: secs, taskTitle: st.taskTitle || '' }
+      : { idTarea: st.taskId, idTareaPersonal: null, duracionSegundos: secs, taskTitle: st.taskTitle || '' };
+
+    this.http.post(`${this.apiBaseUrl}/api/tiempos`, payload).subscribe({
       next: () => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); },
       error: () => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); }
     });
@@ -202,12 +199,12 @@ export class TimerService {
     const st = this.timerStateSubject.getValue();
     if (!st.taskId) return of(null);
     const secs = this.computeEffectiveSeconds();
-    
-    const payload = st.isPersonal
-      ? { idTarea: null, idTareaPersonal: st.taskId, durationSeconds: secs, taskTitle: st.taskTitle || '' }
-      : { idTarea: st.taskId, idTareaPersonal: null, durationSeconds: secs, taskTitle: st.taskTitle || '' };
 
-    return this.taskData.registrarTiempo(payload).pipe(
+    const payload = st.isPersonal
+      ? { idTarea: null, idTareaPersonal: st.taskId, duracionSegundos: secs, taskTitle: st.taskTitle || '' }
+      : { idTarea: st.taskId, idTareaPersonal: null, duracionSegundos: secs, taskTitle: st.taskTitle || '' };
+
+    return this.http.post(`${this.apiBaseUrl}/api/tiempos`, payload).pipe(
       map(res => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); return res; }),
       catchError(() => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); return of(null); })
     );

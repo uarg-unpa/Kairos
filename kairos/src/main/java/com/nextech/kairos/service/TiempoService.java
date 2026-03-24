@@ -144,10 +144,10 @@ public List<TiempoResponseDTO> findLast5ByUsuarioId(Long idUsuario) {
     return tiempoRepository.findLast5ByUsuarioId(idUsuario, pageable).stream()
         .map(t -> new TiempoResponseDTO(
             t.getIdTiempo(),
-            t.getTarea().getNombre(),
+            t.getTarea() != null ? t.getTarea().getNombre() : (t.getTareaPersonal() != null ? t.getTareaPersonal().getNombre() + " (Personal)" : "Desconocido"),
             t.getDuracion(),
             t.getFechaRegistro(),
-            null // descripcion no existe aún
+            t.getDescripcion() != null ? t.getDescripcion() : null
         ))
         .collect(Collectors.toList());
 }
