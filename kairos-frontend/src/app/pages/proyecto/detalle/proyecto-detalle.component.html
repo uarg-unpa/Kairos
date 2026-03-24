@@ -17,7 +17,7 @@
     <div class="d-flex align-items-center gap-2 flex-shrink-0">
       <span class="badge bg-warning text-dark">{{ proyecto.estado }}</span>
 
-      <small class="text-muted d-none d-md-block">Fecha de Inicio: {{ proyecto.fechaInicio }}</small>
+      <small class="text-muted d-none d-md-block">Fecha de Inicio: {{ proyecto.fechaInicio | date }}</small>
 
       <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Lider'"
         class="btn btn-outline-secondary btn-sm btn-config" (click)="abrirModalEditar()">

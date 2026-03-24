@@ -108,7 +108,7 @@
                           [attr.title]="tooltipFinalizadaPendiente(e)"
                           [attr.data-bs-toggle]="colorEstado(e)==='danger' ? 'tooltip' : null">
                           {{ estadoLabel(e) }}</span>
-                    <small class="text-muted"><i class="bi bi-calendar"></i> {{ e.fechaInicio || '-' }} - {{ e.fechaFin || '-' }}</small>
+                    <small class="text-muted"><i class="bi bi-calendar"></i> {{ (e.fechaInicio | date) || '-' }} - {{ (e.fechaFin | date) || '-' }}</small>
                     
                   </div>
                 </div>

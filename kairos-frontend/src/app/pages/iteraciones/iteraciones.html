@@ -52,7 +52,7 @@
                 <div class="mb-2">
                   <small class="text-muted">
                     <i class="bi bi-calendar"></i>
-                    {{ it.fechaInicio || '-' }} - {{ it.fechaFin || '-' }}
+                    {{ (it.fechaInicio | date) || '-' }} - {{ (it.fechaFin | date) || '-' }}
                   </small>
                 </div>
                 <div class="mb-2" *ngIf="it.descripcion">

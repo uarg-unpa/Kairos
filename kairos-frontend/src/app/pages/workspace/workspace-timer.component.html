@@ -100,7 +100,7 @@
               <div class="col-md-6">
                 <span *ngIf="tarea.usuarioNombre"><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
                 <span *ngIf="tarea.fechaFin"><i class="bi bi-calendar me-1" style="margin-left: 10px;"></i>{{
-                  tarea.fechaFin }}</span>
+                  tarea.fechaFin | date }}</span>
                 <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1" style="margin-left: 10px;"></i>Estimado:
                   {{
                   tarea.horasEstimadas ?? 0
@@ -342,7 +342,7 @@
           <div>
             <div class="fw-bold">{{ t.nombreTarea }}</div>
             <div class="small text-muted">
-              {{ t.duracionMinutos }} min • {{ t.fechaRegistro | date:'shortDate' }}
+              {{ t.duracionMinutos }} min • {{ t.fechaRegistro | date }}
             </div>
           </div>
           <button class="btn btn-sm btn-outline-primary" (click)="openEditModal(t)">
