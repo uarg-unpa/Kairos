@@ -76,7 +76,7 @@ public class TiempoController {
         Usuario usuario = usuarioService.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        List<TiempoResponseDTO> ultimos = tiempoService.findLast5ByUsuarioId(usuario.getId());
+        List<TiempoResponseDTO> ultimos = tiempoService.findLast15ByUsuarioId(usuario.getId());
         return ResponseEntity.ok(ultimos);
     }
 

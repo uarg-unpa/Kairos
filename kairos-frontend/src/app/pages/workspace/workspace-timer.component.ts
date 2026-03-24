@@ -117,7 +117,17 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   private subscriptions = new Subscription();
   ultimosTiempos: TiempoResponseDTO[] = [];
-  editTimeForm: { idTiempo: any; duracionMinutos: any; fechaRegistro: any; descripcion: any; } | undefined;
+  editTimeForm: {
+    idTiempo: number;
+    fechaRegistro: string;
+    descripcion: string;
+    editMode: string;
+    hours: number;
+    minutes: number;
+    seconds: number;
+    startDateTime: string;
+    endDateTime: string;
+  } | undefined;
   showEditModal: boolean | undefined;
   comentariosPorTarea: { [idTarea: number]: Comentario[] } = {};
 
@@ -563,25 +573,62 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     );
   }
   openEditModal(tiempo: TiempoResponseDTO): void {
+    const totalMinutos = tiempo.duracionMinutos || 0;
+    const h = Math.floor(totalMinutos / 60);
+    const m = totalMinutos % 60;
+
+    const datePrefix = tiempo.fechaRegistro ? tiempo.fechaRegistro + 'T' : new Date().toISOString().split('T')[0] + 'T';
+
     this.editTimeForm = {
       idTiempo: tiempo.idTiempo,
-      duracionMinutos: tiempo.duracionMinutos,
-      fechaRegistro: tiempo.fechaRegistro,
-      descripcion: tiempo.descripcion || ''
+      fechaRegistro: tiempo.fechaRegistro || new Date().toISOString().split('T')[0],
+      descripcion: tiempo.descripcion || '',
+      editMode: 'duration',
+      hours: h,
+      minutes: m,
+      seconds: 0,
+      startDateTime: datePrefix + '08:00',
+      endDateTime: datePrefix + '09:00'
     };
     this.showEditModal = true;
   }
 
   saveEditedTime(): void {
-    if (!this.editTimeForm || this.editTimeForm.duracionMinutos < 1) {
-      this.alertService.warning('Atención', 'La duración debe ser al menos 1 minuto');
+    if (!this.editTimeForm) return;
+
+    let finalMinutos = 0;
+    let finalFecha = this.editTimeForm.fechaRegistro;
+
+    if (this.editTimeForm.editMode === 'duration') {
+      const h = this.editTimeForm.hours || 0;
+      const m = this.editTimeForm.minutes || 0;
+      const s = this.editTimeForm.seconds || 0;
+      finalMinutos = Math.ceil((h * 3600 + m * 60 + s) / 60);
+    } else {
+      const start = new Date(this.editTimeForm.startDateTime).getTime();
+      const end = new Date(this.editTimeForm.endDateTime).getTime();
+
+      if (isNaN(start) || isNaN(end)) {
+        this.alertService.warning('Error', 'Fechas inválidas.');
+        return;
+      }
+      if (end <= start) {
+        this.alertService.warning('Atención', 'La fecha/hora de fin no puede ser anterior o igual a la de inicio.');
+        return;
+      }
+      finalMinutos = Math.ceil((end - start) / 60000);
+      finalFecha = this.editTimeForm.startDateTime.split('T')[0];
+    }
+
+    if (finalMinutos < 1) {
+      this.alertService.warning('Atención', 'La duración calculada debe ser de al menos 1 minuto.');
       return;
     }
 
     this.subscriptions.add(
       this.timerService.editTime(this.editTimeForm.idTiempo, {
-        duracionMinutos: this.editTimeForm.duracionMinutos,
-        fechaRegistro: this.editTimeForm.fechaRegistro,
+        duracionMinutos: finalMinutos,
+        fechaRegistro: finalFecha,
         descripcion: this.editTimeForm.descripcion
       }).subscribe({
         next: () => {

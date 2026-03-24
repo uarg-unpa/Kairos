@@ -37,7 +37,7 @@ public interface TiempoRepository extends JpaRepository<Tiempo, Long> {
     WHERE t.usuario.id = :idUsuario
     ORDER BY t.fechaRegistro DESC, t.idTiempo DESC
 """)
-List<Tiempo> findLast5ByUsuarioId(@Param("idUsuario") Long idUsuario, Pageable pageable);
+List<Tiempo> findLast15ByUsuarioId(@Param("idUsuario") Long idUsuario, Pageable pageable);
 
 
     @Query("SELECT t.tarea.idTarea, SUM(t.duracion) FROM Tiempo t WHERE t.usuario.id = :idUsuario AND t.tarea IS NOT NULL GROUP BY t.tarea.idTarea")

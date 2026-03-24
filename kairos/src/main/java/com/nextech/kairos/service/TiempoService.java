@@ -139,9 +139,9 @@ public class TiempoService {
         return tiempoRepository.findByFechaRegistroBetween(fechaInicio, fechaFin);
     }
     @Transactional(readOnly = true)
-public List<TiempoResponseDTO> findLast5ByUsuarioId(Long idUsuario) {
-    PageRequest pageable = PageRequest.of(0, 5);
-    return tiempoRepository.findLast5ByUsuarioId(idUsuario, pageable).stream()
+public List<TiempoResponseDTO> findLast15ByUsuarioId(Long idUsuario) {
+    PageRequest pageable = PageRequest.of(0, 15);
+    return tiempoRepository.findLast15ByUsuarioId(idUsuario, pageable).stream()
         .map(t -> new TiempoResponseDTO(
             t.getIdTiempo(),
             t.getTarea() != null ? t.getTarea().getNombre() : (t.getTareaPersonal() != null ? t.getTareaPersonal().getNombre() + " (Personal)" : "Desconocido"),
