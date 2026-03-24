@@ -15,64 +15,77 @@
             
             <ul class="navbar-nav me-auto" *ngIf="usuarioLogueado && router.url !== '/login'">
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/inicio" routerLinkActive="active"><span class="bi bi-house-door"></span> Inicio</a>
+                    <a class="nav-link" routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-house-door"></span> Inicio</a>
                 </li>
 
                 <li class="nav-item" *ngIf="esRutaProyecto() && proyectoId">
-                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'planificacion']" routerLinkActive="active"><span class="bi bi-calendar4-week"></span> Planificacion</a>
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'planificacion']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-calendar4-week"></span> Planificacion</a>
                 </li>
 
                 <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
-                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'etapas']" routerLinkActive="active"><span class="bi bi-diagram-2"></span> Etapas</a>
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'etapas']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-diagram-2"></span> Etapas</a>
                 </li>
                 <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
-                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'iteraciones']" routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a> 
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'iteraciones']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-layers"></span> Iteraciones</a> 
                 </li>
 
                 <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
-                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'workspace']" routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a> 
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'workspace']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-clock"></span> Workspace</a> 
                 </li>
                 <li class="nav-item" *ngIf="esRutaProyecto() && proyectoId">
-                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'dashboard']" routerLinkActive="active"><span class="bi bi-graph-up"></span> Reportes</a>
+                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'dashboard']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-graph-up"></span> Reportes</a>
                 </li>
                 <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
                     <a class="nav-link" routerLink="/usuarios"><span class="bi bi-people"></span> Usuarios</a>
                 </li>
                 <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
-                    <a class="nav-link" routerLink="/roles" routerLinkActive="active"><span class="bi bi-person-check"></span> Roles</a>
+                    <a class="nav-link" routerLink="/roles" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-person-check"></span> Roles</a>
                 </li>
                 <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
-                    <a class="nav-link" routerLink="/permisos" routerLinkActive="active"><span class="bi bi-key"></span> Permisos</a>
+                    <a class="nav-link" routerLink="/permisos" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-key"></span> Permisos</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"><span class="bi bi-question-lg"></span> Ayuda</a>
+                    <a class="nav-link" routerLink="/ayuda" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-question-lg"></span> Ayuda</a>
                 </li>
             </ul>
 
             <ul class="navbar-nav ms-auto">
                 
                 <li class="nav-item" *ngIf="!usuarioLogueado || router.url === '/login'">
-                    <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"><span class="bi bi-question-lg"></span> Ayuda</a>
+                    <a class="nav-link" routerLink="/ayuda" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-question-lg"></span> Ayuda</a>
                 </li>
                 
                 <li class="nav-item" *ngIf="!usuarioLogueado">
-                    <a class="nav-link" routerLink="/login" routerLinkActive="active"><span class="bi bi-box-arrow-in-right"></span> Login</a>
+                    <a class="nav-link" routerLink="/login" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-box-arrow-in-right"></span> Login</a>
                 </li>
                 
                 <ng-container *ngIf="usuarioLogueado && router.url !== '/login'">
-                    <li class="nav-item d-flex align-items-center">
-                        <a [routerLink]="['/usuario/ver', getEncodedUserId()]" class="navbar-text text-white me-3 d-flex align-items-center">
-                            {{ usuarioNombre }} ({{ rolUsuario }}) 
-                            <div class="avatar-circle" style="width: 30px; height: 30px; font-size: 1rem; display: flex; justify-content: center; align-items: center; background-color: #6C63FF; color: white; border-radius: 50%; margin-left: 8px;">
+                    <li class="nav-item mt-3 mt-lg-0 ms-lg-3 profile-nav-item">
+                        <a [routerLink]="['/usuario/ver', getEncodedUserId()]" style="text-decoration: none;" class="navbar-text text-white d-flex align-items-center profile-link">
+                            
+                            <!-- Desktop View -->
+                            <div class="d-none d-lg-flex flex-column me-2 text-end">
+                                <span class="fw-bold lh-1" style="font-size: 0.95rem;">{{ usuarioNombre }}</span>
+                                <span class="badge mt-1" style="background-color: #7d4bff; font-size: 0.65rem;">{{ rolUsuario }}</span>
+                            </div>
+                            
+                            <!-- Mobile View -->
+                            <div class="d-flex d-lg-none flex-column me-auto">
+                                <span class="fw-bold lh-1">{{ usuarioNombre }}</span>
+                                <span class="text-white-50 mt-1" style="font-size: 0.8rem;">{{ rolUsuario }}</span>
+                            </div>
+
+                            <div class="avatar-circle shadow-sm m-0">
                                 {{ inicialesUsuario(usuarioNombre) }}
                             </div>
-                            <i class="bi bi-person-circle" style="font-size: 1.2rem;"></i>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" (click)="logout()" style="cursor: pointer;">
-                            <span class="bi bi-box-arrow-right"></span> Salir
+                    <li class="nav-item ms-lg-2 mt-1 mt-lg-0">
+                        <a class="nav-link text-danger d-flex align-items-center" (click)="logout()" style="cursor: pointer;">
+                            <span class="bi bi-box-arrow-right d-lg-none me-2"></span>
+                            <span class="d-lg-none">Cerrar Sesión</span>
+                            <i class="bi bi-box-arrow-right d-none d-lg-inline fs-5" title="Salir"></i>
                         </a>
                     </li>
                 </ng-container>
