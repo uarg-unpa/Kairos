@@ -114,6 +114,19 @@ public class TiempoController {
         return ResponseEntity.ok(tiempoActualizado);
     }
 
+    @org.springframework.web.bind.annotation.DeleteMapping("/{idTiempo}")
+    public ResponseEntity<Void> eliminarTiempo(
+            @PathVariable Long idTiempo,
+            Authentication authentication) {
+
+        String email = (String) authentication.getPrincipal();
+        Usuario usuario = usuarioService.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        tiempoService.deleteTime(idTiempo, usuario.getId());
+        return ResponseEntity.noContent().build();
+    }
+
     // Reportes simples para dashboard
     @GetMapping("/horas-por-iteracion")
     public ResponseEntity<List<HorasPorIteracionDTO>> horasPorIteracion(

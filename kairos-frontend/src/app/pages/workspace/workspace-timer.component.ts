@@ -1,4 +1,4 @@
-
+import Swal from 'sweetalert2';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -30,11 +30,14 @@ interface PersonalTask {
 interface ManualTimeEntry {
   idTarea: number | null;
   idTareaPersonal: number | null;
+  editMode: string;
   hours: number;
   minutes: number;
   seconds: number;
   descripcion: string;
   fechaRegistro: string;
+  startDateTime: string;
+  endDateTime: string;
 }
 interface TiempoResponseDTO {
   idTiempo: number;
@@ -96,11 +99,14 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   manualTimeEntry: ManualTimeEntry = {
     idTarea: null,
     idTareaPersonal: null,
+    editMode: 'duration',
     hours: 0,
     minutes: 0,
     seconds: 0,
     descripcion: '',
-    fechaRegistro: new Date().toISOString().split('T')[0], // Fecha actual por defecto
+    fechaRegistro: new Date().toISOString().split('T')[0],
+    startDateTime: new Date().toISOString().split('T')[0] + 'T08:00',
+    endDateTime: new Date().toISOString().split('T')[0] + 'T09:00',
   };
   //dia actual
   today: string = new Date().toISOString().split('T')[0]
@@ -537,14 +543,18 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   /** Muestra el modal de registro manual */
   openManualTimeModal(): void {
+    const defaultDate = new Date().toISOString().split('T')[0];
     this.manualTimeEntry = {
       idTarea: null,
       idTareaPersonal: null,
+      editMode: 'duration',
       hours: 0,
       minutes: 0,
       seconds: 0,
       descripcion: '',
-      fechaRegistro: new Date().toISOString().split('T')[0]
+      fechaRegistro: defaultDate,
+      startDateTime: defaultDate + 'T08:00',
+      endDateTime: defaultDate + 'T09:00'
     };
     if ((this.availableTasks || []).length === 0) {
       this.alertService.warning('Sin tareas', 'No tenés tareas pendientes para registrar tiempo.');
@@ -644,20 +654,79 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     );
   }
 
+  confirmDeleteTime(): void {
+    if (!this.editTimeForm) return;
+
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Se eliminará este registro de forma permanente.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.subscriptions.add(
+          this.timerService.deleteTime(this.editTimeForm!.idTiempo).subscribe({
+            next: () => {
+              this.showEditModal = false;
+              this.loadLast5Times();
+              this.loadTasks();
+              Swal.fire('¡Eliminado!', 'El registro ha sido eliminado.', 'success');
+            },
+            error: (err) => {
+              console.error('Error al eliminar tiempo', err);
+              this.alertService.error('Error', 'No se pudo eliminar el registro.');
+            }
+          })
+        );
+      }
+    });
+  }
+
   /** Maneja el envío del formulario de registro manual. */
   handleManualTimeSubmission(): void {
     const entry = this.manualTimeEntry;
 
-    if ((!entry.idTarea && !entry.idTareaPersonal) || (entry.hours === 0 && entry.minutes <= 0 && entry.seconds === 0)) {
-      this.alertService.warning('Atención', "Debe seleccionar una tarea e ingresar una duración de al menos un minuto.");
-      return;
-    }
-    if (new Date(entry.fechaRegistro) > new Date()) {
-      this.alertService.warning('Atención', "No puede registrar tiempo en una fecha futura.");
+    if (!entry.idTarea && !entry.idTareaPersonal) {
+      this.alertService.warning('Atención', "Debe seleccionar una tarea.");
       return;
     }
 
-    const totalSeconds = (entry.hours * 3600) + (entry.minutes * 60) + entry.seconds;
+    let finalSegundos = 0;
+    let finalFecha = entry.fechaRegistro;
+
+    if (entry.editMode === 'duration') {
+      if (entry.hours === 0 && entry.minutes <= 0 && entry.seconds === 0) {
+        this.alertService.warning('Atención', "Debe ingresar una duración de al menos un minuto.");
+        return;
+      }
+      if (new Date(entry.fechaRegistro) > new Date()) {
+        this.alertService.warning('Atención', "No puede registrar tiempo en una fecha futura.");
+        return;
+      }
+      finalSegundos = (entry.hours * 3600) + (entry.minutes * 60) + entry.seconds;
+    } else {
+      const start = new Date(entry.startDateTime).getTime();
+      const end = new Date(entry.endDateTime).getTime();
+
+      if (isNaN(start) || isNaN(end)) {
+        this.alertService.warning('Error', 'Fechas inválidas.');
+        return;
+      }
+      if (end <= start) {
+        this.alertService.warning('Atención', 'La fecha/hora de fin no puede ser anterior o igual a la de inicio.');
+        return;
+      }
+      if (start > Date.now() || end > Date.now()) {
+        this.alertService.warning('Atención', 'No puede registrar tiempo en una fecha/hora futura.');
+        return;
+      }
+      finalSegundos = Math.ceil((end - start) / 1000);
+      finalFecha = entry.startDateTime.split('T')[0];
+    }
 
     const selectedTask = this.availableTasks.find(t => t.id === (entry.idTarea || entry.idTareaPersonal));
     const taskTitle = selectedTask?.title || 'Tarea Desconocida';
@@ -666,9 +735,9 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     const payload = {
       idTarea: isPersonal ? null : (entry.idTarea || entry.idTareaPersonal),
       idTareaPersonal: isPersonal ? (entry.idTareaPersonal || entry.idTarea) : null,
-      duracionSegundos: totalSeconds,
+      duracionSegundos: finalSegundos,
       taskTitle: taskTitle,
-      fechaRegistro: entry.fechaRegistro,
+      fechaRegistro: finalFecha,
       descripcion: entry.descripcion
     };
 

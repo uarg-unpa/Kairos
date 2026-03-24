@@ -226,5 +226,10 @@ export class TimerService {
   editTime(idTiempo: number, data: TiempoEditRequestDTO): Observable<any> {
     return this.http.put(`${this.apiBaseUrl}/api/tiempos/${idTiempo}`, data);
   }
+
+  // DELETE: eliminar un registro de tiempo
+  deleteTime(idTiempo: number): Observable<any> {
+    return this.http.delete(`${this.apiBaseUrl}/api/tiempos/${idTiempo}`);
+  }
 }
 

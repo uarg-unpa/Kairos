@@ -403,9 +403,14 @@
             </div>
 
           </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" (click)="showEditModal = false">Cancelar</button>
-            <button class="btn btn-success" (click)="saveEditedTime()">Guardar Cambios</button>
+          <div class="modal-footer d-flex justify-content-between">
+            <button class="btn btn-outline-danger" (click)="confirmDeleteTime()" title="Eliminar este registro">
+              <i class="bi bi-trash"></i>
+            </button>
+            <div>
+              <button class="btn btn-secondary me-2" (click)="showEditModal = false">Cancelar</button>
+              <button class="btn btn-success" (click)="saveEditedTime()">Guardar Cambios</button>
+            </div>
           </div>
         </div>
       </div>
@@ -436,34 +441,63 @@
             <small class="form-text text-muted">Solo se muestran tareas no completadas.</small>
           </div>
 
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">Horas *</label>
-              <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.hours" name="manualHours" min="0"
-                max="23" required>
+          <!-- Selector de Modos -->
+          <div class="btn-group w-100 mb-3" role="group">
+            <input type="radio" class="btn-check" name="manualMode" id="manualModeDuration" value="duration"
+              [(ngModel)]="manualTimeEntry.editMode">
+            <label class="btn btn-outline-primary" for="manualModeDuration">Duración Manual</label>
+
+            <input type="radio" class="btn-check" name="manualMode" id="manualModeRange" value="range"
+              [(ngModel)]="manualTimeEntry.editMode">
+            <label class="btn btn-outline-primary" for="manualModeRange">Rango Horario</label>
+          </div>
+
+          <!-- MODO 1: DURACIÓN -->
+          <div *ngIf="manualTimeEntry.editMode === 'duration'">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Horas *</label>
+                <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.hours" name="manualHours" min="0"
+                  max="23" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Minutos *</label>
+                <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.minutes" name="manualMinutes"
+                  min="0" max="59" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Segundos</label>
+                <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.seconds" name="manualSeconds"
+                  min="0" max="59">
+              </div>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">Minutos *</label>
-              <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.minutes" name="manualMinutes"
-                min="0" max="59" required>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Segundos</label>
-              <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.seconds" name="manualSeconds"
-                min="0" max="59">
+            <small class="form-text text-muted mb-3 d-block">Duración mínima: 1 segundo.</small>
+
+            <div class="mb-3">
+              <label class="form-label">Fecha del trabajo *</label>
+              <input type="date" class="form-control" [(ngModel)]="manualTimeEntry.fechaRegistro" name="workDate"
+                [max]="today" required>
             </div>
           </div>
-          <small class="form-text text-muted mb-3">Duración mínima: 1 segundo.</small>
 
-          <div class="mb-3 mt-3">
+          <!-- MODO 2: RANGO HORARIO -->
+          <div *ngIf="manualTimeEntry.editMode === 'range'">
+            <div class="mb-3">
+              <label class="form-label">Inicio</label>
+              <input type="datetime-local" class="form-control" [(ngModel)]="manualTimeEntry.startDateTime" name="manualStartDateTime"
+                [max]="today + 'T23:59'">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Fin</label>
+              <input type="datetime-local" class="form-control" [(ngModel)]="manualTimeEntry.endDateTime" name="manualEndDateTime"
+                [max]="today + 'T23:59'">
+            </div>
+          </div>
+
+          <div class="mb-3">
             <label class="form-label">Descripción del trabajo realizado</label>
             <textarea class="form-control" [(ngModel)]="manualTimeEntry.descripcion" name="workDescription" rows="3"
               placeholder="Describe brevemente el trabajo realizado..."></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Fecha del trabajo *</label>
-            <input type="date" class="form-control" [(ngModel)]="manualTimeEntry.fechaRegistro" name="workDate"
-              [max]="today" required>
           </div>
         </div>
         <div class="modal-footer">

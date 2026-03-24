@@ -172,6 +172,18 @@ public Tiempo updateTime(Long idTiempo, TiempoEditRequestDTO request, Long idUsu
     return tiempoRepository.save(tiempo);
 }
 
+@Transactional
+public void deleteTime(Long idTiempo, Long idUsuario) {
+    Tiempo tiempo = tiempoRepository.findById(idTiempo)
+        .orElseThrow(() -> new RuntimeException("Tiempo no encontrado: " + idTiempo));
+
+    if (!tiempo.getUsuario().getId().equals(idUsuario)) {
+        throw new RuntimeException("No tienes permiso para eliminar este registro.");
+    }
+
+    tiempoRepository.delete(tiempo);
+}
+
     /**
      * Calcula la suma total de la duración del tiempo registrado para una tarea
      * específica

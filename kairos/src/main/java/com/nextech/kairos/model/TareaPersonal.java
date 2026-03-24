@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "tarea_personal")
@@ -34,7 +34,7 @@ public class TareaPersonal {
     private String descripcion;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnore
+    @JsonIgnoreProperties({"tareas", "roles", "password"})
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
 
