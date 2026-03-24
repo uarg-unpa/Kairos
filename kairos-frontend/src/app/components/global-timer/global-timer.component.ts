@@ -10,9 +10,9 @@ import { Subscription } from 'rxjs';
   template: `
     <div class="floating-timer" *ngIf="isActive && !isPaused">
       <div class="d-flex align-items-center gap-3 text-white">
-        <div>
+        <div class="timer-text-container">
           <div class="small text-white-50">Cronometrando</div>
-          <div class="fw-bold">{{ taskTitle || 'Tarea' }}</div>
+          <div class="fw-bold task-title-truncate" [title]="taskTitle || 'Tarea'">{{ taskTitle || 'Tarea' }}</div>
         </div>
         <div class="timer-display">{{ elapsedTime }}</div>
         <button class="btn btn-light btn-sm rounded-circle" (click)="pause()">
@@ -49,6 +49,42 @@ import { Subscription } from 'rxjs';
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    .task-title-truncate {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+    @media (max-width: 768px) {
+      .floating-timer {
+        bottom: 0px;
+        right: 0px;
+        left: 0px;
+        border-radius: 0px;
+        padding: 10px;
+        width: 100%;
+        min-width: unset;
+      }
+      .floating-timer .d-flex {
+        justify-content: space-between;
+        gap: 10px !important;
+      }
+      .timer-text-container {
+        flex: 1;
+        min-width: 0;
+      }
+      .timer-display {
+        font-size: 1.2rem;
+        min-width: unset;
+      }
+      .text-white-50 {
+        font-size: 0.6rem;
+      }
+      .task-title-truncate {
+        max-width: 90%;
+        font-size: 0.8rem;
+      }
     }
   `]
 })

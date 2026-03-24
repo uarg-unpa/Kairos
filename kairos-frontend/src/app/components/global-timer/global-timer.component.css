@@ -7,11 +7,43 @@
   border-radius: 15px;
   padding: 15px;
   color: white;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   font-family: 'Courier New', monospace;
 }
 
 .timer-display {
   font-size: 1.8rem;
   font-weight: bold;
+}
+
+.task-title-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+}
+
+@media (max-width: 768px) {
+  .floating-timer {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    border-radius: 0;
+    padding: 10px;
+    width: 100%;
+  }
+
+  .floating-timer .d-flex {
+    justify-content: space-between;
+    gap: 10px !important;
+  }
+
+  .timer-display {
+    font-size: 1.2rem;
+  }
+
+  .task-title-truncate {
+    max-width: 120px;
+    font-size: 9.6px;
+  }
 }

@@ -8,7 +8,7 @@
 
   <div class="col-lg-8">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 container-title">
       <h2 class="mb-0">Mis Tareas</h2>
       <div>
         <button class="btn btn btn-outline-primary" style="margin-right:5px;" title="Crear una tarea personal"
@@ -26,7 +26,7 @@
     <div *ngIf="(projectTasks || personalTasks) ; else loading">
 
       <div class="card planning-card mb-3">
-        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center container-title">
           <div>
             <strong>Tareas de proyecto</strong>
             <span *ngIf="projectIdInView" class="small text-muted ms-2">Mostrando solo este proyecto</span>
@@ -96,23 +96,19 @@
 
             <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
 
-            <div class="row g-2 small align-items-center text-muted">
-              <div class="col-md-6">
-                <span *ngIf="tarea.usuarioNombre"><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
-                <span *ngIf="tarea.fechaFin"><i class="bi bi-calendar me-1" style="margin-left: 10px;"></i>{{
-                  tarea.fechaFin | date }}</span>
-                <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1" style="margin-left: 10px;"></i>Estimado:
-                  {{
-                  tarea.horasEstimadas ?? 0
-                  }}h</span>
-              </div>
-              <div class="col-md-2 ms-auto">
-                <div class="mt-2 flex-column d-flex gap-2" *ngIf="tarea.estado !== 'Completado'">
-                  <button class="btn btn-sm btn-outline-purple button-iniciar-tarea" (click)="startTimerForTask(tarea)"
-                    title="Iniciar Cronómetro" [disabled]="timerState.startTime !== null && !timerState.isPaused">
-                    <i class="bi bi-play-circle"></i>
-                  </button>
+            <div class="d-flex justify-content-between align-items-end mt-2">
+              <div class="small text-muted flex-grow-1 pe-2">
+                <div class="d-flex flex-wrap gap-3">
+                  <span *ngIf="tarea.usuarioNombre"><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
+                  <span *ngIf="tarea.fechaFin"><i class="bi bi-calendar me-1"></i>{{ tarea.fechaFin | date }}</span>
+                  <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1"></i>Estimado: {{ tarea.horasEstimadas ?? 0 }}h</span>
                 </div>
+              </div>
+              <div *ngIf="tarea.estado !== 'Completado'" class="flex-shrink-0">
+                <button class="btn btn-sm btn-outline-purple button-iniciar-tarea" (click)="startTimerForTask(tarea)"
+                  title="Iniciar Cronómetro" [disabled]="timerState.startTime !== null && !timerState.isPaused">
+                  <i class="bi bi-play-circle"></i>
+                </button>
               </div>
             </div>
 
@@ -212,20 +208,18 @@
 
             <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
 
-            <div class="row g-2 small align-items-center text-muted">
-              <div class="col-md-6">
-                <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1"></i>Estimado:
-                  {{ tarea.horasEstimadas ?? 0 }}h
-                </span>
-              </div>
-              <div class="col-md-2 ms-auto">
-                <div class="mt-2 flex-column d-flex gap-2" *ngIf="tarea.estado !== 'Completado'">
-                  <button class="btn btn-sm btn-outline-purple button-iniciar-tarea"
-                    (click)="startTimerForTask({ id: tarea.id, nombre: tarea.nombre + ' (Personal)', type: 'PERSONAL' })"
-                    title="Iniciar Cronómetro" [disabled]="timerState.startTime !== null && !timerState.isPaused">
-                    <i class="bi bi-play-circle"></i>
-                  </button>
+            <div class="d-flex justify-content-between align-items-end mt-2">
+              <div class="small text-muted flex-grow-1 pe-2">
+                <div class="d-flex flex-wrap gap-3">
+                  <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1"></i>Estimado: {{ tarea.horasEstimadas ?? 0 }}h</span>
                 </div>
+              </div>
+              <div *ngIf="tarea.estado !== 'Completado'" class="flex-shrink-0">
+                <button class="btn btn-sm btn-outline-purple button-iniciar-tarea"
+                  (click)="startTimerForTask({ id: tarea.id, nombre: tarea.nombre + ' (Personal)', type: 'PERSONAL' })"
+                  title="Iniciar Cronómetro" [disabled]="timerState.startTime !== null && !timerState.isPaused">
+                  <i class="bi bi-play-circle"></i>
+                </button>
               </div>
             </div>
 
@@ -363,10 +357,12 @@
           <div class="modal-body" *ngIf="editTimeForm">
             <!-- Selector de Modos -->
             <div class="btn-group w-100 mb-3" role="group">
-              <input type="radio" class="btn-check" name="editMode" id="modeDuration" value="duration" [(ngModel)]="editTimeForm.editMode">
+              <input type="radio" class="btn-check" name="editMode" id="modeDuration" value="duration"
+                [(ngModel)]="editTimeForm.editMode">
               <label class="btn btn-outline-primary" for="modeDuration">Duración Manual</label>
-              
-              <input type="radio" class="btn-check" name="editMode" id="modeRange" value="range" [(ngModel)]="editTimeForm.editMode">
+
+              <input type="radio" class="btn-check" name="editMode" id="modeRange" value="range"
+                [(ngModel)]="editTimeForm.editMode">
               <label class="btn btn-outline-primary" for="modeRange">Rango Horario</label>
             </div>
 
@@ -396,11 +392,13 @@
             <div *ngIf="editTimeForm.editMode === 'range'">
               <div class="mb-3">
                 <label class="form-label">Inicio</label>
-                <input type="datetime-local" class="form-control" [(ngModel)]="editTimeForm.startDateTime" [max]="today + 'T23:59'">
+                <input type="datetime-local" class="form-control" [(ngModel)]="editTimeForm.startDateTime"
+                  [max]="today + 'T23:59'">
               </div>
               <div class="mb-3">
                 <label class="form-label">Fin</label>
-                <input type="datetime-local" class="form-control" [(ngModel)]="editTimeForm.endDateTime" [max]="today + 'T23:59'">
+                <input type="datetime-local" class="form-control" [(ngModel)]="editTimeForm.endDateTime"
+                  [max]="today + 'T23:59'">
               </div>
             </div>
 
