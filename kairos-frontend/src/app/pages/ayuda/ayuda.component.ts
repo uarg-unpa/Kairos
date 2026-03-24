@@ -5,9 +5,8 @@ import { SafeUrlPipe } from './safe-url.pipe';
 interface PasoAyuda {
   id: string;
   titulo: string;
-  descripcion: string;
-  pasos?: string[];
-  cierre?: string;
+  contenido: string[];
+  tipo: 'info' | 'pasos' | 'tips';
   videoUrl?: string;
 }
 
@@ -19,64 +18,202 @@ interface PasoAyuda {
   styleUrls: ['./ayuda.component.css']
 })
 export class AyudaComponent {
+
   sidebarOpen = false;
 
   pasos: PasoAyuda[] = [
     {
       id: 'bienvenida',
-      titulo: 'Bienvenido a Kairos',
-      descripcion: 'En esta sección encontrarás los pasos para utilizar el sistema Kairos. Puedes agregar videos demostrativos debajo de cada explicación.'
+      titulo: '👋 Bienvenido a Kairos',
+      contenido: [
+        'Kairos es un sistema para gestionar proyectos de software.',
+        'Permite organizar tareas, equipos, tiempos y reportes en un solo lugar.'
+      ],
+      tipo: 'info'
     },
     {
       id: 'iniciar-sesion',
-      titulo: 'Iniciar Sesión',
-      descripcion: 'Para acceder al sistema, el usuario debe seguir los siguientes pasos:',
-      pasos: [
-        'Acceder a la página <Dirección del sistema> desde un navegador.',
-        'Hacer click en el botón “Iniciar sesión”.',
-          'Al desplegarse la ventana emergente, debe seleccionar la cuenta previamente registrada en el sistema.',
-          'Al realizar los pasos, el usuario ingresará a la pantalla inicial del sistema Kairos.'
-        ],
-        cierre: 'A continuación, puede observarse a través de un video demostrativo:',
-        videoUrl: 'https://youtu.be/pAnGwRiQ4-4?si=GTtf3JUI7fYpM963' 
-      },
-      {
-        id: 'menu-usuario',
-        titulo: 'Menú de Usuario',
-        descripcion:'En la esquina superior derecha, el usuario encontrará su foto de perfil y nombre. Al hacer click, se desplegará un menú con las siguientes opciones:',
-        pasos: [
-          'Ver Perfil: Permite al usuario visualizar su información personal y detalles de su cuenta.',
-          'Cerrar sesión: Permite al usuario salir de su cuenta y regresar a la página de inicio de sesión.',
-        ],
-        cierre: 'A continuación, puede observarse a través de un video demostrativo:',
-        videoUrl: 'https://youtu.be/pAnGwRiQ4-4?si=GTtf3JUI7fYpM963'
-      },
-      {
-        id: 'admin',
-        titulo: 'Administrador del sistema',
-        descripcion:'En esta sección se detallarán las funciones especiales a las que tiene acceso el administrador del sistema Kairos, así como los pasos para acceder a las funcionalidades administrativas. \n Las demas funcionalidades restantes serán las mismas que un miembro de proyecto.',
-        pasos: [
-          'Módulo inicial',
-          'El módulo de inicio es la primera pantalla que se visualiza al ingresar al sistema. En esta sección se muestran los proyectos activos del usuario',
-          'En la barra de navegación del módulo inicial, en la vista del administrador encontramos:',
-          'Proyectos: Permite al administrador visualizar y gestionar los proyectos del sistema',
-          'Usuarios: Listado de todos los usuarios registrados en el sistema.',
-          'Roles: Listado de todos los roles disponibles en el sistema.',
-        ],
-        cierre: 'A continuación, puede observarse a través de un video demostrativo:',
-        videoUrl: 'https://youtu.be/pAnGwRiQ4-4?si=GTtf3JUI7fYpM963'
-      }
-    ];
-
-    toggleSidebar() {
-      this.sidebarOpen = !this.sidebarOpen;
+      titulo: '🔐 Iniciar sesión',
+      contenido: [
+        'Acceder a la página del sistema',
+        'Hacer click en "Iniciar sesión"',
+        'Seleccionar tu cuenta',
+        'Ingresar al sistema'
+      ],
+      tipo: 'pasos',
+      videoUrl: 'https://youtu.be/pAnGwRiQ4-4'
+    },
+    {
+      id: 'navegacion',
+      titulo: '🧭 Navegación principal',
+      contenido: [
+        'Inicio: resumen del proyecto',
+        'Planificación: gestión de tareas',
+        'Etapas: fases del proyecto',
+        'Reportes: métricas y gráficos',
+        'Espacio de trabajo: tareas personales'
+      ],
+      tipo: 'info'
+    },
+    {
+      id: 'crear-tarea',
+      titulo: '📝 Crear una tarea',
+      contenido: [
+        'Ir a "Planificación"',
+        'Click en "Nueva tarea"',
+        'Completar los datos',
+        'Guardar'
+      ],
+      tipo: 'pasos'
+    },
+    {
+      id: 'editar-tarea',
+      titulo: '📝 Editar una tarea',
+      contenido: [
+        'Ir a "Planificación"',
+        'Abrir el menú de la tarea',
+        'Click en "Editar tarea"',
+        'Completar los datos necesarios',
+        'Guardar'
+      ],
+      tipo: 'pasos'
+    },
+    {
+      id: 'eliminar-tarea',
+      titulo: '❌ Eliminar una tarea',
+      contenido: [
+        'Ir a "Planificación"',
+        'Abrir el menú de la tarea',
+        'Seleccionar "Eliminar tarea"',
+        'Confirmar la eliminación'
+      ],
+      tipo: 'pasos'
+    },
+    {
+      id: 'cambiar-estado-tarea',
+      titulo: '🔄 Cambiar el estado de una tarea',
+      contenido: [
+        'Abrir el menú de la tarea',
+        'Seleccionar el estado',
+        'Puede ser "En progreso" o "Completada"',
+      ],
+      tipo: 'pasos'
+    },
+    {
+      id: 'comentarios-tarea',
+      titulo: '💭 Comentarios',
+      contenido: [
+        '💠 Podés agregar comentarios a una tarea',
+        '💠 Sirven para comunicarte con el equipo',
+        '💠 También podés eliminarlos si es necesario'
+      ],
+      tipo: 'info'
+    },
+    {
+      id: 'miembros',
+      titulo: '👥 Miembros del equipo',
+      contenido: [
+        '💠 Podés ver los miembros del proyecto',
+        '💠 Agregar nuevos miembros al equipo',
+        '💠 Asignar roles dentro del proyecto',
+        '💠 Eliminar miembros si es necesario'
+      ],
+      tipo: 'info'
+    },
+    {
+      id: 'tips',
+      titulo: 'Aclaraciones y consejos',
+      contenido: [
+        'Al agregar un miembro, se debe asignar un rol',
+      ],
+      tipo: 'tips'
+    },
+    {
+      id: 'etapas-proyecto',
+      titulo: '📊 Etapas del proyecto',
+      contenido: [
+        'Las etapas permiten dividir el proyecto en fases, permitiendo al usuario crear, editar y eliminar etapas según sea necesario',
+        'Cada etapa tiene nombre, descripción y fechas, al eliminar una etapa, se elimina toda la información relacionada a esa etapa, incluyendo tareas, tiempos y reportes',
+      ],
+      tipo: 'info'
+    },
+    {
+      id: 'iteraciones-proyecto',
+      titulo: '📊 Iteraciones del proyecto',
+      contenido: [
+        'Cada etapa se divide en iteraciones, permitiendo organizar el trabajo en ciclos más pequeños, permitiendo al usuario crear, editar y eliminar iteraciones según sea necesario',
+        'Cada iteración tiene nombre, descripción y fechas, al eliminar una iteración, se elimina toda la información relacionada a esa iteración, incluyendo tareas, tiempos y reportes',
+      ],
+      tipo: 'info'
+    },
+    {
+      id: 'espacio-de-trabajo',
+      titulo: '⏱️ Espacio de trabajo',
+      contenido: [
+        'Ir a "Espacio de trabajo"',
+        'Seleccionar una tarea',
+        'Iniciar el cronómetro para registrar el tiempo dedicado a la tarea',
+        'Detener el cronómetro cuando termines',
+        'El tiempo registrado se guardará automáticamente en la tarea'
+      ],
+      tipo: 'pasos'
+    },
+    {
+      id: 'tips',
+      titulo: '⚠️ Importante',
+      contenido: [
+        'No se puede crear tareas fuera de la iteración',
+        'Las eliminaciones no se pueden deshacer',
+        'Algunas funciones dependen de tu rol'
+      ],
+      tipo: 'tips'
+    },
+    {
+      id: 'reportes',
+      titulo: '📈 Reportes y métricas',
+      contenido: [
+        'En esta sección podrás ver gráficos y métricas sobre el progreso del proyecto, tiempos registrados, tareas completadas y más',
+        'Incluye métricas como tareas atrasadas y próximos vencimientos',
+        'La información se puede filtrar por etapa, iteración o período de tiempo',
+      ],
+      tipo: 'info'
+    },
+    {
+      id: 'tips',
+      titulo: '⚠️ Importante',
+      contenido: [
+        'Kairos permite la exportación de los datos de cada proyecto para su posterior análisis',
+      ],
+      tipo: 'tips'
+    },
+    {
+      id: 'tips',
+      titulo: '⁉️ Preguntas frecuentes',
+      contenido: [
+        '¿Puedo estar en varios proyectos?',
+        'Sí, puedes ser miembro de varios proyectos y cambiar entre ellos fácilmente.',
+        '¿Puedo asignar más de un responsable a una tarea?',
+        'No, cada tarea solo puede tener un responsable asignado.',
+        'Se actualizan los reportes?'
+        ,'Sí, los reportes se acualizan en tiempo real',
+        'Puedo eliminar un proyecto?,',
+        'Sí, siendo un administrador del proyecto, puedes eliminarlo desde la configuración del proyecto, pero ten cuidado, esta acción no se puede deshacer y eliminará toda la información relacionada al proyecto.',
+        '¿No veo algunas opciones?',
+        'Algunas funciones solo están disponibles para ciertos roles, como administradores o líder de proyecto.'
+      ],
+      tipo: 'tips'
     }
+  ];
 
-    scrollToSection(id: string) {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        this.sidebarOpen = false;
-      }
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  scrollToSection(id: string) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      this.sidebarOpen = false;
     }
   }
+}

@@ -1,158 +1,66 @@
-/* Tooltip flotante del tour */
-.tour-tooltip-float {
-  position: absolute;
-  z-index: 3000;
-  display: block;
-  pointer-events: auto;
-  max-width: 95vw;
-}
-.tour-tooltip-float .tour-tooltip-content {
-  background: #3bb0d6;
-  color: #fff;
-  padding: 1.2rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-  text-align: center;
-  max-width: 320px;
-  min-width: 180px;
-  word-break: break-word;
-}
-.tour-tooltip-float .tour-tooltip-arrow {
-  width: 0;
-  height: 0;
-  border-left: 18px solid transparent;
-  border-right: 18px solid transparent;
-  border-bottom: 18px solid #3bb0d6;
-  margin: 0 auto -6px auto;
-}
-/* Tooltip especial del tour sobre la foto de perfil */
-.tour-tooltip-foto-perfil {
-  position: absolute;
-  top: 60px; /* Ajusta según la posición real de la foto de perfil */
-  right: 40px; /* Ajusta según la posición real de la foto de perfil */
-  z-index: 3000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.tour-tooltip-content {
-  background: #3bb0d6;
-  color: #fff;
-  padding: 1.2rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-  text-align: center;
-  max-width: 320px;
-}
-
-.tour-tooltip-arrow {
-  width: 0;
-  height: 0;
-  border-left: 18px solid transparent;
-  border-right: 18px solid transparent;
-  border-bottom: 18px solid #3bb0d6;
-  margin-bottom: -6px;
-}
-/* Overlay del tour */
-.tour-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.5);
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tour-content {
-  background: #fff;
-  padding: 2rem 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
-  max-width: 400px;
-  text-align: center;
-}
-
-.tour-mensaje {
-  font-size: 1.2rem;
-  margin-bottom: 1.5rem;
-}
-
-.tour-controles button {
-  background: #1976d2;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 0.7rem 1.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.tour-controles button:hover {
-  background: #125ea2;
-}
 .ayuda-layout {
   display: flex;
   min-height: 100vh;
+  background: #f4f6f8;
 }
 
+/* SIDEBAR */
 .sidebar {
   width: 250px;
-  background: #222;
+  background: #1e1e2f;
   color: #fff;
   position: fixed;
   left: -250px;
   top: 0;
   height: 100%;
-  overflow-y: auto;
   transition: left 0.3s;
   z-index: 1000;
   padding-top: 2rem;
+  overflow-y: auto;
 }
+
 .sidebar.open {
   left: 0;
 }
+
 .sidebar ul {
   list-style: none;
   padding: 0;
 }
+
 .sidebar li {
   margin: 1rem 0;
 }
+
 .sidebar a {
   color: #fff;
   text-decoration: none;
   cursor: pointer;
-  font-size: 1.1rem;
   padding: 0.5rem 1rem;
   display: block;
-  border-radius: 4px;
+  border-radius: 6px;
   transition: background 0.2s;
 }
+
 .sidebar a:hover {
-  background: #444;
+  background: #333;
 }
+
+/* BOTONES */
 .sidebar-toggle {
   position: fixed;
-  top: 1rem;
+  top: 0.5rem;
   left: 1rem;
-  background: #222;
+  background: #1e1e2f;
   color: #fff;
   border: none;
-  font-size: 2rem;
-  z-index: 1100;
+  font-size: 1.8rem;
+  z-index: 1200;
   cursor: pointer;
   border-radius: 4px;
-  padding: 0.2rem 0.7rem;
+  padding: 0.3rem 0.7rem;
 }
+
 .close-btn {
   position: absolute;
   top: 0.5rem;
@@ -163,38 +71,97 @@
   font-size: 2rem;
   cursor: pointer;
 }
+
+/* CONTENEDOR */
 .ayuda-container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
   flex: 1;
 }
+
 .ayuda-container h1 {
   text-align: center;
   margin-bottom: 2rem;
 }
+
+/* CARDS */
 .ayuda-container section {
-  margin-bottom: 2.5rem;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
-.ayuda-container video, .ayuda-container iframe {
-  display: block;
-  margin: 1rem auto;
+
+/* PASOS */
+.pasos-lista {
+  list-style: none;
+  padding: 0;
+  counter-reset: step;
+}
+
+.pasos-lista li {
+  background: #f1f3f5;
+  margin-bottom: 0.7rem;
+  padding: 0.8rem 1rem;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: relative;
+  padding-left: 2.5rem;
 }
+
+.pasos-lista li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0.8rem;
+  top: 0.8rem;
+  background: #1e1e2f;
+  color: white;
+  width: 20px;
+  height: 20px;
+  font-size: 0.8rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* TIPS */
+.tips-lista {
+  list-style: none;
+  padding: 0;
+}
+
+.tips-lista li {
+  background: #fff3cd;
+  color: #856404;
+  margin-bottom: 0.7rem;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+}
+
+/* VIDEO */
+.video-container {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+iframe {
+  border-radius: 8px;
+}
+
+/* RESPONSIVE */
 @media (max-width: 900px) {
-  .ayuda-layout {
-    flex-direction: column;
-  }
   .sidebar {
     width: 200px;
     left: -200px;
   }
+
   .sidebar.open {
     left: 0;
   }
+
   .ayuda-container {
     padding: 1rem;
   }

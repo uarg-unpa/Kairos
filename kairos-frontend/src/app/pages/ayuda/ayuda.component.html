@@ -1,40 +1,65 @@
 <div class="ayuda-layout">
-  <button class="sidebar-toggle" (click)="toggleSidebar()">&#9776;</button>
+
+  <!-- BOTÓN -->
+  <button class="sidebar-toggle" (click)="toggleSidebar()">☰</button>
+
+  <!-- SIDEBAR -->
   <nav class="sidebar" [class.open]="sidebarOpen">
-    <button class="close-btn" (click)="toggleSidebar()">&times;</button>
+    <button class="close-btn" (click)="toggleSidebar()">×</button>
     <ul>
       <li *ngFor="let paso of pasos">
-        <a (click)="scrollToSection(paso.id)">{{ paso.titulo }}</a>
+        <a (click)="scrollToSection(paso.id)">
+          {{ paso.titulo }}
+        </a>
       </li>
     </ul>
   </nav>
+
+  <!-- CONTENIDO -->
   <div class="ayuda-container">
-    <h1>Manual del Usuario - Kairos</h1>
-
-
-
-
-    <!-- Tooltip flotante del tour, posicionado cerca del elemento objetivo -->
-
+    <h1>Centro de Ayuda - Kairos</h1>
 
     <section *ngFor="let paso of pasos" [attr.id]="paso.id">
+
       <h2>{{ paso.titulo }}</h2>
-      <p>{{ paso.descripcion }}</p>
-      <ul *ngIf="paso.pasos">
-        <li *ngFor="let item of paso.pasos">{{ item }}</li>
-      </ul>
-      <p *ngIf="paso.cierre">{{ paso.cierre }}</p>
-      <div *ngIf="paso.videoUrl">
-        <ng-container *ngIf="paso.videoUrl.includes('youtube.com') || paso.videoUrl.includes('youtu.be'); else localVideo">
-          <iframe width="480" height="270" [src]="paso.videoUrl | safeUrl" frameborder="0" allowfullscreen></iframe>
-        </ng-container>
-        <ng-template #localVideo>
-          <video width="480" controls>
-            <source [src]="paso.videoUrl" type="video/mp4">
-            Tu navegador no soporta la reproducción de video.
-          </video>
-        </ng-template>
+
+      <div [ngSwitch]="paso.tipo">
+
+        <!-- TEXTO NORMAL -->
+        <div *ngSwitchCase="'info'">
+          <p *ngFor="let item of paso.contenido">
+            {{ item }}
+          </p>
+        </div>
+
+        <!-- PASOS -->
+        <ul *ngSwitchCase="'pasos'" class="pasos-lista">
+          <li *ngFor="let item of paso.contenido">
+            {{ item }}
+          </li>
+        </ul>
+
+        <!-- TIPS -->
+        <ul *ngSwitchCase="'tips'" class="tips-lista">
+          <li *ngFor="let item of paso.contenido">
+            {{ item }}
+          </li>
+        </ul>
+
       </div>
+
+      <!-- VIDEO -->
+      <div *ngIf="paso.videoUrl" class="video-container">
+        <iframe
+          width="480"
+          height="270"
+          [src]="paso.videoUrl | safeUrl"
+          frameborder="0"
+          allowfullscreen>
+        </iframe>
+      </div>
+
     </section>
   </div>
+
 </div>
