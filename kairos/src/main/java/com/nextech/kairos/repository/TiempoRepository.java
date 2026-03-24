@@ -43,6 +43,9 @@ List<Tiempo> findLast5ByUsuarioId(@Param("idUsuario") Long idUsuario, Pageable p
     @Query("SELECT t.tarea.idTarea, SUM(t.duracion) FROM Tiempo t WHERE t.usuario.id = :idUsuario GROUP BY t.tarea.idTarea")
     List<Object[]> sumHorasPorTareaUsuario(@Param("idUsuario") Long idUsuario);
 
+    @Query("SELECT t.tareaPersonal.id, SUM(t.duracion) FROM Tiempo t WHERE t.usuario.id = :idUsuario AND t.tareaPersonal IS NOT NULL GROUP BY t.tareaPersonal.id")
+    List<Object[]> sumHorasPorTareaPersonalUsuario(@Param("idUsuario") Long idUsuario);
+
     // Horas por iteración (t.duracion está en minutos)
     @Query("SELECT i.idIteracion, i.numero, COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
            "JOIN t.tarea ta JOIN ta.iteracion i " +

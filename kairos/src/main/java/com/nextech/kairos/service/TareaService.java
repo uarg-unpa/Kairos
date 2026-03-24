@@ -168,6 +168,7 @@ public class TareaService implements ITareaService {
         nuevaTarea.setPrioridad("Media"); 
         nuevaTarea.setIteracion(iteracion);
         nuevaTarea.setFechaFin(fechaFin);
+        nuevaTarea.setHorasEstimadas(tareaPersonal.getHorasEstimadas());
 
         
         Set<Categoria> categorias = new HashSet<>();

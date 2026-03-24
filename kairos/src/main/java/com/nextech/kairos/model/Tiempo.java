@@ -2,7 +2,6 @@ package com.nextech.kairos.model;
 
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,12 +35,12 @@ public class Tiempo {
     private Usuario usuario;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idTarea", nullable = true)
     private Tarea tarea;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idTareaPersonal", nullable = true)
     private TareaPersonal tareaPersonal;
 

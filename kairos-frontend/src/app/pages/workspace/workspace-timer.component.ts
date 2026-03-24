@@ -23,6 +23,8 @@ interface PersonalTask {
   estado: string;
   proyectoPropuestoId?: number;
   categoriaPropuestaId?: number;
+  horasEstimadas?: number;
+  tiempoDedicado?: number;
 }
 
 interface ManualTimeEntry {
@@ -67,7 +69,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
 
   combinedTasks: any[] = [];
   projectTasks: any[] = [];
-  projectIdInView: number | null = null;
+  projectIdInView: number | null = null; //tareas de proyecto seleccionado
 
   private proyectoNameCache: { [id: number]: string } = {};
 
@@ -104,7 +106,8 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   private manualTimeModal: any;
 
   private personalTaskModal: any;
-  newPersonalTask: { nombre: string; descripcion: string } = { nombre: '', descripcion: '' };
+  newPersonalTask: { nombre: string; descripcion: string; horasEstimadas: number | null } = { nombre: '', descripcion: '', horasEstimadas: null };
+  editingPersonalTaskId: number | null = null;
 
   private proposeTaskModal: any;
   proposeTaskData: { taskId: number | null; proyectoId: number | null; categoriaId: number | null } = { taskId: null, proyectoId: null, categoriaId: null };
@@ -228,15 +231,25 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
           this.tareas = result.tareas || [];
           this.personalTasks = result.personalTasks || [];
 
-          return this.timerService.getTiemposTotalesUsuario().pipe(
-            catchError(() => of({} as { [k: number]: number }))
-          );
+          return forkJoin({
+            totales: this.timerService.getTiemposTotalesUsuario().pipe(
+              catchError(() => of({} as { [k: number]: number }))
+            ),
+            totalesPersonales: this.timerService.getTiemposTotalesPersonalesUsuario().pipe(
+              catchError(() => of({} as { [k: number]: number }))
+            )
+          });
         })
       ).subscribe({
-        next: (tiemposMap) => {
+        next: ({totales, totalesPersonales}) => {
           (this.tareas || []).forEach(t => {
-            const minutos = (tiemposMap && tiemposMap[t.idTarea]) ? tiemposMap[t.idTarea] : 0;
+            const minutos = (totales && totales[t.idTarea]) ? totales[t.idTarea] : 0;
             t.tiempoDedicado = parseFloat((minutos / 60).toFixed(2)); // Convertir a horas
+          });
+
+          (this.personalTasks || []).forEach(p => {
+            const minutos = (totalesPersonales && totalesPersonales[p.id]) ? totalesPersonales[p.id] : 0;
+            p.tiempoDedicado = parseFloat((minutos / 60).toFixed(2));
           });
 
           const proyectoIds = Array.from(new Set(
@@ -275,6 +288,8 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
                 estado: p.estado,
                 proyectoPropuestoId: p.proyectoPropuestoId,
                 categoriaPropuestaId: p.categoriaPropuestaId,
+                horasEstimadas: p.horasEstimadas,
+                tiempoDedicado: p.tiempoDedicado,
                 prioridad: 'Personal',
                 type: 'PERSONAL'
               }))
@@ -301,7 +316,9 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
                 priority: 'Personal',
                 description: p.descripcion,
                 type: 'PERSONAL',
-                proyectoPropuestoId: p.proyectoPropuestoId
+                proyectoPropuestoId: p.proyectoPropuestoId,
+                horasEstimadas: p.horasEstimadas,
+                tiempoDedicado: p.tiempoDedicado
               }));
 
             this.availableTasks = projectId ? projectSelector : [...projectSelector, ...personalSelector];
@@ -439,12 +456,8 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (task.type === 'PERSONAL') {
-      this.alertService.warning('No soportado', 'El backend actual no permite registrar tiempos directamente sobre tareas personales. Proponela a un proyecto o convertila a tarea del proyecto para registrar tiempo.');
-      return;
-    }
-
-    this.timerService.startTimer(task.id, task.title);
+    const isPersonal = task.type === 'PERSONAL';
+    this.timerService.startTimer(task.id, task.title, isPersonal);
   }
 
   handlePause(): void {
@@ -469,12 +482,11 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (tarea.type === 'PERSONAL') {
-      this.alertService.warning('No soportado', 'El backend actual no permite iniciar cronómetro sobre tareas personales. Proponela a un proyecto o convertila para poder medir tiempo.');
-      return;
-    }
+    const id = tarea.idTarea || tarea.id;
+    const title = tarea.nombre || tarea.title;
+    const isPersonal = tarea.type === 'PERSONAL';
 
-    this.timerService.startTimer(tarea.idTarea || tarea.id, tarea.nombre || tarea.title);
+    this.timerService.startTimer(id, title, isPersonal);
   }
 
   async markAsCompleted(taskId: number): Promise<void> {
@@ -580,13 +592,9 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     const taskTitle = selectedTask?.title || 'Tarea Desconocida';
     const isPersonal = (selectedTask as any)?.type === 'PERSONAL';
 
-    if (isPersonal) {
-      this.alertService.warning('No soportado', 'Registro manual sobre tareas personales no está soportado por el backend. Proponela a un proyecto o convertila a tarea del proyecto.');
-      return;
-    }
-
     const payload = {
-      idTarea: isPersonal ? null : entry.idTarea,
+      idTarea: isPersonal ? null : (entry.idTarea || entry.idTareaPersonal),
+      idTareaPersonal: isPersonal ? (entry.idTareaPersonal || entry.idTarea) : null,
       durationSeconds: totalSeconds,
       taskTitle: taskTitle,
       fechaRegistro: entry.fechaRegistro,
@@ -611,31 +619,80 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   // metodos de tareas personales
 
   openPersonalTaskModal(): void {
-    this.newPersonalTask = { nombre: '', descripcion: '' };
+    this.newPersonalTask = { nombre: '', descripcion: '', horasEstimadas: null };
+    this.editingPersonalTaskId = null;
+    this.personalTaskModal?.show();
+  }
+
+  openEditPersonalTaskModal(tarea: any): void {
+    this.editingPersonalTaskId = tarea.id;
+    this.newPersonalTask = {
+      nombre: tarea.nombre,
+      descripcion: tarea.descripcion || '',
+      horasEstimadas: tarea.horasEstimadas || null
+    };
     this.personalTaskModal?.show();
   }
 
   closePersonalTaskModal(): void {
     this.personalTaskModal?.hide();
+    this.editingPersonalTaskId = null;
   }
 
   createPersonalTask(): void {
-    if (!this.newPersonalTask.nombre) {
-      this.alertService.warning('Atención', 'El nombre es obligatorio.');
+    if (!this.newPersonalTask.nombre.trim()) return;
+
+    if (this.newPersonalTask.horasEstimadas !== null && this.newPersonalTask.horasEstimadas < 0) {
+      this.alertService.warning('Atención', 'Las horas estimadas no pueden ser negativas.');
       return;
     }
 
-    this.http.post('/api/personal-tasks', this.newPersonalTask).subscribe({
-      next: () => {
-        this.alertService.success('Éxito', 'Tarea personal creada.');
-        this.loadTasks();
-        this.closePersonalTaskModal();
-      },
-      error: (err) => {
-        console.error('Error creating personal task', err);
-        this.alertService.error('Error', 'No se pudo crear la tarea personal.');
-      }
-    });
+    if (this.editingPersonalTaskId) {
+      this.http.put(`/api/personal-tasks/${this.editingPersonalTaskId}`, this.newPersonalTask).subscribe({
+        next: () => {
+          this.alertService.success('Éxito', 'Tarea personal actualizada.');
+          this.loadTasks();
+          this.closePersonalTaskModal();
+        },
+        error: (err) => {
+          console.error('Error al actualizar tarea personal', err);
+          this.alertService.error('Error', 'No se pudo actualizar la tarea personal.');
+        }
+      });
+    } else {
+      this.http.post('/api/personal-tasks', this.newPersonalTask).subscribe({
+        next: () => {
+          this.alertService.success('Éxito', 'Tarea personal creada.');
+          this.loadTasks();
+          this.closePersonalTaskModal();
+        },
+        error: (err) => {
+          console.error('Error creating personal task', err);
+          this.alertService.error('Error', 'No se pudo crear la tarea personal.');
+        }
+      });
+    }
+  }
+
+  async deletePersonalTask(id: number): Promise<void> {
+    const isConfirmed = await this.alertService.confirm(
+      '¿Eliminar Tarea Personal?', 
+      '¿Estás seguro de que deseas eliminar esta tarea personal? Se eliminarán todos los tiempos vinculados a ella.',
+      'Sí, eliminar'
+    );
+
+    if (isConfirmed) {
+      this.http.delete(`/api/personal-tasks/${id}`).subscribe({
+        next: () => {
+          this.alertService.success('Éxito', 'Tarea personal eliminada.');
+          this.loadTasks();
+        },
+        error: (err) => {
+          console.error('Error al eliminar tarea personal', err);
+          this.alertService.error('Error', 'No se pudo eliminar la tarea personal.');
+        }
+      });
+    }
   }
 
   openProposeTaskModal(taskId: number): void {

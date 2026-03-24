@@ -19,10 +19,14 @@ public class TareaPersonalService {
     @Autowired
     private com.nextech.kairos.repository.UsuarioRepository usuarioRepository;
 
-    public TareaPersonal crearTareaPersonal(Usuario usuario, String nombre, String descripcion) {
+    @Autowired
+    private com.nextech.kairos.repository.TiempoRepository tiempoRepository;
+
+    public TareaPersonal crearTareaPersonal(Usuario usuario, String nombre, String descripcion, Double horasEstimadas) {
         Usuario managedUsuario = usuarioRepository.findById(usuario.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
         TareaPersonal tarea = new TareaPersonal(managedUsuario, nombre, descripcion, LocalDate.now(), "BORRADOR");
+        tarea.setHorasEstimadas(horasEstimadas);
         return tareaPersonalRepository.save(tarea);
     }
 
@@ -57,7 +61,19 @@ public class TareaPersonalService {
     }
     
     public void eliminarTareaPersonal(Long id) {
+        TareaPersonal tarea = tareaPersonalRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tarea no encontrada"));
+        List<com.nextech.kairos.model.Tiempo> tiempos = tiempoRepository.findByTareaPersonal(tarea);
+        tiempoRepository.deleteAll(tiempos);
         tareaPersonalRepository.deleteById(id);
+    }
+    
+    public TareaPersonal actualizarTareaPersonal(Long id, com.nextech.kairos.dto.TareaPersonalCreateDTO dto) {
+        TareaPersonal tarea = tareaPersonalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tarea no encontrada"));
+        tarea.setNombre(dto.getNombre());
+        tarea.setDescripcion(dto.getDescripcion());
+        tarea.setHorasEstimadas(dto.getHorasEstimadas());
+        return tareaPersonalRepository.save(tarea);
     }
     
     public TareaPersonal getTareaPersonalPorId(Long id) {

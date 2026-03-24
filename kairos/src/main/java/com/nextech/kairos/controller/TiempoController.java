@@ -61,6 +61,7 @@ public class TiempoController {
         Tiempo tiempoGuardado = tiempoService.registerTime(
             nuevoTiempo, 
             request.getIdTarea(), 
+            request.getIdTareaPersonal(),
             usuario.getId(), 
             request.getDuracionSegundos(), 
             request.getFechaRegistro(),
@@ -86,6 +87,16 @@ public class TiempoController {
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         java.util.Map<Long, Integer> totales = tiempoService.getTiemposTotalesPorUsuario(usuario.getId());
+        return ResponseEntity.ok(totales);
+    }
+
+    @GetMapping("/totales-personales-usuario")
+    public ResponseEntity<java.util.Map<Long, Integer>> getTiemposTotalesPersonalesUsuario(Authentication authentication) {
+        String email = (String) authentication.getPrincipal();
+        Usuario usuario = usuarioService.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        java.util.Map<Long, Integer> totales = tiempoService.getTiemposTotalesPersonalesPorUsuario(usuario.getId());
         return ResponseEntity.ok(totales);
     }
 

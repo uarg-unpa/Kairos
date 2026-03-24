@@ -48,7 +48,7 @@
 
       <div class="card planning-card mb-3">
         <div class="card-header bg-light">
-          <strong>Tareas del Proyecto</strong>
+          <strong>Tareas de proyecto</strong>
           <span *ngIf="projectIdInView" class="small text-muted ms-2">Mostrando solo este proyecto</span>
         </div>
         <div class="card-body p-0">
@@ -189,11 +189,56 @@
                       <i class="bi bi-send me-2"></i>Proponer a Proyecto
                     </a>
                   </li>
+                  <li>
+                    <a class="dropdown-item" style="cursor: pointer;" (click)="openEditPersonalTaskModal(tarea)">
+                      <i class="bi bi-pencil me-2"></i>Editar Tarea
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item text-danger" style="cursor: pointer;" (click)="deletePersonalTask(tarea.id)">
+                      <i class="bi bi-trash me-2"></i>Eliminar Tarea
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>
 
             <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
+            
+            <div class="row g-2 small align-items-center text-muted">
+              <div class="col-md-6">
+                <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1"></i>Estimado:
+                  {{ tarea.horasEstimadas ?? 0 }}h
+                </span>
+              </div>
+              <div class="col-md-2 ms-auto">
+                <div class="mt-2 flex-column d-flex gap-2" *ngIf="tarea.estado !== 'Completado'">
+                  <button class="btn btn-sm btn-outline-purple button-iniciar-tarea" 
+                    (click)="startTimerForTask({ id: tarea.id, nombre: tarea.nombre + ' (Personal)', type: 'PERSONAL' })"
+                    title="Iniciar Cronómetro" [disabled]="timerState.startTime !== null && !timerState.isPaused">
+                    <i class="bi bi-play-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Barra de Progreso -->
+            <div class="mt-2" *ngIf="tarea.horasEstimadas && tarea.horasEstimadas > 0">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="text-muted">Progreso: {{ tarea.tiempoDedicado || 0 }}h / {{ tarea.horasEstimadas }}h</span>
+                <span
+                  [ngClass]="{'text-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'text-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}">
+                  {{ ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) | number:'1.0-0' }}%
+                </span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar" role="progressbar"
+                  [style.width.%]="((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) > 100 ? 100 : ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100)"
+                  [ngClass]="{'bg-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'bg-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}"
+                  aria-valuemin="0" aria-valuemax="100">
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -397,7 +442,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Nueva Tarea Personal</h5>
+        <h5 class="modal-title">{{ editingPersonalTaskId ? 'Editar Tarea Personal' : 'Nueva Tarea Personal' }}</h5>
         <button type="button" class="btn-close" (click)="closePersonalTaskModal()"></button>
       </div>
       <div class="modal-body">
@@ -410,10 +455,14 @@
           <label class="form-label">Descripción</label>
           <textarea class="form-control" [(ngModel)]="newPersonalTask.descripcion" rows="3"></textarea>
         </div>
+        <div class="mb-3">
+          <label class="form-label">Horas Estimadas (opcional)</label>
+          <input type="number" class="form-control" [(ngModel)]="newPersonalTask.horasEstimadas" min="0" step="0.5" placeholder="Ej: 2.5">
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closePersonalTaskModal()">Cancelar</button>
-        <button type="button" class="btn btn-primary" (click)="createPersonalTask()">Crear Tarea</button>
+        <button type="button" class="btn btn-purple" (click)="createPersonalTask()">{{ editingPersonalTaskId ? 'Guardar Cambios' : 'Guardar' }}</button>
       </div>
     </div>
   </div>

@@ -9,8 +9,9 @@ import jakarta.validation.constraints.NotNull;
  */
 public class TiempoRegistroRequest {
     
-    @NotNull
     private Long idTarea;
+    
+    private Long idTareaPersonal;
     
     @NotNull
     private Integer duracionSegundos; 
@@ -20,6 +21,8 @@ public class TiempoRegistroRequest {
 
     public Long getIdTarea() { return idTarea; }
     public void setIdTarea(Long idTarea) { this.idTarea = idTarea; }
+    public Long getIdTareaPersonal() { return idTareaPersonal; }
+    public void setIdTareaPersonal(Long idTareaPersonal) { this.idTareaPersonal = idTareaPersonal; }
     public Integer getDuracionSegundos() { return duracionSegundos; }
     public void setDuracionSegundos(Integer duracionSegundos) { this.duracionSegundos = duracionSegundos; }
     public LocalDate getFechaRegistro() { return fechaRegistro; }

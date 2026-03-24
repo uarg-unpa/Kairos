@@ -44,6 +44,9 @@ public class TareaPersonal {
     @Column(length = 20)
     private String estado;
 
+    @Column(name = "horas_estimadas")
+    private Double horasEstimadas;
+
     // Campos para la propuesta
     @Column(name = "proyecto_propuesto_id")
     private Long proyectoPropuestoId;
@@ -124,5 +127,13 @@ public class TareaPersonal {
 
     public void setCategoriaPropuestaId(Long categoriaPropuestaId) {
         this.categoriaPropuestaId = categoriaPropuestaId;
+    }
+
+    public Double getHorasEstimadas() {
+        return horasEstimadas;
+    }
+
+    public void setHorasEstimadas(Double horasEstimadas) {
+        this.horasEstimadas = horasEstimadas;
     }
 }

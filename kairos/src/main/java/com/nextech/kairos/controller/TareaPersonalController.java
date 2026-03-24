@@ -46,7 +46,7 @@ public class TareaPersonalController {
     public ResponseEntity<TareaPersonal> createPersonalTask(@AuthenticationPrincipal String email, @RequestBody com.nextech.kairos.dto.TareaPersonalCreateDTO tareaPersonalDTO) {
         Usuario usuario = usuarioService.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-        return ResponseEntity.ok(tareaPersonalService.crearTareaPersonal(usuario, tareaPersonalDTO.getNombre(), tareaPersonalDTO.getDescripcion()));
+        return ResponseEntity.ok(tareaPersonalService.crearTareaPersonal(usuario, tareaPersonalDTO.getNombre(), tareaPersonalDTO.getDescripcion(), tareaPersonalDTO.getHorasEstimadas()));
     }
 
     @GetMapping
@@ -54,6 +54,13 @@ public class TareaPersonalController {
         Usuario usuario = usuarioService.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
         return ResponseEntity.ok(tareaPersonalService.getTareasPersonalesPorUsuario(usuario));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TareaPersonal> updatePersonalTask(
+            @PathVariable Long id, 
+            @RequestBody com.nextech.kairos.dto.TareaPersonalCreateDTO dto) {
+        return ResponseEntity.ok(tareaPersonalService.actualizarTareaPersonal(id, dto));
     }
 
     @GetMapping("/project/{projectId}/proposed")
