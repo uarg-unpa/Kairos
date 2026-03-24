@@ -28,6 +28,7 @@ public class TareaRequest {
 
     private LocalDate fechaCreacion;
     private LocalDate fechaFin;
+    private LocalDate fechaCompletada;
     private Double horasEstimadas;
     private Long idTarea;
     private String usuarioNombre;
@@ -121,6 +122,14 @@ public class TareaRequest {
 
     public void setFechaFin(LocalDate fechaFin) {
         this.fechaFin = fechaFin;
+    }
+
+    public LocalDate getFechaCompletada() {
+        return fechaCompletada;
+    }
+
+    public void setFechaCompletada(LocalDate fechaCompletada) {
+        this.fechaCompletada = fechaCompletada;
     }
 
     public Long getUsuarioId() {

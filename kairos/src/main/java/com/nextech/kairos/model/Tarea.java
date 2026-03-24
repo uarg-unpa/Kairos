@@ -64,6 +64,9 @@ public class Tarea {
     @NotBlank(message = "El nombre de la tarea es obligatorio")
     private String nombre;
 
+    @Column(name = "fecha_completada")
+    private LocalDate fechaCompletada;
+
     @Column(name = "horas_estimadas")
     private Double horasEstimadas;
 
@@ -187,6 +190,14 @@ public class Tarea {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public LocalDate getFechaCompletada() {
+        return fechaCompletada;
+    }
+
+    public void setFechaCompletada(LocalDate fechaCompletada) {
+        this.fechaCompletada = fechaCompletada;
     }
 
     public Set<Categoria> getCategorias() {

@@ -356,9 +356,8 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
       .reduce((sum, t) => sum + (t.duracionMinutos || 0), 0);
     this.totalTimeToday = this.formatHours(hoyMinutos);
 
-    const todayStr = new Date().toDateString();
     this.tasksCompletedToday = (this.tareas || [])
-      .filter(t => t.estado === 'Completado' && new Date(t.fechaCreacion).toDateString() === todayStr)
+      .filter(t => t.estado === 'Completado' && t.fechaCompletada === today)
       .length;
 
     this.activeTasks = (this.tareas || []).filter(t => t.estado !== 'Completado').length + this.personalTasks.filter(p => p.estado !== 'Completado').length;

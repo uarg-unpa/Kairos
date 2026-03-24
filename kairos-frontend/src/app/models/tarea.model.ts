@@ -13,6 +13,7 @@ export interface Tarea {
   prioridad: string;
   fechaCreacion: string;
   fechaFin?: string;
+  fechaCompletada?: string;
   horasEstimadas?: number;
   usuarioNombre: string;
   usuarioRol: string;

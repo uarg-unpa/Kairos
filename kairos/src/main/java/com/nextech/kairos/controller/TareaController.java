@@ -69,6 +69,7 @@ public class TareaController {
             dto.setPrioridad(t.getPrioridad());
             dto.setFechaCreacion(t.getFechaCreacion());
             dto.setFechaFin(t.getFechaFin());
+            dto.setFechaCompletada(t.getFechaCompletada());
             dto.setHorasEstimadas(t.getHorasEstimadas());
             dto.setUsuarioId(t.getUsuario().getId());
             dto.setUsuarioNombre(t.getUsuario().getNombre());
@@ -101,6 +102,7 @@ public class TareaController {
             dto.setPrioridad(t.getPrioridad());
             dto.setFechaCreacion(t.getFechaCreacion());
             dto.setFechaFin(t.getFechaFin());
+            dto.setFechaCompletada(t.getFechaCompletada());
             dto.setHorasEstimadas(t.getHorasEstimadas());
             dto.setUsuarioId(t.getUsuario().getId());
             dto.setUsuarioNombre(t.getUsuario().getNombre());
@@ -134,6 +136,7 @@ public List<TareaResponse> getTareasPorProyectoEIteracion(
         dto.setPrioridad(t.getPrioridad());
         dto.setFechaCreacion(t.getFechaCreacion());
         dto.setFechaFin(t.getFechaFin());
+        dto.setFechaCompletada(t.getFechaCompletada());
         dto.setHorasEstimadas(t.getHorasEstimadas());
         dto.setUsuarioId(t.getUsuario().getId());
         dto.setUsuarioNombre(t.getUsuario().getNombre());
@@ -169,6 +172,9 @@ public List<TareaResponse> getTareasPorProyectoEIteracion(
         tarea.setNombre(dto.getNombre());
         tarea.setDescripcion(dto.getDescripcion());
         tarea.setEstado(dto.getEstado());
+        if ("Completado".equalsIgnoreCase(dto.getEstado())) {
+            tarea.setFechaCompletada(java.time.LocalDate.now());
+        }
         tarea.setPrioridad(dto.getPrioridad());
         tarea.setFechaCreacion(dto.getFechaCreacion());
         tarea.setFechaFin(dto.getFechaFin());
@@ -253,8 +259,16 @@ public List<TareaResponse> getTareasPorProyectoEIteracion(
         if (cambios.getDescripcion() != null)
             tarea.setDescripcion(cambios.getDescripcion());
 
-        if (cambios.getEstado() != null)
+        if (cambios.getEstado() != null) {
             tarea.setEstado(cambios.getEstado());
+            if ("Completado".equalsIgnoreCase(cambios.getEstado())) {
+                if (tarea.getFechaCompletada() == null) {
+                    tarea.setFechaCompletada(java.time.LocalDate.now());
+                }
+            } else {
+                tarea.setFechaCompletada(null);
+            }
+        }
 
         if (cambios.getPrioridad() != null)
             tarea.setPrioridad(cambios.getPrioridad());
@@ -344,6 +358,7 @@ if (tieneAutoDependencia) {
             dto.setPrioridad(t.getPrioridad());
             dto.setFechaCreacion(t.getFechaCreacion());
             dto.setFechaFin(t.getFechaFin());
+            dto.setFechaCompletada(t.getFechaCompletada());
             dto.setHorasEstimadas(t.getHorasEstimadas());
             dto.setUsuarioNombre(t.getUsuario().getNombre());
             dto.setCategorias(
