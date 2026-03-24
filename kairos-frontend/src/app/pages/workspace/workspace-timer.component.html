@@ -174,9 +174,13 @@
               </h6>
               <div class="ms-auto">
                 <span class="badge bg-secondary ms-1">Personal</span>
-                <span class="badge bg-info ms-1" [ngClass]="{
-                              'bg-warning': tarea.estado === 'BORRADOR',
-                              'bg-info': tarea.estado === 'En Progreso'
+                <span class="badge ms-1" [ngClass]="{
+                              'bg-warning text-dark': tarea.estado === 'BORRADOR',
+                              'bg-info text-dark': tarea.estado === 'En Progreso',
+                              'bg-secondary': tarea.estado === 'PROPUESTA',
+                              'bg-danger': tarea.estado === 'RECHAZADA',
+                              'bg-success': tarea.estado === 'Completado' || tarea.estado === 'FINALIZADA',
+                              'bg-primary': !['BORRADOR', 'En Progreso', 'PROPUESTA', 'RECHAZADA', 'Completado', 'FINALIZADA'].includes(tarea.estado)
                             }">{{ tarea.estado }}</span>
               </div>
               <div class="dropdown" style="margin-left: 10px;">
