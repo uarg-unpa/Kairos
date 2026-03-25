@@ -782,8 +782,8 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   createPersonalTask(): void {
     if (!this.newPersonalTask.nombre.trim()) return;
 
-    if (this.newPersonalTask.horasEstimadas !== null && this.newPersonalTask.horasEstimadas < 0) {
-      this.alertService.warning('Atención', 'Las horas estimadas no pueden ser negativas.');
+    if (this.newPersonalTask.horasEstimadas === null || this.newPersonalTask.horasEstimadas <= 0) {
+      this.alertService.warning('Atención', 'Las horas estimadas son obligatorias y deben ser mayores a 0.');
       return;
     }
 
