@@ -101,7 +101,8 @@
                 <div class="d-flex flex-wrap gap-3">
                   <span *ngIf="tarea.usuarioNombre"><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
                   <span *ngIf="tarea.fechaFin"><i class="bi bi-calendar me-1"></i>{{ tarea.fechaFin | date }}</span>
-                  <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1"></i>Estimado: {{ tarea.horasEstimadas ?? 0 }}h</span>
+                  <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1"></i>Estimado: {{ tarea.horasEstimadas
+                    ?? 0 }}h</span>
                 </div>
               </div>
               <div *ngIf="tarea.estado !== 'Completado'" class="flex-shrink-0">
@@ -211,7 +212,8 @@
             <div class="d-flex justify-content-between align-items-end mt-2">
               <div class="small text-muted flex-grow-1 pe-2">
                 <div class="d-flex flex-wrap gap-3">
-                  <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1"></i>Estimado: {{ tarea.horasEstimadas ?? 0 }}h</span>
+                  <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1"></i>Estimado: {{ tarea.horasEstimadas
+                    ?? 0 }}h</span>
                 </div>
               </div>
               <div *ngIf="tarea.estado !== 'Completado'" class="flex-shrink-0">
@@ -484,13 +486,13 @@
           <div *ngIf="manualTimeEntry.editMode === 'range'">
             <div class="mb-3">
               <label class="form-label">Inicio</label>
-              <input type="datetime-local" class="form-control" [(ngModel)]="manualTimeEntry.startDateTime" name="manualStartDateTime"
-                [max]="today + 'T23:59'">
+              <input type="datetime-local" class="form-control" [(ngModel)]="manualTimeEntry.startDateTime"
+                name="manualStartDateTime" [max]="today + 'T23:59'">
             </div>
             <div class="mb-3">
               <label class="form-label">Fin</label>
-              <input type="datetime-local" class="form-control" [(ngModel)]="manualTimeEntry.endDateTime" name="manualEndDateTime"
-                [max]="today + 'T23:59'">
+              <input type="datetime-local" class="form-control" [(ngModel)]="manualTimeEntry.endDateTime"
+                name="manualEndDateTime" [max]="today + 'T23:59'">
             </div>
           </div>
 
@@ -522,21 +524,21 @@
         <div class="mb-3">
           <label class="form-label">Nombre de la tarea *</label>
           <input type="text" class="form-control" [(ngModel)]="newPersonalTask.nombre"
-            placeholder="Ej: Investigar nueva librería">
+            placeholder="Ej: Análisis de requisitos">
         </div>
         <div class="mb-3">
           <label class="form-label">Descripción</label>
           <textarea class="form-control" [(ngModel)]="newPersonalTask.descripcion" rows="3"></textarea>
         </div>
         <div class="mb-3">
-          <label class="form-label">Horas Estimadas (opcional)</label>
+          <label class="form-label">Horas Estimadas *</label>
           <input type="number" class="form-control" [(ngModel)]="newPersonalTask.horasEstimadas" min="0" step="0.5"
-            placeholder="Ej: 2.5">
+            placeholder="Ej: 2.5" required>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closePersonalTaskModal()">Cancelar</button>
-        <button type="button" class="btn btn-purple" (click)="createPersonalTask()">{{ editingPersonalTaskId ? 'Guardar
+        <button type="button" class="btn btn-success" (click)="createPersonalTask()">{{ editingPersonalTaskId ? 'Guardar
           Cambios' : 'Guardar' }}</button>
       </div>
     </div>
