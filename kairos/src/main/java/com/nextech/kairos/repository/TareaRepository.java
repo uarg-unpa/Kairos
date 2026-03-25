@@ -16,7 +16,8 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
     List<Tarea> findByNombreContainingIgnoreCase(String nombre);
     List<Tarea> findByEstado(String estado);
     List<Tarea> findByPrioridad(String prioridad);
-    List<Tarea> findByUsuario_Id(Long idUsuario);
+    @Query("SELECT t FROM Tarea t WHERE t.usuario.id = :idUsuario AND t.iteracion.etapa.proyecto.eliminado = false")
+    List<Tarea> findByUsuario_Id(@Param("idUsuario") Long idUsuario);
     List<Tarea> findByIteracion_IdIteracion(Long idIteracion);
     List<Tarea> findByCategorias_Nombre(String nombreCategoria);
     long countByUsuario_IdAndEstado(Long idUsuario, String estado);
@@ -32,9 +33,12 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
     @Query("SELECT t FROM Tarea t " +
        "WHERE t.iteracion.idIteracion = :idIteracion " +
        "AND t.iteracion.etapa.proyecto.idProyecto = :idProyecto")
-List<Tarea> findByProyectoIdAndIteracionId(
+    List<Tarea> findByProyectoIdAndIteracionId(
         @Param("idProyecto") Long idProyecto,
         @Param("idIteracion") Long idIteracion);
+
+    @Query("SELECT t FROM Tarea t WHERE t.usuario.id = :idUsuario AND t.iteracion.etapa.proyecto.idProyecto = :idProyecto AND LOWER(t.estado) NOT LIKE '%completad%' AND LOWER(t.estado) NOT LIKE '%finalizad%'")
+    List<Tarea> findTareasActivasDeUsuarioEnProyecto(@Param("idUsuario") Long idUsuario, @Param("idProyecto") Long idProyecto);
 
 
 }

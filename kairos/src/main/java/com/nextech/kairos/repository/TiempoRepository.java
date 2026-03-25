@@ -180,5 +180,8 @@ List<Tiempo> findLast15ByUsuarioId(@Param("idUsuario") Long idUsuario, Pageable 
                                         @Param("iteracionId") Long iteracionId,
                                         @Param("desde") LocalDate desde,
                                         @Param("hasta") LocalDate hasta);
+
+    @Query("SELECT COUNT(t) FROM Tiempo t JOIN t.tarea ta JOIN ta.iteracion i JOIN i.etapa e WHERE e.proyecto.idProyecto = :proyectoId")
+    long countByProyectoId(@Param("proyectoId") Long proyectoId);
 }
 

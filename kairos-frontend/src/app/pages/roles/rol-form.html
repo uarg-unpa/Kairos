@@ -1,44 +1,45 @@
-<div class="card">
-  <div class="card-header">
-    <h5>{{ titulo }}</h5>
-  </div>
-  <div class="card-body">
-    <form (ngSubmit)="guardar()">
-      <div class="form-group mb-3">
-        <label>Nombre</label>
-        <input type="text" class="form-control" [(ngModel)]="nombre" name="nombre" required />
-      </div>
+<div class="container my-5">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">{{ titulo || 'Crear Rol' }}</h4>
+    </div>
+    <div class="card-body p-4">
+      <form (ngSubmit)="guardar()">
+        <div class="mb-3">
+          <label class="form-label">Nombre del Rol:</label>
+          <input type="text" class="form-control" [(ngModel)]="nombre" name="nombre" required />
+        </div>
 
-      <div class="form-group">
-          <label>Permisos:</label>
-          @if (permisos().length > 0) {
-            <div class="row">
-                @for (permiso of permisos(); track permiso.id) {
-                    <div class="col-md-6">
-                        <div class="form-check">
-                            <input 
-                                class="form-check-input" 
-                                type="checkbox" 
-                                [id]="'permiso_' + permiso.id" 
-                                [value]="permiso.id"
-                                (change)="togglePermiso(permiso.id, $event.target.checked)"> 
-                            
-                            <label class="form-check-label" [for]="'permiso_' + permiso.id">
-                                <span class="bi bi-lock-locked"></span> 
-                                <span>{{ permiso.nombre }}</span>
-                            </label>
-                        </div>
-                    </div>
-                }
-            </div>
-          } @else {
-            <p class="text-muted">Cargando permisos...</p>
-          }
-      </div>
-      <div class="mt-3">
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <a routerLink="/roles" class="btn btn-secondary ms-2">Cancelar</a> 
-      </div>
-    </form>
+        <div class="mb-3">
+            <label class="form-label">Permisos:</label>
+            @if (permisos().length > 0) {
+              <div class="row">
+                  @for (permiso of permisos(); track permiso.id) {
+                      <div class="col-md-6 mb-2">
+                          <div class="form-check form-switch">
+                              <input 
+                                  class="form-check-input" 
+                                  type="checkbox" 
+                                  [id]="'permiso_' + permiso.id" 
+                                  [value]="permiso.id"
+                                  (change)="togglePermiso(permiso.id, $event.target.checked)"> 
+                              
+                              <label class="form-check-label ms-2" [for]="'permiso_' + permiso.id">
+                                  <i class="bi bi-lock-locked text-muted"></i> {{ permiso.nombre }}
+                              </label>
+                          </div>
+                      </div>
+                  }
+              </div>
+            } @else {
+              <p class="text-muted">Cargando permisos...</p>
+            }
+        </div>
+        <div class="mt-4">
+          <button type="submit" class="btn btn-primary me-2">Crear</button>
+          <a routerLink="/roles" class="btn btn-secondary">Cancelar</a> 
+        </div>
+      </form>
+    </div>
   </div>
 </div>

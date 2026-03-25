@@ -9,7 +9,7 @@ import { EtapaService } from '../../../services/etapa.service';
 import { TaskService } from '../../../services/tarea.service';
 import { IdCoderService } from '../../../services/id-coder.service';
 import { AlertService } from '../../../services/alert.service';
-
+import Swal from 'sweetalert2';
 
 import { Proyecto } from '../../../models/proyecto.model';
 import { Etapa } from '../../../models/etapa.model';
@@ -204,6 +204,34 @@ export class ProyectoDetalleComponent implements OnInit {
       },
       error: (err) => {
         this.errorMensaje = err.error?.error || 'Error al actualizar';
+      }
+    });
+  }
+
+  eliminarProyecto(): void {
+    if (!this.proyecto) return;
+
+    Swal.fire({
+      title: '¿Eliminar este proyecto?',
+      text: 'Dependiendo de la actividad registrada, el proyecto se archivará o eliminará permanentemente. ¿Deseas continuar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.proyectoService.deleteProyecto(this.proyecto!.idProyecto).subscribe({
+          next: () => {
+            Swal.fire('Procesado', 'El proyecto ha sido eliminado/archivado exitosamente.', 'success');
+            this.router.navigate(['/inicio']);
+          },
+          error: (err) => {
+            console.error('Error al eliminar proyecto:', err);
+            this.alertService.error('Error', 'No se pudo eliminar el proyecto.');
+          }
+        });
       }
     });
   }

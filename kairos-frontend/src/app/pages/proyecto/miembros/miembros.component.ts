@@ -5,9 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { ProyectoService } from '../../../services/proyecto.service';
 import { AuthService } from '../../../services/auth.service';
 import { UsuariosService } from '../../../services/usuarios.service';
-import { IdCoderService } from '../../../services/id-coder.service'
+import { IdCoderService } from '../../../services/id-coder.service';
 import { AlertService } from '../../../services/alert.service';
-// import { Proyecto } from '../../../models/proyecto.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-miembros',
@@ -41,7 +41,6 @@ export class MiembrosComponent implements OnInit {
   esLiderActual: boolean = false;
   selectedUsuarioId: number | null = null;
   currentUserId: number | null = null;
-  miembrosLimiteAlcanzado: boolean = false;
   maxRolLength: number = 20;
   private alertService = inject(AlertService);
 
@@ -93,7 +92,7 @@ export class MiembrosComponent implements OnInit {
           status: 'offline',
           usuario: { id: m.idUsuario, nombre: m.nombre, email: m.email }
         }));
-        this.miembrosLimiteAlcanzado = this.miembros.length >= 6;
+
         if (this.authService.esAdmin()) {
           this.rolEnProyecto = 'Admin';
         }
@@ -146,10 +145,6 @@ export class MiembrosComponent implements OnInit {
 
 
   abrirModalAgregar(): void {
-    if (this.miembrosLimiteAlcanzado) {
-      this.alertService.warning('Este proyecto ya alcanzó el límite de 6 miembros.');
-      return;
-    }
     this.mostrarModalAgregar = true;
     this.searchQuery = '';
     this.usuariosBusqueda = [];
@@ -176,10 +171,6 @@ export class MiembrosComponent implements OnInit {
   }
 
   agregarMiembro(): void {
-    if (this.miembrosLimiteAlcanzado) {
-      this.errorMensaje = 'No se pueden agregar más miembros. Límite: 6.';
-      return;
-    }
     if (!this.proyectoId) return;
 
     // Opción 1: Usuario seleccionado del buscador
@@ -231,9 +222,6 @@ export class MiembrosComponent implements OnInit {
     this.newEmail = usuario.email;
     this.usuariosBusqueda = [];
     this.searchQuery = usuario.nombre;
-  }
-  limiteMiembros(): boolean {
-    return this.miembrosLimiteAlcanzado;
   }
   validarEmail(): string | null {
     const email = this.newEmail.trim();
@@ -302,6 +290,31 @@ export class MiembrosComponent implements OnInit {
       },
       error: () => {
         this.errorMensaje = 'No se pudo actualizar el rol.';
+      }
+    });
+  }
+
+  eliminarMiembro(miembro: any): void {
+    Swal.fire({
+      title: '¿Confirmas la desvinculación?',
+      text: `Estás a punto de eliminar a ${miembro.nombre} del proyecto. Sus métricas y tareas finalizadas se conservarán pero las tareas pendientes serán reasignadas automáticamente al Líder del proyecto.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, desvincular',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.proyectoService.eliminarMiembro(this.proyectoId!, miembro.idUsuario).subscribe({
+          next: () => {
+            this.alertService.success('Usuario desvinculado con éxito.');
+            this.cargarMiembros();
+          },
+          error: (err) => {
+            this.alertService.error('Error al desvincular: ' + (err.error?.error || err.message));
+          }
+        });
       }
     });
   }

@@ -20,8 +20,11 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import org.hibernate.annotations.SQLRestriction;
+
 @Entity
 @Table(name = "proyecto")
+@SQLRestriction("eliminado = false")
 public class Proyecto {
 
     @Id
@@ -75,6 +78,9 @@ public class Proyecto {
     @Column(name = "logo", columnDefinition = "LONGTEXT")
     private String logo;
 
+    @Column(name = "eliminado", nullable = false)
+    private boolean eliminado = false;
+
     public Proyecto() {}
 
     @PrePersist
@@ -118,6 +124,8 @@ public class Proyecto {
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) { this.fechaActualizacion = fechaActualizacion; }
     public String getLogo() { return logo; }
     public void setLogo(String logo) { this.logo = logo; }
+    public boolean isEliminado() { return eliminado; }
+    public void setEliminado(boolean eliminado) { this.eliminado = eliminado; }
 
     public Etapa crearEtapa(Etapa etapa) {
         if (etapa == null) return null;

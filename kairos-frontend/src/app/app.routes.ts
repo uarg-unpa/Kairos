@@ -6,6 +6,8 @@ import { LoginComponent } from './pages/login/login';
 import { authGuard } from './guards/auth.guard';
 import { RolFormComponent } from './pages/roles/rol-form';
 import { PermisoFormComponent } from './pages/permisos/permiso-form';
+import { PermisoVerComponent } from './pages/permisos/permiso-ver';
+import { PermisoModificarComponent } from './pages/permisos/permiso-modificar';
 import { UsuarioVerComponent } from './pages/usuario/ver';
 import { UsuarioCrearComponent } from './pages/usuario/crear';
 import { SalirComponent } from './pages/salir/salir';
@@ -58,8 +60,8 @@ export const routes: Routes = [
   { path: 'rol/ver/:id', component: RolVerComponent, canActivate: [authGuard] },
   { path: 'rol/modificar/:id', component: RolModificarComponent, canActivate: [authGuard] },
   { path: 'permisos/crear', component: PermisoFormComponent, canActivate: [authGuard] },
-  { path: 'permiso/ver/:id', component: PermisosComponent, canActivate: [authGuard] },
-  { path: 'permiso/modificar/:id', component: PermisosComponent, canActivate: [authGuard] },
+  { path: 'permiso/ver/:id', component: PermisoVerComponent, canActivate: [authGuard] },
+  { path: 'permiso/modificar/:id', component: PermisoModificarComponent, canActivate: [authGuard] },
   { path: 'usuario/ver/:id', component: UsuarioVerComponent, canActivate: [authGuard] },
   { path: 'usuario/modificar/:id', redirectTo: 'usuario/ver/:id?mode=edit' },
   { path: 'usuario/crear', component: UsuarioCrearComponent, canActivate: [authGuard] },
