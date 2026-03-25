@@ -232,7 +232,7 @@ public class ProyectoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') or hasAuthority('ROLE_LIDER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     public ResponseEntity<?> eliminarProyecto(
         @PathVariable Long id,
         Authentication auth) {
@@ -243,11 +243,9 @@ public class ProyectoController {
                 .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
 
             boolean esAdmin = authService.isAdmin(usuario.getEmail());
-            boolean esLider = proyecto.getUsuariosProyecto().stream()
-                .anyMatch(up -> up.getUsuario().getId().equals(usuario.getId()) && "Líder".equals(up.getRolProyecto()));
 
-            if (!esAdmin && !esLider) {
-                return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+            if (!esAdmin) {
+                return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado. Solo administradores pueden eliminar proyectos."));
             }
 
             proyectoService.delete(id);

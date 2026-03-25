@@ -19,7 +19,7 @@
 
       <small class="text-muted d-none d-md-block">Fecha de Inicio: {{ proyecto.fechaInicio | date }}</small>
 
-      <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto === 'Lider'"
+      <button *ngIf="rolEnProyecto === 'Admin'"
         class="btn btn-outline-danger btn-sm" (click)="eliminarProyecto()">
         <i class="bi bi-trash"></i>
         <span class="d-none d-md-inline"> Eliminar</span>

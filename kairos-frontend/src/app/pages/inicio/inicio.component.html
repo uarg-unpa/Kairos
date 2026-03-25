@@ -178,7 +178,7 @@
               <label class="form-label">Líder del Proyecto *</label>
               <div class="position-relative">
                 <input type="text" class="form-control" placeholder="Buscar líder..." [(ngModel)]="searchLider"
-                  name="busquedaLider" [class.is-invalid]="!liderId" (input)="buscarLider()" required>
+                  name="busquedaLider" autocomplete="off" [class.is-invalid]="!liderId" (input)="buscarLider()" required>
 
                 <div class="invalid-feedback" *ngIf="!liderId">
                   Selecciona un líder
