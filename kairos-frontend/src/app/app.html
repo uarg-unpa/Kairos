@@ -18,12 +18,12 @@
                     <a class="nav-link" routerLink="/inicio" routerLinkActive="active"><span
                             class="bi bi-house-door"></span> Proyectos </a>
                 </li>
+                <li class="nav-item" *ngIf="esRutaProyecto()">
+                    <a class="nav-link" routerLink="/inicio"><span class="bi bi-box-arrow-left"></span> Salir</a>
+                </li>
                 <li class="nav-item" *ngIf="esRutaProyecto() && proyectoId">
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId]" routerLinkActive="active"><span
                             class="bi bi-house-door"></span> Inicio</a>
-                </li>
-                <li class="nav-item" *ngIf="esRutaProyecto()">
-                    <a class="nav-link" routerLink="/inicio"><span class="bi bi-box-arrow-left"></span> Salir</a>
                 </li>
 
                 <li class="nav-item" *ngIf="esRutaProyecto() && proyectoId">
@@ -35,14 +35,6 @@
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'etapas']"
                         routerLinkActive="active"><span class="bi bi-diagram-2"></span> Etapas</a>
                 </li>
-                <!-- <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
-                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'iteraciones']" routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a> 
-                </li> 
-                <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
-                    <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'iteraciones']"
-                        routerLinkActive="active"><span class="bi bi-layers"></span> Iteraciones</a>
-                </li>
--->
                 <li class="nav-item" *ngIf="!esAdmin() && esRutaProyecto() && proyectoId">
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'workspace']"
                         routerLinkActive="active"><span class="bi bi-clock"></span> Workspace</a>
@@ -51,16 +43,31 @@
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'dashboard']"
                         routerLinkActive="active"><span class="bi bi-graph-up"></span> Reportes</a>
                 </li>
-                <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
-                    <a class="nav-link" routerLink="/usuarios"><span class="bi bi-people"></span> Usuarios</a>
-                </li>
-                <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
-                    <a class="nav-link" routerLink="/roles" routerLinkActive="active"
-                        [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-person-check"></span> Roles</a>
-                </li>
-                <li class="nav-item" *ngIf="esAdmin() && !esRutaProyecto()">
-                    <a class="nav-link" routerLink="/permisos" routerLinkActive="active"
-                        [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-key"></span> Permisos</a>
+                <li class="nav-item dropdown" *ngIf="esAdmin() && !esRutaProyecto()">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <span class="bi bi-shield-lock"></span> Control
+                    </a>
+                    <ul class="dropdown-menu shadow-sm border-0">
+                        <li>
+                            <a class="dropdown-item" routerLink="/usuarios" routerLinkActive="active"
+                                [routerLinkActiveOptions]="{ exact: true }">
+                                <span class="bi bi-people me-2"></span> Usuarios
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" routerLink="/roles" routerLinkActive="active"
+                                [routerLinkActiveOptions]="{ exact: true }">
+                                <span class="bi bi-person-check me-2"></span> Roles
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" routerLink="/permisos" routerLinkActive="active"
+                                [routerLinkActiveOptions]="{ exact: true }">
+                                <span class="bi bi-key me-2"></span> Permisos
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="nav-item">
