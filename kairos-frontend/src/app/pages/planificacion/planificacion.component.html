@@ -11,7 +11,7 @@
         Categorías
       </button>
       <!-- Toggle button for proposed tasks -->
-      <button class="btn btn-outline-primary" (click)="toggleTareasPropuestas()">
+      <button *ngIf="esLider()" class="btn btn-outline-primary" (click)="toggleTareasPropuestas()">
         <i class="bi bi-plus-circle me-2"></i>Tareas propuestas
       </button>
     </div>
@@ -70,6 +70,7 @@
               <td>{{ tarea.usuario?.nombre }}</td>
               <td>
                 <input type="date" [(ngModel)]="tarea.fechaFinAceptada"
+                  [min]="iteracionActual?.fechaInicio" [max]="iteracionActual?.fechaFin"
                   class="form-control form-control-sm d-inline-block w-auto me-2">
               </td>
               <td class="text-end">

@@ -271,6 +271,11 @@ export class PlanificacionComponent implements OnInit {
       return;
     }
 
+    if (tareaPersonal.fechaFinAceptada < this.iteracionActual.fechaInicio || tareaPersonal.fechaFinAceptada > this.iteracionActual.fechaFin) {
+      this.alertService.warning('Atención', `La fecha debe estar dentro de la iteración actual (${this.iteracionActual.fechaInicio} a ${this.iteracionActual.fechaFin}).`);
+      return;
+    }
+
     this.http.post(`/api/personal-tasks/${tareaPersonal.id}/accept`, null, {
       params: {
         iteracionId: this.iteracionActual.idIteracion.toString(),
