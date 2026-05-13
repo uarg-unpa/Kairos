@@ -35,6 +35,10 @@ export class ProyectoService {
     return this.http.get<Proyecto[]>(`${this.baseUrl}/usuario/${idUsuario}`, { headers: this.getHeaders() });
   }
 
+  deleteProyecto(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${id}`, { headers: this.getHeaders() });
+  }
+
   // Mis proyectos (para miembro)
   getMisProyectos(): Observable<Proyecto[]> {
     return this.http.get<Proyecto[]>(`${this.baseUrl}/mis-proyectos`, { headers: this.getHeaders() });

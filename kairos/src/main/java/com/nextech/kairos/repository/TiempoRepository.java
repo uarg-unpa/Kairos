@@ -16,6 +16,8 @@ public interface TiempoRepository extends JpaRepository<Tiempo, Long> {
 
     
     List<Tiempo> findByTareaIdTarea(Long idTarea);
+    
+    List<Tiempo> findByTareaPersonal(com.nextech.kairos.model.TareaPersonal tareaPersonal);
 
     @Query("SELECT t FROM Tiempo t WHERE t.usuario.id = :idUsuario")
     List<Tiempo> findByUsuarioId(Long idUsuario);
@@ -35,11 +37,14 @@ public interface TiempoRepository extends JpaRepository<Tiempo, Long> {
     WHERE t.usuario.id = :idUsuario
     ORDER BY t.fechaRegistro DESC, t.idTiempo DESC
 """)
-List<Tiempo> findLast5ByUsuarioId(@Param("idUsuario") Long idUsuario, Pageable pageable);
+List<Tiempo> findLast15ByUsuarioId(@Param("idUsuario") Long idUsuario, Pageable pageable);
 
 
-    @Query("SELECT t.tarea.idTarea, SUM(t.duracion) FROM Tiempo t WHERE t.usuario.id = :idUsuario GROUP BY t.tarea.idTarea")
+    @Query("SELECT t.tarea.idTarea, SUM(t.duracion) FROM Tiempo t WHERE t.usuario.id = :idUsuario AND t.tarea IS NOT NULL GROUP BY t.tarea.idTarea")
     List<Object[]> sumHorasPorTareaUsuario(@Param("idUsuario") Long idUsuario);
+
+    @Query("SELECT t.tareaPersonal.id, SUM(t.duracion) FROM Tiempo t WHERE t.usuario.id = :idUsuario AND t.tareaPersonal IS NOT NULL GROUP BY t.tareaPersonal.id")
+    List<Object[]> sumHorasPorTareaPersonalUsuario(@Param("idUsuario") Long idUsuario);
 
     // Horas por iteración (t.duracion está en minutos)
     @Query("SELECT i.idIteracion, i.numero, COALESCE(SUM(t.duracion),0) FROM Tiempo t " +
@@ -175,5 +180,8 @@ List<Tiempo> findLast5ByUsuarioId(@Param("idUsuario") Long idUsuario, Pageable p
                                         @Param("iteracionId") Long iteracionId,
                                         @Param("desde") LocalDate desde,
                                         @Param("hasta") LocalDate hasta);
+
+    @Query("SELECT COUNT(t) FROM Tiempo t JOIN t.tarea ta JOIN ta.iteracion i JOIN i.etapa e WHERE e.proyecto.idProyecto = :proyectoId")
+    long countByProyectoId(@Param("proyectoId") Long proyectoId);
 }
 

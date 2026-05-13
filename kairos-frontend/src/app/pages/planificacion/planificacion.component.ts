@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+
 
 import { IdCoderService } from '../../services/id-coder.service';
 import { TaskService } from '../../services/tarea.service';
@@ -25,6 +27,8 @@ import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
 import { Comentario } from '../../models/comentario.model';
 import { Etapa } from '../../models/etapa.model';
+import { tareaPersonal } from '../../models/personal-task.model';
+// import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-planificacion',
@@ -55,6 +59,9 @@ export class PlanificacionComponent implements OnInit {
   etapas: Etapa[] = [];
   iteracionActual: Iteracion | null = null;
   proyectoNombre: string | null = null;
+
+  tareasPropuestas: tareaPersonal[] = [];
+  mostrarTareasPropuestas: boolean = false;
 
   // Usuario y comentarios
   usuarios: Usuario[] = [];
@@ -89,11 +96,9 @@ export class PlanificacionComponent implements OnInit {
     private router: Router,
     private idCoderService: IdCoderService,
     private proyectoService: ProyectoService,
+    private http: HttpClient,
     private alertService: AlertService
-    /*private authService: AuthService*/
-  ) {
-
-  }
+  ) { }
 
   ngOnInit(): void {
     const encodedId = this.route.snapshot.paramMap.get('id');
@@ -105,9 +110,9 @@ export class PlanificacionComponent implements OnInit {
         this.proyectoId = id;
         this.cargarNombreProyecto(id);
         this.cargarMiembros();
-        console.log("IdPROYECTO", this.proyectoId)
+        this.cargarTareaPersonal();
       } else {
-        alert('Acceso denegado o ID de proyecto inválido.');
+        this.alertService.error('Error', 'Acceso denegado o ID de proyecto inválido.');
         this.router.navigate(['/inicio']);
         return;
       }
@@ -181,7 +186,6 @@ export class PlanificacionComponent implements OnInit {
           this.iteraciones = [iteracionActual];
           this.filtroIteracionId = iteracionActual.idIteracion;
         }
-        console.log('Iteración actual:', this.iteracionActual);
         this.cargarTareas();
         this.cargarCategorias();
       },
@@ -229,6 +233,76 @@ export class PlanificacionComponent implements OnInit {
     });
   }
 
+  private cargarTareaPersonal(): void {
+    if (!this.proyectoId) return;
+    this.http.get<tareaPersonal[]>(`/api/personal-tasks/project/${this.proyectoId}/proposed`)
+      .subscribe({
+        next: (data) => {
+          this.tareasPropuestas = data;
+        },
+        error: (err) => console.error('Error loading proposed tasks:', err)
+      });
+  }
+
+  toggleTareasPropuestas(): void {
+    this.mostrarTareasPropuestas = !this.mostrarTareasPropuestas;
+    this.cargarTareaPersonal();
+  }
+
+  getCategoryName(id: number | undefined): string {
+    if (!id) return 'Sin categoría';
+    const cat = this.categorias.find(c => c.idCategoria === id);
+    return cat ? cat.nombre : 'Desconocida';
+  }
+
+  aceptarTareaPersonal(tareaPersonal: tareaPersonal): void {
+    if (!this.iteracionActual) {
+      this.alertService.error('Error', 'No existe una iteración activa.');
+      return;
+    }
+
+    const categoryId = tareaPersonal.categoriaPropuestaId;
+    if (!categoryId) {
+      this.alertService.error('Error', 'La tarea no tiene una categoría propuesta.');
+      return;
+    }
+    if (!tareaPersonal.fechaFinAceptada) {
+      this.alertService.error('Error', 'Debes elegir una fecha de fin para la tarea.');
+      return;
+    }
+
+    this.http.post(`/api/personal-tasks/${tareaPersonal.id}/accept`, null, {
+      params: {
+        iteracionId: this.iteracionActual.idIteracion.toString(),
+        categoriaId: categoryId.toString(),
+        fechaFin: tareaPersonal.fechaFinAceptada
+      }
+    }).subscribe({
+      next: () => {
+        this.alertService.success('Tarea aceptada', 'Se agregó la tarea a la planificación');
+        this.cargarTareaPersonal();
+        this.cargarTareas();
+      },
+      error: () => this.alertService.error('Error', 'Error al aceptar la tarea.')
+    });
+  }
+
+  rechazarTareaPersonal(tareaPersonal: tareaPersonal): void {
+    this.alertService.confirm('¿Estás seguro de rechazar la tarea?', 'Esta acción no se puede revertir.')
+      .then((result) => {
+        if (result) {
+          this.http.put(`/api/personal-tasks/${tareaPersonal.id}/reject`, {}).subscribe({
+            next: () => {
+              this.alertService.success('Tarea rechazada', 'Se rechazó la tarea');
+              this.cargarTareaPersonal();
+              this.cargarTareas();
+            },
+            error: () => this.alertService.error('Error', 'Error al rechazar la tarea.')
+          });
+        }
+      });
+  }
+
   // ===== Manejadores de Eventos =====
 
   onAbrirModalCrear(): void {
@@ -267,7 +341,6 @@ export class PlanificacionComponent implements OnInit {
       categoriaIds: datos.categoriaId ? [Number(datos.categoriaId)] : [],
       dependenciasIds: datos.dependenciaId ? [Number(datos.dependenciaId)] : []
     };
-    console.log('Datos para crear tarea:', tareaParaBackend);
 
     this.taskService.createTarea(tareaParaBackend).subscribe({
       next: () => {
@@ -293,8 +366,6 @@ export class PlanificacionComponent implements OnInit {
       dependenciasIds: datos.dependenciaId ? [Number(datos.dependenciaId)] : []
     };
 
-    console.log('Datos para editar tarea:', tareaParaBackend);
-
     this.taskService.updateTarea(datos.tareaId, tareaParaBackend).subscribe({
       next: () => {
         this.cargarTareas();
@@ -308,10 +379,7 @@ export class PlanificacionComponent implements OnInit {
           err?.error?.error ||     // caso: { error: "mensaje" }
           err?.error?.message ||   // caso: { message: "mensaje" }
           'Ocurrió un error inesperado.';
-
-        alert('⚠️ ' + mensaje);
-        console.error('Error completo:', err);
-
+        this.alertService.error('Error', mensaje);
       }
 
     });
@@ -344,8 +412,13 @@ export class PlanificacionComponent implements OnInit {
     if (tarea) {
       tarea.estado = evento.nuevoEstado;
       this.taskService.updateTarea(evento.tareaId, { estado: evento.nuevoEstado }).subscribe({
-        next: () => console.log('Estado actualizado'),
-        error: (err) => console.error('Error al actualizar estado:', err)
+        next: () => {
+          this.cargarTareas();
+          this.alertService.success('Estado actualizado', 'El estado de la tarea ha sido actualizado.');
+        },
+        error: () => {
+          this.alertService.error('Error', 'Error al actualizar el estado de la tarea.');
+        }
       });
     }
   }

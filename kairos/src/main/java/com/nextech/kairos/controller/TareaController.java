@@ -68,6 +68,7 @@ public class TareaController {
             dto.setPrioridad(t.getPrioridad());
             dto.setFechaCreacion(t.getFechaCreacion());
             dto.setFechaFin(t.getFechaFin());
+            dto.setFechaCompletada(t.getFechaCompletada());
             dto.setHorasEstimadas(t.getHorasEstimadas());
             dto.setUsuarioId(t.getUsuario().getId());
             dto.setUsuarioNombre(t.getUsuario().getNombre());
@@ -100,6 +101,7 @@ public class TareaController {
             dto.setPrioridad(t.getPrioridad());
             dto.setFechaCreacion(t.getFechaCreacion());
             dto.setFechaFin(t.getFechaFin());
+            dto.setFechaCompletada(t.getFechaCompletada());
             dto.setHorasEstimadas(t.getHorasEstimadas());
             dto.setUsuarioId(t.getUsuario().getId());
             dto.setUsuarioNombre(t.getUsuario().getNombre());
@@ -123,19 +125,20 @@ public class TareaController {
 
         List<Tarea> tareas = tareaService.obtenerTareasPorProyectoYIteracion(idProyecto, idIteracion);
 
-        return tareas.stream().map(t -> {
-            TareaResponse dto = new TareaResponse();
-            dto.setIdTarea(t.getIdTarea());
-            dto.setNombre(t.getNombre());
-            dto.setDescripcion(t.getDescripcion());
-            dto.setEstado(t.getEstado());
-            dto.setPrioridad(t.getPrioridad());
-            dto.setFechaCreacion(t.getFechaCreacion());
-            dto.setFechaFin(t.getFechaFin());
-            dto.setHorasEstimadas(t.getHorasEstimadas());
-            dto.setUsuarioId(t.getUsuario().getId());
-            dto.setUsuarioNombre(t.getUsuario().getNombre());
-            dto.setIteracionId(t.getIteracion() != null ? t.getIteracion().getIdIteracion() : null);
+    return tareas.stream().map(t -> {
+        TareaResponse dto = new TareaResponse();
+        dto.setIdTarea(t.getIdTarea());
+        dto.setNombre(t.getNombre());
+        dto.setDescripcion(t.getDescripcion());
+        dto.setEstado(t.getEstado());
+        dto.setPrioridad(t.getPrioridad());
+        dto.setFechaCreacion(t.getFechaCreacion());
+        dto.setFechaFin(t.getFechaFin());
+        dto.setFechaCompletada(t.getFechaCompletada());
+        dto.setHorasEstimadas(t.getHorasEstimadas());
+        dto.setUsuarioId(t.getUsuario().getId());
+        dto.setUsuarioNombre(t.getUsuario().getNombre());
+        dto.setIteracionId(t.getIteracion() != null ? t.getIteracion().getIdIteracion() : null);
 
             dto.setCategorias(t.getCategorias().stream()
                     .map(c -> new CategoriaResponse(
@@ -166,6 +169,9 @@ public class TareaController {
         tarea.setNombre(dto.getNombre());
         tarea.setDescripcion(dto.getDescripcion());
         tarea.setEstado(dto.getEstado());
+        if ("Completado".equalsIgnoreCase(dto.getEstado())) {
+            tarea.setFechaCompletada(java.time.LocalDate.now());
+        }
         tarea.setPrioridad(dto.getPrioridad());
         tarea.setFechaCreacion(dto.getFechaCreacion());
         tarea.setFechaFin(dto.getFechaFin());
@@ -249,8 +255,16 @@ public class TareaController {
         if (cambios.getDescripcion() != null)
             tarea.setDescripcion(cambios.getDescripcion());
 
-        if (cambios.getEstado() != null)
+        if (cambios.getEstado() != null) {
             tarea.setEstado(cambios.getEstado());
+            if ("Completado".equalsIgnoreCase(cambios.getEstado())) {
+                if (tarea.getFechaCompletada() == null) {
+                    tarea.setFechaCompletada(java.time.LocalDate.now());
+                }
+            } else {
+                tarea.setFechaCompletada(null);
+            }
+        }
 
         if (cambios.getPrioridad() != null)
             tarea.setPrioridad(cambios.getPrioridad());
@@ -348,6 +362,7 @@ public class TareaController {
             dto.setPrioridad(t.getPrioridad());
             dto.setFechaCreacion(t.getFechaCreacion());
             dto.setFechaFin(t.getFechaFin());
+            dto.setFechaCompletada(t.getFechaCompletada());
             dto.setHorasEstimadas(t.getHorasEstimadas());
             dto.setUsuarioNombre(t.getUsuario().getNombre());
             dto.setCategorias(

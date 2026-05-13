@@ -1,0 +1,164 @@
+docs: actualización de documentos(cierre construcción y planificación post cursada)
+docs: actualización de documentos(cierre construcción y planificación post cursada)
+fix: primera prueba tareas propuestas
+fix: gráfico de estimación vs ejecución filtrado
+merge dev-copia y tareas propuestas 20-11
+merge
+fix: mostrar comentarios
+fix: mostrar primero las tareas pendientes
+fix: cambiar alert() por librería sweet alert
+fix: arreglo de visual de botones
+fix: arreglo de visualización de tareas y botones
+fix: arreglo en gráficos, semanas, rangos de semanas, ajuste de filtros
+fix: botón de iniciar en la tarea, completar tarea, se borró el botón que falla cerrar el modal de crear proyecto
+fix: paginacion
+fix: tags en estimacion vs ejecucion
+fix: primer prueba de barra de progreso
+fix: filtro de tareas en workspace
+fix: nuevas validaciones para agregar miembro
+feat: corrección validación de fechas en crear proyecto, cambio de selección de líder
+feat: corrección visual del botón de agregar en miembros
+feat: advertencia no permitir rol vacío, mostrar botón de por que lider no puede editar su rol, correción de que miembros vean el botón de editar
+fix: categorias duplicadas
+fix: error en la planificacion
+fix: categorias duplicadas
+merge con dev-copia
+merge con dashboard
+fix: script de datos
+merge con iteracion de rama dashboard
+fix: script de datos
+feat: arreglo del nav en el nombre del usuario
+feat: modificación archivo modificar usuario en desuso
+fix: rutas con id codificada
+feat: corregir error en el nav de id codificado desactualizado
+feat: solución error de iteraciones por etapa por id codificado
+merge dev con dashboard 16-11
+fix: vista de usuario modificada, agregar CU modificar perfil, validacion de usuarios segun rol (admin o usuario común) e IDs codificados
+fix: agregar protección en rutas usando ids encriptados
+feat: corrección de botón de editar rol de proyecto
+merge dev con dashboard 15-11
+feat: arreglar error de ingreso de usuario invitado al sistema
+(dev) algunos arreglos visuales
+feat: corregir error recuperación de usuarios
+feat: arreglar recuperación de usuarios para agregar al proyecto
+fix: vista miembros
+fix: separado la planificacion por componentes
+fix: merge con feature/categorias
+fix: tareas con dependencias ciruclares
+fix: tareas con dependencias ciruclares
+feat: nueva actualización de gitignore
+(dev) detalles en tarjeyas
+(dev)
+(dev) agregando detalles en las vistas
+(dev) corrección relaciones con las vistas pertenecientes a 1 proyecto
+merge con dev
+feat: gitignore actualizado
+fix: agregar link dashboard
+feat: corregir bucle de consulta de admin
+docs: inicio de manuales
+feat: corrección de filtrado en el nav
+fix: validaciones
+fix: arreglado dependencias circulares y recursivas
+feat: corrección de permisos para rol de lider dentro de proyecto
+fix: rutas de seguridad y bloqueo de accesos
+merge
+fix: modificacion botones y estado
+feat: diseño responsive de div de información del proyecto
+fix: validaciones de formularios de crear proyecto y modificar proyecto
+fix: agregar div con información del proyecto
+fix: modificar proyecto
+(dev) clase constants
+(dev) bosquejo dashboard (comienzos)
+feat: solución de roles, permisos
+(dev) arreglando errores
+fix: rutas segun proyecto
+feat: corregir gitignore
+feat: agregar html y css de vista de proyectos
+fix: vista de proyectos (/proyecto/:id/)
+feat: filtrado por roles
+fix: primera configuración del nav
+feat: corrección error tarea
+feat: subir crearproyectorequest
+feat: subir crearproyectorequest
+(dev) cambio archivo gitignore
+(dev) cambio en el archivo gitignore
+fix: crear proyecto
+feat: corrección de error en rutas, mantener '**' al final de las rutas
+feat: arreglar conflicto faltante en planficacion.component.html
+merge de la rama dev con la rama feature/tareas
+feat: correción de integer a long
+fix: validaciones varias
+fix: vista de inicio, inicio de CU de proyectos
+fix: agregar estadísticas(pendiente), agregar ultimos registros
+fix: flotante de cronometro global
+feat: correccion parcial de listado de tareas
+fix: arreglado comentarios y borrado de tareas
+docs: casos de pruebas avanzados
+feat: fecha limite
+feat: corregir error de actualización de tareas al registrar
+fix: arreglado el crear categoria
+fix: Modales mal referenciados
+fix: primer avance cu 21, modal formulario hecho
+(dev) "Correcciones y nuevo banner con cajas informativas en Etapas"
+docs: especificaciones y casos de prueba
+(dev) refinando detalles
+(dev) más arreglos de sintaxis y compatibilidad
+(dev) "parcheando errores de sintaxis y compatibilidad"
+(dev) arreglando commits
+(dev) finalizando implementacion CU 07 y CU 08
+docs: inicio documento casos de prueba de CU 07, 13, 14
+fix: validaciones
+feat: corregir error en timer.service, import mal referenciado
+docs: Priorizacion 2da tanda CU finalizada
+docs: especificacion CU21 finalizado, documentos actualizados 31-10
+docs: Inicio de priorización 2da tanda, inicio especificacion CU21
+(dev) nuevo archivo "README"
+docs: casos de prueba e implementacion
+(dev) "arreglo"
+(dev) Comentarios en las modificaciones para mayor comprensión
+(dev) arreglo del cronómetro
+fix: vinculacion con bdd
+fix: primera funcionalidad, guardar en el localStorage
+feat: corregido error de id en ComentarioRepository, TareaRepository, TiempoRepository. fix: Servicio de Reporte
+fix: servicios
+fix: repositorios
+fix: agregar clases modelo, repository: categoria, comentario, etapa, tarea
+docs(construccion/especificaciones): CU12 finalizado
+docs(construcción/especificaciones): CU09 y CU20 terminados, CU12 avanzado
+docs: agregado base de datos Kairos, inicio especificación CU09 y CU20
+(dev) refinando detalles jeje
+(dev) agregando vistas -> CU1
+docs: priorización de Casos de Uso
+(dev) arreglando los usuarios admin
+(dev) problema con el archivo .env
+docs: nuevo grafico estimacion
+fix: prototipo
+docs: presentación 17/10
+docs: Modelo de diseño actualizado y prototipo
+docs: modelo de diseño
+docs(presentaciones): presentaciones actualizadas
+docs: actualización 17/10
+docs(Estimacion): Grafico nuevo11/10/2025
+docs: actualización 13-10
+feat: error en application.properties
+fix: application modificado
+fix: uargflow a spring
+docs(Estimacion): Grafico nuevo28/9/25
+docs(Estimacion): Grafico nuevo
+docs(Estimacion): Estimacion 03 Kairos
+docs(elaboracion 2/Estimación): agregar excel y documento de estimación
+docs(elaboracion 2/modelo de casos de uso): agregar clases, componentes y documentos actualizados
+fix: proyecto creado
+docs(elaboracion 2/Modelo de Casos de Uso): agregar requerimientos
+docs: documentos actualizados
+docs(elaboración/iteración 2): Inicio Plan de pruebas y planificación
+docs(elaboración/especificación de requerimientos): Documentos finalizados
+docs(elaboración/especificación de requerimientos): Agregar requerimientos
+docs(presentaciones): actualizadas
+docs(Plan de Estimación): comienzo
+docs: títulos modificados
+docs: documentos actualizados
+docs(Etapa Inicio): actualizar documentos
+docs(Recursos): agregado Descripcion de carpeta
+docs(Etapa_Inicio): agregar plantillas
+docs(gestiondelproyecto/inicio): plantillas actualizadas

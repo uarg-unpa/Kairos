@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nextech.kairos.dto.TiempoEditRequestDTO;
 import com.nextech.kairos.dto.TiempoResponseDTO;
 import com.nextech.kairos.model.Tarea;
+import com.nextech.kairos.model.TareaPersonal;
 import com.nextech.kairos.model.Tiempo;
 import com.nextech.kairos.model.Usuario;
 import com.nextech.kairos.repository.TiempoRepository;
@@ -25,16 +26,19 @@ public class TiempoService {
     private final TiempoRepository tiempoRepository;
     private final UsuarioService usuarioService;
     private final TareaService tareaService;
+    private final TareaPersonalService tareaPersonalService;
 
     @Autowired
     public TiempoService(
             TiempoRepository tiempoRepository,
             UsuarioService usuarioService,
-            TareaService tareaService) {
+            TareaService tareaService,
+            TareaPersonalService tareaPersonalService) {
 
         this.tiempoRepository = tiempoRepository;
         this.usuarioService = usuarioService;
         this.tareaService = tareaService;
+        this.tareaPersonalService = tareaPersonalService;
     }
 
     @Transactional(readOnly = true)
@@ -48,16 +52,7 @@ public class TiempoService {
     }
 
     /**
-     * Crea un nuevo registro de tiempo asociado a una tarea y un usuario.
-     * Este método está diseñado para ser llamado por el controlador al detener el
-     * cronómetro o al registrar tiempo manual.
-     * * @param tiempo Entidad Tiempo a persistir.
-     * @param idTarea ID de la tarea obligatoria.
-     * @param idUsuario ID del usuario logueado (obligatorio!!).
-     * @param duracionSegundos Duración total del registro en segundos
-     * @param fechaRegistro Fecha del registro
-     * @param descripcion Descripción del trabajo realizado
-     * @return El registro de tiempo guardado.
+     * Crea un nuevo registro de tiempo asociado a una tarea (o tarea personal) y un usuario.
      */
     public Tiempo registerTime(
             Tiempo tiempo,
@@ -66,16 +61,18 @@ public class TiempoService {
             Integer duracionSegundos,
             LocalDate fechaRegistro,
             String descripcion) {
+            
+        return registerTime(tiempo, idTarea, null, idUsuario, duracionSegundos, fechaRegistro, descripcion);
+    }
 
-        Tarea tarea = tareaService.obtenerPorId(idTarea);
-        if (tarea == null) {
-            throw new RuntimeException("Tarea no encontrada con ID: " + idTarea);
-        }
-        
-        // 🚨 VALIDACIÓN CU21 Extensión 4a: No registrar tiempo en tareas finalizadas
-        if ("Completado".equalsIgnoreCase(tarea.getEstado()) || "Finalizado".equalsIgnoreCase(tarea.getEstado())) {
-            throw new IllegalStateException("No se puede registrar tiempo en una tarea con estado '" + tarea.getEstado() + "'.");
-        }
+    public Tiempo registerTime(
+            Tiempo tiempo,
+            Long idTarea,
+            Long idTareaPersonal,
+            Long idUsuario,
+            Integer duracionSegundos,
+            LocalDate fechaRegistro,
+            String descripcion) {
 
         Usuario usuario = usuarioService.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + idUsuario));
@@ -84,20 +81,32 @@ public class TiempoService {
             throw new RuntimeException("La duración registrada debe ser de al menos 1 segundo.");
         }
 
-        // Persistimos en minutos, redondeando hacia arriba para no perder registros
-        // cortos
+        // Persistimos en minutos, redondeando hacia arriba
         int duracionMinutos = (int) Math.ceil(duracionSegundos / 60.0);
 
-        tiempo.setTarea(tarea);
         tiempo.setUsuario(usuario);
         tiempo.setDuracion(duracionMinutos);
-        // La entidad Tiempo.java no tiene campo descripcion, por lo que este campo se ignora por ahora
-        // tiempo.setDescripcion(descripcion);
-
         if (fechaRegistro == null) {
             tiempo.setFechaRegistro(LocalDate.now());
         } else {
             tiempo.setFechaRegistro(fechaRegistro);
+        }
+
+        if (idTarea != null) {
+            Tarea tarea = tareaService.obtenerPorId(idTarea);
+            if (tarea == null) {
+                throw new RuntimeException("Tarea no encontrada con ID: " + idTarea);
+            }
+            // 🚨 VALIDACIÓN CU21 Extensión 4a: No registrar tiempo en tareas finalizadas
+            if ("Completado".equalsIgnoreCase(tarea.getEstado()) || "Finalizado".equalsIgnoreCase(tarea.getEstado())) {
+                throw new IllegalStateException("No se puede registrar tiempo en una tarea con estado '" + tarea.getEstado() + "'.");
+            }
+            tiempo.setTarea(tarea);
+        } else if (idTareaPersonal != null) {
+             TareaPersonal tareaPersonal = tareaPersonalService.getTareaPersonalPorId(idTareaPersonal);
+             tiempo.setTareaPersonal(tareaPersonal);
+        } else {
+            throw new IllegalArgumentException("Debe especificar una Tarea o una Tarea Personal");
         }
 
         return tiempoRepository.save(tiempo);
@@ -130,15 +139,15 @@ public class TiempoService {
         return tiempoRepository.findByFechaRegistroBetween(fechaInicio, fechaFin);
     }
     @Transactional(readOnly = true)
-public List<TiempoResponseDTO> findLast5ByUsuarioId(Long idUsuario) {
-    PageRequest pageable = PageRequest.of(0, 5);
-    return tiempoRepository.findLast5ByUsuarioId(idUsuario, pageable).stream()
+public List<TiempoResponseDTO> findLast15ByUsuarioId(Long idUsuario) {
+    PageRequest pageable = PageRequest.of(0, 15);
+    return tiempoRepository.findLast15ByUsuarioId(idUsuario, pageable).stream()
         .map(t -> new TiempoResponseDTO(
             t.getIdTiempo(),
-            t.getTarea().getNombre(),
+            t.getTarea() != null ? t.getTarea().getNombre() : (t.getTareaPersonal() != null ? t.getTareaPersonal().getNombre() + " (Personal)" : "Desconocido"),
             t.getDuracion(),
             t.getFechaRegistro(),
-            null // descripcion no existe aún
+            t.getDescripcion() != null ? t.getDescripcion() : null
         ))
         .collect(Collectors.toList());
 }
@@ -163,6 +172,18 @@ public Tiempo updateTime(Long idTiempo, TiempoEditRequestDTO request, Long idUsu
     return tiempoRepository.save(tiempo);
 }
 
+@Transactional
+public void deleteTime(Long idTiempo, Long idUsuario) {
+    Tiempo tiempo = tiempoRepository.findById(idTiempo)
+        .orElseThrow(() -> new RuntimeException("Tiempo no encontrado: " + idTiempo));
+
+    if (!tiempo.getUsuario().getId().equals(idUsuario)) {
+        throw new RuntimeException("No tienes permiso para eliminar este registro.");
+    }
+
+    tiempoRepository.delete(tiempo);
+}
+
     /**
      * Calcula la suma total de la duración del tiempo registrado para una tarea
      * específica
@@ -179,6 +200,16 @@ public Tiempo updateTime(Long idTiempo, TiempoEditRequestDTO request, Long idUsu
     @Transactional(readOnly = true)
     public java.util.Map<Long, Integer> getTiemposTotalesPorUsuario(Long idUsuario) {
         List<Object[]> results = tiempoRepository.sumHorasPorTareaUsuario(idUsuario);
+        return results.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> ((Number) row[1]).intValue()
+                ));
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.Map<Long, Integer> getTiemposTotalesPersonalesPorUsuario(Long idUsuario) {
+        List<Object[]> results = tiempoRepository.sumHorasPorTareaPersonalUsuario(idUsuario);
         return results.stream()
                 .collect(Collectors.toMap(
                         row -> (Long) row[0],

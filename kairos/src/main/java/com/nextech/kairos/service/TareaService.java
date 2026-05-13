@@ -3,13 +3,20 @@ package com.nextech.kairos.service;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.nextech.kairos.model.Categoria;
 import com.nextech.kairos.model.Iteracion;
 import com.nextech.kairos.model.Tarea;
+import com.nextech.kairos.model.TareaPersonal;
+import com.nextech.kairos.model.Tiempo;
 import com.nextech.kairos.repository.TareaRepository;
+import com.nextech.kairos.repository.TareaPersonalRepository;
+import com.nextech.kairos.repository.TiempoRepository;
+import com.nextech.kairos.repository.CategoriaRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -132,6 +139,57 @@ public class TareaService implements ITareaService {
     @Override
     public List<Tarea> obtenerTareasPorProyectoYIteracion(Long idProyecto, Long idIteracion) {
         return tareaRepository.findByProyectoIdAndIteracionId(idProyecto, idIteracion);
+    }
+
+    @Autowired
+    private TareaPersonalRepository tareaPersonalRepository;
+    @Autowired
+    private TiempoRepository tiempoRepository;
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
+    @Transactional
+    public Tarea aceptarTareaPersonal(Long tareaPersonalId, Long iteracionId, Long categoriaId, LocalDate fechaFin) {
+        TareaPersonal tareaPersonal = tareaPersonalRepository.findById(tareaPersonalId)
+            .orElseThrow(() -> new IllegalArgumentException("Tarea personal no encontrada"));
+
+        Iteracion iteracion = iteracionService.obtenerPorId(iteracionId)
+            .orElseThrow(() -> new IllegalArgumentException("Iteración no encontrada"));
+            
+        Categoria categoria = categoriaRepository.findById(categoriaId)
+            .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
+
+        Tarea nuevaTarea = new Tarea();
+        nuevaTarea.setNombre(tareaPersonal.getNombre());
+        nuevaTarea.setDescripcion(tareaPersonal.getDescripcion());
+        nuevaTarea.setUsuario(tareaPersonal.getUsuario());
+        nuevaTarea.setFechaCreacion(tareaPersonal.getFechaCreacion());
+        nuevaTarea.setEstado("En Progreso"); 
+        nuevaTarea.setPrioridad("Media"); 
+        nuevaTarea.setIteracion(iteracion);
+        nuevaTarea.setFechaFin(fechaFin);
+        nuevaTarea.setHorasEstimadas(tareaPersonal.getHorasEstimadas());
+
+        
+        Set<Categoria> categorias = new HashSet<>();
+        categorias.add(categoria);
+        nuevaTarea.setCategorias(categorias);
+        
+        // Save new task
+        nuevaTarea = tareaRepository.save(nuevaTarea);
+        
+        // Move time records
+        List<Tiempo> tiempos = tiempoRepository.findByTareaPersonal(tareaPersonal);
+        for (Tiempo t : tiempos) {
+            t.setTareaPersonal(null);
+            t.setTarea(nuevaTarea);
+            tiempoRepository.save(t);
+        }
+        
+        tareaPersonalRepository.save(tareaPersonal);
+        tareaPersonalRepository.delete(tareaPersonal);
+        
+        return nuevaTarea;
     }
 
 }

@@ -1,8 +1,9 @@
 <div class="container my-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h3>Miembros del Proyecto</h3>
-    <div>
-      <button *ngIf="rolEnProyecto === 'Admin'" class="btn btn-primary boton-agregar" (click)="abrirModalAgregar()">
+    <div class="d-flex flex-column">
+      <button *ngIf="rolEnProyecto === 'Admin' || rolEnProyecto=== 'Líder'" class="btn btn-primary boton-agregar"
+        (click)="abrirModalAgregar()">
         <i class="bi bi-plus-circle"></i> Agregar Miembro
       </button>
     </div>
@@ -38,7 +39,8 @@
         </div>
         <!-- ACCIONES -->
         <div class="d-flex gap-2">
-          <button class="btn btn-sm btn-outline-danger" *ngIf="rolEnProyecto === 'Admin'"
+          <button class="btn btn-sm btn-outline-danger"
+            *ngIf="currentUserId !== miembro.idUsuario && (rolEnProyecto === 'Admin' || rolEnProyecto === 'Líder')"
             (click)="eliminarMiembro(miembro)">
             Eliminar
           </button>

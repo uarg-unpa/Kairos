@@ -8,11 +8,12 @@
 
   <div class="col-lg-8">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="mb-0">Mis Tareas Asignadas</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3 container-title">
+      <h2 class="mb-0">Mis Tareas</h2>
       <div>
-        <button class="btn btn btn-outline-primary" style="margin-right:5px;" title="Proponer una tarea nueva">
-          <i class="bi bi-send me-2"></i> Nueva tarea
+        <button class="btn btn btn-outline-primary" style="margin-right:5px;" title="Crear una tarea personal"
+          (click)="openPersonalTaskModal()">
+          <i class="bi bi-plus-circle me-2"></i> Nueva tarea
         </button>
         <button class="btn btn-outline-success" (click)="openManualTimeModal()">
           <i class="bi bi-clock-history me-2"></i>Tiempo Manual
@@ -20,166 +21,234 @@
       </div>
     </div>
 
-    <div class="card planning-card mb-3">
-      <div class="card-body py-2">
-        <div class="row g-3 align-items-center">
-          <div class="col-md-4">
-            <select class="form-select" [(ngModel)]="filtroEstado" aria-label="Filtrar por estado">
-              <option>En Progreso</option>
-              <option>Completado</option>
-              <option value="Todos">Todos los estados</option>
-            </select>
+
+
+    <div *ngIf="(projectTasks || personalTasks) ; else loading">
+
+      <div class="card planning-card mb-3">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center container-title">
+          <div>
+            <strong>Tareas de proyecto</strong>
+            <span *ngIf="projectIdInView" class="small text-muted ms-2">Mostrando solo este proyecto</span>
           </div>
-          <div class="col-md-4">
-            <select class="form-select" [(ngModel)]="filtroPrioridad">
-              <option value="">Todas las prioridades</option>
+          <div class="d-flex gap-2">
+            <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="filtroEstado"
+              (ngModelChange)="paginaActual = 1">
+              <option value="Todos">Todos los estados</option>
+              <option value="En Progreso">En Progreso</option>
+              <option value="Completado">Completado</option>
+            </select>
+            <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="filtroPrioridad"
+              (ngModelChange)="paginaActual = 1">
+              <option value="Todas">Todas las prioridades</option>
               <option value="Alta">Alta</option>
               <option value="Media">Media</option>
               <option value="Baja">Baja</option>
             </select>
           </div>
         </div>
-      </div>
-    </div>
+        <div class="card-body p-0">
+          <div *ngIf="(projectTasks.length === 0)" class="p-4 text-center text-muted">
+            <span>No hay tareas del proyecto.</span>
+          </div>
 
-    <div class="card planning-card" *ngIf="tareas; else loading">
-      <div class="card-body p-0">
-        <div *ngIf="(tareasEnProgreso === 0) && filtroEstado === 'En Progreso'" class="p-4 text-center text-muted">
-          <span>
-            No tienes tareas asignadas.
-          </span> <br>
-          <button class="btn btn-sm btn-outline-success" title="Proponer una tarea nueva">
-            <i class="bi bi-send"></i> Proponer una tarea nueva
-          </button>
-        </div>
-
-        <!-- Listar tareas -->
-        <div *ngFor="let tarea of tareasPaginadas()" class="task-card p-3 border-bottom bg-white task-item">
-          <div class="d-flex mb-3">
-            <h6 class="mb-0">{{ tarea.nombre }}</h6>
-            <div class="ms-auto">
-
-              <span class="badge" [ngClass]="{
+          <!-- Listar tareas del proyecto -->
+          <div *ngFor="let tarea of projectTasksPaginadas()" class="task-card p-3 border-bottom bg-white task-item">
+            <div class="d-flex mb-3">
+              <h6 class="mb-0">
+                {{ tarea.nombre }}
+                <small *ngIf="tarea.proyectoNombre" class="text-muted ms-2">• {{ tarea.proyectoNombre }}</small>
+              </h6>
+              <div class="ms-auto">
+                <span class="badge" [ngClass]="{
                               'bg-danger': tarea.prioridad === 'Alta',
                               'bg-warning': tarea.prioridad === 'Media',
                               'bg-primary': tarea.prioridad === 'Baja'
                             }">
-                {{ tarea.prioridad }}
-              </span>
-              <span class="badge bg-info ms-1" [ngClass]="{
+                  {{ tarea.prioridad || 'Media' }}
+                </span>
+                <span class="badge bg-info ms-1" [ngClass]="{
                               'bg-success': tarea.estado === 'Completado',
-                              'bg-info': tarea.estado === 'En Progreso',
+                              'bg-info': tarea.estado === 'En Progreso' || tarea.estado === 'BORRADOR',
                               'bg-secondary': tarea.estado === 'Incompleto'
                             }">{{ tarea.estado }}</span>
-              <span class="badge bg-secondary ms-1">
-                {{ tarea.categorias && tarea.categorias.length > 0 ? tarea.categorias[0].nombre : 'Sin categoría' }}
-              </span>
+                <span class="badge bg-secondary ms-1">
+                  {{ tarea.categorias && tarea.categorias.length > 0 ? tarea.categorias[0].nombre : 'Sin categoría' }}
+                </span>
+              </div>
+              <div class="dropdown" style="margin-left: 10px;">
+                <button class="btn btn-sm btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
+                  <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" *ngIf="tarea.estado !== 'Completado'"
+                      (click)="markAsCompleted(tarea.idTarea)" title="Marcar como Completado">
+                      <i class="bi bi-check-circle me-2"></i>Completar
+                    </a>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                </ul>
+              </div>
             </div>
-            <div class="dropdown" style="margin-left: 10px;">
-              <button class="btn btn-sm btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
-                <i class="bi bi-three-dots"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" *ngIf="tarea.estado !== 'Completado'"
-                    (click)="markAsCompleted(tarea.idTarea)" title="Marcar como Completado">
-                    <i class="bi bi-check-circle me-2"></i>Completar
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" *ngIf="tarea.estado !== 'En Progreso'" title="Reanudar">
-                    <i class="bi bi-play-circle me-2"></i> Reanudar tarea
-                  </a>
-                </li>
-                <li>
-                  <hr class="dropdown-divider">
-                </li>
-                <li>
-                  <a class="dropdown-item">
-                    <i class="bi bi-send me-2"></i>Proponer
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
 
+            <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
 
-          <!-- Descripción -->
-          <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
-
-          <!-- Miembro y Rol -->
-          <div class="row g-2 small align-items-center text-muted">
-            <div class="col-md-6">
-              <span><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
-              <span><i class="bi bi-calendar me-1" style="margin-left: 10px;"></i>{{ tarea.fechaFin }}</span>
-              <span><i class="bi bi-clock me-1" style="margin-left: 10px;"></i>Estimado: {{ tarea.horasEstimadas ?? 0
-                }}h</span>
-            </div>
-            <div class="col-md-2 ms-auto">
-              <div class="mt-2 flex-column d-flex gap-2" *ngIf="tarea.estado !== 'Completado'">
-                <button class="btn btn-sm btn-outline-purple button-iniciar-tarea"
-                  (click)="startTimerForTask(tarea.idTarea, tarea.nombre)" title="Iniciar Cronómetro"
-                  [disabled]="timerState.startTime !== null && !timerState.isPaused">
+            <div class="d-flex justify-content-between align-items-end mt-2">
+              <div class="small text-muted flex-grow-1 pe-2">
+                <div class="d-flex flex-wrap gap-3">
+                  <span *ngIf="tarea.usuarioNombre"><i class="bi bi-person me-1"></i>{{ tarea.usuarioNombre }}</span>
+                  <span *ngIf="tarea.fechaFin"><i class="bi bi-calendar me-1"></i>{{ tarea.fechaFin | date }}</span>
+                  <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1"></i>Estimado: {{ tarea.horasEstimadas
+                    ?? 0 }}h</span>
+                </div>
+              </div>
+              <div *ngIf="tarea.estado !== 'Completado'" class="flex-shrink-0">
+                <button class="btn btn-sm btn-outline-purple button-iniciar-tarea" (click)="startTimerForTask(tarea)"
+                  title="Iniciar Cronómetro" [disabled]="timerState.startTime !== null && !timerState.isPaused">
                   <i class="bi bi-play-circle"></i>
                 </button>
               </div>
             </div>
-          </div>
 
-          <!-- Acciones Rápidas -->
-
-          <!-- Barra de Progreso -->
-          <div class="mt-2" *ngIf="tarea.horasEstimadas && tarea.horasEstimadas > 0">
-            <div class="d-flex justify-content-between small mb-1">
-              <span class="text-muted">Progreso: {{ tarea.tiempoDedicado || 0 }}h / {{ tarea.horasEstimadas }}h</span>
-              <span
-                [ngClass]="{'text-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'text-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}">
-                {{ ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) | number:'1.0-0' }}%
-              </span>
-            </div>
-            <div class="progress" style="height: 6px;">
-              <div class="progress-bar" role="progressbar"
-                [style.width.%]="((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) > 100 ? 100 : ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100)"
-                [ngClass]="{'bg-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'bg-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}"
-                aria-valuemin="0" aria-valuemax="90">
+            <!-- Barra de Progreso -->
+            <div class="mt-2" *ngIf="tarea.horasEstimadas && tarea.horasEstimadas > 0">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="text-muted">Progreso: {{ tarea.tiempoDedicado || 0 }}h / {{ tarea.horasEstimadas }}h</span>
+                <span
+                  [ngClass]="{'text-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'text-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}">
+                  {{ ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) | number:'1.0-0' }}%
+                </span>
               </div>
-            </div>
-
-            <div class="mt-3 p-3 bg-light rounded border"
-              *ngIf="(comentariosPorTarea?.[tarea.idTarea]?.length || 0) > 0;">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <strong><i class="bi bi-sticky me-2"></i>Comentarios</strong>
-              </div>
-              <div>
-                <div *ngFor="let c of comentariosPorTarea?.[tarea.idTarea]"
-                  class="p-2 border-bottom small text-muted d-flex justify-content-between align-items-center">
-                  <div><i class="bi bi-chat-left-text me-1"></i>{{ c.contenido }}</div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar" role="progressbar"
+                  [style.width.%]="((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) > 100 ? 100 : ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100)"
+                  [ngClass]="{'bg-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'bg-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}"
+                  aria-valuemin="0" aria-valuemax="100">
                 </div>
               </div>
+            </div>
+          </div>
 
+          <!-- Paginación -->
+          <nav class="mt-3 mb-2" *ngIf="totalPaginas() > 1">
+            <ul class="pagination justify-content-center mb-0">
+              <li class="page-item" [class.disabled]="paginaActual === 1">
+                <a class="page-link" (click)="cambiarPagina(paginaActual - 1)" aria-label="Anterior">Anterior</a>
+              </li>
+              <li class="page-item" *ngFor="let num of [].constructor(totalPaginas()); let i = index"
+                [class.active]="paginaActual === i + 1">
+                <a class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</a>
+              </li>
+              <li class="page-item" [class.disabled]="paginaActual === totalPaginas()">
+                <a class="page-link" (click)="cambiarPagina(paginaActual + 1)" aria-label="Siguiente">Siguiente</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+      <div class="card planning-card mb-3" *ngIf="!projectIdInView">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <strong>Tareas Personales</strong>
+          <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="filtroEstadoPersonal">
+            <option value="Todos">Todas las tareas</option>
+            <option value="PROPUESTA">Propuesta</option>
+            <option value="RECHAZADA">Rechazada</option>
+            <option value="BORRADOR">Borrador</option>
+          </select>
+        </div>
+        <div class="card-body p-0">
+          <div *ngIf="(personalTasks.length === 0)" class="p-4 text-center text-muted">
+            <span>No tenés tareas personales.</span>
+          </div>
+
+          <div *ngFor="let tarea of personalTasksPaginadas()" class="task-card p-3 border-bottom bg-white task-item">
+            <div class="d-flex mb-3">
+              <h6 class="mb-0">
+                <span class="badge bg-purple me-2" title="Tarea Personal"><i class="bi bi-person-fill"></i></span>
+                {{ tarea.nombre }}
+              </h6>
+              <div class="ms-auto">
+                <span class="badge bg-secondary ms-1">Personal</span>
+                <span class="badge ms-1" [ngClass]="{
+                              'bg-warning text-dark': tarea.estado === 'BORRADOR',
+                              'bg-info text-dark': tarea.estado === 'En Progreso',
+                              'bg-secondary': tarea.estado === 'PROPUESTA',
+                              'bg-danger': tarea.estado === 'RECHAZADA',
+                              'bg-success': tarea.estado === 'Completado' || tarea.estado === 'FINALIZADA',
+                              'bg-primary': !['BORRADOR', 'En Progreso', 'PROPUESTA', 'RECHAZADA', 'Completado', 'FINALIZADA'].includes(tarea.estado)
+                            }">{{ tarea.estado }}</span>
+              </div>
+              <div class="dropdown" style="margin-left: 10px;">
+                <button class="btn btn-sm btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
+                  <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li *ngIf="tarea.estado === 'BORRADOR'">
+                    <a class="dropdown-item" (click)="openProposeTaskModal(tarea.id)">
+                      <i class="bi bi-send me-2"></i>Proponer a Proyecto
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" style="cursor: pointer;" (click)="openEditPersonalTaskModal(tarea)">
+                      <i class="bi bi-pencil me-2"></i>Editar Tarea
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item text-danger" style="cursor: pointer;"
+                      (click)="deletePersonalTask(tarea.id)">
+                      <i class="bi bi-trash me-2"></i>Eliminar Tarea
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
 
+            <p class="text-muted mb-2 small">{{ tarea.descripcion }}</p>
+
+            <div class="d-flex justify-content-between align-items-end mt-2">
+              <div class="small text-muted flex-grow-1 pe-2">
+                <div class="d-flex flex-wrap gap-3">
+                  <span *ngIf="tarea.horasEstimadas"><i class="bi bi-clock me-1"></i>Estimado: {{ tarea.horasEstimadas
+                    ?? 0 }}h</span>
+                </div>
+              </div>
+              <div *ngIf="tarea.estado !== 'Completado'" class="flex-shrink-0">
+                <button class="btn btn-sm btn-outline-purple button-iniciar-tarea"
+                  (click)="startTimerForTask({ id: tarea.id, nombre: tarea.nombre + ' (Personal)', type: 'PERSONAL' })"
+                  title="Iniciar Cronómetro" [disabled]="timerState.startTime !== null && !timerState.isPaused">
+                  <i class="bi bi-play-circle"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Barra de Progreso -->
+            <div class="mt-2" *ngIf="tarea.horasEstimadas && tarea.horasEstimadas > 0">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="text-muted">Progreso: {{ tarea.tiempoDedicado || 0 }}h / {{ tarea.horasEstimadas }}h</span>
+                <span
+                  [ngClass]="{'text-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'text-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}">
+                  {{ ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) | number:'1.0-0' }}%
+                </span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar" role="progressbar"
+                  [style.width.%]="((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100) > 100 ? 100 : ((tarea.tiempoDedicado || 0) / tarea.horasEstimadas * 100)"
+                  [ngClass]="{'bg-danger': (tarea.tiempoDedicado || 0) > tarea.horasEstimadas, 'bg-success': (tarea.tiempoDedicado || 0) <= tarea.horasEstimadas}"
+                  aria-valuemin="0" aria-valuemax="100">
+                </div>
+              </div>
+            </div>
           </div>
+
         </div>
-
-        <!-- Paginación -->
-        <nav class="mt-3 mb-2" *ngIf="totalPaginas() > 1">
-          <ul class="pagination justify-content-center mb-0">
-            <li class="page-item" [class.disabled]="paginaActual === 1">
-              <a class="page-link" (click)="cambiarPagina(paginaActual - 1)" aria-label="Anterior">Anterior</a>
-            </li>
-            <li class="page-item" *ngFor="let num of [].constructor(totalPaginas()); let i = index"
-              [class.active]="paginaActual === i + 1">
-              <a class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</a>
-            </li>
-            <li class="page-item" [class.disabled]="paginaActual === totalPaginas()">
-              <a class="page-link" (click)="cambiarPagina(paginaActual + 1)" aria-label="Siguiente">Siguiente</a>
-            </li>
-          </ul>
-        </nav>
-
       </div>
+
     </div>
+
   </div>
 
   <div class="col-lg-4">
@@ -195,6 +264,7 @@
         <div class="mb-3">
           <select class="form-select" [(ngModel)]="selectedTaskId" [disabled]="timerState.startTime !== null">
             <option [ngValue]="null">Seleccionar tarea...</option>
+            <option *ngIf="availableTasks.length === 0" disabled>No tienes tareas pendientes</option>
             <option *ngFor="let task of availableTasks" [ngValue]="task.id">
               {{ task.title }}
             </option>
@@ -204,7 +274,7 @@
         <div class="d-flex justify-content-center gap-2 mb-3">
           <button class="btn btn-success btn-timer" id="startTimer"
             title="{{ timerState.isPaused ? 'Reanudar' : 'Iniciar' }}" (click)="handleStart()"
-            [disabled]="timerState.startTime !== null && !timerState.isPaused">
+            [disabled]="timerState.startTime !== null && !timerState.isPaused || availableTasks.length === 0">
             <i class="bi bi-play-fill"></i>
           </button>
 
@@ -259,7 +329,7 @@
       <div class="card-header bg-light">
         <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Últimos Registros</h5>
       </div>
-      <div class="card-body p-0">
+      <div class="card-body p-0" style="max-height: 400px; overflow-y: auto; overflow-x: hidden;">
         <div *ngIf="ultimosTiempos.length === 0" class="p-3 text-muted small">
           No hay registros recientes.
         </div>
@@ -268,7 +338,7 @@
           <div>
             <div class="fw-bold">{{ t.nombreTarea }}</div>
             <div class="small text-muted">
-              {{ t.duracionMinutos }} min • {{ t.fechaRegistro | date:'shortDate' }}
+              {{ t.duracionMinutos }} min • {{ t.fechaRegistro | date }}
             </div>
           </div>
           <button class="btn btn-sm btn-outline-primary" (click)="openEditModal(t)">
@@ -286,20 +356,63 @@
             <h5 class="modal-title">Editar Registro de Tiempo</h5>
             <button type="button" class="btn-close" (click)="showEditModal = false"></button>
           </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">Duración (minutos)</label>
-              <input type="number" class="form-control" [(ngModel)]="editTimeForm.duracionMinutos" min="1"
-                *ngIf="editTimeForm">
+          <div class="modal-body" *ngIf="editTimeForm">
+            <!-- Selector de Modos -->
+            <div class="btn-group w-100 mb-3" role="group">
+              <input type="radio" class="btn-check" name="editMode" id="modeDuration" value="duration"
+                [(ngModel)]="editTimeForm.editMode">
+              <label class="btn btn-outline-primary" for="modeDuration">Duración Manual</label>
+
+              <input type="radio" class="btn-check" name="editMode" id="modeRange" value="range"
+                [(ngModel)]="editTimeForm.editMode">
+              <label class="btn btn-outline-primary" for="modeRange">Rango Horario</label>
             </div>
-            <div class="mb-3">
-              <label class="form-label">Fecha</label>
-              <input type="date" class="form-control" [(ngModel)]="editTimeForm.fechaRegistro" *ngIf="editTimeForm">
+
+            <!-- MODO 1: DURACIÓN -->
+            <div *ngIf="editTimeForm.editMode === 'duration'">
+              <div class="row g-2 mb-3">
+                <div class="col-md-4">
+                  <label class="form-label">Horas</label>
+                  <input type="number" class="form-control" [(ngModel)]="editTimeForm.hours" min="0">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Min.</label>
+                  <input type="number" class="form-control" [(ngModel)]="editTimeForm.minutes" min="0" max="59">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Seg.</label>
+                  <input type="number" class="form-control" [(ngModel)]="editTimeForm.seconds" min="0" max="59">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Fecha del Trabajo</label>
+                <input type="date" class="form-control" [(ngModel)]="editTimeForm.fechaRegistro" [max]="today">
+              </div>
             </div>
+
+            <!-- MODO 2: RANGO HORARIO -->
+            <div *ngIf="editTimeForm.editMode === 'range'">
+              <div class="mb-3">
+                <label class="form-label">Inicio</label>
+                <input type="datetime-local" class="form-control" [(ngModel)]="editTimeForm.startDateTime"
+                  [max]="today + 'T23:59'">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Fin</label>
+                <input type="datetime-local" class="form-control" [(ngModel)]="editTimeForm.endDateTime"
+                  [max]="today + 'T23:59'">
+              </div>
+            </div>
+
           </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" (click)="showEditModal = false">Cancelar</button>
-            <button class="btn btn-success" (click)="saveEditedTime()">Guardar</button>
+          <div class="modal-footer d-flex justify-content-between">
+            <button class="btn btn-outline-danger" (click)="confirmDeleteTime()" title="Eliminar este registro">
+              <i class="bi bi-trash"></i>
+            </button>
+            <div>
+              <button class="btn btn-secondary me-2" (click)="showEditModal = false">Cancelar</button>
+              <button class="btn btn-success" (click)="saveEditedTime()">Guardar Cambios</button>
+            </div>
           </div>
         </div>
       </div>
@@ -322,6 +435,7 @@
             <label class="form-label">Seleccionar tarea *</label>
             <select class="form-select" [(ngModel)]="manualTimeEntry.idTarea" name="manualTimeTaskSelect" required>
               <option [ngValue]="null">Seleccionar tarea...</option>
+              <option *ngIf="availableTasks.length === 0" disabled>No tienes tareas pendientes</option>
               <option *ngFor="let task of availableTasks" [ngValue]="task.id">
                 {{ task.title }} ({{ task.status }})
               </option>
@@ -329,41 +443,138 @@
             <small class="form-text text-muted">Solo se muestran tareas no completadas.</small>
           </div>
 
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">Horas *</label>
-              <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.hours" name="manualHours" min="0"
-                max="23" required>
+          <!-- Selector de Modos -->
+          <div class="btn-group w-100 mb-3" role="group">
+            <input type="radio" class="btn-check" name="manualMode" id="manualModeDuration" value="duration"
+              [(ngModel)]="manualTimeEntry.editMode">
+            <label class="btn btn-outline-primary" for="manualModeDuration">Duración Manual</label>
+
+            <input type="radio" class="btn-check" name="manualMode" id="manualModeRange" value="range"
+              [(ngModel)]="manualTimeEntry.editMode">
+            <label class="btn btn-outline-primary" for="manualModeRange">Rango Horario</label>
+          </div>
+
+          <!-- MODO 1: DURACIÓN -->
+          <div *ngIf="manualTimeEntry.editMode === 'duration'">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Horas *</label>
+                <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.hours" name="manualHours" min="0"
+                  max="23" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Minutos *</label>
+                <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.minutes" name="manualMinutes"
+                  min="0" max="59" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Segundos</label>
+                <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.seconds" name="manualSeconds"
+                  min="0" max="59">
+              </div>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">Minutos *</label>
-              <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.minutes" name="manualMinutes"
-                min="0" max="59" required>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Segundos</label>
-              <input type="number" class="form-control" [(ngModel)]="manualTimeEntry.seconds" name="manualSeconds"
-                min="0" max="59">
+            <small class="form-text text-muted mb-3 d-block">Duración mínima: 1 segundo.</small>
+
+            <div class="mb-3">
+              <label class="form-label">Fecha del trabajo *</label>
+              <input type="date" class="form-control" [(ngModel)]="manualTimeEntry.fechaRegistro" name="workDate"
+                [max]="today" required>
             </div>
           </div>
-          <small class="form-text text-muted mb-3">Duración mínima: 1 segundo.</small>
 
-          <div class="mb-3 mt-3">
+          <!-- MODO 2: RANGO HORARIO -->
+          <div *ngIf="manualTimeEntry.editMode === 'range'">
+            <div class="mb-3">
+              <label class="form-label">Inicio</label>
+              <input type="datetime-local" class="form-control" [(ngModel)]="manualTimeEntry.startDateTime"
+                name="manualStartDateTime" [max]="today + 'T23:59'">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Fin</label>
+              <input type="datetime-local" class="form-control" [(ngModel)]="manualTimeEntry.endDateTime"
+                name="manualEndDateTime" [max]="today + 'T23:59'">
+            </div>
+          </div>
+
+          <div class="mb-3">
             <label class="form-label">Descripción del trabajo realizado</label>
             <textarea class="form-control" [(ngModel)]="manualTimeEntry.descripcion" name="workDescription" rows="3"
               placeholder="Describe brevemente el trabajo realizado..."></textarea>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Fecha del trabajo *</label>
-            <input type="date" class="form-control" [(ngModel)]="manualTimeEntry.fechaRegistro" name="workDate"
-              [max]="today" required>
-          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeManualTimeModal()">Cancelar</button>
-          <button type="submit" class="btn btn-success" (click)="loadTasks()">Registrar Tiempo</button>
+          <button type="submit" class="btn btn-success" (click)="loadTasks()"
+            [disabled]="availableTasks.length === 0">Registrar Tiempo</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nueva Tarea Personal -->
+<div class="modal fade" id="personalTaskModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ editingPersonalTaskId ? 'Editar Tarea Personal' : 'Nueva Tarea Personal' }}</h5>
+        <button type="button" class="btn-close" (click)="closePersonalTaskModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Nombre de la tarea *</label>
+          <input type="text" class="form-control" [(ngModel)]="newPersonalTask.nombre"
+            placeholder="Ej: Análisis de requisitos">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Descripción</label>
+          <textarea class="form-control" [(ngModel)]="newPersonalTask.descripcion" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Horas Estimadas *</label>
+          <input type="number" class="form-control" [(ngModel)]="newPersonalTask.horasEstimadas" min="0" step="0.5"
+            placeholder="Ej: 2.5" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closePersonalTaskModal()">Cancelar</button>
+        <button type="button" class="btn btn-success" (click)="createPersonalTask()">{{ editingPersonalTaskId ? 'Guardar
+          Cambios' : 'Guardar' }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Proponer Tarea -->
+<div class="modal fade" id="proposeTaskModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Proponer Tarea a Proyecto</h5>
+        <button type="button" class="btn-close" (click)="closeProposeTaskModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted">Selecciona el proyecto y la categoría para proponer esta tarea.</p>
+        <div class="mb-3">
+          <label class="form-label">Proyecto *</label>
+          <select class="form-select" [(ngModel)]="proposeTaskData.proyectoId" (change)="onProjectSelect()">
+            <option [ngValue]="null">Seleccionar proyecto...</option>
+            <option *ngFor="let p of proyectos" [ngValue]="p.idProyecto">{{ p.nombre }}</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Categoría *</label>
+          <select class="form-select" [(ngModel)]="proposeTaskData.categoriaId"
+            [disabled]="!proposeTaskData.proyectoId">
+            <option [ngValue]="null">Seleccionar categoría...</option>
+            <option *ngFor="let c of categorias" [ngValue]="c.idCategoria">{{ c.nombre }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeProposeTaskModal()">Cancelar</button>
+        <button type="button" class="btn btn-success" (click)="proposeTask()">Proponer</button>
+      </div>
     </div>
   </div>
 </div>

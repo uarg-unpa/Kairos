@@ -11,11 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nextech.kairos.model.Etapa;
 import com.nextech.kairos.model.Proyecto;
 import com.nextech.kairos.model.Rol;
+import com.nextech.kairos.model.Tarea;
 import com.nextech.kairos.model.Usuario;
 import com.nextech.kairos.model.UsuarioProyecto;
 import com.nextech.kairos.model.UsuarioProyectoId;
 import com.nextech.kairos.repository.ProyectoRepository;
 import com.nextech.kairos.repository.RolRepository;
+import com.nextech.kairos.repository.TareaRepository;
+import com.nextech.kairos.repository.TiempoRepository;
+import com.nextech.kairos.repository.UsuarioProyectoRepository;
+import com.nextech.kairos.repository.ProyectoRepository;
+import com.nextech.kairos.repository.RolRepository;
+import com.nextech.kairos.repository.TiempoRepository;
 import com.nextech.kairos.repository.UsuarioProyectoRepository;
 
 @Service
@@ -25,19 +32,25 @@ public class ProyectoService implements IProyectoService {
     private final ProyectoRepository proyectoRepository;
     private final UsuarioProyectoRepository usuarioProyectoRepository;
     private final UsuarioService usuarioService;
+    private final TiempoRepository tiempoRepository;
 
     @Autowired
     public ProyectoService(
         ProyectoRepository proyectoRepository,
         UsuarioProyectoRepository usuarioProyectoRepository,
-        UsuarioService usuarioService) {
+        UsuarioService usuarioService,
+        TiempoRepository tiempoRepository) {
         
         this.proyectoRepository = proyectoRepository;
         this.usuarioProyectoRepository = usuarioProyectoRepository;
         this.usuarioService = usuarioService;
+        this.tiempoRepository = tiempoRepository;
     }
     @Autowired
     private RolRepository rolRepository;
+
+    @Autowired
+    private TareaRepository tareaRepository;
 
     @Transactional(readOnly = true)
     public List<Proyecto> findAll() {
@@ -92,10 +105,20 @@ public class ProyectoService implements IProyectoService {
     }
 
     public void delete(Long idProyecto) {
-        // Debido a CascadeType.ALL y orphanRemoval=true en las colecciones
-        // (etapas, categorias, reportes, usuariosProyecto), la eliminación del proyecto
-        // eliminará todos los elementos relacionados en cascada.
-        proyectoRepository.deleteById(idProyecto);
+        Proyecto proyecto = proyectoRepository.findById(idProyecto)
+            .orElseThrow(() -> new RuntimeException("Proyecto no encontrado con ID: " + idProyecto));
+            
+        long countTiempos = tiempoRepository.countByProyectoId(idProyecto);
+        
+        if (countTiempos == 0) {
+            // Borrado físico: Debido a CascadeType.ALL en las colecciones
+            // eliminará los elementos relacionados en cascada.
+            proyectoRepository.deleteById(idProyecto);
+        } else {
+            // Borrado lógico: Hay tiempo invertido, preservar el proyecto.
+            proyecto.setEliminado(true);
+            proyectoRepository.save(proyecto);
+        }
     }
 
     /**
@@ -206,11 +229,26 @@ public class ProyectoService implements IProyectoService {
     public Optional<Proyecto> findByIdWithUsuarios(Long id) {
         return proyectoRepository.findByIdWithUsuarios(id);
     }
-    /**
-     * Buscar proyectos
-     */
-    // @Transactional(readOnly = true)
-    // public List<Proyecto> searchByNombre(String nombre) {
-    //     return proyectoRepository.findByNombreContainingIgnoreCase(nombre);
-    // }
+
+    @Transactional
+    public void expulsarMiembro(Long idProyecto, Long idUsuarioAEliminar) {
+        Proyecto proyecto = proyectoRepository.findById(idProyecto)
+                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+
+        UsuarioProyecto relacionLider = usuarioProyectoRepository.findByProyecto_IdProyecto(idProyecto).stream()
+                .filter(up -> up.getRolProyecto().toLowerCase().contains("líder") || up.getRolProyecto().toLowerCase().contains("lider"))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No se encontró un Líder interno en el proyecto para heredar las tareas."));
+        
+        Usuario lider = relacionLider.getUsuario();
+
+        List<Tarea> tareasActivas = tareaRepository.findTareasActivasDeUsuarioEnProyecto(idUsuarioAEliminar, idProyecto);
+
+        for (Tarea t : tareasActivas) {
+            t.setUsuario(lider);
+            tareaRepository.save(t);
+        }
+
+        this.removeUserFromProject(idProyecto, idUsuarioAEliminar);
+    }
 }

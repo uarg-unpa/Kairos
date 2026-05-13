@@ -1,19 +1,22 @@
 <div class="container my-5">
   <div class="card shadow-lg">
     <div class="card-header bg-primary text-white">
-      <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Crear Permiso</h4>
+      <h4 class="mb-0"><i class="bi bi-pencil"></i> Modificar Permiso: {{ nombre }}</h4>
     </div>
     <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <h5 class="card-title text-primary">Modificar Datos</h5>
+      </div>
+
       <form (ngSubmit)="guardar()">
         <div class="mb-3">
           <label for="nombre" class="form-label">Nombre del Permiso:</label>
           <input type="text" class="form-control" id="nombre" name="nombre" [(ngModel)]="nombre" required>
-          <small class="form-text text-muted">Ingrese un nombre descriptivo para el permiso (ej: "Usuarios", "Roles", "Permisos")</small>
         </div>
         
         <div class="mt-4">
           <button type="submit" class="btn btn-primary me-2">
-            Crear Permiso
+            Guardar Cambios
           </button>
           <a routerLink="/permisos" class="btn btn-secondary">
             Cancelar

@@ -1,12 +1,10 @@
-﻿import { Injectable, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, map, catchError } from 'rxjs';
 import { ConfigService } from './config.service';
 import { TimerState, initialTimerState } from '../models/timer.model';
-import { TaskService } from './tarea.service';
+// import { TaskService } from './tarea.service';
 
-// Nota: Este tipo se usa solo para comunicar "hay un timer activo" a componentes
-// como SalirComponent. No representa ningÃºn endpoint del backend.
 export interface TiempoActivoDTO {
   idTiempoActivo: number;
   idUsuario: number;
@@ -31,7 +29,6 @@ interface TiempoEditRequestDTO {
 export class TimerService {
   private http = inject(HttpClient);
   private config = inject(ConfigService);
-  private taskData = inject(TaskService);
 
   private timerStateSubject = new BehaviorSubject<TimerState>({ ...initialTimerState });
   readonly timerState$ = this.timerStateSubject.asObservable();
@@ -79,6 +76,7 @@ export class TimerService {
       isPaused: st.isPaused,
       pausedAccumulatedMs: this.pausedAccumulatedMs,
       pausedSinceMs: this.pausedSinceMs,
+      isPersonal: st.isPersonal,
     };
     localStorage.setItem(this.storageKey(userId), JSON.stringify(payload));
   }
@@ -137,6 +135,7 @@ export class TimerService {
           startTime: data.startTime,
           isPaused: !!data.isPaused,
           pausedDuration: 0,
+          isPersonal: !!data.isPersonal,
         });
         this.startTicking();
       } else {
@@ -146,13 +145,13 @@ export class TimerService {
   }
 
   // -------- API pÃºblica usada por Workspace --------
-  startTimer(taskId: number, taskTitle: string): void {
+  startTimer(taskId: number, taskTitle: string, isPersonal: boolean = false): void {
     const state = this.timerStateSubject.getValue();
     if (state.startTime && !state.isPaused) return;
     const startMs = Date.now();
     this.pausedAccumulatedMs = 0;
     this.pausedSinceMs = null;
-    this.timerStateSubject.next({ id: String(startMs), taskId, taskTitle, startTime: startMs, isPaused: false, pausedDuration: 0 });
+    this.timerStateSubject.next({ id: String(startMs), taskId, taskTitle, startTime: startMs, isPaused: false, pausedDuration: 0, isPersonal });
     this.currentUserId$().subscribe(uid => { if (uid) this.saveToStorage(uid); });
     this.startTicking();
   }
@@ -174,7 +173,12 @@ export class TimerService {
     const secs = this.computeEffectiveSeconds();
     const st = this.timerStateSubject.getValue();
     if (!st.taskId) { this.clearState(); return; }
-    this.taskData.registrarTiempo({ idTarea: st.taskId, durationSeconds: secs, taskTitle: st.taskTitle || '' }).subscribe({
+
+    const payload = st.isPersonal
+      ? { idTarea: null, idTareaPersonal: st.taskId, duracionSegundos: secs, taskTitle: st.taskTitle || '' }
+      : { idTarea: st.taskId, idTareaPersonal: null, duracionSegundos: secs, taskTitle: st.taskTitle || '' };
+
+    this.http.post(`${this.apiBaseUrl}/api/tiempos`, payload).subscribe({
       next: () => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); },
       error: () => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); }
     });
@@ -195,7 +199,12 @@ export class TimerService {
     const st = this.timerStateSubject.getValue();
     if (!st.taskId) return of(null);
     const secs = this.computeEffectiveSeconds();
-    return this.taskData.registrarTiempo({ idTarea: st.taskId, durationSeconds: secs, taskTitle: st.taskTitle || '' }).pipe(
+
+    const payload = st.isPersonal
+      ? { idTarea: null, idTareaPersonal: st.taskId, duracionSegundos: secs, taskTitle: st.taskTitle || '' }
+      : { idTarea: st.taskId, idTareaPersonal: null, duracionSegundos: secs, taskTitle: st.taskTitle || '' };
+
+    return this.http.post(`${this.apiBaseUrl}/api/tiempos`, payload).pipe(
       map(res => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); return res; }),
       catchError(() => { this.currentUserId$().subscribe(uid => { if (uid) this.clearStorage(uid); }); this.clearState(); return of(null); })
     );
@@ -209,9 +218,18 @@ export class TimerService {
     return this.http.get<{ [key: number]: number }>(`${this.apiBaseUrl}/api/tiempos/totales-usuario`);
   }
 
+  getTiemposTotalesPersonalesUsuario(): Observable<{ [key: number]: number }> {
+    return this.http.get<{ [key: number]: number }>(`${this.apiBaseUrl}/api/tiempos/totales-personales-usuario`);
+  }
+
   // PUT: editar un registro de tiempo
   editTime(idTiempo: number, data: TiempoEditRequestDTO): Observable<any> {
     return this.http.put(`${this.apiBaseUrl}/api/tiempos/${idTiempo}`, data);
+  }
+
+  // DELETE: eliminar un registro de tiempo
+  deleteTime(idTiempo: number): Observable<any> {
+    return this.http.delete(`${this.apiBaseUrl}/api/tiempos/${idTiempo}`);
   }
 }
 

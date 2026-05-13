@@ -25,6 +25,26 @@ export class InicioComponent implements OnInit {
   totalProyectos: number = 0;
   enProgreso: number = 0;
   completados: number = 0;
+  
+  // Filtros
+  filtroEstado: string = 'Todos';
+  filtroBusqueda: string = '';
+
+  get proyectosFiltrados(): Proyecto[] {
+    return this.proyectos.filter(p => {
+      const estadoLowerCase = p.estado ? p.estado.toLowerCase() : '';
+      const filtroReq = this.filtroEstado.toLowerCase();
+      // Asume que los estados que vienen de la DB o en `p.estado` son 'En Progreso', 'Completado', etc.
+      const matchEstado = this.filtroEstado === 'Todos' || estadoLowerCase === filtroReq;
+      
+      const search = this.filtroBusqueda.toLowerCase().trim();
+      const matchBusqueda = !search || 
+                            (p.nombre && p.nombre.toLowerCase().includes(search)) || 
+                            (p.equipo && p.equipo.toLowerCase().includes(search));
+                            
+      return matchEstado && matchBusqueda;
+    });
+  }
   // Modal
   mostrarModal = false;
   usuarios: any[] = [];

@@ -61,6 +61,7 @@ public class TiempoController {
         Tiempo tiempoGuardado = tiempoService.registerTime(
             nuevoTiempo, 
             request.getIdTarea(), 
+            request.getIdTareaPersonal(),
             usuario.getId(), 
             request.getDuracionSegundos(), 
             request.getFechaRegistro(),
@@ -75,7 +76,7 @@ public class TiempoController {
         Usuario usuario = usuarioService.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        List<TiempoResponseDTO> ultimos = tiempoService.findLast5ByUsuarioId(usuario.getId());
+        List<TiempoResponseDTO> ultimos = tiempoService.findLast15ByUsuarioId(usuario.getId());
         return ResponseEntity.ok(ultimos);
     }
 
@@ -86,6 +87,16 @@ public class TiempoController {
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         java.util.Map<Long, Integer> totales = tiempoService.getTiemposTotalesPorUsuario(usuario.getId());
+        return ResponseEntity.ok(totales);
+    }
+
+    @GetMapping("/totales-personales-usuario")
+    public ResponseEntity<java.util.Map<Long, Integer>> getTiemposTotalesPersonalesUsuario(Authentication authentication) {
+        String email = (String) authentication.getPrincipal();
+        Usuario usuario = usuarioService.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        java.util.Map<Long, Integer> totales = tiempoService.getTiemposTotalesPersonalesPorUsuario(usuario.getId());
         return ResponseEntity.ok(totales);
     }
 
@@ -101,6 +112,19 @@ public class TiempoController {
 
         Tiempo tiempoActualizado = tiempoService.updateTime(idTiempo, request, usuario.getId());
         return ResponseEntity.ok(tiempoActualizado);
+    }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/{idTiempo}")
+    public ResponseEntity<Void> eliminarTiempo(
+            @PathVariable Long idTiempo,
+            Authentication authentication) {
+
+        String email = (String) authentication.getPrincipal();
+        Usuario usuario = usuarioService.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        tiempoService.deleteTime(idTiempo, usuario.getId());
+        return ResponseEntity.noContent().build();
     }
 
     // Reportes simples para dashboard

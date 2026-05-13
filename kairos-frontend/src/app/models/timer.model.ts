@@ -28,6 +28,7 @@ export interface TimerState {
   startTime: number | null; // Timestamp (milisegundos) del inicio real
   isPaused: boolean;
   pausedDuration: number; // Duración en milisegundos cuando se pausó
+  isPersonal?: boolean;
 }
 
 // estado inicial
@@ -38,4 +39,5 @@ export const initialTimerState: TimerState = {
   startTime: null,
   isPaused: false,
   pausedDuration: 0,
+  isPersonal: false,
 };

@@ -30,9 +30,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("No se puede eliminar la categoría porque tiene tareas asociadas.");
+                .body(Map.of("error", "Database constraint violation: " + ex.getMostSpecificCause().getMessage()));
     }
 
       @ExceptionHandler(IllegalArgumentException.class)

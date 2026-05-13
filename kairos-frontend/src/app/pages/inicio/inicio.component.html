@@ -28,12 +28,12 @@
   <!--filtros-->
   <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm">
     <div class="d-flex gap-2 flex-wrap">
-      <select class="form-select" style="width: 200px;">
-        <option>Todos</option>
-        <option>En progreso</option>
-        <option>Completados</option>
+      <select class="form-select" style="width: 200px;" [(ngModel)]="filtroEstado">
+        <option value="Todos">Todos</option>
+        <option value="En progreso">En progreso</option>
+        <option value="Completado">Completados</option>
       </select>
-      <input type="text" class="form-control" placeholder="Buscar..." style="width: 250px;">
+      <input type="text" class="form-control" placeholder="Buscar..." style="width: 250px;" [(ngModel)]="filtroBusqueda">
     </div>
     <button *ngIf="usuario?.admin" class="btn btn-primary bi bi-plus" (click)="abrirModal()">
       <span class="d-none d-md-inline">Nuevo Proyecto</span>
@@ -42,7 +42,36 @@
 
   <!--proyectos-->
   <div class="row g-4">
-    <div class="col-md-3 mb-4" *ngFor="let p of proyectos">
+    <div class="col-md-3 mb-4">
+      <a [routerLink]="['/workspace']" class="text-decoration-none d-block h-100">
+        <div class="card project-card border-0 shadow-sm h-100">
+
+          <!-- LOGO -->
+          <div class="workspace d-flex align-items-center justify-content-center p-3">
+            <img [src]="'workspace.png'" width="70" height="70" alt="Espacio de Trabajo" class="img-fluid"
+              style="object-fit: contain;">
+          </div>
+
+          <!-- CONTENIDO -->
+          <div class="card-body">
+            <h5 class="card-title">Mi espacio de trabajo</h5>
+            <!-- <h6 class="text-muted mb-2">{{ p.equipo }}</h6>
+            <p class="card-text">{{ p.descripcion }}</p> -->
+
+            <!-- FOOTER -->
+            <!-- <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span [class]="'badge rounded-pill ' + getEstadoClass(p.estado)">
+                {{ p.estado }}
+              </span>
+              <small class="text-muted">
+                {{ p.fechaCreacion | date }}
+              </small>
+            </div> -->
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3 mb-4" *ngFor="let p of proyectosFiltrados">
       <a [routerLink]="['/proyecto', getEncodedIdForProject(p)]" class="text-decoration-none d-block h-100">
         <div class="card project-card border-0 shadow-sm h-100">
 
@@ -64,7 +93,7 @@
                 {{ p.estado }}
               </span>
               <small class="text-muted">
-                {{ p.fechaCreacion | date:'dd-MM-yyyy' }}
+                {{ p.fechaCreacion | date }}
               </small>
             </div>
           </div>
@@ -72,7 +101,7 @@
       </a>
     </div>
 
-    <div *ngIf="proyectos.length === 0" class="col-12 text-center text-muted">
+    <div *ngIf="proyectosFiltrados.length === 0" class="col-12 text-center text-muted">
       No hay proyectos para mostrar.
     </div>
   </div>
@@ -149,7 +178,7 @@
               <label class="form-label">Líder del Proyecto *</label>
               <div class="position-relative">
                 <input type="text" class="form-control" placeholder="Buscar líder..." [(ngModel)]="searchLider"
-                  name="busquedaLider" [class.is-invalid]="!liderId" (input)="buscarLider()" required>
+                  name="busquedaLider" autocomplete="off" [class.is-invalid]="!liderId" (input)="buscarLider()" required>
 
                 <div class="invalid-feedback" *ngIf="!liderId">
                   Selecciona un líder

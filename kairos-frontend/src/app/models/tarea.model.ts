@@ -13,6 +13,7 @@ export interface Tarea {
   prioridad: string;
   fechaCreacion: string;
   fechaFin?: string;
+  fechaCompletada?: string;
   horasEstimadas?: number;
   usuarioNombre: string;
   usuarioRol: string;
@@ -22,4 +23,5 @@ export interface Tarea {
   dependenciasIds?: number[];
   notas?: string;
   tiempoDedicado?: number; // Horas dedicadas (calculado en frontend)
+  proyectoId?: number;
 }
