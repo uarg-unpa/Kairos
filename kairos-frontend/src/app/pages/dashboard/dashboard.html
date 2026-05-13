@@ -75,7 +75,6 @@
         <option value="quarter" [disabled]="soloFiltroTodo">Últimos 90 días</option>
         <option value="all">Todo</option>
       </select>
-<<<<<<< HEAD
       <app-dashboard-export [proyecto]="proyecto" [semanaActual]="semanaActual" [tareasCompletadas]="tareasCompletadas"
         [totalTareas]="totalTareas" [totalHoras]="totalHoras" [eficiencia]="eficiencia"
         [atrasadasCount]="atrasadasCount" [proximasCount]="proximasCount" [charts]="charts"
@@ -86,9 +85,6 @@
       </app-dashboard-export>
       <small class="text-muted" *ngIf="soloFiltroTodo">Para iteraciones finalizadas solo se muestran datos
         históricos.</small>
-=======
-      <small class="text-muted" *ngIf="soloFiltroTodo">Para iteraciones finalizadas solo se muestran datos históricos.</small>
->>>>>>> 3d492b89f4cac1ea2afe77dcc7203a2451dd3928
     </div>
   </div>
 
@@ -126,13 +122,9 @@
             [ngClass]="proximasCount > 0 ? 'bi bi-exclamation-lg text-danger' : 'bi bi-check-circle text-success'"></i>
           <div class="fw-bold text-dark">
             <h4 class="mb-2">Próximos vencimientos</h4>
-<<<<<<< HEAD
             <span class="fs-5" *ngIf="proximasCount > 0">{{ proximasCount }} {{ proximasCount === 1 ? 'tarea
               próxima a
               vencer' : 'tareas próximas a vencer' }}</span>
-=======
-            <span class="fs-5" *ngIf="proximasCount > 0">{{ proximasCount }} {{ proximasCount === 1 ? 'tarea próxima a vencer' : 'tareas proximas a vencer' }}</span>
->>>>>>> 3d492b89f4cac1ea2afe77dcc7203a2451dd3928
             <span class="fs-5 text-muted" *ngIf="proximasCount === 0">No hay tareas próximas a vencer</span>
           </div>
         </div>
@@ -210,11 +202,7 @@
               </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
                 *ngIf="!loadingTareasData && !chartDataDisponibles('chartTareasUser')">
-<<<<<<< HEAD
                 <p class="mb-0 text-muted small">No existen tareas asignadas en este rango.</p>
-=======
-                <p class="mb-0 text-muted small">No se registraron tareas asignadas en este rango.</p>
->>>>>>> 3d492b89f4cac1ea2afe77dcc7203a2451dd3928
               </div>
             </div>
           </div>
