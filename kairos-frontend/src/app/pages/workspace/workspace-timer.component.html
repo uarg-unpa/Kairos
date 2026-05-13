@@ -12,7 +12,7 @@
       <h2 class="mb-0">Mis Tareas</h2>
       <div>
         <button class="btn btn btn-outline-primary" style="margin-right:5px;" title="Crear una tarea personal"
-          (click)="openPersonalTaskModal()">
+          (click)="openPersonalTaskModal()" *ngIf="(!projectIdInView)">
           <i class="bi bi-plus-circle me-2"></i> Nueva tarea
         </button>
         <button class="btn btn-outline-success" (click)="openManualTimeModal()">
