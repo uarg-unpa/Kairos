@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  # ── Base de Datos MySQL ──
+  kairos-db:
+    image: mysql:8.0
+    container_name: kairos-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-kairos2026}
+      MYSQL_DATABASE: kairos
+    ports:
+      - "3306:3306"
+    volumes:
+      - kairos-db-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - kairos-network
+
+  # ── Backend (Spring Boot) ──
+  kairos-backend:
+    image: guill3r/kairos:kairos-backend
+    container_name: kairos-backend
+    restart: unless-stopped
+    depends_on:
+      kairos-db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://kairos-db:3306/kairos?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-kairos2026}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+    ports:
+      - "8080:8080"
+    networks:
+      - kairos-network
+
+  # ── Frontend (Angular + Nginx) ──
+  kairos-frontend:
+    image: guill3r/kairos:kairos-frontend
+    container_name: kairos-frontend
+    restart: unless-stopped
+    depends_on:
+      - kairos-backend
+    volumes:
+      - ./env.json:/usr/share/nginx/html/assets/env.json
+    ports:
+      - "80:80"
+    networks:
+      - kairos-network
+
+volumes:
+  kairos-db-data:
+    driver: local
+
+networks:
+  kairos-network:
+    driver: bridge
