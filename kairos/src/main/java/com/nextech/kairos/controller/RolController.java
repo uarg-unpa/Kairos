@@ -73,7 +73,7 @@ public class RolController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(convertToResponse(rol));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().build(); 
         }
     }
     

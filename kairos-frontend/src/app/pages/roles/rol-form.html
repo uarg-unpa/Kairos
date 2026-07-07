@@ -11,33 +11,43 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Permisos:</label>
-            @if (permisos().length > 0) {
-              <div class="row">
-                  @for (permiso of permisos(); track permiso.id) {
-                      <div class="col-md-6 mb-2">
-                          <div class="form-check form-switch">
-                              <input 
-                                  class="form-check-input" 
-                                  type="checkbox" 
-                                  [id]="'permiso_' + permiso.id" 
-                                  [value]="permiso.id"
-                                  (change)="togglePermiso(permiso.id, $event.target.checked)"> 
-                              
-                              <label class="form-check-label ms-2" [for]="'permiso_' + permiso.id">
-                                  <i class="bi bi-lock-locked text-muted"></i> {{ permiso.nombre }}
-                              </label>
-                          </div>
-                      </div>
-                  }
+          <label class="form-label">Permisos:</label>
+          @if (permisos().length > 0) {
+          <div class="row">
+            @for (permiso of permisos(); track permiso.id) {
+            @if (permiso.id == 4 || permiso.id == 5) {
+            <div class="col-md-6 mb-2">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [id]="'permiso_' + permiso.id" [value]="permiso.id"
+                  checked disabled>
+
+                <label class="form-check-label ms-2" [for]="'permiso_' + permiso.id">
+                  <i class="bi bi-lock-locked text-muted"></i> {{ permiso.nombre }}
+                </label>
               </div>
-            } @else {
-              <p class="text-muted">Cargando permisos...</p>
+            </div>
             }
+            @else {
+            <div class="col-md-6 mb-2">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [id]="'permiso_' + permiso.id" [value]="permiso.id"
+                  (change)="togglePermiso(permiso.id, $event.target.checked)">
+
+                <label class="form-check-label ms-2" [for]="'permiso_' + permiso.id">
+                  <i class="bi bi-lock-locked text-muted"></i> {{ permiso.nombre }}
+                </label>
+              </div>
+            </div>
+            }
+            }
+          </div>
+          } @else {
+          <p class="text-muted">Cargando permisos...</p>
+          }
         </div>
         <div class="mt-4">
           <button type="submit" class="btn btn-primary me-2">Crear</button>
-          <a routerLink="/roles" class="btn btn-secondary">Cancelar</a> 
+          <a routerLink="/roles" class="btn btn-secondary">Cancelar</a>
         </div>
       </form>
     </div>

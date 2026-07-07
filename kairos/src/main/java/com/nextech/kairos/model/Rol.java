@@ -118,8 +118,10 @@ public class Rol {
     }
 
     public void addPermiso(Permiso permiso) {
-        this.permisos.add(permiso);
-        permiso.getRoles().add(this);
+        if (permiso!=null && !this.permisos.contains(permiso)) {
+            this.permisos.add(permiso);
+            permiso.getRoles().add(this);
+        }
     }
 
     public void removePermiso(Permiso permiso) {

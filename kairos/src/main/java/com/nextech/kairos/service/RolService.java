@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nextech.kairos.model.Permiso;
 import com.nextech.kairos.model.Rol;
+import com.nextech.kairos.service.PermisoService;
 import com.nextech.kairos.repository.PermisoRepository;
 import com.nextech.kairos.repository.RolRepository;
 
@@ -23,6 +24,8 @@ public class RolService {
     
     @Autowired
     private PermisoRepository permisoRepository;
+
+    private PermisoService permisoService;
     
     public Rol save(Rol rol) {
         return rolRepository.save(rol);
@@ -54,6 +57,8 @@ public class RolService {
         }
         
         Rol newRole = new Rol(nombre);
+        newRole.addPermiso(permisoService.findByName("Ingresar").get());
+        newRole.addPermiso(permisoService.findByName("Salir").get());
         return save(newRole);
     }
     
