@@ -23,7 +23,7 @@ services:
 
   # ── Backend (Spring Boot) ──
   kairos-backend:
-    image: guill3r/kairos:kairos-backend
+    image: guill3r/kairos2:kairos-backend
     container_name: kairos-backend
     restart: unless-stopped
     depends_on:
@@ -46,7 +46,7 @@ services:
 
   # ── Frontend (Angular + Nginx) ──
   kairos-frontend:
-    image: guill3r/kairos:kairos-frontend
+    image: guill3r/kairos2:kairos-frontend
     container_name: kairos-frontend
     restart: unless-stopped
     depends_on:
