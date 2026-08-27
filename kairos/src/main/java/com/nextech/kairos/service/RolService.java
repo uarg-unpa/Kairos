@@ -25,6 +25,7 @@ public class RolService {
     @Autowired
     private PermisoRepository permisoRepository;
 
+    @Autowired
     private PermisoService permisoService;
     
     public Rol save(Rol rol) {
