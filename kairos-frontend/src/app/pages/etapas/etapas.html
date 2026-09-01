@@ -182,17 +182,21 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">Fecha de inicio *</label>
-              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()"
+              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas() || fechaInicioMenorAProyecto()"
+                [attr.min]="proyecto?.fechaInicio || proyectoInicio || null"
                 [(ngModel)]="nuevaEtapa.fechaInicio" (ngModelChange)="onFechaInicioChange($event)" name="fechaInicio"
                 required />
-              <div class="invalid-feedback" *ngIf="fechasDesordenadas()">
+              <div class="invalid-feedback" *ngIf="fechaInicioMenorAProyecto()">
+                La fecha de inicio no puede ser menor a la fecha de inicio del proyecto ({{ proyecto?.fechaInicio || proyectoInicio }}).
+              </div>
+              <div class="invalid-feedback" *ngIf="fechasDesordenadas() && !fechaInicioMenorAProyecto()">
                 La fecha de fin no puede ser anterior a la fecha de inicio
               </div>
             </div>
             <div class="col-md-6">
               <label class="form-label">Fecha de fin *</label>
               <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()"
-                [attr.min]="nuevaEtapa.fechaInicio || null" [(ngModel)]="nuevaEtapa.fechaFin" name="fechaFin"
+                [attr.min]="nuevaEtapa.fechaInicio || proyecto?.fechaInicio || proyectoInicio || null" [(ngModel)]="nuevaEtapa.fechaFin" name="fechaFin"
                 required />
               <div class="invalid-feedback" *ngIf="fechasDesordenadas()">
                 La fecha de fin no puede ser anterior a la fecha de inicio

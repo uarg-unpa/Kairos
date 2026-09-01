@@ -92,6 +92,10 @@ public ResponseEntity<EtapaDTO> obtenerEtapaActualPorProyecto(@PathVariable Long
             proyecto = proyectoRepository.findAll().stream().findFirst().orElse(null);
         }
         if (proyecto != null) {
+            if (proyecto.getFechaInicio() != null && ini != null && ini.isBefore(proyecto.getFechaInicio())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "La fecha de inicio de la etapa no puede ser anterior a la fecha de inicio del proyecto (" + proyecto.getFechaInicio() + ")");
+            }
             e.setProyecto(proyecto);
         }
         Etapa saved = etapaService.guardar(e);
