@@ -6,6 +6,7 @@ import { RolesService, RolItem } from '../../services/roles';
 import { PermisosService } from '../../services/permisos';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '../../services/config.service';
+import { AlertService } from '../../services/alert.service';
 import { switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -22,6 +23,7 @@ export class RolModificarComponent implements OnInit {
   private http = inject(HttpClient);
   private rolesService = inject(RolesService);
   public permisosService = inject(PermisosService); 
+  private alertService = inject(AlertService);
 
   rolId: number | null = null;
   rol: RolItem | null = null;
@@ -81,18 +83,23 @@ export class RolModificarComponent implements OnInit {
   guardar(): void {
     if (!this.rolId) return;
 
+    if (!this.nombre || !this.nombre.trim()) {
+      this.alertService.warning('Atención', 'El nombre del rol no puede estar vacío.');
+      return;
+    }
+
     const body = { 
-      nombre: this.nombre, 
+      nombre: this.nombre.trim(), 
       permisosIds: this.permisosSeleccionados 
     };
 
     this.http.put(`${this.baseUrl}/${this.rolId}`, body).subscribe({
       next: () => {
-        alert('Rol modificado con éxito.');
+        this.alertService.success('Éxito', 'Rol modificado con éxito.');
         this.rolesService.cargarRoles();
         this.router.navigate(['/roles']);
       },
-      error: (err) => alert(`Error al modificar rol: ${err.error?.error || 'Error desconocido'}`)
+      error: (err) => this.alertService.error('Error', `Error al modificar rol: ${err.error?.error || err.error?.message || 'Error desconocido'}`)
     });
   }
 }
