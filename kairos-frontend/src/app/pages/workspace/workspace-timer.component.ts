@@ -2,6 +2,7 @@ import Swal from 'sweetalert2';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Subscription, of, forkJoin, Observable } from 'rxjs';
 import { catchError, switchMap, map } from 'rxjs/operators';
 import { TimerService } from '../../services/timer.service';
@@ -55,11 +56,13 @@ declare var bootstrap: any;
   imports: [
     CommonModule,
     FormsModule,
+    RouterModule,
   ],
   templateUrl: './workspace-timer.component.html',
   styleUrls: ['./workspace-timer.component.css']
 })
 export class WorkspaceTimerComponent implements OnInit, OnDestroy {
+  // private router = inject(Router);
 
   elapsedTimeDisplay: string = '00:00:00';
   timerState: TimerState = {} as TimerState;
@@ -780,7 +783,10 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   }
 
   createPersonalTask(): void {
-    if (!this.newPersonalTask.nombre.trim()) return;
+    if (!this.newPersonalTask.nombre.trim()) {
+      this.alertService.warning('Atención', 'El nombre de la tarea no puede estar vacío.');
+      return;
+    };
 
     if (this.newPersonalTask.horasEstimadas === null || this.newPersonalTask.horasEstimadas <= 0) {
       this.alertService.warning('Atención', 'Las horas estimadas son obligatorias y deben ser mayores a 0.');
