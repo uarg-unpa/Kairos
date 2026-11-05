@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { UsuariosService } from '../../services/usuarios.service';
 import { AuthService } from '../../services/auth.service';
 import { IdCoderService } from '../../services/id-coder.service';
+// import { AlertService } from '../../services/alert.service';
 
 
 
@@ -23,7 +24,8 @@ export class UsuariosComponent {
   usuarios = this.usuariosService.usuarios;
   constructor(
     public router: Router,
-    public auth: AuthService
+    public auth: AuthService,
+    // private alertService: AlertService,
   ) {
   }
   getEncodedId(id: number): string {
