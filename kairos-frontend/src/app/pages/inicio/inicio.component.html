@@ -119,16 +119,14 @@
       <!-- FORMULARIO -->
       <form (ngSubmit)="crearProyecto()" #form="ngForm">
         <div class="modal-body">
-          <div *ngIf="errorMensaje" class="alert alert-danger" role="alert">
-            {{ errorMensaje }}
-          </div>
+
 
           <!-- NOMBRE Y EQUIPO -->
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Nombre del Proyecto *</label>
               <input type="text" class="form-control" [(ngModel)]="nuevoProyecto.nombre" name="nombre" #nombre="ngModel"
-                maxlength="20" required>
+                maxlength="20" [class.is-invalid]="nombre.invalid && (nombre.touched || form.submitted)" required>
               <div class="invalid-feedback"
                 *ngIf="validarNombre() && ((nombre.touched || nombre.dirty || form.submitted)) ">
                 {{ validarNombre() }}
@@ -141,7 +139,7 @@
             <div class="col-md-6">
               <label class="form-label">Equipo *</label>
               <input type="text" class="form-control" [(ngModel)]="nuevoProyecto.equipo" name="equipo" #equipo="ngModel"
-                maxlength="20" required>
+                maxlength="20" [class.is-invalid]="equipo.invalid && (equipo.touched || form.submitted)" required>
               <div class="invalid-feedback"
                 *ngIf="validarEquipo() && (equipo.touched || equipo.dirty || form.submitted)">
                 {{ validarEquipo() }}
@@ -170,7 +168,8 @@
             <div class="col-md-6">
               <label class="form-label">Fecha de Inicio</label>
               <input type="date" class="form-control" [(ngModel)]="nuevoProyecto.fechaInicio" name="fechaInicio"
-                #fechaInicio="ngModel" [min]="hoyISO" (input)="limitarAnio($event)" required>
+                #fechaInicio="ngModel" [min]="hoyISO" (input)="limitarAnio($event)"
+                [class.is-invalid]="fechaInicio.invalid && (fechaInicio.touched || form.submitted)" required>
 
               <div class="invalid-feedback"
                 *ngIf="validarFecha() && (fechaInicio.dirty || fechaInicio.touched || form.submitted) ">
@@ -182,7 +181,8 @@
               <label class="form-label">Líder del Proyecto *</label>
               <div class="position-relative">
                 <input type="text" class="form-control" placeholder="Buscar líder..." [(ngModel)]="searchLider"
-                  name="busquedaLider" autocomplete="off" #busquedaLider="ngModel" (input)="buscarLider()" required>
+                  name="busquedaLider" autocomplete="off" #busquedaLider="ngModel" (input)="buscarLider()"
+                  [class.is-invalid]="busquedaLider.invalid && (busquedaLider.touched || form.submitted)" required>
 
                 <div class="invalid-feedback"
                   *ngIf="!liderId && (busquedaLider.touched || busquedaLider.dirty || form.submitted)">
