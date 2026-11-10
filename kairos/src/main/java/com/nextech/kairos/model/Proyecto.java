@@ -19,6 +19,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.SQLRestriction;
 
@@ -34,16 +35,19 @@ public class Proyecto {
     @NotBlank
     @Size(max = 255)
     @Column(name = "nombre", nullable = false, length = 255)
+    @NotNull(message = "El nombre es requerido")
     private String nombre;
-    
+
     @Size(max = 255)
     @Column(name = "equipo", length = 255)
+    @NotNull(message = "El equipo es obligatorio")
     private String equipo;
 
     @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
     @Column(name = "fecha_inicio")
+    @NotNull(message = "La fecha de inicio es obligatoria")
     private LocalDate fechaInicio;
 
     @Column(name = "fecha_fin")
@@ -63,7 +67,7 @@ public class Proyecto {
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<Categoria> categorias = new HashSet<>();
-    
+
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<Reporte> reportes = new HashSet<>();
@@ -71,7 +75,7 @@ public class Proyecto {
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<UsuarioProyecto> usuariosProyecto = new HashSet<>();
-    
+
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
@@ -81,7 +85,8 @@ public class Proyecto {
     @Column(name = "eliminado", nullable = false)
     private boolean eliminado = false;
 
-    public Proyecto() {}
+    public Proyecto() {
+    }
 
     @PrePersist
     protected void onCreate() {
@@ -96,39 +101,129 @@ public class Proyecto {
         this.fechaActualizacion = LocalDateTime.now();
     }
 
-    public Long getIdProyecto() { return idProyecto; }
-    public void setIdProyecto(Long idProyecto) { this.idProyecto = idProyecto; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public String getEquipo() { return equipo; }
-    public void setEquipo(String equipo) { this.equipo = equipo; }
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public LocalDate getFechaInicio() { return fechaInicio; }
-    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
-    public LocalDate getFechaFin() { return fechaFin; }
-    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
-    public LocalDate getFechaCreacion() { return fechaCreacion; }
-    public void setFechaCreacion(LocalDate fechaCreacion) { this.fechaCreacion = fechaCreacion; }
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
-    public Set<Etapa> getEtapas() { return etapas; }
-    public void setEtapas(Set<Etapa> etapas) { this.etapas = etapas; }
-    public Set<Categoria> getCategorias() { return categorias; }
-    public void setCategorias(Set<Categoria> categorias) { this.categorias = categorias; }
-    public Set<Reporte> getReportes() { return reportes; }
-    public void setReportes(Set<Reporte> reportes) { this.reportes = reportes; }
-    public Set<UsuarioProyecto> getUsuariosProyecto() { return usuariosProyecto; }
-    public void setUsuariosProyecto(Set<UsuarioProyecto> usuariosProyecto) { this.usuariosProyecto = usuariosProyecto; }
-    public LocalDateTime getFechaActualizacion() { return fechaActualizacion; }
-    public void setFechaActualizacion(LocalDateTime fechaActualizacion) { this.fechaActualizacion = fechaActualizacion; }
-    public String getLogo() { return logo; }
-    public void setLogo(String logo) { this.logo = logo; }
-    public boolean isEliminado() { return eliminado; }
-    public void setEliminado(boolean eliminado) { this.eliminado = eliminado; }
+    public Long getIdProyecto() {
+        return idProyecto;
+    }
+
+    public void setIdProyecto(Long idProyecto) {
+        this.idProyecto = idProyecto;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getEquipo() {
+        return equipo;
+    }
+
+    public void setEquipo(String equipo) {
+        this.equipo = equipo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+
+    public LocalDate getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDate fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public Set<Etapa> getEtapas() {
+        return etapas;
+    }
+
+    public void setEtapas(Set<Etapa> etapas) {
+        this.etapas = etapas;
+    }
+
+    public Set<Categoria> getCategorias() {
+        return categorias;
+    }
+
+    public void setCategorias(Set<Categoria> categorias) {
+        this.categorias = categorias;
+    }
+
+    public Set<Reporte> getReportes() {
+        return reportes;
+    }
+
+    public void setReportes(Set<Reporte> reportes) {
+        this.reportes = reportes;
+    }
+
+    public Set<UsuarioProyecto> getUsuariosProyecto() {
+        return usuariosProyecto;
+    }
+
+    public void setUsuariosProyecto(Set<UsuarioProyecto> usuariosProyecto) {
+        this.usuariosProyecto = usuariosProyecto;
+    }
+
+    public LocalDateTime getFechaActualizacion() {
+        return fechaActualizacion;
+    }
+
+    public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
+        this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    public boolean isEliminado() {
+        return eliminado;
+    }
+
+    public void setEliminado(boolean eliminado) {
+        this.eliminado = eliminado;
+    }
 
     public Etapa crearEtapa(Etapa etapa) {
-        if (etapa == null) return null;
+        if (etapa == null)
+            return null;
         etapa.setProyecto(this);
         this.etapas.add(etapa);
         return etapa;

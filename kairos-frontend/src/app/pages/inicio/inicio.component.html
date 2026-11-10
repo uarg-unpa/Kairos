@@ -33,7 +33,8 @@
         <option value="En progreso">En progreso</option>
         <option value="Completado">Completados</option>
       </select>
-      <input type="text" class="form-control" placeholder="Buscar..." style="width: 250px;" [(ngModel)]="filtroBusqueda">
+      <input type="text" class="form-control" placeholder="Buscar..." style="width: 250px;"
+        [(ngModel)]="filtroBusqueda">
     </div>
     <button *ngIf="usuario?.admin" class="btn btn-primary bi bi-plus" (click)="abrirModal()">
       <span class="d-none d-md-inline">Nuevo Proyecto</span>
@@ -116,7 +117,7 @@
       </div>
 
       <!-- FORMULARIO -->
-      <form (ngSubmit)="crearProyecto()">
+      <form (ngSubmit)="crearProyecto()" #form="ngForm">
         <div class="modal-body">
           <div *ngIf="errorMensaje" class="alert alert-danger" role="alert">
             {{ errorMensaje }}
@@ -126,9 +127,10 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Nombre del Proyecto *</label>
-              <input type="text" class="form-control" [(ngModel)]="nuevoProyecto.nombre" name="nombre"
-                [class.is-invalid]="validarNombre()" maxlength="20" required>
-              <div class="invalid-feedback" *ngIf="validarNombre()">
+              <input type="text" class="form-control" [(ngModel)]="nuevoProyecto.nombre" name="nombre" #nombre="ngModel"
+                maxlength="20" required>
+              <div class="invalid-feedback"
+                *ngIf="validarNombre() && ((nombre.touched || nombre.dirty || form.submitted)) ">
                 {{ validarNombre() }}
               </div>
               <small class="text-muted">
@@ -138,9 +140,10 @@
 
             <div class="col-md-6">
               <label class="form-label">Equipo *</label>
-              <input type="text" class="form-control" [(ngModel)]="nuevoProyecto.equipo" name="equipo"
-                [class.is-invalid]="validarEquipo()" maxlength="20" required>
-              <div class="invalid-feedback" *ngIf="validarEquipo()">
+              <input type="text" class="form-control" [(ngModel)]="nuevoProyecto.equipo" name="equipo" #equipo="ngModel"
+                maxlength="20" required>
+              <div class="invalid-feedback"
+                *ngIf="validarEquipo() && (equipo.touched || equipo.dirty || form.submitted)">
                 {{ validarEquipo() }}
               </div>
               <small class="text-muted">
@@ -167,9 +170,10 @@
             <div class="col-md-6">
               <label class="form-label">Fecha de Inicio</label>
               <input type="date" class="form-control" [(ngModel)]="nuevoProyecto.fechaInicio" name="fechaInicio"
-                [class.is-invalid]="validarFecha()" [min]="hoyISO" (input)="limitarAnio($event)">
+                #fechaInicio="ngModel" [min]="hoyISO" (input)="limitarAnio($event)" required>
 
-              <div class="invalid-feedback" *ngIf="validarFecha()">
+              <div class="invalid-feedback"
+                *ngIf="validarFecha() && (fechaInicio.dirty || fechaInicio.touched || form.submitted) ">
                 {{ validarFecha() }}
               </div>
             </div>
@@ -178,9 +182,10 @@
               <label class="form-label">Líder del Proyecto *</label>
               <div class="position-relative">
                 <input type="text" class="form-control" placeholder="Buscar líder..." [(ngModel)]="searchLider"
-                  name="busquedaLider" autocomplete="off" [class.is-invalid]="!liderId" (input)="buscarLider()" required>
+                  name="busquedaLider" autocomplete="off" #busquedaLider="ngModel" (input)="buscarLider()" required>
 
-                <div class="invalid-feedback" *ngIf="!liderId">
+                <div class="invalid-feedback"
+                  *ngIf="!liderId && (busquedaLider.touched || busquedaLider.dirty || form.submitted)">
                   Selecciona un líder
                 </div>
 
