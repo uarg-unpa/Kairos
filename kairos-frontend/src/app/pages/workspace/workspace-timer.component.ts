@@ -10,6 +10,7 @@ import { TaskService } from '../../services/tarea.service';
 import { ProyectoService } from '../../services/proyecto.service';
 import { AlertService } from '../../services/alert.service';
 import { ComentarioService } from '../../services/comentario.service';
+import { AuthService } from '../../services/auth.service';
 import { TimerState } from '../../models/timer.model';
 import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
@@ -146,7 +147,8 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     private proyectoService: ProyectoService,
     private alertService: AlertService,
     private comentarioService: ComentarioService,
-    private http: HttpClient
+    private http: HttpClient,
+    private authService: AuthService
   ) { }
 
 
@@ -157,10 +159,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     this.loadTasks();
     this.loadLast5Times();
 
-    const usuarioGuardado = localStorage.getItem('usuario_data');
-    if (usuarioGuardado) {
-      this.usuarioActual = JSON.parse(usuarioGuardado);
-    }
+    this.usuarioActual = this.authService.usuario;
 
     this.subscriptions.add(this.timerService.timerState$.subscribe(state => {
       this.timerState = state;

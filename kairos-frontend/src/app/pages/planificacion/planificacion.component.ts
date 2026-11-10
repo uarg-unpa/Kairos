@@ -13,7 +13,7 @@ import { IteracionService } from '../../services/iteracion.service';
 import { ComentarioService } from '../../services/comentario.service';
 import { EtapaService } from '../../services/etapa.service';
 import { AlertService } from '../../services/alert.service';
-/*import { AuthService } from '../../services/auth.service';*/
+import { AuthService } from '../../services/auth.service';
 
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskFiltersComponent } from './task-filters/task-filters.component';
@@ -97,7 +97,8 @@ export class PlanificacionComponent implements OnInit {
     private idCoderService: IdCoderService,
     private proyectoService: ProyectoService,
     private http: HttpClient,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -120,10 +121,7 @@ export class PlanificacionComponent implements OnInit {
       this.proyectoId = null;
     }
 
-    const usuarioGuardado = localStorage.getItem('usuario_data');
-    if (usuarioGuardado) {
-      this.usuarioActual = JSON.parse(usuarioGuardado);
-    }
+    this.usuarioActual = this.authService.usuario;
 
     this.route.queryParamMap.subscribe(params => {
       const venc = params.get('vencimiento');

@@ -9,6 +9,7 @@ import { IteracionService } from '../../services/iteracion.service';
 import { UsuariosService } from '../../services/usuarios';
 import { ComentarioService } from '../../services/comentario.service';
 import { EtapaService } from '../../services/etapa.service';
+import { AuthService } from '../../services/auth.service';
 import { Etapa } from '../../models/etapa.model';
 
 import { Iteracion } from '../../models/iteracion.model';
@@ -122,7 +123,8 @@ export class PlanificacionComponent implements OnInit {
     private comentarioService: ComentarioService,
     private etapaService: EtapaService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     // sincroniza la lista de usuarios cada vez que cambia el servicio
     effect(() => {
@@ -135,7 +137,7 @@ export class PlanificacionComponent implements OnInit {
   /**
    * Inicialización del componente:
    * - carga tareas, categorías e iteraciones
-   * - recupera usuario guardado en localStorage
+   * - recupera usuario autenticado
    * - inicializa el modal de bootstrap si está presente en el DOM
    */
   ngOnInit(): void {
@@ -156,10 +158,7 @@ export class PlanificacionComponent implements OnInit {
     this.cargarIteraciones();
   
 
-    const usuarioGuardado = localStorage.getItem('usuario_data');
-    if (usuarioGuardado) {
-      this.usuarioActual = JSON.parse(usuarioGuardado);
-    }
+    this.usuarioActual = this.authService.usuario;
     console.log('Usuario actual:', this.usuarioActual);
 
     this.obtenerIteracionActual();
