@@ -8,6 +8,8 @@ import { Proyecto } from '../../models/proyecto.model';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AlertService } from '../../services/alert.service';
+
 
 @Component({
   selector: 'app-inicio',
@@ -75,7 +77,8 @@ export class InicioComponent implements OnInit {
     private proyectoService: ProyectoService,
     private router: Router,
     private idCoderService: IdCoderService,
-    private usuariosService: UsuariosService
+    private usuariosService: UsuariosService,
+    private alertService: AlertService
   ) { }
 
   ngOnInit(): void {
@@ -105,7 +108,7 @@ export class InicioComponent implements OnInit {
   cargarUsuarios() {
     this.proyectoService.getUsuarios().subscribe({
       next: (usuarios) => this.usuarios = usuarios,
-      error: () => alert('Error al cargar usuarios')
+      error: () => this.alertService.error("Error al cargar usuarios")
     });
   }
 
@@ -154,10 +157,11 @@ export class InicioComponent implements OnInit {
     this.proyectoService.crearProyecto(payload).subscribe({
       next: (nuevo) => {
         this.proyectos.push(nuevo);
-        alert('Proyecto creado');
+        this.alertService.success("Proyecto creado");
         this.cerrarModal();
       },
       error: (err) => {
+        this.alertService.error("Error al crear proyecto");
         this.errorMensaje = err.error?.error || 'Error al crear';
       }
     });
