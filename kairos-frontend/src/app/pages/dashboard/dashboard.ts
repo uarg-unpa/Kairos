@@ -12,6 +12,7 @@ import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { ProyectoService } from '../../services/proyecto.service';
 import { Proyecto } from '../../models/proyecto.model';
 import { Iteracion } from '../../models/iteracion.model';
+import { AlertService } from '../../services/alert.service';
 
 declare const Chart: any;
 
@@ -98,6 +99,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   horasDiaDetalle: HorasDiaDetalle[] = [];
   horasTareaDetalle: HorasTareaDetalle[] = [];
   tareasNoFinalizadas: any[] = [];
+
+  constructor(private alertService: AlertService) { }
+
   private horasIteracionRows: any[] = [];
   private horasEstimadasPorIteracion = new Map<number, number>();
 
@@ -137,7 +141,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           this.proyectoId = id;
           this.encodedProjectId = encodedId;
         } else {
-          alert('Acceso denegado o ID de proyecto invAlido.');
+          this.alertService.error("Acceso denegado o ID de proyecto invAlido.");
           this.router.navigate(['/inicio']);
           return;
         }

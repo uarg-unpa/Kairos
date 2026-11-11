@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { UsuariosService } from '../../services/usuarios.service';
 import { AuthService } from '../../services/auth.service';
 import { IdCoderService } from '../../services/id-coder.service';
-// import { AlertService } from '../../services/alert.service';
+import { AlertService } from '../../services/alert.service';
 
 
 
@@ -25,7 +25,7 @@ export class UsuariosComponent {
   constructor(
     public router: Router,
     public auth: AuthService,
-    // private alertService: AlertService,
+    private alertService: AlertService,
   ) {
   }
   getEncodedId(id: number): string {
@@ -33,7 +33,8 @@ export class UsuariosComponent {
   }
 
   eliminarUsuario(id: number) {
-    alert('Eliminar usuario ' + id);
+    this.alertService.confirm("¿Está seguro de eliminar el usuario?", "Cancelar", "Eliminar");
+
     this.usuariosService.eliminarUsuario(id).subscribe({
       next: () => {
         this.usuarios.update(usuarios => usuarios.filter(u => u.id !== id));
