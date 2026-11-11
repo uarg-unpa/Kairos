@@ -24,7 +24,7 @@ import { Usuario } from '../../models/usuarios';
 import { Comentario } from '../../models/comentario.model';
 import { Etapa } from '../../models/etapa.model';
 import { Proyecto } from '../../models/proyecto.model';
-
+import { AlertService } from '../../services/alert.service';
 @Component({
   selector: 'app-planificacion',
   templateUrl: './planificacion-iteracion.html',
@@ -78,7 +78,8 @@ export class PlanificacionIteracion implements OnInit {
     private etapaService: EtapaService,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private alertService: AlertService
   ) {
   }
 
@@ -95,8 +96,7 @@ export class PlanificacionIteracion implements OnInit {
         this.cargarMiembros();
         console.log('Proyecto ID Decodificado:', this.proyectoId);
       } else {
-        console.error('ID de proyecto inválido en la ruta');
-        alert('Acceso denegado o ID de proyecto inválido.');
+        this.alertService.error('ID de proyecto inválido en la ruta');
         this.router.navigate(['/inicio']);
         return;
       }

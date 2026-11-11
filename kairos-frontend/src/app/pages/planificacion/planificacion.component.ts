@@ -472,12 +472,7 @@ export class PlanificacionComponent implements OnInit {
         console.error('Error al crear categoría:', err);
 
         // mensaje personalizado del backend
-        const mensaje =
-          err?.error?.message ||  // <<--- TU CASO
-          err?.message ||
-          'Ocurrió un error inesperado al crear la categoría.';
-
-        alert('⚠️ ' + mensaje);
+        this.alertService.error(err?.error?.message || err?.message || 'Ocurrió un error inesperado al crear la categoría.');
       }
 
     });
@@ -490,14 +485,7 @@ export class PlanificacionComponent implements OnInit {
         next: () => this.cargarCategorias(),
         error: (err) => {
           console.error('Error al crear categoría:', err);
-
-          // mensaje personalizado del backend
-          const mensaje =
-            err?.error?.message ||  // <<--- TU CASO
-            err?.message ||
-            'Ocurrió un error inesperado al editar la categoría.';
-
-          alert('⚠️ ' + mensaje);
+          this.alertService.error(err?.error?.message || err?.message || 'Ocurrió un error inesperado al editar la categoría.');
         }
 
       });
@@ -509,13 +497,7 @@ export class PlanificacionComponent implements OnInit {
       error: (err) => {
         console.error('Error al eliminar categoría:', err);
 
-        // mensaje personalizado del backend
-        const mensaje =
-          err?.error ||  // <<--- TU CASO
-          err?.message ||
-          'Ocurrió un error inesperado al eliminar la categoría.';
-
-        alert('⚠️ ' + mensaje);
+        this.alertService.error(err?.error?.message || err?.message || 'Ocurrió un error inesperado al eliminar la categoría.');
       }
     });
   }

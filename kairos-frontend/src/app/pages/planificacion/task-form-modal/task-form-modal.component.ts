@@ -5,7 +5,7 @@ import { Tarea } from '../../../models/tarea.model';
 import { CategoriaDTO } from '../../../services/categoria.service';
 import { Iteracion } from '../../../models/iteracion.model';
 import { Usuario } from '../../../models/usuarios';
-import Swal from 'sweetalert2';
+import { AlertService } from '../../../services/alert.service';
 
 declare var bootstrap: any;
 
@@ -49,6 +49,8 @@ export class TaskFormModalComponent implements OnInit {
     dependenciaId: null,
   };
 
+  constructor(private alertService: AlertService) { }
+
 
 
   ngOnInit(): void {
@@ -80,7 +82,6 @@ export class TaskFormModalComponent implements OnInit {
       return;
     }
 
-    // ❗✔ Si NO hay tarea en edición → resetear para "Nueva Tarea"
   }
 
 
@@ -99,13 +100,12 @@ export class TaskFormModalComponent implements OnInit {
       const iterInicio = new Date(this.iteracionActual?.fechaInicio || '');
       const iterFin = new Date(this.iteracionActual?.fechaFin || '');
       if (fin < inicio) {
-        Swal.fire('Error', 'La fecha de fin no puede ser anterior a la fecha de creación.', 'error');
+        this.alertService.error('La fecha de fin no puede ser anterior a la fecha de creación.');
         return;
       }
       if (inicio < iterInicio || fin > iterFin ||
         fin < iterInicio || inicio > iterFin) {
-
-        Swal.fire('Error', `Las fechas deben estar dentro del rango de la iteración actual: ${this.iteracionActual?.fechaInicio} a ${this.iteracionActual?.fechaFin}.`, 'error');
+        this.alertService.error(`Las fechas deben estar dentro del rango de la iteración actual: ${this.iteracionActual?.fechaInicio} a ${this.iteracionActual?.fechaFin}.`);
 
         return;
       }
@@ -120,17 +120,17 @@ export class TaskFormModalComponent implements OnInit {
     }
 
     if (this.nuevaTarea.horasEstimadas < 0) {
-      Swal.fire('Error', 'Las horas estimadas no pueden ser negativas.', 'error');
+      this.alertService.error('Las horas estimadas no pueden ser negativas.');
       return;
     }
 
     if (this.nuevaTarea.usuarioId === 0 || this.nuevaTarea.usuarioId === null) {
-      alert('⚠️ Debes asignar un usuario a la tarea.');
+      this.alertService.error('Debes asignar un usuario a la tarea.');
       return;
     }
 
     if (this.nuevaTarea.categoriaId === null || this.nuevaTarea.categoriaId === 0) {
-      alert('⚠️ Debes asignar una categoría a la tarea.');
+      this.alertService.error('Debes asignar una categoría a la tarea.');
       return;
     }
 
@@ -138,10 +138,8 @@ export class TaskFormModalComponent implements OnInit {
       return
     }
 
-
-    // ❌ Validar que no dependa de sí misma
     if (this.tareaEnEdicion && this.nuevaTarea.dependenciaId === this.tareaEnEdicion.idTarea) {
-      Swal.fire('Error', 'Una tarea no puede depender de sí misma.', 'error');
+      this.alertService.error('La tarea no puede depender de sí misma.');
       return;
     }
 
@@ -153,7 +151,7 @@ export class TaskFormModalComponent implements OnInit {
       );
 
       if (ciclo) {
-        Swal.fire('Error', 'Dependencia inválida. Se detectó una dependencia circular.', 'error');
+        this.alertService.error('Una tarea no puede depender de sí misma.');
         return;
       }
     }
