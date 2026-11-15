@@ -93,11 +93,17 @@ public class Proyecto {
         if (this.fechaCreacion == null) {
             this.fechaCreacion = LocalDate.now();
         }
+        if (this.fechaInicio == null) {
+            this.fechaInicio = this.fechaCreacion;
+        }
         this.fechaActualizacion = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
+        if (this.fechaInicio == null) {
+            this.fechaInicio = this.fechaCreacion != null ? this.fechaCreacion : LocalDate.now();
+        }
         this.fechaActualizacion = LocalDateTime.now();
     }
 

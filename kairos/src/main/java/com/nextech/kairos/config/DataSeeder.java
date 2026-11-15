@@ -1,8 +1,13 @@
 package com.nextech.kairos.config;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -10,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.nextech.kairos.model.Categoria;
 import com.nextech.kairos.model.Comentario;
@@ -76,7 +84,8 @@ public class DataSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         if (etapaRepository.count() > 0) {
-            log.info("DataSeeder: datos existentes, no seeding");
+            log.info("DataSeeder: datos existentes, verificando MetricFlow SQA...");
+            checkAndSeedMetricFlowIfOldOrMissing();
             return;
         }
 
@@ -116,6 +125,7 @@ public class DataSeeder implements CommandLineRunner {
         proyecto.setEquipo("NexTech");
         proyecto.setDescripcion("Sistema de planificación de proyectos, registro de tiempos y visualización del avance");
         proyecto.setEstado("En Progreso");
+        proyecto.setFechaInicio(LocalDate.of(2025, 8, 1));
         proyecto.setLogo("Kairos Logo.png");
         proyecto = proyectoRepository.save(proyecto);
 
@@ -142,6 +152,7 @@ public class DataSeeder implements CommandLineRunner {
         proyecto.setEquipo("4 Bytes");
         proyecto.setDescripcion("Sistema de gestión de requerimientos y casos de uso");
         proyecto.setEstado("En Progreso");
+        proyecto.setFechaInicio(LocalDate.of(2025, 8, 1));
         proyecto = proyectoRepository.save(proyecto);
 
         Usuario cristian = createUser("Cristian Carranza", "cristian.carranza@gmail.com", rolUsuarioComun);
@@ -163,7 +174,9 @@ public class DataSeeder implements CommandLineRunner {
         proyecto.setNombre("MetricFlow SQA");
         proyecto.setEquipo("CoDevIT");
         proyecto.setDescripcion("Sistema de análisis y gestión de métricas de calidad");
-        proyecto.setEstado("En Progreso");
+        proyecto.setEstado("Completado");
+        proyecto.setFechaInicio(LocalDate.of(2025, 8, 22));
+        proyecto.setFechaFin(LocalDate.of(2026, 2, 6));
         proyecto = proyectoRepository.save(proyecto);
 
         Usuario ezequiel = createUser("Ezequiel Mansilla", "ezequiel.mansilla@gmail.com", rolUsuarioComun);
@@ -178,8 +191,182 @@ public class DataSeeder implements CommandLineRunner {
         createUsuarioProyecto(lorenzo, proyecto, "Programador");
         createUsuarioProyecto(malcolm, proyecto, "Documentador");
 
-        Set<Categoria> categorias = createCategorias(proyecto);
-        createStagesAndIterations(proyecto, categorias, Arrays.asList(ezequiel, fabricio, santiago, lorenzo, malcolm));
+        seedMetricFlowFromData(proyecto, Arrays.asList(ezequiel, fabricio, santiago, lorenzo, malcolm));
+    }
+
+    private void checkAndSeedMetricFlowIfOldOrMissing() {
+        Optional<Proyecto> metricOpt = proyectoRepository.findByNombre("MetricFlow SQA");
+        if (metricOpt.isEmpty()) {
+            return;
+        }
+        Proyecto proyecto = metricOpt.get();
+        List<Etapa> etapas = etapaRepository.findByProyecto_IdProyecto(proyecto.getIdProyecto());
+        boolean hasTransicion = etapas.stream().anyMatch(e -> "Transición".equalsIgnoreCase(e.getNombre()));
+        if (hasTransicion) {
+            log.info("DataSeeder: MetricFlow SQA ya cuenta con datos reales de Codevit.");
+            return;
+        }
+
+        log.info("DataSeeder: actualizando MetricFlow SQA con datos reales de Codevit...");
+        for (Etapa e : etapas) {
+            etapaRepository.delete(e);
+        }
+        etapaRepository.flush();
+
+        List<Categoria> viejasCategorias = categoriaRepository.findByProyectoIdProyecto(proyecto.getIdProyecto());
+        categoriaRepository.deleteAll(viejasCategorias);
+        categoriaRepository.flush();
+
+        Usuario ezequiel = usuarioRepository.findByEmail("ezequiel.mansilla@gmail.com").orElse(null);
+        Usuario fabricio = usuarioRepository.findByEmail("fabricio.nunez@gmail.com").orElse(null);
+        Usuario santiago = usuarioRepository.findByEmail("santiago.pacheco@gmail.com").orElse(null);
+        Usuario lorenzo = usuarioRepository.findByEmail("lorenzo.teppa@gmail.com").orElse(null);
+        Usuario malcolm = usuarioRepository.findByEmail("malcolm.salazar@gmail.com").orElse(null);
+
+        List<Usuario> usuarios = new java.util.ArrayList<>();
+        if (ezequiel != null) usuarios.add(ezequiel);
+        if (fabricio != null) usuarios.add(fabricio);
+        if (santiago != null) usuarios.add(santiago);
+        if (lorenzo != null) usuarios.add(lorenzo);
+        if (malcolm != null) usuarios.add(malcolm);
+
+        seedMetricFlowFromData(proyecto, usuarios);
+        if (proyecto.getFechaInicio() == null) {
+            proyecto.setFechaInicio(LocalDate.of(2025, 8, 22));
+        }
+        proyecto.setFechaFin(LocalDate.of(2026, 2, 6));
+        proyecto.setEstado("Completado");
+        proyectoRepository.save(proyecto);
+        log.info("DataSeeder: MetricFlow SQA actualizado exitosamente con datos reales de Codevit.");
+    }
+
+    private void seedMetricFlowFromData(Proyecto proyecto, List<Usuario> usuarios) {
+        try (InputStream is = getClass().getResourceAsStream("/data/metricflow_codevit_data.json")) {
+            if (is == null) {
+                log.warn("No se encontró /data/metricflow_codevit_data.json en classpath, usando fallback simulado.");
+                Set<Categoria> categorias = createCategorias(proyecto);
+                createStagesAndIterations(proyecto, categorias, usuarios);
+                return;
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(is);
+
+            Map<String, Usuario> usuarioMap = new HashMap<>();
+            for (Usuario u : usuarios) {
+                usuarioMap.put(u.getEmail(), u);
+            }
+
+            Map<String, Categoria> categoriaMap = new HashMap<>();
+            JsonNode categoriasNode = root.get("categorias");
+            if (categoriasNode != null && categoriasNode.isArray()) {
+                for (JsonNode catNode : categoriasNode) {
+                    String catNombre = catNode.asText();
+                    Categoria cat = new Categoria();
+                    cat.setNombre(catNombre);
+                    cat.setProyecto(proyecto);
+                    cat = categoriaRepository.save(cat);
+                    categoriaMap.put(catNombre, cat);
+                }
+            }
+
+            Map<String, Iteracion> iteracionMap = new HashMap<>();
+            JsonNode etapasNode = root.get("etapas");
+            if (etapasNode != null && etapasNode.isArray()) {
+                for (JsonNode eNode : etapasNode) {
+                    String etapaNombre = eNode.get("nombre").asText();
+                    String etapaDesc = eNode.has("descripcion") ? eNode.get("descripcion").asText() : "";
+                    EstadoEtapa etapaEstado = EstadoEtapa.valueOf(eNode.get("estado").asText());
+                    LocalDate fechaInicio = LocalDate.parse(eNode.get("fechaInicio").asText());
+                    LocalDate fechaFin = LocalDate.parse(eNode.get("fechaFin").asText());
+
+                    Etapa etapa = createEtapa(etapaNombre, etapaDesc, etapaEstado, proyecto, fechaInicio, fechaFin);
+
+                    JsonNode itersNode = eNode.get("iteraciones");
+                    if (itersNode != null && itersNode.isArray()) {
+                        for (JsonNode iterNode : itersNode) {
+                            int iterNum = iterNode.get("numero").asInt();
+                            LocalDate iterInicio = LocalDate.parse(iterNode.get("fechaInicio").asText());
+                            LocalDate iterFin = LocalDate.parse(iterNode.get("fechaFin").asText());
+
+                            Iteracion iteracion = createIteracion(iterNum, etapa, iterInicio, iterFin);
+                            if (iterNode.has("descripcion")) {
+                                iteracion.setDescripcion(iterNode.get("descripcion").asText());
+                                iteracion = iteracionRepository.save(iteracion);
+                            }
+                            iteracionMap.put(etapaNombre + "_" + iterNum, iteracion);
+                        }
+                    }
+                }
+            }
+
+            JsonNode tareasNode = root.get("tareas");
+            if (tareasNode != null && tareasNode.isArray()) {
+                for (JsonNode tNode : tareasNode) {
+                    String etapaNombre = tNode.get("etapa").asText();
+                    int iterNum = tNode.get("iteracionNumero").asInt();
+                    Iteracion iteracion = iteracionMap.get(etapaNombre + "_" + iterNum);
+
+                    String userEmail = tNode.get("userEmail").asText();
+                    Usuario usuario = usuarioMap.get(userEmail);
+
+                    String catNombre = tNode.get("categoria").asText();
+                    Categoria categoria = categoriaMap.get(catNombre);
+
+                    Tarea tarea = new Tarea();
+                    tarea.setNombre(tNode.get("nombre").asText());
+                    if (tNode.has("descripcion")) {
+                        tarea.setDescripcion(tNode.get("descripcion").asText());
+                    }
+                    tarea.setIteracion(iteracion);
+                    tarea.setUsuario(usuario);
+                    tarea.setFechaCreacion(LocalDate.parse(tNode.get("fechaInicio").asText()));
+                    tarea.setFechaFin(LocalDate.parse(tNode.get("fechaFin").asText()));
+                    tarea.setHorasEstimadas(tNode.get("horasEstimadas").asDouble());
+                    tarea.setEstado(tNode.get("estado").asText());
+                    tarea.setPrioridad(tNode.get("prioridad").asText());
+
+                    if (categoria != null) {
+                        Set<Categoria> cats = new HashSet<>();
+                        cats.add(categoria);
+                        tarea.setCategorias(cats);
+                    }
+
+                    tarea = tareaRepository.save(tarea);
+
+                    JsonNode tiemposNode = tNode.get("tiempos");
+                    if (tiemposNode != null && tiemposNode.isArray()) {
+                        for (JsonNode timeNode : tiemposNode) {
+                            Tiempo tiempo = new Tiempo();
+                            tiempo.setTarea(tarea);
+                            tiempo.setUsuario(usuario);
+                            tiempo.setDuracion(timeNode.get("duracion").asInt());
+                            tiempo.setFechaRegistro(LocalDate.parse(timeNode.get("fechaRegistro").asText()));
+                            if (timeNode.has("descripcion")) {
+                                String desc = timeNode.get("descripcion").asText();
+                                tiempo.setDescripcion(desc);
+                                if (!desc.startsWith("Registro de tiempo")) {
+                                    Comentario com = new Comentario();
+                                    com.setTarea(tarea);
+                                    com.setUsuario(usuario);
+                                    com.setContenido(desc);
+                                    com.setFechaComentario(tiempo.getFechaRegistro());
+                                    comentarioRepository.save(com);
+                                }
+                            }
+                            tiempoRepository.save(tiempo);
+                        }
+                    }
+                }
+            }
+
+            log.info("DataSeeder: MetricFlow SQA sembrado exitosamente con datos reales de Codevit ({} tareas)",
+                    tareasNode != null ? tareasNode.size() : 0);
+
+        } catch (Exception e) {
+            log.error("Error al sembrar datos reales de MetricFlow SQA desde JSON: {}", e.getMessage(), e);
+            throw new RuntimeException("Error al cargar datos reales de MetricFlow SQA", e);
+        }
     }
 
     private void createVestaRiskProject(Rol rolUsuarioComun) {
@@ -188,6 +375,7 @@ public class DataSeeder implements CommandLineRunner {
         proyecto.setEquipo("T-Code");
         proyecto.setDescripcion("Sistema de gestión y análisis de riesgos");
         proyecto.setEstado("Completado");
+        proyecto.setFechaInicio(LocalDate.of(2025, 8, 1));
         proyecto = proyectoRepository.save(proyecto);
 
         Usuario agustin = createUser("Agustín Collareda", "agustin.collareda@gmail.com", rolUsuarioComun);
@@ -216,6 +404,7 @@ public class DataSeeder implements CommandLineRunner {
             proyecto.setEquipo(data[1]);
             proyecto.setDescripcion(data[2]);
             proyecto.setEstado("En Progreso");
+            proyecto.setFechaInicio(LocalDate.of(2025, 8, 1));
             proyecto = proyectoRepository.save(proyecto);
 
             int userCount = 4 + (int)(Math.random() * 2);
