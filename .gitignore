@@ -60,6 +60,8 @@ Constants.java
 *.tgz
 *.zip
 
+# === local
+kairos/
 kairos-frontend/
 .vscode/
 src/
