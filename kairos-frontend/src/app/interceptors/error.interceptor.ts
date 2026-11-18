@@ -36,7 +36,8 @@ export class ErrorInterceptor implements HttpInterceptor {
 
         if (
           error.status === 401 &&
-          !req.url.endsWith('/auth/logout')
+          !req.url.endsWith('/auth/logout') &&
+          !req.url.endsWith('/auth/me')
         ) {
           this.alertService.warning(
             'Sesión expirada',

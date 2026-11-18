@@ -55,6 +55,7 @@
                                 <span class="bi bi-people me-2"></span> Usuarios
                             </a>
                         </li>
+                        <!-- Roles y Permisos ocultos (sin funcionalidad activa)
                         <li>
                             <a class="dropdown-item" routerLink="/roles" routerLinkActive="active"
                                 [routerLinkActiveOptions]="{ exact: true }">
@@ -67,21 +68,26 @@
                                 <span class="bi bi-key me-2"></span> Permisos
                             </a>
                         </li>
+                        -->
                     </ul>
                 </li>
 
+                <!-- Ayuda (oculto)
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"
                         [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-question-lg"></span> Ayuda</a>
                 </li>
+                -->
             </ul>
 
             <ul class="navbar-nav ms-auto">
 
+                <!-- Ayuda sin sesión (oculto)
                 <li class="nav-item" *ngIf="!usuarioLogueado || router.url === '/login'">
                     <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"
                         [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-question-lg"></span> Ayuda</a>
                 </li>
+                -->
 
                 <li class="nav-item" *ngIf="!usuarioLogueado">
                     <a class="nav-link" routerLink="/login" routerLinkActive="active"

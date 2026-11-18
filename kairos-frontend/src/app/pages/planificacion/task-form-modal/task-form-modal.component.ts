@@ -170,7 +170,7 @@ export class TaskFormModalComponent implements OnInit {
 
   resetModal(): void {
     this.tareaEnEdicion = null;
-    this.nuevaTarea = {
+    const valoresIniciales = {
       nombre: '',
       descripcion: '',
       categoria: '',
@@ -183,6 +183,12 @@ export class TaskFormModalComponent implements OnInit {
       usuarioId: null,
       iteracionId: this.iteracionActual?.idIteracion || null,
     };
+    this.nuevaTarea = { ...valoresIniciales };
+
+    // Resetear el estado del NgForm: limpia submitted, dirty, touched
+    setTimeout(() => {
+      this.form?.resetForm(valoresIniciales);
+    });
   }
 
   abrirModal(): void {

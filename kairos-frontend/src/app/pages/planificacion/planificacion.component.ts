@@ -152,7 +152,7 @@ export class PlanificacionComponent implements OnInit {
           id: u.idUsuario,
           nombre: u.nombre,
           email: u.email,
-          rol: [] // si no manejás roles todavía, dejalo como array vacío
+          rol: []
         }));
 
         console.log("Usuarios convertidos:", this.usuarios);
@@ -495,9 +495,15 @@ export class PlanificacionComponent implements OnInit {
     this.categoriaService.deleteCategoria(categoriaId).subscribe({
       next: () => this.cargarCategorias(),
       error: (err) => {
-        console.error('Error al eliminar categoría:', err);
+        let mensaje = 'No se pudo eliminar la categoría.';
 
-        this.alertService.error(err?.error?.message || err?.message || 'Ocurrió un error inesperado al eliminar la categoría.');
+        if (err.status === 409 || err.status === 400) {
+          mensaje = 'No se puede eliminar esta categoría porque tiene tareas asignadas.';
+        } else if (err.status === 0 || err.status >= 500) {
+          mensaje = 'No se pudo conectar con el servidor. Intentá nuevamente más tarde.';
+        }
+
+        this.alertService.error(mensaje);
       }
     });
   }

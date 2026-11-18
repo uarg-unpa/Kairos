@@ -1,40 +1,19 @@
-# === Node.js ===
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-.pnpm-debug.log
+# =============================================================================
+# KAIROS - Docker Deployment .gitignore
+# =============================================================================
 
-# === Environment variables ===
+# Credenciales y variables de entorno del backend
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
 
-# === Logs ===
-logs
-*.log
-*.log.*
-pids
-*.pid
-*.seed
-*.pid.lock
+# Configuraciones reales del frontend (contienen Client IDs y URLs locales)
+env.json
+env.demo.json
+!env.json.example
+!env.demo.json.example
 
-# === Coverage reports ===
-coverage/
-*.lcov
-
-# === Build output ===
-dist/
-build/
-out/
-.next/
-.nuxt/
-.svelte-kit/
-
-# === IDEs & editors ===
+# IDEs y configuración de editores
 .vscode/
 .idea/
 *.suo
@@ -43,26 +22,16 @@ out/
 *.sln
 *.sw?
 
-# === OS generated files ===
+# Código fuente y dependencias locales (esta rama es solo para despliegue de imágenes Docker)
+kairos/
+kairos-frontend/
+node_modules/
+dist/
+
+# Logs del sistema
+*.log
+npm-debug.log*
+
+# Archivos del sistema operativo
 .DS_Store
 Thumbs.db
-
-# === Temporary files ===
-tmp/
-temp/
-.cache/
-.parcel-cache/
-.eslintcache
-# No versionar archivos locales sensibles
-# Constants.java debe migrarse a config/properties o plantillas, no ignorarse
-# === Misc ===
-*.tgz
-*.zip
-
-/kairos/target/
-target/
-
-kairos/target
-.vscode/
-.mvn/
-.mvn/wrapper/

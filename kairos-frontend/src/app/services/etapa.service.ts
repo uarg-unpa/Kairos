@@ -8,6 +8,10 @@ export class EtapaService {
   private baseUrl = 'http://localhost:8080/api/etapas';
   constructor(private http: HttpClient) {}
 
+  getEtapaById(id: number): Observable<Etapa> {
+    return this.http.get<Etapa>(`${this.baseUrl}/${id}`);
+  }
+
   getEtapas(): Observable<Etapa[]> {
     return this.http.get<Etapa[]>(this.baseUrl);
   }

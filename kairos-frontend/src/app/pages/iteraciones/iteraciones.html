@@ -99,6 +99,14 @@
       </div>
       <div class="modal-body">
         <div *ngIf="errorNuevaIteracion" class="alert alert-danger" role="alert">{{ errorNuevaIteracion }}</div>
+
+        <!-- Rango de la etapa como referencia visual -->
+        <div *ngIf="etapaActual?.fechaInicio && etapaActual?.fechaFin" class="alert alert-info py-2 px-3 mb-3">
+          <i class="bi bi-info-circle me-2"></i>
+          Rango permitido por la etapa:
+          <strong>{{ etapaActual!.fechaInicio }}</strong> → <strong>{{ etapaActual!.fechaFin }}</strong>
+        </div>
+
         <form #formIter="ngForm">
           <div class="row g-3">
             <div class="col-12">
@@ -115,12 +123,16 @@
               <label class="form-label">Fecha de inicio *</label>
               <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()"
                 [(ngModel)]="nuevaIteracion.fechaInicio" (ngModelChange)="onFechaInicioChange($event)"
+                [min]="etapaActual?.fechaInicio || null"
+                [max]="etapaActual?.fechaFin || null"
                 name="fechaInicio" required />
             </div>
             <div class="col-md-6">
               <label class="form-label">Fecha de fin *</label>
               <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()"
-                [attr.min]="nuevaIteracion.fechaInicio || null" [(ngModel)]="nuevaIteracion.fechaFin" name="fechaFin"
+                [attr.min]="nuevaIteracion.fechaInicio || etapaActual?.fechaInicio || null"
+                [max]="etapaActual?.fechaFin || null"
+                [(ngModel)]="nuevaIteracion.fechaFin" name="fechaFin"
                 required />
             </div>
             <div class="col-12" *ngIf="fechasDesordenadas()">

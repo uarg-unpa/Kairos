@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ProyectoService } from '../../services/proyecto.service';
 import { IdCoderService } from '../../services/id-coder.service';
@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { Proyecto } from '../../models/proyecto.model';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { AlertService } from '../../services/alert.service';
 
 
@@ -21,6 +21,8 @@ import { AlertService } from '../../services/alert.service';
   styleUrls: ['./inicio.component.css']
 })
 export class InicioComponent implements OnInit {
+  @ViewChild('form') form!: NgForm;
+
   proyectos: Proyecto[] = [];
   rolPrincipal: 'miembro' | 'lider' | 'Administrador' = 'miembro';
   usuario: any = null;
@@ -103,6 +105,11 @@ export class InicioComponent implements OnInit {
     document.body.classList.remove('modal-open');
     const backdrop = document.querySelector('.modal-backdrop');
     if (backdrop) backdrop.remove();
+
+    // Resetear estado del NgForm: limpia submitted, dirty, touched
+    setTimeout(() => {
+      this.form?.resetForm();
+    });
   }
 
   cargarUsuarios() {

@@ -6,8 +6,10 @@ import { IteracionService } from '../../services/iteracion.service';
 import { IdCoderService } from '../../services/id-coder.service';
 import { AuthService } from '../../services/auth.service';
 import { ProyectoService } from '../../services/proyecto.service';
+import { EtapaService } from '../../services/etapa.service';
 import { Iteracion } from '../../models/iteracion.model';
 import { Proyecto } from '../../models/proyecto.model';
+import { Etapa } from '../../models/etapa.model';
 import { AlertService } from '../../services/alert.service';
 
 declare const bootstrap: any;
@@ -28,10 +30,12 @@ export class IteracionesComponent implements OnInit {
   private idCoderService = inject(IdCoderService);
   private authService = inject(AuthService);
   private proyectoService = inject(ProyectoService);
+  private etapaService = inject(EtapaService);
   private alertService = inject(AlertService);
 
   etapaSlug: string | null = null;
   etapaId: number | null = null;
+  etapaActual: Etapa | null = null;   // ← datos completos de la etapa (con fechas)
   proyectoId: number | null = null;
   proyectoNombre: string | null = null;
   proyecto?: Proyecto;
@@ -110,6 +114,11 @@ export class IteracionesComponent implements OnInit {
 
       if (this.etapaId) {
         this.iteracionService.getIteracionesPorEtapaId(this.etapaId).subscribe(all => this.iteraciones = all);
+        // Cargar datos de la etapa para obtener su rango de fechas
+        this.etapaService.getEtapaById(this.etapaId).subscribe({
+          next: (etapa) => this.etapaActual = etapa,
+          error: (err) => console.error('Error cargando etapa', err)
+        });
         return;
       }
 
@@ -147,11 +156,28 @@ export class IteracionesComponent implements OnInit {
   nuevaIteracionValida(): boolean {
     const i = this.nuevaIteracion;
     this.errorNuevaIteracion = null;
+
     if (!(i.fechaInicio && i.fechaFin)) return false;
+
     if (this.fechasDesordenadas()) {
-      this.errorNuevaIteracion = 'La fecha de fin no puede ser anterior a la fecha de inicio';
+      this.errorNuevaIteracion = 'La fecha de fin no puede ser anterior a la fecha de inicio.';
       return false;
     }
+
+    // Validar que las fechas estén dentro del rango de la etapa
+    if (this.etapaActual?.fechaInicio && this.etapaActual?.fechaFin) {
+      const etapaInicio = new Date(this.etapaActual.fechaInicio);
+      const etapaFin = new Date(this.etapaActual.fechaFin);
+      const iterInicio = new Date(i.fechaInicio);
+      const iterFin = new Date(i.fechaFin);
+
+      if (iterInicio < etapaInicio || iterFin > etapaFin) {
+        this.errorNuevaIteracion =
+          `Las fechas deben estar dentro del rango de la etapa: ${this.etapaActual.fechaInicio} → ${this.etapaActual.fechaFin}.`;
+        return false;
+      }
+    }
+
     return true;
   }
 
