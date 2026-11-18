@@ -1,5 +1,37 @@
-.vscode
+# =============================================================================
+# KAIROS - Docker Deployment .gitignore
+# =============================================================================
+
+# Credenciales y variables de entorno del backend
 .env
-.env.json
+.env.*
+!.env.example
+
+# Configuraciones reales del frontend (contienen Client IDs y URLs locales)
 env.json
+env.demo.json
+!env.json.example
+!env.demo.json.example
+
+# IDEs y configuración de editores
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Código fuente y dependencias locales (esta rama es solo para despliegue de imágenes Docker)
 kairos/
+kairos-frontend/
+node_modules/
+dist/
+
+# Logs del sistema
+*.log
+npm-debug.log*
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

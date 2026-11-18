@@ -1,0 +1,75 @@
+services:
+  # ── Base de Datos MySQL - DEMO ──
+  kairos-db-demo:
+    image: mysql:8.0
+    container_name: kairos-db-demo
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DEMO_DB_PASSWORD:-kairos_demo_2026}
+      MYSQL_DATABASE: kairos_demo
+    ports:
+      - "3307:3306"
+    volumes:
+      - kairos-demo-db-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - kairos-demo-network
+
+  # ── Backend Spring Boot - DEMO (con datos precargados) ──
+  kairos-backend-demo:
+    image: guill3r/kairos:backend-latest
+    container_name: kairos-backend-demo
+    restart: unless-stopped
+    depends_on:
+      kairos-db-demo:
+        condition: service_healthy
+    env_file:
+      - path: ./kairos/.env
+        required: false
+      - path: ./.env
+        required: false
+    environment:
+      # Activa DataSeeder para sembrar proyectos, tareas y tiempos de Codevit
+      SPRING_PROFILES_ACTIVE: demo
+      SPRING_DATASOURCE_URL: jdbc:mysql://kairos-db-demo:3306/kairos_demo?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${DEMO_DB_PASSWORD:-kairos_demo_2026}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      JWT_SECRET: ${JWT_SECRET:-9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+    ports:
+      - "8081:8080"
+    networks:
+      kairos-demo-network:
+        aliases:
+          - backend
+
+  # ── Frontend Angular + Nginx - DEMO ──
+  kairos-frontend-demo:
+    image: guill3r/kairos:frontend-latest
+    container_name: kairos-frontend-demo
+    restart: unless-stopped
+    depends_on:
+      - kairos-backend-demo
+    volumes:
+      - ./env.demo.json:/usr/share/nginx/html/assets/env.json:ro
+    ports:
+      - "8082:80"
+    networks:
+      - kairos-demo-network
+
+volumes:
+  kairos-demo-db-data:
+    driver: local
+
+networks:
+  kairos-demo-network:
+    driver: bridge

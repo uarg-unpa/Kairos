@@ -23,7 +23,7 @@ services:
 
   # ── Backend (Spring Boot) ──
   kairos-backend:
-    image: guill3r/kairos2:kairos-backend
+    image: guill3r/kairos:backend-latest
     container_name: kairos-backend
     restart: unless-stopped
     depends_on:
@@ -42,11 +42,13 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - kairos-network
+      kairos-network:
+        aliases:
+          - backend
 
   # ── Frontend (Angular + Nginx) ──
   kairos-frontend:
-    image: guill3r/kairos2:kairos-frontend
+    image: guill3r/kairos:frontend-latest
     container_name: kairos-frontend
     restart: unless-stopped
     depends_on:
