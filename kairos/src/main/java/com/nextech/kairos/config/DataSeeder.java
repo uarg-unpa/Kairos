@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.context.annotation.Profile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,6 +42,7 @@ import com.nextech.kairos.repository.UsuarioProyectoRepository;
 import com.nextech.kairos.repository.UsuarioRepository;
 
 @Configuration
+@Profile("demo")
 public class DataSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
@@ -104,18 +105,18 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void createAllProjects(Rol rolUsuarioComun) {
-        //1: Kairos (NexTech)
+        // 1: Kairos (NexTech)
         createKairosProject(rolUsuarioComun);
-        //2: GRCU Manager (4 Bytes)
+        // 2: GRCU Manager (4 Bytes)
         createGRCUManagerProject(rolUsuarioComun);
 
-        //3: MetricFlow SQA (CoDevIT)
+        // 3: MetricFlow SQA (CoDevIT)
         createMetricFlowProject(rolUsuarioComun);
 
-        //4: Vesta Risk Manager (T-Code)
+        // 4: Vesta Risk Manager (T-Code)
         createVestaRiskProject(rolUsuarioComun);
 
-        //5-8:proyectos inventados
+        // 5-8:proyectos inventados
         createInventedProjects(rolUsuarioComun);
     }
 
@@ -123,7 +124,8 @@ public class DataSeeder implements CommandLineRunner {
         Proyecto proyecto = new Proyecto();
         proyecto.setNombre("Kairos");
         proyecto.setEquipo("NexTech");
-        proyecto.setDescripcion("Sistema de planificación de proyectos, registro de tiempos y visualización del avance");
+        proyecto.setDescripcion(
+                "Sistema de planificación de proyectos, registro de tiempos y visualización del avance");
         proyecto.setEstado("En Progreso");
         proyecto.setFechaInicio(LocalDate.of(2025, 8, 1));
         proyecto.setLogo("Kairos Logo.png");
@@ -143,7 +145,8 @@ public class DataSeeder implements CommandLineRunner {
 
         Set<Categoria> categorias = createCategorias(proyecto);
 
-        createStagesAndIterations(proyecto, categorias, Arrays.asList(gonzalo, guillermo, valeria, agustina, florencia));
+        createStagesAndIterations(proyecto, categorias,
+                Arrays.asList(gonzalo, guillermo, valeria, agustina, florencia));
     }
 
     private void createGRCUManagerProject(Rol rolUsuarioComun) {
@@ -224,11 +227,16 @@ public class DataSeeder implements CommandLineRunner {
         Usuario malcolm = usuarioRepository.findByEmail("malcolm.salazar@gmail.com").orElse(null);
 
         List<Usuario> usuarios = new java.util.ArrayList<>();
-        if (ezequiel != null) usuarios.add(ezequiel);
-        if (fabricio != null) usuarios.add(fabricio);
-        if (santiago != null) usuarios.add(santiago);
-        if (lorenzo != null) usuarios.add(lorenzo);
-        if (malcolm != null) usuarios.add(malcolm);
+        if (ezequiel != null)
+            usuarios.add(ezequiel);
+        if (fabricio != null)
+            usuarios.add(fabricio);
+        if (santiago != null)
+            usuarios.add(santiago);
+        if (lorenzo != null)
+            usuarios.add(lorenzo);
+        if (malcolm != null)
+            usuarios.add(malcolm);
 
         seedMetricFlowFromData(proyecto, usuarios);
         if (proyecto.getFechaInicio() == null) {
@@ -392,10 +400,10 @@ public class DataSeeder implements CommandLineRunner {
 
     private void createInventedProjects(Rol rolUsuarioComun) {
         String[][] projectsData = {
-            {"DataFlow Pro", "InnovateTech", "Plataforma de flujo de datos en tiempo real"},
-            {"SecureVault", "CyberGuard", "Sistema de gestión de seguridad y criptografía"},
-            {"CloudSync Manager", "SkyTech", "Gestor de sincronización en la nube"},
-            {"Analytics Hub", "DataInsights", "Centro de análisis e inteligencia de datos"}
+                { "DataFlow Pro", "InnovateTech", "Plataforma de flujo de datos en tiempo real" },
+                { "SecureVault", "CyberGuard", "Sistema de gestión de seguridad y criptografía" },
+                { "CloudSync Manager", "SkyTech", "Gestor de sincronización en la nube" },
+                { "Analytics Hub", "DataInsights", "Centro de análisis e inteligencia de datos" }
         };
 
         for (String[] data : projectsData) {
@@ -407,15 +415,15 @@ public class DataSeeder implements CommandLineRunner {
             proyecto.setFechaInicio(LocalDate.of(2025, 8, 1));
             proyecto = proyectoRepository.save(proyecto);
 
-            int userCount = 4 + (int)(Math.random() * 2);
+            int userCount = 4 + (int) (Math.random() * 2);
             java.util.List<Usuario> usuarios = new java.util.ArrayList<>();
             for (int i = 0; i < userCount; i++) {
-                Usuario user = createUser("User " + data[1] + " " + (i + 1), 
-                    "user" + i + "@" + data[1].toLowerCase() + ".com", rolUsuarioComun);
+                Usuario user = createUser("User " + data[1] + " " + (i + 1),
+                        "user" + i + "@" + data[1].toLowerCase() + ".com", rolUsuarioComun);
                 usuarios.add(user);
             }
 
-            String[] roles = {"Líder", "Programador", "Analista", "Documentador", "Gerente de Calidad"};
+            String[] roles = { "Líder", "Programador", "Analista", "Documentador", "Gerente de Calidad" };
             for (int i = 0; i < usuarios.size(); i++) {
                 createUsuarioProyecto(usuarios.get(i), proyecto, roles[i % roles.length]);
             }
@@ -440,8 +448,8 @@ public class DataSeeder implements CommandLineRunner {
 
     private Set<Categoria> createCategorias(Proyecto proyecto) {
         String[] categoriasNombres = {
-            "Análisis", "Diseño", "Codificación", "Validación y Verificación", 
-            "Documentación", "Actividades Externas"
+                "Análisis", "Diseño", "Codificación", "Validación y Verificación",
+                "Documentación", "Actividades Externas"
         };
         Set<Categoria> categorias = new HashSet<>();
         for (String nombre : categoriasNombres) {
@@ -453,17 +461,18 @@ public class DataSeeder implements CommandLineRunner {
         return categorias;
     }
 
-    private void createStagesAndIterations(Proyecto proyecto, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
-        Etapa inicio = createEtapa("Inicio", 
-            "Definición de la visión del proyecto y análisis de viabilidad",
-            EstadoEtapa.COMPLETADA, proyecto, LocalDate.of(2025, 8, 1), LocalDate.of(2025, 9, 4));
-        
+    private void createStagesAndIterations(Proyecto proyecto, Set<Categoria> categorias,
+            java.util.List<Usuario> usuarios) {
+        Etapa inicio = createEtapa("Inicio",
+                "Definición de la visión del proyecto y análisis de viabilidad",
+                EstadoEtapa.COMPLETADA, proyecto, LocalDate.of(2025, 8, 1), LocalDate.of(2025, 9, 4));
+
         Iteracion inicioIter = createIteracion(1, inicio, LocalDate.of(2025, 8, 1), LocalDate.of(2025, 9, 4));
         createTareasInicio(inicioIter, categorias, usuarios);
         Etapa elaboracion = createEtapa("Elaboración",
-            "Análisis detallado de requisitos y diseño de arquitectura",
-            EstadoEtapa.EN_PROGRESO, proyecto, LocalDate.of(2025, 9, 5), LocalDate.of(2025, 10, 10));
-        
+                "Análisis detallado de requisitos y diseño de arquitectura",
+                EstadoEtapa.EN_PROGRESO, proyecto, LocalDate.of(2025, 9, 5), LocalDate.of(2025, 10, 10));
+
         Iteracion elab1 = createIteracion(1, elaboracion, LocalDate.of(2025, 9, 5), LocalDate.of(2025, 9, 23));
         createTareasElaboracion1(elab1, categorias, usuarios);
 
@@ -471,9 +480,9 @@ public class DataSeeder implements CommandLineRunner {
         createTareasElaboracion2(elab2, categorias, usuarios);
 
         Etapa construccion = createEtapa("Construcción",
-            "Implementación y pruebas incrementales del producto",
-            EstadoEtapa.PENDIENTE, proyecto, LocalDate.of(2025, 10, 13), LocalDate.of(2025, 11, 18));
-        
+                "Implementación y pruebas incrementales del producto",
+                EstadoEtapa.PENDIENTE, proyecto, LocalDate.of(2025, 10, 13), LocalDate.of(2025, 11, 18));
+
         Iteracion cons1 = createIteracion(1, construccion, LocalDate.of(2025, 10, 13), LocalDate.of(2025, 10, 28));
         createTareasConstraccion1(cons1, categorias, usuarios);
 
@@ -484,8 +493,8 @@ public class DataSeeder implements CommandLineRunner {
         createTareasConstraccion3(cons3, categorias, usuarios);
     }
 
-    private Etapa createEtapa(String nombre, String descripcion, EstadoEtapa estado, 
-                              Proyecto proyecto, LocalDate fechaInicio, LocalDate fechaFin) {
+    private Etapa createEtapa(String nombre, String descripcion, EstadoEtapa estado,
+            Proyecto proyecto, LocalDate fechaInicio, LocalDate fechaFin) {
         Etapa etapa = new Etapa();
         etapa.setNombre(nombre);
         etapa.setDescripcion(descripcion);
@@ -506,10 +515,10 @@ public class DataSeeder implements CommandLineRunner {
         return iteracionRepository.save(iteracion);
     }
 
-    private Tarea createTarea(String nombre, Iteracion iteracion, Usuario usuario, 
-                              LocalDate fechaInicio, LocalDate fechaFin, 
-                              Set<Categoria> categorias, Categoria categoriaPrimaria,
-                              double horasEstimadas, String estado) {
+    private Tarea createTarea(String nombre, Iteracion iteracion, Usuario usuario,
+            LocalDate fechaInicio, LocalDate fechaFin,
+            Set<Categoria> categorias, Categoria categoriaPrimaria,
+            double horasEstimadas, String estado) {
         Tarea tarea = new Tarea();
         tarea.setNombre(nombre);
         tarea.setIteracion(iteracion);
@@ -530,18 +539,17 @@ public class DataSeeder implements CommandLineRunner {
     private void createTareasInicio(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
         java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
         java.util.List<String> tareasNombres = Arrays.asList(
-            "Entrevista con clientes",
-            "Estándar de documentación",
-            "Resumen de entrevista",
-            "Estudio de factibilidad",
-            "Modelo de Negocio",
-            "Plan de SQA",
-            "Plan de Proyecto",
-            "Plan de Gestión de Configuración",
-            "Propuesta de Desarrollo",
-            "Plan de Iteración E1",
-            "Implementación de UARGFlow"
-        );
+                "Entrevista con clientes",
+                "Estándar de documentación",
+                "Resumen de entrevista",
+                "Estudio de factibilidad",
+                "Modelo de Negocio",
+                "Plan de SQA",
+                "Plan de Proyecto",
+                "Plan de Gestión de Configuración",
+                "Propuesta de Desarrollo",
+                "Plan de Iteración E1",
+                "Implementación de UARGFlow");
 
         LocalDate inicio = iteracion.getFechaInicio();
         LocalDate fin = iteracion.getFechaFin();
@@ -550,33 +558,34 @@ public class DataSeeder implements CommandLineRunner {
             Usuario responsable = usuarios.get(i % usuarios.size());
             Categoria cat = catList.get(i % catList.size());
             LocalDate tFin = inicio.plusDays(2 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
+            if (tFin.isAfter(fin))
+                tFin = fin;
 
-            Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable, 
-                inicio.plusDays(i), tFin, categorias, cat, 2.0 + (i * 0.5), "Completado");
-            
+            Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable,
+                    inicio.plusDays(i), tFin, categorias, cat, 2.0 + (i * 0.5), "Completado");
+
             addTimeRecords(tarea, responsable, inicio.plusDays(i), 1 + (i % 3));
-            
+
             if (i % 3 == 0) {
                 addCommentToTask(tarea, usuarios.get((i + 1) % usuarios.size()), inicio.plusDays(i));
             }
         }
     }
 
-    private void createTareasElaboracion1(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
+    private void createTareasElaboracion1(Iteracion iteracion, Set<Categoria> categorias,
+            java.util.List<Usuario> usuarios) {
         java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
         java.util.List<String> tareasNombres = Arrays.asList(
-            "Plan de Estimación",
-            "Estimación 1",
-            "Plan de Gestión de Riesgos",
-            "Identificación de primeros riesgos",
-            "Herramientas y Tecnologías a utilizar",
-            "Especificación de Requerimientos",
-            "Plan de SQA finalizado",
-            "Diagrama de Casos de Uso",
-            "Cierre de iteración E1",
-            "Plan de iteración E2"
-        );
+                "Plan de Estimación",
+                "Estimación 1",
+                "Plan de Gestión de Riesgos",
+                "Identificación de primeros riesgos",
+                "Herramientas y Tecnologías a utilizar",
+                "Especificación de Requerimientos",
+                "Plan de SQA finalizado",
+                "Diagrama de Casos de Uso",
+                "Cierre de iteración E1",
+                "Plan de iteración E2");
 
         LocalDate inicio = iteracion.getFechaInicio();
         LocalDate fin = iteracion.getFechaFin();
@@ -585,34 +594,35 @@ public class DataSeeder implements CommandLineRunner {
             Usuario responsable = usuarios.get(i % usuarios.size());
             Categoria cat = catList.get(i % catList.size());
             LocalDate tFin = inicio.plusDays(1 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
+            if (tFin.isAfter(fin))
+                tFin = fin;
 
             Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable,
-                inicio.plusDays(i), tFin, categorias, cat, 3.0 + (i * 0.8), "Completado");
-            
+                    inicio.plusDays(i), tFin, categorias, cat, 3.0 + (i * 0.8), "Completado");
+
             addTimeRecords(tarea, responsable, inicio.plusDays(i), 2 + (i % 2));
-            
+
             if (i % 4 == 1) {
                 addCommentToTask(tarea, usuarios.get((i + 2) % usuarios.size()), inicio.plusDays(i));
             }
         }
     }
 
-    private void createTareasElaboracion2(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
+    private void createTareasElaboracion2(Iteracion iteracion, Set<Categoria> categorias,
+            java.util.List<Usuario> usuarios) {
         java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
         java.util.List<String> tareasNombres = Arrays.asList(
-            "Estimación 2",
-            "Identificación y evaluación de Riesgos",
-            "Modelo de Casos de Uso",
-            "Revisión de Modelo de Casos de Uso",
-            "Primer prototipo funcional",
-            "Modelo de Datos",
-            "Inicio de Modelo de Diseño",
-            "Plan de pruebas",
-            "Pruebas de Implementación de UARGFlow",
-            "Cierre de iteracion E2",
-            "Plan de Iteración C1"
-        );
+                "Estimación 2",
+                "Identificación y evaluación de Riesgos",
+                "Modelo de Casos de Uso",
+                "Revisión de Modelo de Casos de Uso",
+                "Primer prototipo funcional",
+                "Modelo de Datos",
+                "Inicio de Modelo de Diseño",
+                "Plan de pruebas",
+                "Pruebas de Implementación de UARGFlow",
+                "Cierre de iteracion E2",
+                "Plan de Iteración C1");
 
         LocalDate inicio = iteracion.getFechaInicio();
         LocalDate fin = iteracion.getFechaFin();
@@ -621,41 +631,42 @@ public class DataSeeder implements CommandLineRunner {
             Usuario responsable = usuarios.get(i % usuarios.size());
             Categoria cat = catList.get(i % catList.size());
             LocalDate tFin = inicio.plusDays(1 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
+            if (tFin.isAfter(fin))
+                tFin = fin;
 
             double horas = "Primer prototipo funcional".equals(tareasNombres.get(i)) ? 8.0 : 3.5 + (i * 0.6);
             Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable,
-                inicio.plusDays(i), tFin, categorias, cat, horas, "Completado");
-            
+                    inicio.plusDays(i), tFin, categorias, cat, horas, "Completado");
+
             addTimeRecords(tarea, responsable, inicio.plusDays(i), 2 + (i % 3));
-            
+
             if (i % 3 == 2) {
                 addCommentToTask(tarea, usuarios.get((i + 3) % usuarios.size()), inicio.plusDays(i));
             }
         }
     }
 
-    private void createTareasConstraccion1(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
+    private void createTareasConstraccion1(Iteracion iteracion, Set<Categoria> categorias,
+            java.util.List<Usuario> usuarios) {
         java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
         java.util.List<String> tareasNombres = Arrays.asList(
-            "Estimación 3",
-            "Evaluación de Riesgos",
-            "Modelo Arquitectónico",
-            "Revisión de Modelo Arquitectónico",
-            "Modelo de diseño finalizado",
-            "Revisión de modelo de diseño",
-            "Definición de 1ra tanda de casos de uso",
-            "Especificación de Casos de uso a implementar",
-            "Revisión Técnica de Especificación",
-            "Implementación del modelo de datos en SQL",
-            "Definición de Casos de Prueba",
-            "CU: Crear Proyecto",
-            "CU: Gestionar Usuarios",
-            "CU: Asignar Recursos",
-            "Ejecución de Casos de prueba",
-            "Cierre de iteración C1",
-            "Plan de Iteración C2"
-        );
+                "Estimación 3",
+                "Evaluación de Riesgos",
+                "Modelo Arquitectónico",
+                "Revisión de Modelo Arquitectónico",
+                "Modelo de diseño finalizado",
+                "Revisión de modelo de diseño",
+                "Definición de 1ra tanda de casos de uso",
+                "Especificación de Casos de uso a implementar",
+                "Revisión Técnica de Especificación",
+                "Implementación del modelo de datos en SQL",
+                "Definición de Casos de Prueba",
+                "CU: Crear Proyecto",
+                "CU: Gestionar Usuarios",
+                "CU: Asignar Recursos",
+                "Ejecución de Casos de prueba",
+                "Cierre de iteración C1",
+                "Plan de Iteración C2");
 
         LocalDate inicio = iteracion.getFechaInicio();
         LocalDate fin = iteracion.getFechaFin();
@@ -664,39 +675,40 @@ public class DataSeeder implements CommandLineRunner {
             Usuario responsable = usuarios.get(i % usuarios.size());
             Categoria cat = catList.get(i % catList.size());
             LocalDate tFin = inicio.plusDays(1 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
+            if (tFin.isAfter(fin))
+                tFin = fin;
 
-            boolean isCodingTask = tareasNombres.get(i).startsWith("CU:") || 
-                                   tareasNombres.get(i).contains("Implementación");
+            boolean isCodingTask = tareasNombres.get(i).startsWith("CU:") ||
+                    tareasNombres.get(i).contains("Implementación");
             double horas = isCodingTask ? 6.0 + (Math.random() * 4) : 3.0 + (i * 0.5);
-            
+
             Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable,
-                inicio.plusDays(i), tFin, categorias, cat, horas, "Completado");
-            
+                    inicio.plusDays(i), tFin, categorias, cat, horas, "Completado");
+
             addTimeRecords(tarea, responsable, inicio.plusDays(i), isCodingTask ? 3 + (i % 3) : 2);
-            
+
             if (i % 3 == 0) {
                 addCommentToTask(tarea, usuarios.get((i + 1) % usuarios.size()), inicio.plusDays(i));
             }
         }
     }
 
-    private void createTareasConstraccion2(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
+    private void createTareasConstraccion2(Iteracion iteracion, Set<Categoria> categorias,
+            java.util.List<Usuario> usuarios) {
         java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
         java.util.List<String> tareasNombres = Arrays.asList(
-            "Estimación 4",
-            "Evaluación de Riesgos",
-            "Priorización de segunda tanda de CU",
-            "Definición de pruebas para CU",
-            "Especificación de Casos de Uso a implementar",
-            "CU: Reportes Avanzados",
-            "CU: Panel de Control",
-            "CU: Exportar Datos",
-            "CU: Integración API",
-            "Ejecución de Casos de prueba",
-            "Cierre de iteración C2",
-            "Plan de Iteración C3"
-        );
+                "Estimación 4",
+                "Evaluación de Riesgos",
+                "Priorización de segunda tanda de CU",
+                "Definición de pruebas para CU",
+                "Especificación de Casos de Uso a implementar",
+                "CU: Reportes Avanzados",
+                "CU: Panel de Control",
+                "CU: Exportar Datos",
+                "CU: Integración API",
+                "Ejecución de Casos de prueba",
+                "Cierre de iteración C2",
+                "Plan de Iteración C3");
 
         LocalDate inicio = iteracion.getFechaInicio();
         LocalDate fin = iteracion.getFechaFin();
@@ -705,37 +717,38 @@ public class DataSeeder implements CommandLineRunner {
             Usuario responsable = usuarios.get(i % usuarios.size());
             Categoria cat = catList.get(i % catList.size());
             LocalDate tFin = inicio.plusDays(1 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
+            if (tFin.isAfter(fin))
+                tFin = fin;
 
             boolean isCodingTask = tareasNombres.get(i).startsWith("CU:");
             double horas = isCodingTask ? 5.0 + (Math.random() * 5) : 2.5 + (i * 0.6);
-            
+
             Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable,
-                inicio.plusDays(i), tFin, categorias, cat, horas, "Completado");
-            
+                    inicio.plusDays(i), tFin, categorias, cat, horas, "Completado");
+
             addTimeRecords(tarea, responsable, inicio.plusDays(i), isCodingTask ? 2 + (i % 3) : 1 + (i % 2));
-            
+
             if (i % 4 == 1) {
                 addCommentToTask(tarea, usuarios.get((i + 2) % usuarios.size()), inicio.plusDays(i));
             }
         }
     }
 
-    private void createTareasConstraccion3(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
+    private void createTareasConstraccion3(Iteracion iteracion, Set<Categoria> categorias,
+            java.util.List<Usuario> usuarios) {
         java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
         java.util.List<String> tareasNombres = Arrays.asList(
-            "Estimación 5",
-            "Evaluación de Riesgos",
-            "Definición de casos de uso a implementar",
-            "Definición de casos de prueba para casos de uso",
-            "Especificación de casos de uso a implementar",
-            "CU: Auditoría del Sistema",
-            "CU: Gestión de Permisos",
-            "CU: Búsqueda Avanzada",
-            "CU: Notificaciones en Tiempo Real",
-            "Ejecución de casos de prueba",
-            "Cierre de Iteración C3"
-        );
+                "Estimación 5",
+                "Evaluación de Riesgos",
+                "Definición de casos de uso a implementar",
+                "Definición de casos de prueba para casos de uso",
+                "Especificación de casos de uso a implementar",
+                "CU: Auditoría del Sistema",
+                "CU: Gestión de Permisos",
+                "CU: Búsqueda Avanzada",
+                "CU: Notificaciones en Tiempo Real",
+                "Ejecución de casos de prueba",
+                "Cierre de Iteración C3");
 
         LocalDate inicio = iteracion.getFechaInicio();
         LocalDate fin = iteracion.getFechaFin();
@@ -744,16 +757,17 @@ public class DataSeeder implements CommandLineRunner {
             Usuario responsable = usuarios.get(i % usuarios.size());
             Categoria cat = catList.get(i % catList.size());
             LocalDate tFin = inicio.plusDays(1 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
+            if (tFin.isAfter(fin))
+                tFin = fin;
 
             boolean isCodingTask = tareasNombres.get(i).startsWith("CU:");
             double horas = isCodingTask ? 4.0 + (Math.random() * 6) : 2.0 + (i * 0.7);
-            
+
             Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable,
-                inicio.plusDays(i), tFin, categorias, cat, horas, "En Progreso");
-            
+                    inicio.plusDays(i), tFin, categorias, cat, horas, "En Progreso");
+
             addTimeRecords(tarea, responsable, inicio.plusDays(i), isCodingTask ? 2 + (i % 3) : 1);
-            
+
             if (i % 3 == 1) {
                 addCommentToTask(tarea, usuarios.get((i + 1) % usuarios.size()), inicio.plusDays(i));
             }
@@ -762,12 +776,11 @@ public class DataSeeder implements CommandLineRunner {
 
     private void addTimeRecords(Tarea tarea, Usuario usuario, LocalDate fechaBase, int numRecords) {
 
-
         for (int i = 0; i < numRecords; i++) {
             Tiempo tiempo = new Tiempo();
             tiempo.setTarea(tarea);
             tiempo.setUsuario(usuario);
-            tiempo.setDuracion(30 + (int)(Math.random() * 240));
+            tiempo.setDuracion(30 + (int) (Math.random() * 240));
             tiempo.setFechaRegistro(fechaBase.plusDays(i));
             tiempoRepository.save(tiempo);
         }
@@ -775,19 +788,18 @@ public class DataSeeder implements CommandLineRunner {
 
     private void addCommentToTask(Tarea tarea, Usuario usuario, LocalDate fechaBase) {
         java.util.List<String> comentarios = Arrays.asList(
-            "Necesita revisión de especificaciones",
-            "Completado exitosamente",
-            "Requiere ajustes menores",
-            "Bloqueado por otra tarea",
-            "Aprobado por el equipo de QA",
-            "Pendiente de validación",
-            "Documentación faltante"
-        );
+                "Necesita revisión de especificaciones",
+                "Completado exitosamente",
+                "Requiere ajustes menores",
+                "Bloqueado por otra tarea",
+                "Aprobado por el equipo de QA",
+                "Pendiente de validación",
+                "Documentación faltante");
 
         Comentario comentario = new Comentario();
         comentario.setTarea(tarea);
         comentario.setUsuario(usuario);
-        comentario.setContenido(comentarios.get((int)(Math.random() * comentarios.size())));
+        comentario.setContenido(comentarios.get((int) (Math.random() * comentarios.size())));
         comentario.setFechaComentario(fechaBase);
         comentarioRepository.save(comentario);
     }
