@@ -36,30 +36,29 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .exceptionHandling(exceptions -> exceptions
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-            )
-            .authorizeHttpRequests(authz -> authz
-                // Recursos públicos comunes
-                .requestMatchers(
-                    "/", 
-                    "/error", 
-                    "/favicon.ico",
-                    "/static/**", //recursos estáticos están en /static/
-                    "/css/**", "/js/**", "/images/**" //faltan agregar según avance el proyecto
-                ).permitAll()
-                // Endpoints públicos
-                .requestMatchers("/auth/**").permitAll()
-                // Endpoints protegidos por permisos
-                //.requestMatchers("/api/usuarios/**").hasAnyAuthority("Usuarios", "ROLE_ADMINISTRADOR")
-                .requestMatchers("/api/roles/**").hasAnyAuthority("Roles", "ROLE_ADMINISTRADOR")
-                .requestMatchers("/api/permisos/**").hasAnyAuthority("Permisos", "ROLE_ADMINISTRADOR")
-                // Todo lo demás necesita autenticación
-                .anyRequest().permitAll()
-            );
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .authorizeHttpRequests(authz -> authz
+                        // Recursos públicos comunes
+                        .requestMatchers(
+                                "/",
+                                "/error",
+                                "/favicon.ico",
+                                "/static/**", // recursos estáticos están en /static/
+                                "/css/**", "/js/**", "/images/**" // faltan agregar según avance el proyecto
+                        ).permitAll()
+                        // Endpoints públicos
+                        .requestMatchers("/auth/**").permitAll()
+                        // Endpoints protegidos por permisos
+                        // .requestMatchers("/api/usuarios/**").hasAnyAuthority("Usuarios",
+                        // "ROLE_ADMINISTRADOR")
+                        .requestMatchers("/api/roles/**").hasAnyAuthority("Roles", "ROLE_ADMINISTRADOR")
+                        .requestMatchers("/api/permisos/**").hasAnyAuthority("Permisos", "ROLE_ADMINISTRADOR")
+                        // Todo lo demás necesita autenticación
+                        .anyRequest().authenticated());
 
         // Filtro JWT
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

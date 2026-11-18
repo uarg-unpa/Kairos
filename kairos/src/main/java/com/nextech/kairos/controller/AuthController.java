@@ -37,8 +37,9 @@ import com.nextech.kairos.util.JwtUtil;
 
 @RestController
 @RequestMapping("/auth")
-// @CrossOrigin(origins = {*}, allowCredentials = "true", maxAge = 3600) // para despliegue
-@CrossOrigin(origins = {"http://localhost:4200", "http://127.0.0.1:4200"}, allowCredentials = "true", maxAge = 3600)
+// @CrossOrigin(origins = {*}, allowCredentials = "true", maxAge = 3600) // para
+// despliegue
+@CrossOrigin(origins = { "http://localhost:4200", "http://127.0.0.1:4200" }, allowCredentials = "true", maxAge = 3600)
 public class AuthController {
 
     @Autowired
@@ -70,17 +71,16 @@ public class AuthController {
             boolean isAdmin = authService.isAdmin(email);
 
             UserInfoResponse response = new UserInfoResponse(
-                usuario.get().getId(),
-                usuario.get().getNombre(),
-                usuario.get().getEmail(),
-                permissions,
-                isAdmin
-            );
+                    usuario.get().getId(),
+                    usuario.get().getNombre(),
+                    usuario.get().getEmail(),
+                    permissions,
+                    isAdmin);
 
             return ResponseEntity.ok(response);
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     /**
@@ -169,9 +169,8 @@ public class AuthController {
             var authorities = permissions.stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toSet());
-            usuario.getRoles().forEach(rol ->
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + rol.getNombre().toUpperCase().replace(" ", "_")))
-            );
+            usuario.getRoles().forEach(rol -> authorities
+                    .add(new SimpleGrantedAuthority("ROLE_" + rol.getNombre().toUpperCase().replace(" ", "_"))));
 
             String token = jwtUtil.generateToken(email, authorities);
 
@@ -198,7 +197,7 @@ public class AuthController {
             return null;
         }
         Object principal = authentication.getPrincipal();
-        if (principal instanceof String str && !str.isBlank()) {
+        if (principal instanceof String str && !str.isBlank() && !"anonymousUser".equalsIgnoreCase(str)) {
             return str;
         }
         return null;

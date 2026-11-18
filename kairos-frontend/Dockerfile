@@ -1,26 +1,22 @@
-# ── Stage 1: Build Angular app ──
+# Stage 1: Build Angular application
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Copiar archivos de dependencias
+# Cache package dependencies
 COPY package*.json ./
 RUN npm ci
 
-# Copiar código fuente y compilar
+# Copy sources and compile production bundle
 COPY . .
 RUN npm run build -- --configuration production
 
-# ── Stage 2: Web Server Nginx ──
+# Stage 2: Serve with Nginx
 FROM nginx:alpine
-WORKDIR /usr/share/nginx/html
 
-# Limpiar archivos por defecto
-RUN rm -rf ./*
-
-# Copiar build de Angular
+# Copy compiled Angular files
 COPY --from=build /app/dist/kairos-frontend/browser /usr/share/nginx/html
 
-# Copiar configuración de Nginx
+# Copy custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80

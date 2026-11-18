@@ -1,10 +1,10 @@
+
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpBackend } from '@angular/common/http';
 
 interface AppConfig {
   googleClientId?: string;
   apiBaseUrl?: string;
-  // claves alternativas aceptadas (no se exponen, se normalizan al cargar)
   GOOGLE_CLIENT_ID?: string;
   google_client_id?: string;
   API_BASE_URL?: string;
@@ -13,24 +13,31 @@ interface AppConfig {
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
-  private http = inject(HttpClient);
+  // HttpBackend evita ejecutar los interceptores durante la carga inicial
+  private http = new HttpClient(inject(HttpBackend));
   private config: AppConfig = {};
 
   load(): Promise<void> {
-    // Carga configuración en runtime desde assets/env.json
-    return new Promise((resolve) => {
-      const url = `assets/env.json?v=${Date.now()}`; // evita caché del navegador en dev
-      this.http.get<AppConfig>(url).subscribe({
-        next: (cfg) => {
-          const c = cfg || {} as AppConfig;
-          const googleClientId = c.googleClientId || c.GOOGLE_CLIENT_ID || c.google_client_id;
-          const apiBaseUrl = c.apiBaseUrl || c.API_BASE_URL || c.api_base_url;
-          this.config = { ...c, googleClientId, apiBaseUrl } as AppConfig;
-          resolve();
-        },
-        error: () => resolve() // continúa aunque no exista el archivo
+    const url = `assets/env.json?v=${Date.now()}`;
+
+    return this.http.get<AppConfig>(url).toPromise()
+      .then(cfg => {
+        const c = cfg || {};
+
+        this.config = {
+          ...c,
+          googleClientId:
+            c.googleClientId || c.GOOGLE_CLIENT_ID || c.google_client_id,
+          apiBaseUrl:
+            c.apiBaseUrl || c.API_BASE_URL || c.api_base_url
+        };
+
+        console.log('Configuración cargada:', this.config);
+      })
+      .catch(err => {
+        console.error('No se pudo cargar assets/env.json:', err);
+        throw err;
       });
-    });
   }
 
   get<T extends keyof AppConfig>(key: T): AppConfig[T] | undefined {

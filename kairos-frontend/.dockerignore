@@ -3,7 +3,5 @@ dist/
 .angular/
 .git/
 .gitignore
-.vscode/
-.editorconfig
-README.md
-*.log
+.idea/
+npm-debug.log

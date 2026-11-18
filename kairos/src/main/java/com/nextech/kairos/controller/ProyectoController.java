@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.nextech.kairos.dto.ActualizarProyectoRequest;
 import com.nextech.kairos.dto.CrearProyectoRequest;
@@ -50,11 +52,14 @@ public class ProyectoController {
 
     private Usuario getCurrentUser(Authentication auth) {
         if (auth == null || auth.getPrincipal() == null) {
-            throw new RuntimeException("No autenticado");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No autenticado");
         }
-        String email = (String) auth.getPrincipal();
+        Object principal = auth.getPrincipal();
+        if (!(principal instanceof String email) || email.isBlank() || "anonymousUser".equalsIgnoreCase(email)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No autenticado");
+        }
         return authService.getUserForSession(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
     }
 
     // 1. MIS PROYECTOS → Miembros y Líderes

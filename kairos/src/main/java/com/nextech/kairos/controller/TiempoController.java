@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.nextech.kairos.dto.TiempoEditRequestDTO;
 import com.nextech.kairos.dto.TiempoRegistroRequest;
@@ -44,6 +45,18 @@ public class TiempoController {
         this.usuarioService = usuarioService;
     }
 
+    private Usuario getAuthenticatedUser(Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No autenticado");
+        }
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof String email) || email.isBlank() || "anonymousUser".equalsIgnoreCase(email)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No autenticado");
+        }
+        return usuarioService.findByEmail(email)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+    }
+
     /**
      * Registra un nuevo tiempo, obtenido del cronómetro o manual.
      * Obtiene el usuario autenticado del contexto de seguridad.
@@ -51,10 +64,7 @@ public class TiempoController {
     @PostMapping
     public ResponseEntity<Tiempo> registrarTiempo(@Valid @RequestBody TiempoRegistroRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (String) authentication.getPrincipal();
-
-        Usuario usuario = usuarioService.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado, no se puede registrar tiempo."));
+        Usuario usuario = getAuthenticatedUser(authentication);
         
         Tiempo nuevoTiempo = new Tiempo();
         
@@ -72,9 +82,7 @@ public class TiempoController {
     }
     @GetMapping("/ultimos")
     public ResponseEntity<List<TiempoResponseDTO>> getUltimosTiempos(Authentication authentication) {
-        String email = (String) authentication.getPrincipal();
-        Usuario usuario = usuarioService.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = getAuthenticatedUser(authentication);
 
         List<TiempoResponseDTO> ultimos = tiempoService.findLast15ByUsuarioId(usuario.getId());
         return ResponseEntity.ok(ultimos);
@@ -82,9 +90,7 @@ public class TiempoController {
 
     @GetMapping("/totales-usuario")
     public ResponseEntity<java.util.Map<Long, Integer>> getTiemposTotalesUsuario(Authentication authentication) {
-        String email = (String) authentication.getPrincipal();
-        Usuario usuario = usuarioService.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = getAuthenticatedUser(authentication);
 
         java.util.Map<Long, Integer> totales = tiempoService.getTiemposTotalesPorUsuario(usuario.getId());
         return ResponseEntity.ok(totales);
@@ -92,9 +98,7 @@ public class TiempoController {
 
     @GetMapping("/totales-personales-usuario")
     public ResponseEntity<java.util.Map<Long, Integer>> getTiemposTotalesPersonalesUsuario(Authentication authentication) {
-        String email = (String) authentication.getPrincipal();
-        Usuario usuario = usuarioService.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = getAuthenticatedUser(authentication);
 
         java.util.Map<Long, Integer> totales = tiempoService.getTiemposTotalesPersonalesPorUsuario(usuario.getId());
         return ResponseEntity.ok(totales);
@@ -106,9 +110,7 @@ public class TiempoController {
             @Valid @RequestBody TiempoEditRequestDTO request,
             Authentication authentication) {
 
-        String email = (String) authentication.getPrincipal();
-        Usuario usuario = usuarioService.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = getAuthenticatedUser(authentication);
 
         Tiempo tiempoActualizado = tiempoService.updateTime(idTiempo, request, usuario.getId());
         return ResponseEntity.ok(tiempoActualizado);
@@ -119,9 +121,7 @@ public class TiempoController {
             @PathVariable Long idTiempo,
             Authentication authentication) {
 
-        String email = (String) authentication.getPrincipal();
-        Usuario usuario = usuarioService.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = getAuthenticatedUser(authentication);
 
         tiempoService.deleteTime(idTiempo, usuario.getId());
         return ResponseEntity.noContent().build();

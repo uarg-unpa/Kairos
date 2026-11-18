@@ -1,30 +1,27 @@
-# ── Stage 1: Build stage ──
-FROM maven:3.9.9-eclipse-temurin-21 AS build
+# Stage 1: Build Spring Boot application
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copiar pom.xml y descargar dependencias para aprovechar caché de capas
+# Cache Maven dependencies
 COPY pom.xml .
-RUN mvn dependency:go-offline -B || true
+RUN mvn dependency:go-offline -B
 
-# Copiar código fuente y compilar JAR
+# Copy source code and build jar without running unit tests during image creation
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# ── Stage 2: Runtime stage ──
-FROM eclipse-temurin:21-jre-jammy
+# Stage 2: Minimal runtime image
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-# Crear usuario sin privilegios por seguridad
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+# Create non-root user for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Copiar el ejecutable generado
-COPY --from=build /app/target/kairos-*.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 RUN chown -R appuser:appgroup /app
 
 USER appuser
 
 EXPOSE 8080
 
-ENV JAVA_OPTS="-Xms256m -Xmx512m"
-
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

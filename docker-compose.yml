@@ -1,0 +1,72 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: kairos-db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: kairos
+      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-root}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - kairos-network
+
+  backend:
+    build:
+      context: ./kairos
+      dockerfile: Dockerfile
+    container_name: kairos-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - path: ./kairos/.env
+        required: false
+      - path: ./.env
+        required: false
+    environment:
+      # Perfil limpio (sin 'demo' para no ejecutar DataSeeder)
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/kairos?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-root}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      JWT_SECRET: ${JWT_SECRET:-9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - kairos-network
+
+  frontend:
+    build:
+      context: ./kairos-frontend
+      dockerfile: Dockerfile
+    container_name: kairos-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - kairos-network
+
+volumes:
+  mysql_data:
+
+networks:
+  kairos-network:
+    driver: bridge
+

@@ -2,9 +2,6 @@ target/
 .git/
 .gitignore
 .idea/
-.vscode/
 *.iml
 .env
-.mvn/
-mvnw
-mvnw.cmd
+HELP.md
