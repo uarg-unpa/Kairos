@@ -8,7 +8,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${DEMO_DB_PASSWORD:-kairos_demo_2026}
       MYSQL_DATABASE: kairos_demo
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - kairos-demo-db-data:/var/lib/mysql
     healthcheck:
@@ -46,7 +46,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f}
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
     ports:
-      - "8081:8080"
+      - "8080:8080"
     networks:
       kairos-demo-network:
         aliases:
@@ -62,7 +62,7 @@ services:
     volumes:
       - ./env.demo.json:/usr/share/nginx/html/assets/env.json:ro
     ports:
-      - "8082:80"
+      - "80:80"
     networks:
       - kairos-demo-network
 
