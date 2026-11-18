@@ -13,7 +13,7 @@ import { IteracionService } from '../../services/iteracion.service';
 import { ComentarioService } from '../../services/comentario.service';
 import { EtapaService } from '../../services/etapa.service';
 import { AlertService } from '../../services/alert.service';
-/*import { AuthService } from '../../services/auth.service';*/
+import { AuthService } from '../../services/auth.service';
 
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskFiltersComponent } from './task-filters/task-filters.component';
@@ -97,7 +97,8 @@ export class PlanificacionComponent implements OnInit {
     private idCoderService: IdCoderService,
     private proyectoService: ProyectoService,
     private http: HttpClient,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -120,10 +121,7 @@ export class PlanificacionComponent implements OnInit {
       this.proyectoId = null;
     }
 
-    const usuarioGuardado = localStorage.getItem('usuario_data');
-    if (usuarioGuardado) {
-      this.usuarioActual = JSON.parse(usuarioGuardado);
-    }
+    this.usuarioActual = this.authService.usuario;
 
     this.route.queryParamMap.subscribe(params => {
       const venc = params.get('vencimiento');
@@ -474,12 +472,7 @@ export class PlanificacionComponent implements OnInit {
         console.error('Error al crear categoría:', err);
 
         // mensaje personalizado del backend
-        const mensaje =
-          err?.error?.message ||  // <<--- TU CASO
-          err?.message ||
-          'Ocurrió un error inesperado al crear la categoría.';
-
-        alert('⚠️ ' + mensaje);
+        this.alertService.error(err?.error?.message || err?.message || 'Ocurrió un error inesperado al crear la categoría.');
       }
 
     });
@@ -492,14 +485,7 @@ export class PlanificacionComponent implements OnInit {
         next: () => this.cargarCategorias(),
         error: (err) => {
           console.error('Error al crear categoría:', err);
-
-          // mensaje personalizado del backend
-          const mensaje =
-            err?.error?.message ||  // <<--- TU CASO
-            err?.message ||
-            'Ocurrió un error inesperado al editar la categoría.';
-
-          alert('⚠️ ' + mensaje);
+          this.alertService.error(err?.error?.message || err?.message || 'Ocurrió un error inesperado al editar la categoría.');
         }
 
       });
@@ -511,13 +497,7 @@ export class PlanificacionComponent implements OnInit {
       error: (err) => {
         console.error('Error al eliminar categoría:', err);
 
-        // mensaje personalizado del backend
-        const mensaje =
-          err?.error ||  // <<--- TU CASO
-          err?.message ||
-          'Ocurrió un error inesperado al eliminar la categoría.';
-
-        alert('⚠️ ' + mensaje);
+        this.alertService.error(err?.error?.message || err?.message || 'Ocurrió un error inesperado al eliminar la categoría.');
       }
     });
   }

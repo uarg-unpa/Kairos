@@ -3,6 +3,7 @@
     import { Router } from '@angular/router';
     import { Observable, tap, BehaviorSubject } from 'rxjs';
     import { ConfigService } from './config.service';
+    import { CookieService } from './cookie.service';
 
     interface AuthResponse {
       token: string;
@@ -23,53 +24,80 @@
       private http = inject(HttpClient);
       private router = inject(Router);
       private config = inject(ConfigService);
+      private cookieService = inject(CookieService);
 
       readonly backendBaseUrl = this.config.get('apiBaseUrl') || 'http://localhost:8080';
       readonly googleAuthUrl = `${this.backendBaseUrl}/auth/google`;
 
-      private storageKey = 'jwt_token';
-      private storageUserKey = 'usuario_data';
+      private readonly cookieSessionKey = 'kairos_session_active';
+      private readonly cookieUserKey = 'kairos_user_data';
 
-      private isLoggedInSubject = new BehaviorSubject<boolean>(this.isAuthenticated());
-      isLoggedIn$ = this.isLoggedInSubject.asObservable();
+      private _token: string | null = null;
+      private _usuario: any = null;
 
-      private currentUserSubject = new BehaviorSubject<any>(this.usuario);
-      currentUser$ = this.currentUserSubject.asObservable();
+      private isLoggedInSubject: BehaviorSubject<boolean>;
+      isLoggedIn$: Observable<boolean>;
+
+      private currentUserSubject: BehaviorSubject<any>;
+      currentUser$: Observable<any>;
+
+      constructor() {
+        // 1. Limpiar cualquier resto de LocalStorage existente (incidencia: borrar local_storage)
+        this.cookieService.clearLocalStorage();
+
+        // 2. Cargar usuario inicial desde la cookie protegida
+        this._usuario = this.cookieService.getSecureObject(this.cookieUserKey);
+
+        // 3. Inicializar sujetos reactivos
+        this.currentUserSubject = new BehaviorSubject<any>(this._usuario);
+        this.currentUser$ = this.currentUserSubject.asObservable();
+
+        this.isLoggedInSubject = new BehaviorSubject<boolean>(this.isAuthenticated());
+        this.isLoggedIn$ = this.isLoggedInSubject.asObservable();
+
+        // 4. Si hay sesión activa en cookie, sincronizar y verificar con el backend (/auth/me)
+        if (this.isAuthenticated()) {
+          this.getCurrentUser().subscribe({
+            next: (user) => {
+              this.usuario = user;
+            },
+            error: (err) => {
+              if (err.status === 401 || err.status === 403) {
+                console.warn('Sesión inválida o expirada en backend. Limpiando credenciales locales.');
+                this.logout();
+              }
+            }
+          });
+        }
+      }
 
       get token(): string | null {
-        return localStorage.getItem(this.storageKey);
+        return this._token;
       }
 
       set token(value: string | null) {
+        this._token = value;
         if (value) {
-          localStorage.setItem(this.storageKey, value);
+          this.cookieService.set(this.cookieSessionKey, '1', { days: 7, path: '/' });
         } else {
-          localStorage.removeItem(this.storageKey);
+          this.cookieService.delete(this.cookieSessionKey);
         }
-        // actualizar estado de logueo
-        this.isLoggedInSubject.next(!!value);
+        this.isLoggedInSubject.next(!!value || this.cookieService.has(this.cookieSessionKey));
       }
 
       get usuario(): any {
-        const userStr = localStorage.getItem(this.storageUserKey);
-        return userStr ? JSON.parse(userStr) : null;
+        if (this._usuario) {
+          return this._usuario;
+        }
+        this._usuario = this.cookieService.getSecureObject(this.cookieUserKey);
+        return this._usuario;
       }
 
       set usuario(value: any) {
         if (value) {
-          if (value.admin === true) {
-            const usuarioSeguro = {
-              id: value.id,
-              nombre: value.nombre,
-              email: value.email,
-              rol: 'ADMINISTRADOR',
-              admin: true
-            };
-            localStorage.setItem(this.storageUserKey, JSON.stringify(usuarioSeguro));
-            this.currentUserSubject.next(usuarioSeguro);
-            return;
-          }
-          const rolFinal = this.normalizarRol(value.rol || value.roles?.[0]);
+          const rolFinal = value.admin === true
+            ? 'ADMINISTRADOR'
+            : this.normalizarRol(value.rol || value.roles?.[0]);
 
           const usuarioSeguro = {
             id: value.id,
@@ -79,10 +107,12 @@
             admin: rolFinal === 'ADMINISTRADOR'
           };
 
-          localStorage.setItem(this.storageUserKey, JSON.stringify(usuarioSeguro));
+          this._usuario = usuarioSeguro;
+          this.cookieService.setSecureObject(this.cookieUserKey, usuarioSeguro, 7);
           this.currentUserSubject.next(usuarioSeguro);
         } else {
-          localStorage.removeItem(this.storageUserKey);
+          this._usuario = null;
+          this.cookieService.delete(this.cookieUserKey);
           this.currentUserSubject.next(null);
         }
       }
@@ -96,7 +126,7 @@
       }
 
       isAuthenticated(): boolean {
-        return !!this.token;
+        return !!this._token || this.cookieService.has(this.cookieSessionKey) || !!this._usuario;
       }
       
       esAdmin(): boolean {
@@ -104,16 +134,31 @@
       }
 
       logout(): void {
-        this.token = null;
+        this._token = null;
         this.usuario = null;
+        this.cookieService.delete(this.cookieSessionKey);
+        this.cookieService.delete(this.cookieUserKey);
+        this.cookieService.clearLocalStorage();
+
+        // Notificar al backend para eliminar la cookie HttpOnly
+        this.http.post(`${this.backendBaseUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
+          next: () => {},
+          error: () => {}
+        });
+
+        this.isLoggedInSubject.next(false);
+        this.currentUserSubject.next(null);
         this.router.navigate(['/login']);
       }
 
       exchangeGoogleToken(idToken: string): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(this.googleAuthUrl, { idToken }).pipe(
+        return this.http.post<AuthResponse>(this.googleAuthUrl, { idToken }, { withCredentials: true }).pipe(
           tap((res) => {
             if (res?.token) {
               this.token = res.token;
+            } else {
+              this.cookieService.set(this.cookieSessionKey, '1', { days: 7, path: '/' });
+              this.isLoggedInSubject.next(true);
             }
             if (res?.usuario) {
               this.usuario = res.usuario;
@@ -122,12 +167,11 @@
         );
       }
 
-
       // NUEVO: Obtener usuario actual
       getCurrentUser(): Observable<UserInfoResponse> {
-        return this.http.get<UserInfoResponse>(`${this.backendBaseUrl}/auth/me`).pipe(
+        return this.http.get<UserInfoResponse>(`${this.backendBaseUrl}/auth/me`, { withCredentials: true }).pipe(
           tap(user => {
-            this.usuario = user; // guarda en localStorage
+            this.usuario = user; // guarda en memoria y en cookie protegida
           })
         );
       }

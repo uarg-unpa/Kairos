@@ -25,6 +25,7 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   idProyecto!: number;
   proyectoNombre?: string;
   proyecto?: Proyecto;
+  proyectoInicio?: string;
   private addStageModal: any;
 
   private usuariosService = inject(UsuariosService);
@@ -94,6 +95,7 @@ export class EtapasComponent implements OnInit, AfterViewInit {
       next: (p) => {
         this.proyecto = p;
         this.proyectoNombre = p.nombre;
+        this.proyectoInicio = p.fechaInicio;
       },
       error: (err) => console.error('Error cargando proyecto', err)
     });
@@ -117,7 +119,19 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   nuevaEtapaValida(): boolean {
     const e = this.nuevaEtapa;
     this.errorNuevaEtapa = null;
+    if (this.proyecto?.estado === 'FINALIZADO') {
+      this.errorNuevaEtapa = 'No se pueden crear etapas en un proyecto finalizado';
+      return false;
+    }
+
     if (!(e.nombre && e.fechaInicio && e.fechaFin)) return false;
+
+    if (this.fechaInicioMenorAProyecto()) {
+      const inicioProy = this.proyecto?.fechaInicio || this.proyectoInicio;
+      this.errorNuevaEtapa = `La fecha de inicio no puede ser menor a la fecha de inicio del proyecto (${inicioProy})`;
+      return false;
+    }
+
     if (this.fechasDesordenadas()) {
       this.errorNuevaEtapa = 'La fecha de fin no puede ser anterior a la fecha de inicio';
       return false;
@@ -138,7 +152,7 @@ export class EtapasComponent implements OnInit, AfterViewInit {
       },
       error: (err) => {
         console.error('Error creando etapa', err);
-        this.errorNuevaEtapa = err?.error?.error || 'No se pudo crear la etapa';
+        this.errorNuevaEtapa = err?.error?.error || err?.error?.message || 'No se pudo crear la etapa';
       }
     });
   }
@@ -146,6 +160,18 @@ export class EtapasComponent implements OnInit, AfterViewInit {
   private resetForm() {
     this.nuevaEtapa = { nombre: '', descripcion: '', fechaInicio: '', fechaFin: '', proyectoId: this.idProyecto };
     this.errorNuevaEtapa = null;
+  }
+
+  fechaInicioMenorAProyecto(): boolean {
+    const e = this.nuevaEtapa;
+    const inicioProyecto = this.proyecto?.fechaInicio || this.proyectoInicio;
+    if (!e?.fechaInicio || !inicioProyecto) return false;
+    const iniEtapa = new Date(e.fechaInicio);
+    const iniProy = new Date(inicioProyecto);
+    if (isNaN(iniEtapa.getTime()) || isNaN(iniProy.getTime())) {
+      return e.fechaInicio < inicioProyecto;
+    }
+    return iniEtapa < iniProy;
   }
 
   fechasDesordenadas(): boolean {

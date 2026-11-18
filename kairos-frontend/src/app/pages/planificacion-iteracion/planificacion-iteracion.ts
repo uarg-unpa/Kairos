@@ -11,6 +11,7 @@ import { ComentarioService } from '../../services/comentario.service';
 import { EtapaService } from '../../services/etapa.service';
 import { ProyectoService } from '../../services/proyecto.service';
 import { IdCoderService } from '../../services/id-coder.service';
+import { AuthService } from '../../services/auth.service';
 
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskFiltersComponent } from './task-filters/task-filters.component';
@@ -23,7 +24,7 @@ import { Usuario } from '../../models/usuarios';
 import { Comentario } from '../../models/comentario.model';
 import { Etapa } from '../../models/etapa.model';
 import { Proyecto } from '../../models/proyecto.model';
-
+import { AlertService } from '../../services/alert.service';
 @Component({
   selector: 'app-planificacion',
   templateUrl: './planificacion-iteracion.html',
@@ -76,16 +77,14 @@ export class PlanificacionIteracion implements OnInit {
     private comentarioService: ComentarioService,
     private etapaService: EtapaService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private authService: AuthService,
+    private alertService: AlertService
   ) {
   }
 
   ngOnInit(): void {
-
-    const usuarioGuardado = localStorage.getItem('usuario_data');
-    if (usuarioGuardado) {
-      this.usuarioActual = JSON.parse(usuarioGuardado);
-    }
+    this.usuarioActual = this.authService.usuario;
 
     const encodedId = this.route.snapshot.paramMap.get('id');
 
@@ -97,8 +96,7 @@ export class PlanificacionIteracion implements OnInit {
         this.cargarMiembros();
         console.log('Proyecto ID Decodificado:', this.proyectoId);
       } else {
-        console.error('ID de proyecto inválido en la ruta');
-        alert('Acceso denegado o ID de proyecto inválido.');
+        this.alertService.error('ID de proyecto inválido en la ruta');
         this.router.navigate(['/inicio']);
         return;
       }

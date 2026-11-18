@@ -1,0 +1,3398 @@
+{
+  "proyecto": {
+    "nombre": "MetricFlow SQA",
+    "equipo": "CoDevIT",
+    "descripcion": "Sistema de análisis y gestión de métricas de calidad",
+    "estado": "Completado"
+  },
+  "categorias": [
+    "Análisis",
+    "Diseño",
+    "Codificación",
+    "Validación y Verificación",
+    "Documentación",
+    "Gestión",
+    "Actividades Externas"
+  ],
+  "etapas": [
+    {
+      "nombre": "Inicio",
+      "descripcion": "Definición de visión, objetivos y análisis inicial de requerimientos",
+      "estado": "COMPLETADA",
+      "fechaInicio": "2025-08-22",
+      "fechaFin": "2025-09-09",
+      "iteraciones": [
+        {
+          "numero": 1,
+          "descripcion": "Inicio",
+          "fechaInicio": "2025-08-22",
+          "fechaFin": "2025-09-09"
+        }
+      ]
+    },
+    {
+      "nombre": "Elaboración",
+      "descripcion": "Diseño de la arquitectura, especificación de casos de uso y mitigación de riesgos",
+      "estado": "COMPLETADA",
+      "fechaInicio": "2025-09-10",
+      "fechaFin": "2025-10-10",
+      "iteraciones": [
+        {
+          "numero": 1,
+          "descripcion": "Elaboración I",
+          "fechaInicio": "2025-09-10",
+          "fechaFin": "2025-09-23"
+        },
+        {
+          "numero": 2,
+          "descripcion": "Elaboración II",
+          "fechaInicio": "2025-09-24",
+          "fechaFin": "2025-10-10"
+        }
+      ]
+    },
+    {
+      "nombre": "Construcción",
+      "descripcion": "Implementación del producto, codificación de casos de uso y pruebas integrales",
+      "estado": "COMPLETADA",
+      "fechaInicio": "2025-09-15",
+      "fechaFin": "2025-11-17",
+      "iteraciones": [
+        {
+          "numero": 1,
+          "descripcion": "Construcción I",
+          "fechaInicio": "2025-09-15",
+          "fechaFin": "2025-10-29"
+        },
+        {
+          "numero": 2,
+          "descripcion": "Construcción II",
+          "fechaInicio": "2025-10-30",
+          "fechaFin": "2025-11-07"
+        },
+        {
+          "numero": 3,
+          "descripcion": "Construcción III",
+          "fechaInicio": "2025-11-08",
+          "fechaFin": "2025-11-17"
+        }
+      ]
+    },
+    {
+      "nombre": "Transición",
+      "descripcion": "Finalización de documentación, manuales de usuario y memoria del proyecto",
+      "estado": "COMPLETADA",
+      "fechaInicio": "2025-11-18",
+      "fechaFin": "2026-02-06",
+      "iteraciones": [
+        {
+          "numero": 1,
+          "descripcion": "Transición",
+          "fechaInicio": "2025-11-18",
+          "fechaFin": "2026-02-06"
+        }
+      ]
+    }
+  ],
+  "tareas": [
+    {
+      "nombre": "Entrevista",
+      "descripcion": "Actividad de Entrevista realizada por Santiago Pacheco en Inicio",
+      "actividad": "Entrevista",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-08-25",
+      "fechaFin": "2025-08-26",
+      "horasEstimadas": 2.5,
+      "totalHorasReales": 2.3,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 104,
+          "fechaRegistro": "2025-08-25",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Entrevista"
+        },
+        {
+          "duracion": 34,
+          "fechaRegistro": "2025-08-26",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Entrevista"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Santiago Pacheco en Inicio",
+      "actividad": "Documentación",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-08-27",
+      "fechaFin": "2025-09-08",
+      "horasEstimadas": 12,
+      "totalHorasReales": 10.28,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 259,
+          "fechaRegistro": "2025-08-27",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 100,
+          "fechaRegistro": "2025-08-30",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 41,
+          "fechaRegistro": "2025-09-02",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 72,
+          "fechaRegistro": "2025-09-04",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 75,
+          "fechaRegistro": "2025-09-04",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 49,
+          "fechaRegistro": "2025-09-07",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 21,
+          "fechaRegistro": "2025-09-08",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Diseño",
+      "descripcion": "Actividad de Diseño realizada por Santiago Pacheco en Elaboración I",
+      "actividad": "Diseño",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Diseño",
+      "fechaInicio": "2025-09-10",
+      "fechaFin": "2025-09-10",
+      "horasEstimadas": 4,
+      "totalHorasReales": 3.48,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 209,
+          "fechaRegistro": "2025-09-10",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Diseño"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Santiago Pacheco en Elaboración I",
+      "actividad": "Documentación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-09-11",
+      "fechaFin": "2025-09-18",
+      "horasEstimadas": 1.5,
+      "totalHorasReales": 1.48,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 69,
+          "fechaRegistro": "2025-09-11",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 20,
+          "fechaRegistro": "2025-09-18",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Santiago Pacheco en Elaboración II",
+      "actividad": "Documentación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-09-23",
+      "fechaFin": "2025-09-26",
+      "horasEstimadas": 5.5,
+      "totalHorasReales": 5.18,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 20,
+          "fechaRegistro": "2025-09-23",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 154,
+          "fechaRegistro": "2025-09-24",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 129,
+          "fechaRegistro": "2025-09-25",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 8,
+          "fechaRegistro": "2025-09-26",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Diseño",
+      "descripcion": "Actividad de Diseño realizada por Santiago Pacheco en Elaboración II",
+      "actividad": "Diseño",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Diseño",
+      "fechaInicio": "2025-09-27",
+      "fechaFin": "2025-10-06",
+      "horasEstimadas": 11,
+      "totalHorasReales": 9.72,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 71,
+          "fechaRegistro": "2025-09-27",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 167,
+          "fechaRegistro": "2025-09-28",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 82,
+          "fechaRegistro": "2025-09-29",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 77,
+          "fechaRegistro": "2025-10-02",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 82,
+          "fechaRegistro": "2025-10-05",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 104,
+          "fechaRegistro": "2025-10-06",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Diseño"
+        }
+      ]
+    },
+    {
+      "nombre": "Validación y Verificación",
+      "descripcion": "Actividad de Validación y Verificación realizada por Santiago Pacheco en Elaboración II",
+      "actividad": "Validación y Verificación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-10-02",
+      "fechaFin": "2025-10-02",
+      "horasEstimadas": 0.5,
+      "totalHorasReales": 0.3,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 18,
+          "fechaRegistro": "2025-10-02",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Validación y Verificación"
+        }
+      ]
+    },
+    {
+      "nombre": "Diseño",
+      "descripcion": "Actividad de Diseño realizada por Santiago Pacheco en Construcción I",
+      "actividad": "Diseño",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Diseño",
+      "fechaInicio": "2025-10-13",
+      "fechaFin": "2025-10-14",
+      "horasEstimadas": 1,
+      "totalHorasReales": 1.15,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 31,
+          "fechaRegistro": "2025-10-13",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 38,
+          "fechaRegistro": "2025-10-14",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Diseño"
+        }
+      ]
+    },
+    {
+      "nombre": "Pruebas",
+      "descripcion": "Actividad de Pruebas realizada por Santiago Pacheco en Construcción I",
+      "actividad": "Pruebas",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-10-22",
+      "fechaFin": "2025-10-23",
+      "horasEstimadas": 1.5,
+      "totalHorasReales": 1.52,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 31,
+          "fechaRegistro": "2025-10-22",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Pruebas"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-10-23",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Pruebas"
+        }
+      ]
+    },
+    {
+      "nombre": "Estimación",
+      "descripcion": "Actividad de Estimación realizada por Santiago Pacheco en Construcción I",
+      "actividad": "Estimación",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Gestión",
+      "fechaInicio": "2025-10-23",
+      "fechaFin": "2025-10-27",
+      "horasEstimadas": 0.5,
+      "totalHorasReales": 0.5,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 25,
+          "fechaRegistro": "2025-10-23",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Estimación"
+        },
+        {
+          "duracion": 5,
+          "fechaRegistro": "2025-10-27",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Estimación"
+        }
+      ]
+    },
+    {
+      "nombre": "Estimación",
+      "descripcion": "Actividad de Estimación realizada por Santiago Pacheco en Construcción II",
+      "actividad": "Estimación",
+      "etapa": "Construcción",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Construcción II",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Gestión",
+      "fechaInicio": "2025-10-30",
+      "fechaFin": "2025-11-06",
+      "horasEstimadas": 1,
+      "totalHorasReales": 1.03,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 22,
+          "fechaRegistro": "2025-10-30",
+          "semana": 11,
+          "descripcion": "Correción de estimación 6 con nueva plantilla"
+        },
+        {
+          "duracion": 40,
+          "fechaRegistro": "2025-11-06",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Estimación"
+        }
+      ]
+    },
+    {
+      "nombre": "Pruebas",
+      "descripcion": "Actividad de Pruebas realizada por Santiago Pacheco en Construcción II",
+      "actividad": "Pruebas",
+      "etapa": "Construcción",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Construcción II",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-11-05",
+      "fechaFin": "2025-11-05",
+      "horasEstimadas": 0.5,
+      "totalHorasReales": 0.73,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 44,
+          "fechaRegistro": "2025-11-05",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Pruebas"
+        }
+      ]
+    },
+    {
+      "nombre": "Estimación",
+      "descripcion": "Actividad de Estimación realizada por Santiago Pacheco en Construcción III",
+      "actividad": "Estimación",
+      "etapa": "Construcción",
+      "iteracionNumero": 3,
+      "iteracionNombre": "Construcción III",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Gestión",
+      "fechaInicio": "2025-11-11",
+      "fechaFin": "2025-11-11",
+      "horasEstimadas": 0.5,
+      "totalHorasReales": 0.08,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 5,
+          "fechaRegistro": "2025-11-11",
+          "semana": 13,
+          "descripcion": "Registro de tiempo - Estimación"
+        }
+      ]
+    },
+    {
+      "nombre": "Pruebas",
+      "descripcion": "Actividad de Pruebas realizada por Santiago Pacheco en Construcción III",
+      "actividad": "Pruebas",
+      "etapa": "Construcción",
+      "iteracionNumero": 3,
+      "iteracionNombre": "Construcción III",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-11-12",
+      "fechaFin": "2025-11-12",
+      "horasEstimadas": 1.5,
+      "totalHorasReales": 1.07,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 64,
+          "fechaRegistro": "2025-11-12",
+          "semana": 13,
+          "descripcion": "Registro de tiempo - Pruebas"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Santiago Pacheco en Construcción III",
+      "actividad": "Documentación",
+      "etapa": "Construcción",
+      "iteracionNumero": 3,
+      "iteracionNombre": "Construcción III",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-11-14",
+      "fechaFin": "2025-11-15",
+      "horasEstimadas": 2.5,
+      "totalHorasReales": 1.85,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 29,
+          "fechaRegistro": "2025-11-14",
+          "semana": 13,
+          "descripcion": "Manual de Usuario"
+        },
+        {
+          "duracion": 82,
+          "fechaRegistro": "2025-11-15",
+          "semana": 13,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Santiago Pacheco en Transición",
+      "actividad": "Documentación",
+      "etapa": "Transición",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Transición",
+      "userEmail": "santiago.pacheco@gmail.com",
+      "userName": "Santiago Pacheco",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-11-18",
+      "fechaFin": "2025-11-20",
+      "horasEstimadas": 6.5,
+      "totalHorasReales": 5.38,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 107,
+          "fechaRegistro": "2025-11-18",
+          "semana": 14,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 155,
+          "fechaRegistro": "2025-11-19",
+          "semana": 14,
+          "descripcion": "Manual de Usuario"
+        },
+        {
+          "duracion": 61,
+          "fechaRegistro": "2025-11-20",
+          "semana": 14,
+          "descripcion": "Última parte del Manual de Usuario"
+        }
+      ]
+    },
+    {
+      "nombre": "Entrevista",
+      "descripcion": "Actividad de Entrevista realizada por Ezequiel Mansilla en Inicio",
+      "actividad": "Entrevista",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-08-25",
+      "fechaFin": "2025-08-26",
+      "horasEstimadas": 2.5,
+      "totalHorasReales": 2.57,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-08-25",
+          "semana": 1,
+          "descripcion": "Registro de tiempo - Entrevista"
+        },
+        {
+          "duracion": 34,
+          "fechaRegistro": "2025-08-26",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Entrevista"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Ezequiel Mansilla en Inicio",
+      "actividad": "Documentación",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-08-27",
+      "fechaFin": "2025-09-08",
+      "horasEstimadas": 5.5,
+      "totalHorasReales": 5.88,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 59,
+          "fechaRegistro": "2025-08-27",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 21,
+          "fechaRegistro": "2025-08-31",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 26,
+          "fechaRegistro": "2025-09-04",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 56,
+          "fechaRegistro": "2025-09-05",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 191,
+          "fechaRegistro": "2025-09-08",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Validación y Verificación",
+      "descripcion": "Actividad de Validación y Verificación realizada por Ezequiel Mansilla en Inicio",
+      "actividad": "Validación y Verificación",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-09-01",
+      "fechaFin": "2025-09-09",
+      "horasEstimadas": 1,
+      "totalHorasReales": 0.83,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 31,
+          "fechaRegistro": "2025-09-01",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Validación y Verificación"
+        },
+        {
+          "duracion": 19,
+          "fechaRegistro": "2025-09-09",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Validación y Verificación"
+        }
+      ]
+    },
+    {
+      "nombre": "Reunión",
+      "descripcion": "Actividad de Reunión realizada por Ezequiel Mansilla en Inicio",
+      "actividad": "Reunión",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Actividades Externas",
+      "fechaInicio": "2025-09-06",
+      "fechaFin": "2025-09-06",
+      "horasEstimadas": 4.5,
+      "totalHorasReales": 3.68,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 221,
+          "fechaRegistro": "2025-09-06",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Reunión"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Ezequiel Mansilla en Elaboración I",
+      "actividad": "Documentación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-09-11",
+      "fechaFin": "2025-09-23",
+      "horasEstimadas": 5.5,
+      "totalHorasReales": 5.95,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 67,
+          "fechaRegistro": "2025-09-11",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 70,
+          "fechaRegistro": "2025-09-11",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 83,
+          "fechaRegistro": "2025-09-17",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 137,
+          "fechaRegistro": "2025-09-23",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Validación y Verificación",
+      "descripcion": "Actividad de Validación y Verificación realizada por Ezequiel Mansilla en Elaboración I",
+      "actividad": "Validación y Verificación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-09-12",
+      "fechaFin": "2025-09-12",
+      "horasEstimadas": 1,
+      "totalHorasReales": 1,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-12",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Validación y Verificación"
+        }
+      ]
+    },
+    {
+      "nombre": "Riesgos",
+      "descripcion": "Actividad de Riesgos realizada por Ezequiel Mansilla en Elaboración I",
+      "actividad": "Riesgos",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Gestión",
+      "fechaInicio": "2025-09-17",
+      "fechaFin": "2025-09-17",
+      "horasEstimadas": 0.5,
+      "totalHorasReales": 0.25,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 15,
+          "fechaRegistro": "2025-09-17",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Riesgos"
+        }
+      ]
+    },
+    {
+      "nombre": "Riesgos",
+      "descripcion": "Actividad de Riesgos realizada por Ezequiel Mansilla en Elaboración II",
+      "actividad": "Riesgos",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Gestión",
+      "fechaInicio": "2025-09-24",
+      "fechaFin": "2025-09-24",
+      "horasEstimadas": 2,
+      "totalHorasReales": 1.88,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 113,
+          "fechaRegistro": "2025-09-24",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Riesgos"
+        }
+      ]
+    },
+    {
+      "nombre": "Calidad",
+      "descripcion": "Actividad de Calidad realizada por Ezequiel Mansilla en Elaboración II",
+      "actividad": "Calidad",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-09-25",
+      "fechaFin": "2025-09-25",
+      "horasEstimadas": 0.5,
+      "totalHorasReales": 0.57,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 34,
+          "fechaRegistro": "2025-09-25",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Calidad"
+        }
+      ]
+    },
+    {
+      "nombre": "Estimación",
+      "descripcion": "Actividad de Estimación realizada por Ezequiel Mansilla en Elaboración II",
+      "actividad": "Estimación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Gestión",
+      "fechaInicio": "2025-09-29",
+      "fechaFin": "2025-09-29",
+      "horasEstimadas": 1,
+      "totalHorasReales": 1.32,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 79,
+          "fechaRegistro": "2025-09-29",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Estimación"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Ezequiel Mansilla en Elaboración II",
+      "actividad": "Documentación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-10-01",
+      "fechaFin": "2025-10-09",
+      "horasEstimadas": 3.5,
+      "totalHorasReales": 3.28,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 86,
+          "fechaRegistro": "2025-10-01",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 64,
+          "fechaRegistro": "2025-10-04",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 47,
+          "fechaRegistro": "2025-10-09",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Diseño",
+      "descripcion": "Actividad de Diseño realizada por Ezequiel Mansilla en Elaboración II",
+      "actividad": "Diseño",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Diseño",
+      "fechaInicio": "2025-10-06",
+      "fechaFin": "2025-10-06",
+      "horasEstimadas": 3.5,
+      "totalHorasReales": 3.2,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 192,
+          "fechaRegistro": "2025-10-06",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Diseño"
+        }
+      ]
+    },
+    {
+      "nombre": "Validación y Verificación",
+      "descripcion": "Actividad de Validación y Verificación realizada por Ezequiel Mansilla en Elaboración II",
+      "actividad": "Validación y Verificación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-10-07",
+      "fechaFin": "2025-10-07",
+      "horasEstimadas": 0.5,
+      "totalHorasReales": 0.73,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 44,
+          "fechaRegistro": "2025-10-07",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Validación y Verificación"
+        }
+      ]
+    },
+    {
+      "nombre": "Diseño",
+      "descripcion": "Actividad de Diseño realizada por Ezequiel Mansilla en Construcción I",
+      "actividad": "Diseño",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Diseño",
+      "fechaInicio": "2025-10-15",
+      "fechaFin": "2025-10-15",
+      "horasEstimadas": 1.5,
+      "totalHorasReales": 1.15,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 69,
+          "fechaRegistro": "2025-10-15",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Diseño"
+        }
+      ]
+    },
+    {
+      "nombre": "Riesgos",
+      "descripcion": "Actividad de Riesgos realizada por Ezequiel Mansilla en Construcción I",
+      "actividad": "Riesgos",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Gestión",
+      "fechaInicio": "2025-10-16",
+      "fechaFin": "2025-10-27",
+      "horasEstimadas": 1.5,
+      "totalHorasReales": 1.58,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-10-16",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Riesgos"
+        },
+        {
+          "duracion": 35,
+          "fechaRegistro": "2025-10-27",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Riesgos"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Ezequiel Mansilla en Construcción I",
+      "actividad": "Documentación",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-10-20",
+      "fechaFin": "2025-10-28",
+      "horasEstimadas": 6,
+      "totalHorasReales": 5.05,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 52,
+          "fechaRegistro": "2025-10-20",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-10-24",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 65,
+          "fechaRegistro": "2025-10-27",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 126,
+          "fechaRegistro": "2025-10-28",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Pruebas",
+      "descripcion": "Actividad de Pruebas realizada por Ezequiel Mansilla en Construcción I",
+      "actividad": "Pruebas",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-10-21",
+      "fechaFin": "2025-10-24",
+      "horasEstimadas": 3,
+      "totalHorasReales": 2.95,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 108,
+          "fechaRegistro": "2025-10-21",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Pruebas"
+        },
+        {
+          "duracion": 69,
+          "fechaRegistro": "2025-10-24",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Pruebas"
+        }
+      ]
+    },
+    {
+      "nombre": "Riesgos",
+      "descripcion": "Actividad de Riesgos realizada por Ezequiel Mansilla en Construcción II",
+      "actividad": "Riesgos",
+      "etapa": "Construcción",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Construcción II",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Gestión",
+      "fechaInicio": "2025-10-30",
+      "fechaFin": "2025-11-07",
+      "horasEstimadas": 1,
+      "totalHorasReales": 1.17,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 30,
+          "fechaRegistro": "2025-10-30",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Riesgos"
+        },
+        {
+          "duracion": 40,
+          "fechaRegistro": "2025-11-07",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Riesgos"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Ezequiel Mansilla en Construcción II",
+      "actividad": "Documentación",
+      "etapa": "Construcción",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Construcción II",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-11-04",
+      "fechaFin": "2025-11-05",
+      "horasEstimadas": 2.5,
+      "totalHorasReales": 2.18,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-11-04",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 71,
+          "fechaRegistro": "2025-11-05",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Ezequiel Mansilla en Construcción III",
+      "actividad": "Documentación",
+      "etapa": "Construcción",
+      "iteracionNumero": 3,
+      "iteracionNombre": "Construcción III",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-11-10",
+      "fechaFin": "2025-11-17",
+      "horasEstimadas": 6.5,
+      "totalHorasReales": 6.88,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 21,
+          "fechaRegistro": "2025-11-10",
+          "semana": 13,
+          "descripcion": "Manual de Usuario"
+        },
+        {
+          "duracion": 67,
+          "fechaRegistro": "2025-11-11",
+          "semana": 13,
+          "descripcion": "Manual de Usuario"
+        },
+        {
+          "duracion": 65,
+          "fechaRegistro": "2025-11-12",
+          "semana": 13,
+          "descripcion": "Manual de Usuario"
+        },
+        {
+          "duracion": 122,
+          "fechaRegistro": "2025-11-14",
+          "semana": 13,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 27,
+          "fechaRegistro": "2025-11-17",
+          "semana": 14,
+          "descripcion": "Plan Iteración hasta finalización"
+        },
+        {
+          "duracion": 111,
+          "fechaRegistro": "2025-11-17",
+          "semana": 14,
+          "descripcion": "Manual de Usuario"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Ezequiel Mansilla en Transición",
+      "actividad": "Documentación",
+      "etapa": "Transición",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Transición",
+      "userEmail": "ezequiel.mansilla@gmail.com",
+      "userName": "Ezequiel Mansilla",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-11-18",
+      "fechaFin": "2026-02-06",
+      "horasEstimadas": 19,
+      "totalHorasReales": 19.57,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 127,
+          "fechaRegistro": "2025-11-18",
+          "semana": 14,
+          "descripcion": "Manual de Usuario"
+        },
+        {
+          "duracion": 80,
+          "fechaRegistro": "2025-11-24",
+          "semana": 15,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 40,
+          "fechaRegistro": "2026-01-15",
+          "semana": 16,
+          "descripcion": "Memoria del Proyecto"
+        },
+        {
+          "duracion": 62,
+          "fechaRegistro": "2026-01-20",
+          "semana": 16,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 158,
+          "fechaRegistro": "2026-01-21",
+          "semana": 16,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 69,
+          "fechaRegistro": "2026-01-28",
+          "semana": 16,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 174,
+          "fechaRegistro": "2026-01-29",
+          "semana": 16,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 57,
+          "fechaRegistro": "2026-01-30",
+          "semana": 16,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 57,
+          "fechaRegistro": "2026-01-31",
+          "semana": 16,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 304,
+          "fechaRegistro": "2026-02-02",
+          "semana": 16,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 46,
+          "fechaRegistro": "2026-02-06",
+          "semana": 16,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Fabricio Nuñez en Inicio",
+      "actividad": "Documentación",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-08-22",
+      "fechaFin": "2025-09-08",
+      "horasEstimadas": 39,
+      "totalHorasReales": 34.47,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 108,
+          "fechaRegistro": "2025-08-22",
+          "semana": 1,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 197,
+          "fechaRegistro": "2025-08-26",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 50,
+          "fechaRegistro": "2025-08-29",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 201,
+          "fechaRegistro": "2025-08-30",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 157,
+          "fechaRegistro": "2025-08-31",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 92,
+          "fechaRegistro": "2025-09-01",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 272,
+          "fechaRegistro": "2025-09-03",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 143,
+          "fechaRegistro": "2025-09-04",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 155,
+          "fechaRegistro": "2025-09-05",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 260,
+          "fechaRegistro": "2025-09-06",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 192,
+          "fechaRegistro": "2025-09-07",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 241,
+          "fechaRegistro": "2025-09-08",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Administración de Configuraciones",
+      "descripcion": "Actividad de Administración de Configuraciones realizada por Fabricio Nuñez en Inicio",
+      "actividad": "Administración de Configuraciones",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-08-28",
+      "fechaFin": "2025-08-28",
+      "horasEstimadas": 1.5,
+      "totalHorasReales": 1.55,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 93,
+          "fechaRegistro": "2025-08-28",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Administración de Configuraciones"
+        }
+      ]
+    },
+    {
+      "nombre": "Análisis",
+      "descripcion": "Actividad de Análisis realizada por Fabricio Nuñez en Inicio",
+      "actividad": "Análisis",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-09-08",
+      "fechaFin": "2025-09-08",
+      "horasEstimadas": 2,
+      "totalHorasReales": 2.35,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 141,
+          "fechaRegistro": "2025-09-08",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Análisis"
+        }
+      ]
+    },
+    {
+      "nombre": "Requerimientos",
+      "descripcion": "Actividad de Requerimientos realizada por Fabricio Nuñez en Elaboración I",
+      "actividad": "Requerimientos",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-09-10",
+      "fechaFin": "2025-09-22",
+      "horasEstimadas": 17,
+      "totalHorasReales": 14.02,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 93,
+          "fechaRegistro": "2025-09-10",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        },
+        {
+          "duracion": 95,
+          "fechaRegistro": "2025-09-11",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        },
+        {
+          "duracion": 169,
+          "fechaRegistro": "2025-09-14",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        },
+        {
+          "duracion": 155,
+          "fechaRegistro": "2025-09-21",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        },
+        {
+          "duracion": 329,
+          "fechaRegistro": "2025-09-22",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Fabricio Nuñez en Elaboración I",
+      "actividad": "Documentación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-09-10",
+      "fechaFin": "2025-09-23",
+      "horasEstimadas": 17,
+      "totalHorasReales": 18.32,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 230,
+          "fechaRegistro": "2025-09-10",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 164,
+          "fechaRegistro": "2025-09-11",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 238,
+          "fechaRegistro": "2025-09-15",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 115,
+          "fechaRegistro": "2025-09-17",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 82,
+          "fechaRegistro": "2025-09-18",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 119,
+          "fechaRegistro": "2025-09-20",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 151,
+          "fechaRegistro": "2025-09-23",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Análisis",
+      "descripcion": "Actividad de Análisis realizada por Fabricio Nuñez en Elaboración I",
+      "actividad": "Análisis",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-09-11",
+      "fechaFin": "2025-09-13",
+      "horasEstimadas": 4.5,
+      "totalHorasReales": 4.27,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 113,
+          "fechaRegistro": "2025-09-11",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Análisis"
+        },
+        {
+          "duracion": 143,
+          "fechaRegistro": "2025-09-13",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Análisis"
+        }
+      ]
+    },
+    {
+      "nombre": "Administración de Configuraciones",
+      "descripcion": "Actividad de Administración de Configuraciones realizada por Fabricio Nuñez en Elaboración I",
+      "actividad": "Administración de Configuraciones",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-09-11",
+      "fechaFin": "2025-09-12",
+      "horasEstimadas": 2.5,
+      "totalHorasReales": 1.9,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 45,
+          "fechaRegistro": "2025-09-11",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Administración de Configuraciones"
+        },
+        {
+          "duracion": 69,
+          "fechaRegistro": "2025-09-12",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Administración de Configuraciones"
+        }
+      ]
+    },
+    {
+      "nombre": "Riesgos",
+      "descripcion": "Actividad de Riesgos realizada por Fabricio Nuñez en Elaboración I",
+      "actividad": "Riesgos",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Gestión",
+      "fechaInicio": "2025-09-16",
+      "fechaFin": "2025-09-16",
+      "horasEstimadas": 0.5,
+      "totalHorasReales": 0.55,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 33,
+          "fechaRegistro": "2025-09-16",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Riesgos"
+        }
+      ]
+    },
+    {
+      "nombre": "Requerimientos",
+      "descripcion": "Actividad de Requerimientos realizada por Fabricio Nuñez en Elaboración II",
+      "actividad": "Requerimientos",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-09-25",
+      "fechaFin": "2025-09-30",
+      "horasEstimadas": 7.5,
+      "totalHorasReales": 6.72,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 207,
+          "fechaRegistro": "2025-09-25",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-28",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        },
+        {
+          "duracion": 136,
+          "fechaRegistro": "2025-09-30",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Fabricio Nuñez en Elaboración II",
+      "actividad": "Documentación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-09-25",
+      "fechaFin": "2025-10-09",
+      "horasEstimadas": 5.5,
+      "totalHorasReales": 6.03,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 132,
+          "fechaRegistro": "2025-09-25",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 88,
+          "fechaRegistro": "2025-10-03",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 61,
+          "fechaRegistro": "2025-10-05",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 81,
+          "fechaRegistro": "2025-10-09",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Diseño",
+      "descripcion": "Actividad de Diseño realizada por Fabricio Nuñez en Elaboración II",
+      "actividad": "Diseño",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Diseño",
+      "fechaInicio": "2025-09-25",
+      "fechaFin": "2025-10-05",
+      "horasEstimadas": 17,
+      "totalHorasReales": 19.02,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 83,
+          "fechaRegistro": "2025-09-25",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 217,
+          "fechaRegistro": "2025-10-01",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 474,
+          "fechaRegistro": "2025-10-04",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 367,
+          "fechaRegistro": "2025-10-05",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Diseño"
+        }
+      ]
+    },
+    {
+      "nombre": "Calidad",
+      "descripcion": "Actividad de Calidad realizada por Fabricio Nuñez en Elaboración II",
+      "actividad": "Calidad",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-09-26",
+      "fechaFin": "2025-10-06",
+      "horasEstimadas": 10,
+      "totalHorasReales": 10.17,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 200,
+          "fechaRegistro": "2025-09-26",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Calidad"
+        },
+        {
+          "duracion": 161,
+          "fechaRegistro": "2025-10-02",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Calidad"
+        },
+        {
+          "duracion": 155,
+          "fechaRegistro": "2025-10-05",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Calidad"
+        },
+        {
+          "duracion": 94,
+          "fechaRegistro": "2025-10-06",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Calidad"
+        }
+      ]
+    },
+    {
+      "nombre": "Análisis",
+      "descripcion": "Actividad de Análisis realizada por Fabricio Nuñez en Elaboración II",
+      "actividad": "Análisis",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-09-27",
+      "fechaFin": "2025-09-29",
+      "horasEstimadas": 3,
+      "totalHorasReales": 2.7,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 51,
+          "fechaRegistro": "2025-09-27",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Análisis"
+        },
+        {
+          "duracion": 111,
+          "fechaRegistro": "2025-09-29",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Análisis"
+        }
+      ]
+    },
+    {
+      "nombre": "Reunión",
+      "descripcion": "Actividad de Reunión realizada por Fabricio Nuñez en Elaboración II",
+      "actividad": "Reunión",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Actividades Externas",
+      "fechaInicio": "2025-10-06",
+      "fechaFin": "2025-10-06",
+      "horasEstimadas": 1,
+      "totalHorasReales": 0.9,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 54,
+          "fechaRegistro": "2025-10-06",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Reunión"
+        }
+      ]
+    },
+    {
+      "nombre": "Diseño",
+      "descripcion": "Actividad de Diseño realizada por Fabricio Nuñez en Construcción I",
+      "actividad": "Diseño",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Diseño",
+      "fechaInicio": "2025-10-10",
+      "fechaFin": "2025-10-17",
+      "horasEstimadas": 14,
+      "totalHorasReales": 14.25,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 213,
+          "fechaRegistro": "2025-10-10",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 291,
+          "fechaRegistro": "2025-10-11",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 101,
+          "fechaRegistro": "2025-10-12",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 136,
+          "fechaRegistro": "2025-10-15",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 114,
+          "fechaRegistro": "2025-10-17",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Diseño"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Fabricio Nuñez en Construcción I",
+      "actividad": "Documentación",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-10-13",
+      "fechaFin": "2025-10-26",
+      "horasEstimadas": 6.5,
+      "totalHorasReales": 6.47,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 82,
+          "fechaRegistro": "2025-10-13",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 58,
+          "fechaRegistro": "2025-10-15",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 83,
+          "fechaRegistro": "2025-10-20",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 54,
+          "fechaRegistro": "2025-10-23",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 111,
+          "fechaRegistro": "2025-10-26",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Análisis",
+      "descripcion": "Actividad de Análisis realizada por Fabricio Nuñez en Construcción I",
+      "actividad": "Análisis",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-10-15",
+      "fechaFin": "2025-10-15",
+      "horasEstimadas": 1.5,
+      "totalHorasReales": 1.4,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 84,
+          "fechaRegistro": "2025-10-15",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Análisis"
+        }
+      ]
+    },
+    {
+      "nombre": "Calidad",
+      "descripcion": "Actividad de Calidad realizada por Fabricio Nuñez en Construcción I",
+      "actividad": "Calidad",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-10-16",
+      "fechaFin": "2025-10-16",
+      "horasEstimadas": 3,
+      "totalHorasReales": 2.67,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 160,
+          "fechaRegistro": "2025-10-16",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Calidad"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Fabricio Nuñez en Construcción II",
+      "actividad": "Documentación",
+      "etapa": "Construcción",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Construcción II",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-10-17",
+      "fechaFin": "2025-11-06",
+      "horasEstimadas": 3.5,
+      "totalHorasReales": 3.23,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 81,
+          "fechaRegistro": "2025-10-17",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 54,
+          "fechaRegistro": "2025-10-30",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 30,
+          "fechaRegistro": "2025-11-01",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 29,
+          "fechaRegistro": "2025-11-06",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Pruebas",
+      "descripcion": "Actividad de Pruebas realizada por Fabricio Nuñez en Construcción I",
+      "actividad": "Pruebas",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-10-22",
+      "fechaFin": "2025-10-27",
+      "horasEstimadas": 11,
+      "totalHorasReales": 11.58,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 343,
+          "fechaRegistro": "2025-10-22",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Pruebas"
+        },
+        {
+          "duracion": 89,
+          "fechaRegistro": "2025-10-23",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Pruebas"
+        },
+        {
+          "duracion": 179,
+          "fechaRegistro": "2025-10-25",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Pruebas"
+        },
+        {
+          "duracion": 84,
+          "fechaRegistro": "2025-10-27",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Pruebas"
+        }
+      ]
+    },
+    {
+      "nombre": "Pruebas",
+      "descripcion": "Actividad de Pruebas realizada por Fabricio Nuñez en Construcción II",
+      "actividad": "Pruebas",
+      "etapa": "Construcción",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Construcción II",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-11-05",
+      "fechaFin": "2025-11-05",
+      "horasEstimadas": 4,
+      "totalHorasReales": 4,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-11-05",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Pruebas"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Fabricio Nuñez en Transición",
+      "actividad": "Documentación",
+      "etapa": "Transición",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Transición",
+      "userEmail": "fabricio.nunez@gmail.com",
+      "userName": "Fabricio Nuñez",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-11-20",
+      "fechaFin": "2025-11-20",
+      "horasEstimadas": 4.5,
+      "totalHorasReales": 4.13,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 248,
+          "fechaRegistro": "2025-11-20",
+          "semana": 14,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Entrevista",
+      "descripcion": "Actividad de Entrevista realizada por Malcolm Salazar en Inicio",
+      "actividad": "Entrevista",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-08-25",
+      "fechaFin": "2025-08-25",
+      "horasEstimadas": 1,
+      "totalHorasReales": 1,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-08-25",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Entrevista"
+        }
+      ]
+    },
+    {
+      "nombre": "Programación",
+      "descripcion": "Actividad de Programación realizada por Malcolm Salazar en Inicio",
+      "actividad": "Programación",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Codificación",
+      "fechaInicio": "2025-08-27",
+      "fechaFin": "2025-09-03",
+      "horasEstimadas": 3.5,
+      "totalHorasReales": 3.5,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 30,
+          "fechaRegistro": "2025-08-27",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-08-28",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 30,
+          "fechaRegistro": "2025-09-03",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 30,
+          "fechaRegistro": "2025-09-03",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Programación"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Malcolm Salazar en Inicio",
+      "actividad": "Documentación",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-09-02",
+      "fechaFin": "2025-09-02",
+      "horasEstimadas": 1,
+      "totalHorasReales": 1,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-02",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Validación y Verificación",
+      "descripcion": "Actividad de Validación y Verificación realizada por Malcolm Salazar en Elaboración II",
+      "actividad": "Validación y Verificación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-09-24",
+      "fechaFin": "2025-09-24",
+      "horasEstimadas": 2.5,
+      "totalHorasReales": 2,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-09-24",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Validación y Verificación"
+        }
+      ]
+    },
+    {
+      "nombre": "Reunión",
+      "descripcion": "Actividad de Reunión realizada por Malcolm Salazar en Elaboración II",
+      "actividad": "Reunión",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Actividades Externas",
+      "fechaInicio": "2025-09-30",
+      "fechaFin": "2025-09-30",
+      "horasEstimadas": 3,
+      "totalHorasReales": 3,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 180,
+          "fechaRegistro": "2025-09-30",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Reunión"
+        }
+      ]
+    },
+    {
+      "nombre": "Programación",
+      "descripcion": "Actividad de Programación realizada por Malcolm Salazar en Elaboración II",
+      "actividad": "Programación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Codificación",
+      "fechaInicio": "2025-10-08",
+      "fechaFin": "2025-10-09",
+      "horasEstimadas": 6.5,
+      "totalHorasReales": 6,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 180,
+          "fechaRegistro": "2025-10-08",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 180,
+          "fechaRegistro": "2025-10-09",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Programación"
+        }
+      ]
+    },
+    {
+      "nombre": "Pruebas",
+      "descripcion": "Actividad de Pruebas realizada por Malcolm Salazar en Elaboración II",
+      "actividad": "Pruebas",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-10-09",
+      "fechaFin": "2025-10-09",
+      "horasEstimadas": 2.5,
+      "totalHorasReales": 2.5,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 150,
+          "fechaRegistro": "2025-10-09",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Pruebas"
+        }
+      ]
+    },
+    {
+      "nombre": "Reunión",
+      "descripcion": "Actividad de Reunión realizada por Malcolm Salazar en Construcción I",
+      "actividad": "Reunión",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Actividades Externas",
+      "fechaInicio": "2025-10-16",
+      "fechaFin": "2025-10-16",
+      "horasEstimadas": 2.5,
+      "totalHorasReales": 2.17,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 130,
+          "fechaRegistro": "2025-10-16",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Reunión"
+        }
+      ]
+    },
+    {
+      "nombre": "Pruebas",
+      "descripcion": "Actividad de Pruebas realizada por Malcolm Salazar en Construcción I",
+      "actividad": "Pruebas",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-10-16",
+      "fechaFin": "2025-10-16",
+      "horasEstimadas": 2.5,
+      "totalHorasReales": 2.17,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 130,
+          "fechaRegistro": "2025-10-16",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Pruebas"
+        }
+      ]
+    },
+    {
+      "nombre": "Programación",
+      "descripcion": "Actividad de Programación realizada por Malcolm Salazar en Construcción I",
+      "actividad": "Programación",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Codificación",
+      "fechaInicio": "2025-10-23",
+      "fechaFin": "2025-10-27",
+      "horasEstimadas": 17,
+      "totalHorasReales": 18.07,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 214,
+          "fechaRegistro": "2025-10-23",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-10-24",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 150,
+          "fechaRegistro": "2025-10-25",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-10-26",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 360,
+          "fechaRegistro": "2025-10-27",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        }
+      ]
+    },
+    {
+      "nombre": "Programación",
+      "descripcion": "Actividad de Programación realizada por Malcolm Salazar en Construcción II",
+      "actividad": "Programación",
+      "etapa": "Construcción",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Construcción II",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Codificación",
+      "fechaInicio": "2025-11-07",
+      "fechaFin": "2025-11-07",
+      "horasEstimadas": 10.5,
+      "totalHorasReales": 10,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 600,
+          "fechaRegistro": "2025-11-07",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Programación"
+        }
+      ]
+    },
+    {
+      "nombre": "Programación",
+      "descripcion": "Actividad de Programación realizada por Malcolm Salazar en Construcción III",
+      "actividad": "Programación",
+      "etapa": "Construcción",
+      "iteracionNumero": 3,
+      "iteracionNombre": "Construcción III",
+      "userEmail": "malcolm.salazar@gmail.com",
+      "userName": "Malcolm Salazar",
+      "categoria": "Codificación",
+      "fechaInicio": "2025-11-09",
+      "fechaFin": "2025-11-10",
+      "horasEstimadas": 7,
+      "totalHorasReales": 8,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 360,
+          "fechaRegistro": "2025-11-09",
+          "semana": 13,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-11-10",
+          "semana": 13,
+          "descripcion": "Registro de tiempo - Programación"
+        }
+      ]
+    },
+    {
+      "nombre": "Entrevista",
+      "descripcion": "Actividad de Entrevista realizada por Lorenzo Teppa en Inicio",
+      "actividad": "Entrevista",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-08-25",
+      "fechaFin": "2025-08-26",
+      "horasEstimadas": 1.5,
+      "totalHorasReales": 1.57,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-08-25",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Entrevista"
+        },
+        {
+          "duracion": 34,
+          "fechaRegistro": "2025-08-26",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Entrevista"
+        }
+      ]
+    },
+    {
+      "nombre": "Administración de Configuraciones",
+      "descripcion": "Actividad de Administración de Configuraciones realizada por Lorenzo Teppa en Inicio",
+      "actividad": "Administración de Configuraciones",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-08-27",
+      "fechaFin": "2025-09-08",
+      "horasEstimadas": 5,
+      "totalHorasReales": 5,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-08-27",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Administración de Configuraciones"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-08-28",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Administración de Configuraciones"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-05",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Administración de Configuraciones"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-08",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Administración de Configuraciones"
+        }
+      ]
+    },
+    {
+      "nombre": "Programación",
+      "descripcion": "Actividad de Programación realizada por Lorenzo Teppa en Inicio",
+      "actividad": "Programación",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Codificación",
+      "fechaInicio": "2025-08-30",
+      "fechaFin": "2025-09-01",
+      "horasEstimadas": 3.5,
+      "totalHorasReales": 3.5,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 150,
+          "fechaRegistro": "2025-08-30",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-01",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Programación"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Lorenzo Teppa en Inicio",
+      "actividad": "Documentación",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-08-31",
+      "fechaFin": "2025-09-06",
+      "horasEstimadas": 9.5,
+      "totalHorasReales": 9.83,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-08-31",
+          "semana": 2,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-03",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-04",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 150,
+          "fechaRegistro": "2025-09-05",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 260,
+          "fechaRegistro": "2025-09-06",
+          "semana": 3,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Requerimientos",
+      "descripcion": "Actividad de Requerimientos realizada por Lorenzo Teppa en Inicio",
+      "actividad": "Requerimientos",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-09-08",
+      "fechaFin": "2025-09-08",
+      "horasEstimadas": 2.5,
+      "totalHorasReales": 2,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-09-08",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        }
+      ]
+    },
+    {
+      "nombre": "Análisis",
+      "descripcion": "Actividad de Análisis realizada por Lorenzo Teppa en Inicio",
+      "actividad": "Análisis",
+      "etapa": "Inicio",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Inicio",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-09-09",
+      "fechaFin": "2025-09-09",
+      "horasEstimadas": 1,
+      "totalHorasReales": 1,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-09",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Análisis"
+        }
+      ]
+    },
+    {
+      "nombre": "Documentación",
+      "descripcion": "Actividad de Documentación realizada por Lorenzo Teppa en Elaboración I",
+      "actividad": "Documentación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-09-10",
+      "fechaFin": "2025-09-11",
+      "horasEstimadas": 2,
+      "totalHorasReales": 2,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-10",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Documentación"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-11",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Documentación"
+        }
+      ]
+    },
+    {
+      "nombre": "Requerimientos",
+      "descripcion": "Actividad de Requerimientos realizada por Lorenzo Teppa en Elaboración I",
+      "actividad": "Requerimientos",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-09-12",
+      "fechaFin": "2025-09-22",
+      "horasEstimadas": 2,
+      "totalHorasReales": 2,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 30,
+          "fechaRegistro": "2025-09-12",
+          "semana": 4,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        },
+        {
+          "duracion": 90,
+          "fechaRegistro": "2025-09-22",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        }
+      ]
+    },
+    {
+      "nombre": "Requerimientos",
+      "descripcion": "Actividad de Requerimientos realizada por Lorenzo Teppa en Construcción I",
+      "actividad": "Requerimientos",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-09-15",
+      "fechaFin": "2025-09-15",
+      "horasEstimadas": 2,
+      "totalHorasReales": 2,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-09-15",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Requerimientos"
+        }
+      ]
+    },
+    {
+      "nombre": "Análisis",
+      "descripcion": "Actividad de Análisis realizada por Lorenzo Teppa en Elaboración I",
+      "actividad": "Análisis",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-09-16",
+      "fechaFin": "2025-09-16",
+      "horasEstimadas": 0.5,
+      "totalHorasReales": 0.5,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 30,
+          "fechaRegistro": "2025-09-16",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Análisis"
+        }
+      ]
+    },
+    {
+      "nombre": "Diseño",
+      "descripcion": "Actividad de Diseño realizada por Lorenzo Teppa en Elaboración I",
+      "actividad": "Diseño",
+      "etapa": "Elaboración",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Elaboración I",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Diseño",
+      "fechaInicio": "2025-09-17",
+      "fechaFin": "2025-10-10",
+      "horasEstimadas": 6.5,
+      "totalHorasReales": 7.18,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 101,
+          "fechaRegistro": "2025-09-17",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 90,
+          "fechaRegistro": "2025-09-18",
+          "semana": 5,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-10-10",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Diseño"
+        }
+      ]
+    },
+    {
+      "nombre": "Administración de Configuraciones",
+      "descripcion": "Actividad de Administración de Configuraciones realizada por Lorenzo Teppa en Elaboración II",
+      "actividad": "Administración de Configuraciones",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Documentación",
+      "fechaInicio": "2025-09-25",
+      "fechaFin": "2025-10-04",
+      "horasEstimadas": 2,
+      "totalHorasReales": 2.5,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-25",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Administración de Configuraciones"
+        },
+        {
+          "duracion": 30,
+          "fechaRegistro": "2025-09-29",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Administración de Configuraciones"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-10-04",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Administración de Configuraciones"
+        }
+      ]
+    },
+    {
+      "nombre": "Análisis",
+      "descripcion": "Actividad de Análisis realizada por Lorenzo Teppa en Elaboración II",
+      "actividad": "Análisis",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Análisis",
+      "fechaInicio": "2025-09-26",
+      "fechaFin": "2025-10-04",
+      "horasEstimadas": 7,
+      "totalHorasReales": 7,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-09-26",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Análisis"
+        },
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-09-29",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Análisis"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-10-04",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Análisis"
+        }
+      ]
+    },
+    {
+      "nombre": "Validación y Verificación",
+      "descripcion": "Actividad de Validación y Verificación realizada por Lorenzo Teppa en Elaboración II",
+      "actividad": "Validación y Verificación",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-09-26",
+      "fechaFin": "2025-09-26",
+      "horasEstimadas": 1,
+      "totalHorasReales": 1,
+      "prioridad": "Baja",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-09-26",
+          "semana": 6,
+          "descripcion": "Registro de tiempo - Validación y Verificación"
+        }
+      ]
+    },
+    {
+      "nombre": "Diseño",
+      "descripcion": "Actividad de Diseño realizada por Lorenzo Teppa en Elaboración II",
+      "actividad": "Diseño",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Diseño",
+      "fechaInicio": "2025-09-29",
+      "fechaFin": "2025-10-06",
+      "horasEstimadas": 18,
+      "totalHorasReales": 18.5,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 30,
+          "fechaRegistro": "2025-09-29",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 540,
+          "fechaRegistro": "2025-10-01",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 480,
+          "fechaRegistro": "2025-10-02",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-10-06",
+          "semana": 8,
+          "descripcion": "Registro de tiempo - Diseño"
+        }
+      ]
+    },
+    {
+      "nombre": "Calidad",
+      "descripcion": "Actividad de Calidad realizada por Lorenzo Teppa en Elaboración II",
+      "actividad": "Calidad",
+      "etapa": "Elaboración",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Elaboración II",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-10-03",
+      "fechaFin": "2025-10-03",
+      "horasEstimadas": 1.5,
+      "totalHorasReales": 1.5,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 90,
+          "fechaRegistro": "2025-10-03",
+          "semana": 7,
+          "descripcion": "Registro de tiempo - Calidad"
+        }
+      ]
+    },
+    {
+      "nombre": "Calidad",
+      "descripcion": "Actividad de Calidad realizada por Lorenzo Teppa en Construcción I",
+      "actividad": "Calidad",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-10-13",
+      "fechaFin": "2025-10-17",
+      "horasEstimadas": 2.5,
+      "totalHorasReales": 2.5,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 90,
+          "fechaRegistro": "2025-10-13",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Calidad"
+        },
+        {
+          "duracion": 60,
+          "fechaRegistro": "2025-10-17",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Calidad"
+        }
+      ]
+    },
+    {
+      "nombre": "Diseño",
+      "descripcion": "Actividad de Diseño realizada por Lorenzo Teppa en Construcción I",
+      "actividad": "Diseño",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Diseño",
+      "fechaInicio": "2025-10-14",
+      "fechaFin": "2025-10-15",
+      "horasEstimadas": 8,
+      "totalHorasReales": 8,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 90,
+          "fechaRegistro": "2025-10-14",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 300,
+          "fechaRegistro": "2025-10-15",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Diseño"
+        },
+        {
+          "duracion": 90,
+          "fechaRegistro": "2025-10-15",
+          "semana": 9,
+          "descripcion": "Registro de tiempo - Diseño"
+        }
+      ]
+    },
+    {
+      "nombre": "Programación",
+      "descripcion": "Actividad de Programación realizada por Lorenzo Teppa en Construcción I",
+      "actividad": "Programación",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Codificación",
+      "fechaInicio": "2025-10-21",
+      "fechaFin": "2025-10-29",
+      "horasEstimadas": 65,
+      "totalHorasReales": 56,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-10-21",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-10-22",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 480,
+          "fechaRegistro": "2025-10-22",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 480,
+          "fechaRegistro": "2025-10-23",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-10-24",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-10-25",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 480,
+          "fechaRegistro": "2025-10-25",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 720,
+          "fechaRegistro": "2025-10-26",
+          "semana": 10,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-10-27",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-10-29",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Programación"
+        }
+      ]
+    },
+    {
+      "nombre": "Pruebas",
+      "descripcion": "Actividad de Pruebas realizada por Lorenzo Teppa en Construcción I",
+      "actividad": "Pruebas",
+      "etapa": "Construcción",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Construcción I",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-10-27",
+      "fechaFin": "2025-10-27",
+      "horasEstimadas": 4.5,
+      "totalHorasReales": 4,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-10-27",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Pruebas"
+        }
+      ]
+    },
+    {
+      "nombre": "Programación",
+      "descripcion": "Actividad de Programación realizada por Lorenzo Teppa en Construcción II",
+      "actividad": "Programación",
+      "etapa": "Construcción",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Construcción II",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Codificación",
+      "fechaInicio": "2025-10-30",
+      "fechaFin": "2025-11-06",
+      "horasEstimadas": 39,
+      "totalHorasReales": 45,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-10-30",
+          "semana": 11,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 600,
+          "fechaRegistro": "2025-11-01",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 480,
+          "fechaRegistro": "2025-11-02",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-11-03",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-11-04",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-11-04",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-11-05",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 540,
+          "fechaRegistro": "2025-11-06",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Programación"
+        }
+      ]
+    },
+    {
+      "nombre": "Pruebas",
+      "descripcion": "Actividad de Pruebas realizada por Lorenzo Teppa en Construcción II",
+      "actividad": "Pruebas",
+      "etapa": "Construcción",
+      "iteracionNumero": 2,
+      "iteracionNombre": "Construcción II",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Validación y Verificación",
+      "fechaInicio": "2025-11-05",
+      "fechaFin": "2025-11-05",
+      "horasEstimadas": 3.5,
+      "totalHorasReales": 4,
+      "prioridad": "Media",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 240,
+          "fechaRegistro": "2025-11-05",
+          "semana": 12,
+          "descripcion": "Registro de tiempo - Pruebas"
+        }
+      ]
+    },
+    {
+      "nombre": "Programación",
+      "descripcion": "Actividad de Programación realizada por Lorenzo Teppa en Construcción III",
+      "actividad": "Programación",
+      "etapa": "Construcción",
+      "iteracionNumero": 3,
+      "iteracionNombre": "Construcción III",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Codificación",
+      "fechaInicio": "2025-11-09",
+      "fechaFin": "2025-11-10",
+      "horasEstimadas": 20,
+      "totalHorasReales": 21,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 720,
+          "fechaRegistro": "2025-11-09",
+          "semana": 13,
+          "descripcion": "Registro de tiempo - Programación"
+        },
+        {
+          "duracion": 540,
+          "fechaRegistro": "2025-11-10",
+          "semana": 13,
+          "descripcion": "Registro de tiempo - Programación"
+        }
+      ]
+    },
+    {
+      "nombre": "Programación",
+      "descripcion": "Actividad de Programación realizada por Lorenzo Teppa en Transición",
+      "actividad": "Programación",
+      "etapa": "Transición",
+      "iteracionNumero": 1,
+      "iteracionNombre": "Transición",
+      "userEmail": "lorenzo.teppa@gmail.com",
+      "userName": "Lorenzo Teppa",
+      "categoria": "Codificación",
+      "fechaInicio": "2025-11-18",
+      "fechaFin": "2025-11-18",
+      "horasEstimadas": 2,
+      "totalHorasReales": 2,
+      "prioridad": "Alta",
+      "estado": "Completado",
+      "tiempos": [
+        {
+          "duracion": 120,
+          "fechaRegistro": "2025-11-18",
+          "semana": 14,
+          "descripcion": "Registro de tiempo - Programación"
+        }
+      ]
+    }
+  ]
+}

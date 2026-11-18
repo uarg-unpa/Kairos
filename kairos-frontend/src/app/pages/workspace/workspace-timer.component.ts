@@ -2,6 +2,7 @@ import Swal from 'sweetalert2';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Subscription, of, forkJoin, Observable } from 'rxjs';
 import { catchError, switchMap, map } from 'rxjs/operators';
 import { TimerService } from '../../services/timer.service';
@@ -9,6 +10,7 @@ import { TaskService } from '../../services/tarea.service';
 import { ProyectoService } from '../../services/proyecto.service';
 import { AlertService } from '../../services/alert.service';
 import { ComentarioService } from '../../services/comentario.service';
+import { AuthService } from '../../services/auth.service';
 import { TimerState } from '../../models/timer.model';
 import { Tarea } from '../../models/tarea.model';
 import { Usuario } from '../../models/usuarios';
@@ -55,11 +57,13 @@ declare var bootstrap: any;
   imports: [
     CommonModule,
     FormsModule,
+    RouterModule,
   ],
   templateUrl: './workspace-timer.component.html',
   styleUrls: ['./workspace-timer.component.css']
 })
 export class WorkspaceTimerComponent implements OnInit, OnDestroy {
+  // private router = inject(Router);
 
   elapsedTimeDisplay: string = '00:00:00';
   timerState: TimerState = {} as TimerState;
@@ -143,7 +147,8 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     private proyectoService: ProyectoService,
     private alertService: AlertService,
     private comentarioService: ComentarioService,
-    private http: HttpClient
+    private http: HttpClient,
+    private authService: AuthService
   ) { }
 
 
@@ -154,10 +159,7 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
     this.loadTasks();
     this.loadLast5Times();
 
-    const usuarioGuardado = localStorage.getItem('usuario_data');
-    if (usuarioGuardado) {
-      this.usuarioActual = JSON.parse(usuarioGuardado);
-    }
+    this.usuarioActual = this.authService.usuario;
 
     this.subscriptions.add(this.timerService.timerState$.subscribe(state => {
       this.timerState = state;
@@ -780,7 +782,10 @@ export class WorkspaceTimerComponent implements OnInit, OnDestroy {
   }
 
   createPersonalTask(): void {
-    if (!this.newPersonalTask.nombre.trim()) return;
+    if (!this.newPersonalTask.nombre.trim()) {
+      this.alertService.warning('Atención', 'El nombre de la tarea no puede estar vacío.');
+      return;
+    };
 
     if (this.newPersonalTask.horasEstimadas === null || this.newPersonalTask.horasEstimadas <= 0) {
       this.alertService.warning('Atención', 'Las horas estimadas son obligatorias y deben ser mayores a 0.');

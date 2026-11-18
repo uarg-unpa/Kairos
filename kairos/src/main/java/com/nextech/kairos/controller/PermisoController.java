@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/permisos")
-@CrossOrigin(origins = "*", maxAge = 3600)
+// @CrossOrigin(origins = {*}, allowCredentials = "true", maxAge = 3600) // para despliegue
+@CrossOrigin(origins = {"http://localhost:4200", "http://127.0.0.1:4200"}, allowCredentials = "true", maxAge = 3600)
 @PreAuthorize("hasAuthority('Permisos') or hasAuthority('ROLE_ADMINISTRADOR')")
 public class PermisoController {
     

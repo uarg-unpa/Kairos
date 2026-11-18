@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, map, catchError } from 'rxjs';
 import { ConfigService } from './config.service';
+import { CookieService } from './cookie.service';
 import { TimerState, initialTimerState } from '../models/timer.model';
 // import { TaskService } from './tarea.service';
 
@@ -29,6 +30,7 @@ interface TiempoEditRequestDTO {
 export class TimerService {
   private http = inject(HttpClient);
   private config = inject(ConfigService);
+  private cookieService = inject(CookieService);
 
   private timerStateSubject = new BehaviorSubject<TimerState>({ ...initialTimerState });
   readonly timerState$ = this.timerStateSubject.asObservable();
@@ -60,11 +62,26 @@ export class TimerService {
     );
   }
 
-  // -------- LocalStorage helpers --------
-  private storageKey(userId: number) { return `kairos.timer.${userId}`; }
+  // -------- Storage helpers con Cookies Seguras --------
+  private storageKey(userId: number) { return `kairos_timer_${userId}`; }
   private loadFromStorage(userId: number): any | null {
-    try { const raw = localStorage.getItem(this.storageKey(userId)); return raw ? JSON.parse(raw) : null; }
-    catch { return null; }
+    // 1. Intentar desde cookie segura
+    const fromCookie = this.cookieService.getSecureObject<any>(this.storageKey(userId));
+    if (fromCookie) return fromCookie;
+
+    // 2. Si existía en LocalStorage de sesión previa, migrar y eliminar de LocalStorage
+    try {
+      const oldKey = `kairos.timer.${userId}`;
+      const oldRaw = localStorage.getItem(oldKey);
+      if (oldRaw) {
+        localStorage.removeItem(oldKey);
+        const parsed = JSON.parse(oldRaw);
+        this.cookieService.setSecureObject(this.storageKey(userId), parsed, 2);
+        return parsed;
+      }
+    } catch {}
+
+    return null;
   }
   private saveToStorage(userId: number): void {
     const st = this.timerStateSubject.getValue();
@@ -78,9 +95,13 @@ export class TimerService {
       pausedSinceMs: this.pausedSinceMs,
       isPersonal: st.isPersonal,
     };
-    localStorage.setItem(this.storageKey(userId), JSON.stringify(payload));
+    this.cookieService.setSecureObject(this.storageKey(userId), payload, 2);
+    try { localStorage.removeItem(`kairos.timer.${userId}`); } catch {}
   }
-  private clearStorage(userId: number): void { localStorage.removeItem(this.storageKey(userId)); }
+  private clearStorage(userId: number): void {
+    this.cookieService.delete(this.storageKey(userId));
+    try { localStorage.removeItem(`kairos.timer.${userId}`); } catch {}
+  }
 
   // Indica si hay timer activo para el usuario actual leyendo desde localStorage
   getActive(): Observable<TiempoActivoDTO | null> {

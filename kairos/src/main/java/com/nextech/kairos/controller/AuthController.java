@@ -1,12 +1,15 @@
 package com.nextech.kairos.controller;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,7 +37,8 @@ import com.nextech.kairos.util.JwtUtil;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*", maxAge = 3600)
+// @CrossOrigin(origins = {*}, allowCredentials = "true", maxAge = 3600) // para despliegue
+@CrossOrigin(origins = {"http://localhost:4200", "http://127.0.0.1:4200"}, allowCredentials = "true", maxAge = 3600)
 public class AuthController {
 
     @Autowired
@@ -114,7 +118,17 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<AuthResponse> logout() {
-        return ResponseEntity.ok(new AuthResponse("Logout successful", null, null));
+        ResponseCookie deleteCookie = ResponseCookie.from("JWT_TOKEN", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body(new AuthResponse("Logout successful", null, null));
     }
 
     /**
@@ -160,8 +174,18 @@ public class AuthController {
             );
 
             String token = jwtUtil.generateToken(email, authorities);
-return ResponseEntity.ok(new AuthResponse("OK", token, usuario));
 
+            ResponseCookie jwtCookie = ResponseCookie.from("JWT_TOKEN", token)
+                    .httpOnly(true)
+                    .secure(false)
+                    .path("/")
+                    .sameSite("Lax")
+                    .maxAge(Duration.ofDays(7))
+                    .build();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .body(new AuthResponse("OK", token, usuario));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
