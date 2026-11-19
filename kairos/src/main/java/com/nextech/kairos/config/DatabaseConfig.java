@@ -4,6 +4,7 @@ package com.nextech.kairos.config;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import com.nextech.kairos.model.Permiso;
 import com.nextech.kairos.model.Rol;
@@ -14,6 +15,7 @@ import com.nextech.kairos.service.RolService;
 public class DatabaseConfig {
     
     @Bean
+    @Order(2)
     CommandLineRunner initDatabase(PermisoService permisoService, RolService rolService) {
         return args -> {
             // crear permisos si no existen

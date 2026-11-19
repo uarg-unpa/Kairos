@@ -58,8 +58,8 @@ public class RolService {
         }
         
         Rol newRole = new Rol(nombre);
-        newRole.addPermiso(permisoService.findByName("Ingresar").get());
-        newRole.addPermiso(permisoService.findByName("Salir").get());
+        permisoRepository.findByNombre("Ingresar").ifPresent(newRole::addPermiso);
+        permisoRepository.findByNombre("Salir").ifPresent(newRole::addPermiso);
         return save(newRole);
     }
     
