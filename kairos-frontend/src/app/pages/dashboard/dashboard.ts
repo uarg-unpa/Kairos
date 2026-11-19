@@ -1,4 +1,4 @@
-﻿import { AfterViewInit, Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, inject } from '@angular/core';
 
 import { DashboardExportComponent } from './dashboard-export.component';
 import { CommonModule } from '@angular/common';
@@ -99,6 +99,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   horasDiaDetalle: HorasDiaDetalle[] = [];
   horasTareaDetalle: HorasTareaDetalle[] = [];
   tareasNoFinalizadas: any[] = [];
+  mostrarTodasNoFinalizadas = false;
 
   constructor(private alertService: AlertService) { }
 
@@ -442,16 +443,24 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
   } private actualizarHorasIteracionChart() {
-    const orderedIds: number[] = [];
-    const pushId = (value: number | null | undefined) => {
-      if (value === null || value === undefined) return;
-      const numericId = Number(value);
-      if (!Number.isFinite(numericId)) return;
-      if (!orderedIds.includes(numericId)) orderedIds.push(numericId);
-    };
+    // Recolectar todos los IDs involucrados (de filas reales y de estimadas)
+    const idsSet = new Set<number>();
+    this.horasIteracionRows.forEach(row => {
+      const id = this.obtenerIteracionId(row);
+      if (id !== null && Number.isFinite(id)) idsSet.add(id);
+    });
+    this.horasEstimadasPorIteracion.forEach((_, iterId) => {
+      if (Number.isFinite(iterId)) idsSet.add(iterId);
+    });
 
-    this.horasIteracionRows.forEach(row => pushId(this.obtenerIteracionId(row)));
-    this.horasEstimadasPorIteracion.forEach((_, iterId) => pushId(iterId));
+    // Ordenar por fechaInicio de la iteración para respetar el orden cronológico por etapa
+    const orderedIds = [...idsSet].sort((a, b) => {
+      const iterA = this.iteraciones?.find((it: any) => Number(it?.idIteracion) === a);
+      const iterB = this.iteraciones?.find((it: any) => Number(it?.idIteracion) === b);
+      const dateA = iterA?.fechaInicio ? new Date(iterA.fechaInicio).getTime() : 0;
+      const dateB = iterB?.fechaInicio ? new Date(iterB.fechaInicio).getTime() : 0;
+      return dateA - dateB;
+    });
 
     if (!orderedIds.length) {
       this.horasIteracionDetalle = [];
@@ -905,6 +914,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       const finIter = parseFecha(iter?.fechaFin);
       return !!finIter && finIter < hoy;
     });
+    this.mostrarTodasNoFinalizadas = false;
 
     const estimadas = tareas.map(t => t.horasEstimadas || 0).reduce((a: number, b: number) => a + b, 0);
     const reales = this.totalHoras;
@@ -961,6 +971,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     } catch { }
     this.loadingTareasData = false;
+  }
+
+  get tareasNoFinalizadasVisibles(): any[] {
+    if (this.mostrarTodasNoFinalizadas) return this.tareasNoFinalizadas;
+    return this.tareasNoFinalizadas.slice(0, 10);
+  }
+
+  toggleMostrarTodasNoFinalizadas(): void {
+    this.mostrarTodasNoFinalizadas = !this.mostrarTodasNoFinalizadas;
   }
 
   /* private computeWeeklyRange(): { from: string, to: string } {

@@ -497,7 +497,7 @@ export class PlanificacionComponent implements OnInit {
       error: (err) => {
         console.error('Error al eliminar categoría:', err);
 
-        this.alertService.error(err?.error?.message || err?.message || 'Ocurrió un error inesperado al eliminar la categoría.');
+        this.alertService.error('Ocurrió un error inesperado al eliminar la categoría.');
       }
     });
   }

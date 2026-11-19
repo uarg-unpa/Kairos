@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { IteracionService } from '../../services/iteracion.service';
+import { EtapaService } from '../../services/etapa.service';
 import { IdCoderService } from '../../services/id-coder.service';
 import { AuthService } from '../../services/auth.service';
 import { ProyectoService } from '../../services/proyecto.service';
 import { Iteracion } from '../../models/iteracion.model';
+import { Etapa } from '../../models/etapa.model';
 import { Proyecto } from '../../models/proyecto.model';
 import { AlertService } from '../../services/alert.service';
 
@@ -25,6 +27,7 @@ export class IteracionesComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private iteracionService = inject(IteracionService);
+  private etapaService = inject(EtapaService);
   private idCoderService = inject(IdCoderService);
   private authService = inject(AuthService);
   private proyectoService = inject(ProyectoService);
@@ -32,6 +35,7 @@ export class IteracionesComponent implements OnInit {
 
   etapaSlug: string | null = null;
   etapaId: number | null = null;
+  etapa: Etapa | null = null;
   proyectoId: number | null = null;
   proyectoNombre: string | null = null;
   proyecto?: Proyecto;
@@ -110,6 +114,7 @@ export class IteracionesComponent implements OnInit {
 
       if (this.etapaId) {
         this.iteracionService.getIteracionesPorEtapaId(this.etapaId).subscribe(all => this.iteraciones = all);
+        this.cargarEtapa();
         return;
       }
 
@@ -133,6 +138,14 @@ export class IteracionesComponent implements OnInit {
     });
   }
 
+  private cargarEtapa(): void {
+    if (!this.etapaId) return;
+    this.etapaService.getEtapaById(this.etapaId).subscribe({
+      next: (e) => { this.etapa = e; },
+      error: (err) => console.error('Error cargando etapa', err)
+    });
+  }
+
   abrirModalIteracion() {
     this.errorNuevaIteracion = null;
     this.addIterationModal?.show();
@@ -152,11 +165,23 @@ export class IteracionesComponent implements OnInit {
       this.errorNuevaIteracion = 'La fecha de fin no puede ser anterior a la fecha de inicio';
       return false;
     }
+    if (this.fechaFueraDeEtapa()) {
+      this.errorNuevaIteracion = `Las fechas deben estar dentro del rango de la etapa (${this.etapa!.fechaInicio} – ${this.etapa!.fechaFin})`;
+      return false;
+    }
     return true;
   }
 
   crearIteracion() {
-    if (!this.nuevaIteracionValida()) return;
+    if (!this.nuevaIteracionValida()) {
+      if (this.fechaFueraDeEtapa()) {
+        this.alertService.error(
+          'Fechas fuera del rango de la etapa',
+          `La iteración debe estar comprendida dentro del rango de la etapa: ${this.etapa?.fechaInicio} – ${this.etapa?.fechaFin}`
+        );
+      }
+      return;
+    }
     if (!this.etapaId) { alert('Selecciona una etapa para crear la iteración.'); return; }
     const payload = {
       numero: this.obtenerSiguienteNumero(),
@@ -187,12 +212,35 @@ export class IteracionesComponent implements OnInit {
     return fin < ini;
   }
 
+  fechaFueraDeEtapa(): boolean {
+    if (!this.etapa?.fechaInicio || !this.etapa?.fechaFin) return false;
+    const i = this.nuevaIteracion;
+    if (!i?.fechaInicio || !i?.fechaFin) return false;
+    const iterIni = new Date(i.fechaInicio);
+    const iterFin = new Date(i.fechaFin);
+    const etapaIni = new Date(this.etapa.fechaInicio);
+    const etapaFin = new Date(this.etapa.fechaFin);
+    if ([iterIni, iterFin, etapaIni, etapaFin].some(d => isNaN(d.getTime()))) return false;
+    return iterIni < etapaIni || iterFin > etapaFin;
+  }
+
+  get etapaFechaMin(): string | null {
+    return this.etapa?.fechaInicio ?? null;
+  }
+
+  get etapaFechaMax(): string | null {
+    return this.etapa?.fechaFin ?? null;
+  }
+
   onFechaInicioChange(value: string): void {
     this.nuevaIteracion.fechaInicio = value;
     if (this.nuevaIteracion.fechaFin && this.nuevaIteracion.fechaFin < value) {
       this.nuevaIteracion.fechaFin = value;
     }
     this.errorNuevaIteracion = null;
+    if (this.fechaFueraDeEtapa()) {
+      this.errorNuevaIteracion = `Las fechas deben estar dentro del rango de la etapa (${this.etapa!.fechaInicio} – ${this.etapa!.fechaFin})`;
+    }
   }
 
   private resetForm() {

@@ -106,6 +106,16 @@
                 Se asignará automáticamente la Iteración #{{ proximoNumeroIteracion }}.
               </div>
             </div>
+            <div class="col-12" *ngIf="etapa?.fechaInicio && etapa?.fechaFin">
+              <div class="alert alert-info py-2 px-3 mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>
+                  Las fechas deben estar dentro del rango de la etapa
+                  <strong>{{ etapa!.nombre }}</strong>:
+                  {{ etapa!.fechaInicio }} – {{ etapa!.fechaFin }}
+                </span>
+              </div>
+            </div>
             <div class="col-12">
               <label class="form-label">Descripción (opcional)</label>
               <textarea class="form-control" rows="3" [(ngModel)]="nuevaIteracion.descripcion" name="descripcion"
@@ -113,18 +123,28 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">Fecha de inicio *</label>
-              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()"
+              <input type="date" class="form-control"
+                [class.is-invalid]="fechasDesordenadas() || fechaFueraDeEtapa()"
                 [(ngModel)]="nuevaIteracion.fechaInicio" (ngModelChange)="onFechaInicioChange($event)"
+                [min]="etapaFechaMin ?? ''" [max]="etapaFechaMax ?? ''"
                 name="fechaInicio" required />
             </div>
             <div class="col-md-6">
               <label class="form-label">Fecha de fin *</label>
-              <input type="date" class="form-control" [class.is-invalid]="fechasDesordenadas()"
-                [attr.min]="nuevaIteracion.fechaInicio || null" [(ngModel)]="nuevaIteracion.fechaFin" name="fechaFin"
+              <input type="date" class="form-control"
+                [class.is-invalid]="fechasDesordenadas() || fechaFueraDeEtapa()"
+                [attr.min]="nuevaIteracion.fechaInicio || etapaFechaMin || null"
+                [attr.max]="etapaFechaMax || null"
+                [(ngModel)]="nuevaIteracion.fechaFin" name="fechaFin"
                 required />
             </div>
             <div class="col-12" *ngIf="fechasDesordenadas()">
               <div class="invalid-feedback d-block">La fecha de fin no puede ser anterior a la fecha de inicio</div>
+            </div>
+            <div class="col-12" *ngIf="!fechasDesordenadas() && fechaFueraDeEtapa()">
+              <div class="invalid-feedback d-block">
+                Las fechas deben estar dentro del rango de la etapa ({{ etapa?.fechaInicio }} – {{ etapa?.fechaFin }})
+              </div>
             </div>
           </div>
         </form>
@@ -132,8 +152,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="cerrarModalIteracion()">Cancelar</button>
         <button type="button" class="btn btn-success" [disabled]="!nuevaIteracionValida()"
-          (click)="crearIteracion()">Crear iteración</button>
-      </div>
+          (click)="crearIteracion()">Crear iteración</button>      </div>
     </div>
   </div>
 </div>
