@@ -1,0 +1,4051 @@
+{
+  "proyectos": [
+    {
+      "nombre": "Kairos",
+      "equipo": "NexTech",
+      "descripcion": "Sistema de planificación de proyectos, registro de tiempos y visualización del avance",
+      "estado": "Completado",
+      "logo": "Kairos Logo.png",
+      "usuarios": [
+        {
+          "nombre": "Gonzalo Ulloa",
+          "email": "gonzaloalejandrou@gmail.com",
+          "rolProyecto": "Líder"
+        },
+        {
+          "nombre": "Guillermo Escalante",
+          "email": "guilleh114@gmail.com",
+          "rolProyecto": "Analista"
+        },
+        {
+          "nombre": "Valeria Centurión",
+          "email": "centurionvaleria6@gmail.com",
+          "rolProyecto": "Programador"
+        },
+        {
+          "nombre": "Agustina Maldonado",
+          "email": "agus0.0maldonado@gmail.com",
+          "rolProyecto": "Documentador"
+        },
+        {
+          "nombre": "Florencia Mendez",
+          "email": "esstefaniamendez@gmail.com",
+          "rolProyecto": "Gerente de Calidad"
+        }
+      ],
+      "etapas": [
+        {
+          "nombre": "Inicio",
+          "descripcion": "Definición de la visión del proyecto y análisis de viabilidad",
+          "estado": "COMPLETADA",
+          "fechaInicio": "2025-08-19",
+          "fechaFin": "2025-09-04",
+          "iteraciones": [
+            {
+              "numero": 1,
+              "fechaInicio": "2025-08-19",
+              "fechaFin": "2025-09-04",
+              "tareas": [
+                {
+                  "nombre": "PAsado de notas reunion",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-08-19",
+                  "fechaFin": "2025-08-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 24,
+                      "fechaRegistro": "2025-08-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.54
+                },
+                {
+                  "nombre": "Reuniones",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-08-19",
+                  "fechaFin": "2025-08-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 157,
+                      "fechaRegistro": "2025-08-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.67
+                },
+                {
+                  "nombre": "Actividades de Codificación (Inicio)",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-08-19",
+                  "fechaFin": "2025-08-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 276,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 262,
+                      "fechaRegistro": "2025-08-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 8.07
+                },
+                {
+                  "nombre": "Plan de SQA",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-08-19",
+                  "fechaFin": "2025-08-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 83,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 28,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 22,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 7,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 7,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 17,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 42,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 40,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 24,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 45,
+                      "fechaRegistro": "2025-08-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 4.7
+                },
+                {
+                  "nombre": "Actividades de Actividades Externas (Inicio)",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-08-19",
+                  "fechaFin": "2025-08-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 52,
+                      "fechaRegistro": "2025-08-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.1
+                },
+                {
+                  "nombre": "Actividades de Análisis (Inicio)",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-19",
+                  "fechaFin": "2025-08-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 65,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 38,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 16,
+                      "fechaRegistro": "2025-08-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.34
+                },
+                {
+                  "nombre": "Actividades de Análisis (Inicio)",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-19",
+                  "fechaFin": "2025-08-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 59,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 11,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 28,
+                      "fechaRegistro": "2025-08-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.42
+                },
+                {
+                  "nombre": "Actividades de Análisis (Inicio)",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-19",
+                  "fechaFin": "2025-09-04",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 59,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 43,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 26,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 32,
+                      "fechaRegistro": "2025-09-04"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 24,
+                      "fechaRegistro": "2025-09-04"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 27,
+                      "fechaRegistro": "2025-09-04"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 69,
+                      "fechaRegistro": "2025-09-04"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 62,
+                      "fechaRegistro": "2025-08-31"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 4,
+                      "fechaRegistro": "2025-08-31"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 4.94
+                },
+                {
+                  "nombre": "Actividades de Análisis (Inicio)",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-19",
+                  "fechaFin": "2025-09-04",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 49,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 12,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 15,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 19,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 28,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 13,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 60,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 2,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 107,
+                      "fechaRegistro": "2025-09-04"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 50,
+                      "fechaRegistro": "2025-09-03"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 5.76
+                },
+                {
+                  "nombre": "Actividades de Análisis (Inicio)",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-19",
+                  "fechaFin": "2025-08-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 33,
+                      "fechaRegistro": "2025-08-19"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 10,
+                      "fechaRegistro": "2025-08-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Pasar correcciones",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-08-19",
+                  "fechaFin": "2025-08-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 13,
+                      "fechaRegistro": "2025-08-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Exposiciones",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-09-02",
+                  "fechaFin": "2025-09-02",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 27,
+                      "fechaRegistro": "2025-09-02"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Presentacion 2/9/25",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-09-02",
+                  "fechaFin": "2025-09-02",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 59,
+                      "fechaRegistro": "2025-09-02"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.51
+                },
+                {
+                  "nombre": "Revisión de documentos",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-09-02",
+                  "fechaFin": "2025-09-02",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 24,
+                      "fechaRegistro": "2025-09-02"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 6,
+                      "fechaRegistro": "2025-09-02"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 5,
+                      "fechaRegistro": "2025-09-02"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Creación de repositorio y ramas",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-08-26",
+                  "fechaFin": "2025-09-02",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 116,
+                      "fechaRegistro": "2025-09-02"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 50,
+                      "fechaRegistro": "2025-08-26"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.07
+                },
+                {
+                  "nombre": "Modelo de Negocio",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-09-02",
+                  "fechaFin": "2025-09-02",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 55,
+                      "fechaRegistro": "2025-09-02"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.96
+                },
+                {
+                  "nombre": "Modelo de Negocio",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-08-31",
+                  "fechaFin": "2025-09-02",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 25,
+                      "fechaRegistro": "2025-09-02"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 83,
+                      "fechaRegistro": "2025-08-31"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.24
+                },
+                {
+                  "nombre": "Implementación y grabación de UARGFlow",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-09-01",
+                  "fechaFin": "2025-09-01",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 45,
+                      "fechaRegistro": "2025-09-01"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.84
+                },
+                {
+                  "nombre": "Estudio de Factibilidad",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-30",
+                  "fechaFin": "2025-08-30",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 95,
+                      "fechaRegistro": "2025-08-30"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.2
+                },
+                {
+                  "nombre": "Estándar de documentación",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-28",
+                  "fechaFin": "2025-08-28",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 94,
+                      "fechaRegistro": "2025-08-28"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.58
+                },
+                {
+                  "nombre": "Estudio de Factibilidad",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-28",
+                  "fechaFin": "2025-08-28",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 115,
+                      "fechaRegistro": "2025-08-28"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.53
+                },
+                {
+                  "nombre": "Resumen de entrevista",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-28",
+                  "fechaFin": "2025-08-28",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 28,
+                      "fechaRegistro": "2025-08-28"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 57,
+                      "fechaRegistro": "2025-08-28"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.61
+                },
+                {
+                  "nombre": "Desgrabación de entrevista",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-27",
+                  "fechaFin": "2025-08-27",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 41,
+                      "fechaRegistro": "2025-08-27"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.52
+                },
+                {
+                  "nombre": "Desgrabación de entrevista",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-27",
+                  "fechaFin": "2025-08-27",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 19,
+                      "fechaRegistro": "2025-08-27"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Actividades de Documentación (Inicio)",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-08-27",
+                  "fechaFin": "2025-08-27",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 111,
+                      "fechaRegistro": "2025-08-27"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.76
+                },
+                {
+                  "nombre": "Pasar en limpio notas de la entrevista 1",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-08-27",
+                  "fechaFin": "2025-08-27",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 88,
+                      "fechaRegistro": "2025-08-27"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.3
+                },
+                {
+                  "nombre": "Documento de entrevistas y presentación",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-08-26",
+                  "fechaFin": "2025-08-26",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 51,
+                      "fechaRegistro": "2025-08-26"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "nombre": "Elaboración",
+          "descripcion": "Análisis detallado de requisitos y diseño de arquitectura",
+          "estado": "COMPLETADA",
+          "fechaInicio": "2025-09-05",
+          "fechaFin": "2025-10-10",
+          "iteraciones": [
+            {
+              "numero": 1,
+              "fechaInicio": "2025-09-05",
+              "fechaFin": "2025-09-23",
+              "tareas": [
+                {
+                  "nombre": "Actividades de Actividades Externas (Elaboración I1)",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-09-19",
+                  "fechaFin": "2025-09-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 68,
+                      "fechaRegistro": "2025-09-19"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 25,
+                      "fechaRegistro": "2025-09-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.74
+                },
+                {
+                  "nombre": "Actividades de Validación y Verificación (Elaboración I1)",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-09-19",
+                  "fechaFin": "2025-09-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 231,
+                      "fechaRegistro": "2025-09-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 4.54
+                },
+                {
+                  "nombre": "Actividades de Documentación (Elaboración I1)",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-09-19",
+                  "fechaFin": "2025-09-19",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 169,
+                      "fechaRegistro": "2025-09-19"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 73,
+                      "fechaRegistro": "2025-09-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 4.24
+                },
+                {
+                  "nombre": "Actividades de Análisis (Elaboración I1)",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-09-13",
+                  "fechaFin": "2025-09-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 29,
+                      "fechaRegistro": "2025-09-18"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 241,
+                      "fechaRegistro": "2025-09-16"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 20,
+                      "fechaRegistro": "2025-09-16"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 147,
+                      "fechaRegistro": "2025-09-15"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 33,
+                      "fechaRegistro": "2025-09-15"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 40,
+                      "fechaRegistro": "2025-09-13"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 9.73
+                },
+                {
+                  "nombre": "Actividades de Análisis (Elaboración I1)",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-09-18",
+                  "fechaFin": "2025-09-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 155,
+                      "fechaRegistro": "2025-09-18"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 59,
+                      "fechaRegistro": "2025-09-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 4.03
+                },
+                {
+                  "nombre": "Actividades de Análisis (Elaboración I1)",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-09-12",
+                  "fechaFin": "2025-09-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 86,
+                      "fechaRegistro": "2025-09-18"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 27,
+                      "fechaRegistro": "2025-09-12"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 45,
+                      "fechaRegistro": "2025-09-12"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.71
+                },
+                {
+                  "nombre": "Actividades de Diseño (Elaboración I1)",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-09-16",
+                  "fechaFin": "2025-09-16",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 35,
+                      "fechaRegistro": "2025-09-16"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.06
+                },
+                {
+                  "nombre": "Actividades de Validación y Verificación (Elaboración I1)",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-09-16",
+                  "fechaFin": "2025-09-16",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 26,
+                      "fechaRegistro": "2025-09-16"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Actividades de Codificación (Elaboración I1)",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-09-16",
+                  "fechaFin": "2025-09-16",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 133,
+                      "fechaRegistro": "2025-09-16"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.32
+                },
+                {
+                  "nombre": "Actividades de Análisis (Elaboración I1)",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-09-16",
+                  "fechaFin": "2025-09-16",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 16,
+                      "fechaRegistro": "2025-09-16"
+                    },
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 25,
+                      "fechaRegistro": "2025-09-16"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.01
+                },
+                {
+                  "nombre": "Actividades de Actividades Externas (Elaboración I1)",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-09-16",
+                  "fechaFin": "2025-09-16",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 4,
+                      "fechaRegistro": "2025-09-16"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.5
+                },
+                {
+                  "nombre": "Realizando el documento",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-09-15",
+                  "fechaFin": "2025-09-15",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 90,
+                      "fechaRegistro": "2025-09-15"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.58
+                },
+                {
+                  "nombre": "Actividades de Análisis (Elaboración I1)",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-09-12",
+                  "fechaFin": "2025-09-12",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 195,
+                      "fechaRegistro": "2025-09-12"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.66
+                }
+              ]
+            },
+            {
+              "numero": 2,
+              "fechaInicio": "2025-09-23",
+              "fechaFin": "2025-10-10",
+              "tareas": [
+                {
+                  "nombre": "Identificación y evaluación de riesgos",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-09-23",
+                  "fechaFin": "2025-09-23",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 83,
+                      "fechaRegistro": "2025-09-23"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.34
+                },
+                {
+                  "nombre": "Redefinición de Métricas",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-09-23",
+                  "fechaFin": "2025-09-24",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 100,
+                      "fechaRegistro": "2025-09-24"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.33
+                },
+                {
+                  "nombre": "Redefinición de casos de uso",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-09-23",
+                  "fechaFin": "2025-09-24",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 60,
+                      "fechaRegistro": "2025-09-24"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.66
+                },
+                {
+                  "nombre": "Modelo de Casos de Uso",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-09-24",
+                  "fechaFin": "2025-09-26",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 134,
+                      "fechaRegistro": "2025-09-26"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.94
+                },
+                {
+                  "nombre": "Modelo de Casos de Uso",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-09-24",
+                  "fechaFin": "2025-09-26",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 120,
+                      "fechaRegistro": "2025-09-26"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.34
+                },
+                {
+                  "nombre": "Estudio y análisis de Toggl Track API",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-09-26",
+                  "fechaFin": "2025-09-27",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 48,
+                      "fechaRegistro": "2025-09-27"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Revisión de Modelo de Casos de Uso",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-09-26",
+                  "fechaFin": "2025-09-26",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 20,
+                      "fechaRegistro": "2025-09-26"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.52
+                },
+                {
+                  "nombre": "Estimación Fase Elaboración Iteración 2",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-09-28",
+                  "fechaFin": "2025-09-30",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 180,
+                      "fechaRegistro": "2025-09-28"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 90,
+                      "fechaRegistro": "2025-09-29"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 120,
+                      "fechaRegistro": "2025-09-30"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 4.79
+                },
+                {
+                  "nombre": "Revisión de Estimación Fase Elaboración Iteración 2",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-09-29",
+                  "fechaFin": "2025-09-30",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Presentación 26/09",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-09-26",
+                  "fechaFin": "2025-09-26",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Primer Prototipo Funcional",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-09-26",
+                  "fechaFin": "2025-09-29",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 812,
+                      "fechaRegistro": "2025-09-29"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 12.19
+                },
+                {
+                  "nombre": "Primer Prototipo Funcional",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-09-29",
+                  "fechaFin": "2025-09-30",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 166,
+                      "fechaRegistro": "2025-09-30"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.53
+                },
+                {
+                  "nombre": "Primer Prototipo Funcional",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-09-29",
+                  "fechaFin": "2025-09-30",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 280,
+                      "fechaRegistro": "2025-09-30"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 5.65
+                },
+                {
+                  "nombre": "Presentación 30/09",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-09-30",
+                  "fechaFin": "2025-09-30",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Evaluación de retroalimentación de prototipo",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-09-30",
+                  "fechaFin": "2025-09-30",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.5
+                },
+                {
+                  "nombre": "Capacitación sobre el uso de lenguajes, tecnologías y herramientas a implementar. (Angular)",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-10-01",
+                  "fechaFin": "2025-10-04",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 90,
+                      "fechaRegistro": "2025-10-01"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 180,
+                      "fechaRegistro": "2025-10-04"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 5.19
+                },
+                {
+                  "nombre": "Realización de excel de registro de tiempos y gráficos",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-10-02",
+                  "fechaFin": "2025-10-03",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 340,
+                      "fechaRegistro": "2025-10-03"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 6.22
+                },
+                {
+                  "nombre": "Modelo De Datos (BD)",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-10-01",
+                  "fechaFin": "2025-10-03",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 240,
+                      "fechaRegistro": "2025-10-03"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.46
+                },
+                {
+                  "nombre": "Aprobación Prototipo Funcional",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-10-02",
+                  "fechaFin": "2025-10-02",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Plan de Pruebas",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-09-23",
+                  "fechaFin": "2025-10-07",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 153,
+                      "fechaRegistro": "2025-10-07"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.16
+                },
+                {
+                  "nombre": "Inicio Modelo de Diseño",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-10-04",
+                  "fechaFin": "2025-10-06",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 254,
+                      "fechaRegistro": "2025-10-06"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 4.04
+                },
+                {
+                  "nombre": "Capacitación sobre el uso de lenguajes, tecnologías y herramientas a implementar.",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-10-04",
+                  "fechaFin": "2025-10-04",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Pruebas UARGFlow",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-04",
+                  "fechaFin": "2025-10-04",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Aplicando angular al CU 01",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-09-23",
+                  "fechaFin": "2025-09-23",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 397,
+                      "fechaRegistro": "2025-09-23"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 8.27
+                },
+                {
+                  "nombre": "Implementación UARGFlow Funcional",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-10-05",
+                  "fechaFin": "2025-10-06",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 573,
+                      "fechaRegistro": "2025-10-05"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 180,
+                      "fechaRegistro": "2025-10-06"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 12.82
+                },
+                {
+                  "nombre": "Implementación UARGFlow Funcional",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-10-05",
+                  "fechaFin": "2025-10-05",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 510,
+                      "fechaRegistro": "2025-10-05"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 9.37
+                },
+                {
+                  "nombre": "Implementación UARGFlow Funcional (Video)",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-07",
+                  "fechaFin": "2025-10-07",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 5,
+                      "fechaRegistro": "2025-10-07"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Cierre Fase Elaboración - Iteración 2",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-10",
+                  "fechaFin": "2025-10-10",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 32,
+                      "fechaRegistro": "2025-10-10"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.69
+                },
+                {
+                  "nombre": "Plan de Iteración Fase Construcción Iteración 1",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-10",
+                  "fechaFin": "2025-10-10",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 99,
+                      "fechaRegistro": "2025-10-10"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.44
+                },
+                {
+                  "nombre": "Modelo de Datos (BD)",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-10-02",
+                  "fechaFin": "2025-10-03",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 472,
+                      "fechaRegistro": "2025-10-03"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 9.52
+                },
+                {
+                  "nombre": "Revisión Técnica Formal: Plan de Pruebas",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-07",
+                  "fechaFin": "2025-10-07",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 195,
+                      "fechaRegistro": "2025-10-07"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.17
+                },
+                {
+                  "nombre": "Plan de pruebas",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-06",
+                  "fechaFin": "2025-10-06",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 94,
+                      "fechaRegistro": "2025-10-06"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "nombre": "Construcción",
+          "descripcion": "Implementación y pruebas incrementales del producto",
+          "estado": "COMPLETADA",
+          "fechaInicio": "2025-10-11",
+          "fechaFin": "2025-11-18",
+          "iteraciones": [
+            {
+              "numero": 1,
+              "fechaInicio": "2025-10-11",
+              "fechaFin": "2025-10-28",
+              "tareas": [
+                {
+                  "nombre": "Modelo Arquitectónico",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-13",
+                  "fechaFin": "2025-10-14",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 275,
+                      "fechaRegistro": "2025-10-14"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 4.11
+                },
+                {
+                  "nombre": "Riesgos",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-10-14",
+                  "fechaFin": "2025-10-14",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 68,
+                      "fechaRegistro": "2025-10-14"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.22
+                },
+                {
+                  "nombre": "Prototipo Final",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-10-13",
+                  "fechaFin": "2025-10-14",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 720,
+                      "fechaRegistro": "2025-10-14"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 13.59
+                },
+                {
+                  "nombre": "Modelo Arquitectónico",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-13",
+                  "fechaFin": "2025-10-14",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 49,
+                      "fechaRegistro": "2025-10-14"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.72
+                },
+                {
+                  "nombre": "Modelo Arquitectónico",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-13",
+                  "fechaFin": "2025-10-14",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 43,
+                      "fechaRegistro": "2025-10-14"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Modelo Arquitectónico",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-13",
+                  "fechaFin": "2025-10-14",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 90,
+                      "fechaRegistro": "2025-10-14"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Revisión de Modelo Arquitectónico",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-11",
+                  "fechaFin": "2025-10-14",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Revisión de Modelo de Diseño (Clases y Componentes)",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-16",
+                  "fechaFin": "2025-10-17",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Modelo de Diseño (Clases y Componentes)",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-10-15",
+                  "fechaFin": "2025-10-17",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 443,
+                      "fechaRegistro": "2025-10-17"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 8.41
+                },
+                {
+                  "nombre": "Modelo de Diseño (Clases y Componentes)",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-10-15",
+                  "fechaFin": "2025-10-17",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 347,
+                      "fechaRegistro": "2025-10-17"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 6.51
+                },
+                {
+                  "nombre": "Definir 1° tanda de Casos de Uso que se van a priorizar",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-10-18",
+                  "fechaFin": "2025-10-20",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Priorización e Inicio del Diseño – 1° tanda Casos de Uso",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-10-18",
+                  "fechaFin": "2025-10-21",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 335,
+                      "fechaRegistro": "2025-10-21"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 5.84
+                },
+                {
+                  "nombre": "Especificación de CU 12",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-10-22",
+                  "fechaFin": "2025-10-24",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 81,
+                      "fechaRegistro": "2025-10-24"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.64
+                },
+                {
+                  "nombre": "Revisión de Especificación de CU 09 y 20",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-23",
+                  "fechaFin": "2025-10-24",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 21,
+                      "fechaRegistro": "2025-10-24"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Implementación del Modelo de Datos",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-10-22",
+                  "fechaFin": "2025-10-24",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Revisión de Casos de Prueba asociados a la 1° tanda de Casos de Uso a implementar",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-27",
+                  "fechaFin": "2025-10-28",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Mejora dashboard prototipo",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-10-17",
+                  "fechaFin": "2025-10-17",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 153,
+                      "fechaRegistro": "2025-10-17"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "contenido": "fuera de planificación",
+                      "fechaComentario": "2025-10-17"
+                    }
+                  ],
+                  "horasEstimadas": 2.31
+                },
+                {
+                  "nombre": "Estimación",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-10-11",
+                  "fechaFin": "2025-10-11",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 30,
+                      "fechaRegistro": "2025-10-11"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Diagrama de Componentes",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-10-16",
+                  "fechaFin": "2025-10-16",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 45,
+                      "fechaRegistro": "2025-10-16"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.78
+                },
+                {
+                  "nombre": "Modificación de excel para gráfico de registro de tiempos",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-10-20",
+                  "fechaFin": "2025-10-21",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 280,
+                      "fechaRegistro": "2025-10-21"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "contenido": "Fuera de planificación",
+                      "fechaComentario": "2025-10-21"
+                    }
+                  ],
+                  "horasEstimadas": 5.61
+                },
+                {
+                  "nombre": "Creación y modificación de gráficos obligatorios",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-10-17",
+                  "fechaFin": "2025-10-17",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 60,
+                      "fechaRegistro": "2025-10-17"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "contenido": "Fuera de planificación",
+                      "fechaComentario": "2025-10-17"
+                    }
+                  ],
+                  "horasEstimadas": 1.36
+                },
+                {
+                  "nombre": "Reunión 24/10",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-10-23",
+                  "fechaFin": "2025-10-23",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 155,
+                      "fechaRegistro": "2025-10-23"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.61
+                },
+                {
+                  "nombre": "Reunión 24/10",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-10-23",
+                  "fechaFin": "2025-10-23",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 155,
+                      "fechaRegistro": "2025-10-23"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.02
+                },
+                {
+                  "nombre": "Reunión 24/10",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-10-23",
+                  "fechaFin": "2025-10-23",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 155,
+                      "fechaRegistro": "2025-10-23"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.95
+                },
+                {
+                  "nombre": "Reunión 24/10",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-10-23",
+                  "fechaFin": "2025-10-23",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 155,
+                      "fechaRegistro": "2025-10-23"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.66
+                },
+                {
+                  "nombre": "Especificación de Caso de Uso 20",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-24",
+                  "fechaFin": "2025-10-24",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 143,
+                      "fechaRegistro": "2025-10-24"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.92
+                },
+                {
+                  "nombre": "Especifcación de Caso de Uso 09",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-23",
+                  "fechaFin": "2025-10-24",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 106,
+                      "fechaRegistro": "2025-10-24"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.05
+                },
+                {
+                  "nombre": "Riesgos 24/10",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-10-24",
+                  "fechaFin": "2025-10-24",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 88,
+                      "fechaRegistro": "2025-10-24"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.08
+                },
+                {
+                  "nombre": "Caso de prueba 12 estimar tarea",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-25",
+                  "fechaFin": "2025-10-25",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 10,
+                      "fechaRegistro": "2025-10-25"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "CU20: Registrar tiempo por cronometro",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-10-24",
+                  "fechaFin": "2025-10-26",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 65,
+                      "fechaRegistro": "2025-10-24"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 324,
+                      "fechaRegistro": "2025-10-25"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 373,
+                      "fechaRegistro": "2025-10-26"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 12.51
+                },
+                {
+                  "nombre": "CU20: Registrar tiempo por cronometro",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-10-27",
+                  "fechaFin": "2025-10-27",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 158,
+                      "fechaRegistro": "2025-10-27"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.54
+                },
+                {
+                  "nombre": "Casos de prueba CU09,CU12,CU20",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-27",
+                  "fechaFin": "2025-10-28",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 195,
+                      "fechaRegistro": "2025-10-28"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 4.0
+                },
+                {
+                  "nombre": "Casos de prueba CU09,CU12,CU20",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-27",
+                  "fechaFin": "2025-10-28",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 270,
+                      "fechaRegistro": "2025-10-28"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 4.03
+                },
+                {
+                  "nombre": "Revisión casos de prueba",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-27",
+                  "fechaFin": "2025-10-28",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 22,
+                      "fechaRegistro": "2025-10-28"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "CU09: Crear tarea, CU12: Estimas tarea",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-10-26",
+                  "fechaFin": "2025-10-27",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 914,
+                      "fechaRegistro": "2025-10-27"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 13.95
+                },
+                {
+                  "nombre": "Ejecución de Casos de prueba 1° Tanda",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-28",
+                  "fechaFin": "2025-10-28",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 125,
+                      "fechaRegistro": "2025-10-28"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.91
+                },
+                {
+                  "nombre": "Estimacion ajustes",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-27",
+                  "fechaFin": "2025-10-27",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 94,
+                      "fechaRegistro": "2025-10-27"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.31
+                },
+                {
+                  "nombre": "Cierre iteración",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-28",
+                  "fechaFin": "2025-10-28",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 40,
+                      "fechaRegistro": "2025-10-28"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                }
+              ]
+            },
+            {
+              "numero": 2,
+              "fechaInicio": "2025-10-29",
+              "fechaFin": "2025-11-07",
+              "tareas": [
+                {
+                  "nombre": "Priorización e Inicio Diseño 2º Tanda Casos de Uso",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-10-29",
+                  "fechaFin": "2025-10-31",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 24,
+                      "fechaRegistro": "2025-10-31"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Revisión documento priorizacion CU2",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-10-30",
+                  "fechaFin": "2025-10-30",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 5,
+                      "fechaRegistro": "2025-10-30"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Ajustar documentos en la rama main",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-10-31",
+                  "fechaFin": "2025-10-31",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 10,
+                      "fechaRegistro": "2025-10-31"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Especificación de CU13: Asignar dependencia / CU14: Modificar estado de tarea",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-02",
+                  "fechaFin": "2025-11-04",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 103,
+                      "fechaRegistro": "2025-11-04"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.27
+                },
+                {
+                  "nombre": "Revisión Especificación CU13 y CU14",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-04",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 6,
+                      "fechaRegistro": "2025-11-04"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Especificación de CU15: Visualizar Tarea / CU16: Comentar Tarea",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-02",
+                  "fechaFin": "2025-11-04",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 224,
+                      "fechaRegistro": "2025-11-04"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.93
+                },
+                {
+                  "nombre": "Revisión de CU13 y CU14",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-04",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Especificación de CU07: Crear Etapa",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-02",
+                  "fechaFin": "2025-11-04",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 63,
+                      "fechaRegistro": "2025-11-04"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.57
+                },
+                {
+                  "nombre": "Revisión Especificación CU07 crear etapa",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-04",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.5
+                },
+                {
+                  "nombre": "Especificación de CU08: Crear Iteración",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-02",
+                  "fechaFin": "2025-11-04",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 34,
+                      "fechaRegistro": "2025-11-04"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.95
+                },
+                {
+                  "nombre": "Revisión Especificación CU08 crear etapa",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-04",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.5
+                },
+                {
+                  "nombre": "Revisión Especificación CU15 y CU16",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-04",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Especificación de CU21: Registrar tiempo manual",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-02",
+                  "fechaFin": "2025-11-04",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 95,
+                      "fechaRegistro": "2025-11-04"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.7
+                },
+                {
+                  "nombre": "Revisión Especificación CU21",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-04",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Implementación CU13 Asignar dependencia",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-11-03",
+                  "fechaFin": "2025-11-03",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 276,
+                      "fechaRegistro": "2025-11-03"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.77
+                },
+                {
+                  "nombre": "Implementación CU14 Modificar estado tarea",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-11-03",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 210,
+                      "fechaRegistro": "2025-11-07"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.47
+                },
+                {
+                  "nombre": "Implementación CU15 visualizar tarea",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-11-03",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 278,
+                      "fechaRegistro": "2025-11-07"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.77
+                },
+                {
+                  "nombre": "Implementación CU16 comentar tarea",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-10-29",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 420,
+                      "fechaRegistro": "2025-11-07"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 8.04
+                },
+                {
+                  "nombre": "Implementación CU21 registrar tiempo manual",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-11-01",
+                  "fechaFin": "2025-11-06",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 668,
+                      "fechaRegistro": "2025-11-06"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 12.2
+                },
+                {
+                  "nombre": "Implementación CU07 crear etapa",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-10-29",
+                  "fechaFin": "2025-10-29",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 390,
+                      "fechaRegistro": "2025-10-29"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "contenido": "no planificado",
+                      "fechaComentario": "2025-10-29"
+                    }
+                  ],
+                  "horasEstimadas": 5.01
+                },
+                {
+                  "nombre": "Implemntación CU08 crear iteracion",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-11-02",
+                  "fechaFin": "2025-11-02",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 325,
+                      "fechaRegistro": "2025-11-02"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "contenido": "no planificado",
+                      "fechaComentario": "2025-11-02"
+                    }
+                  ],
+                  "horasEstimadas": 5.37
+                },
+                {
+                  "nombre": "Definición casos de prueba para CU Gestionar tareas",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-06",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Definición casos de prueba para los CU07 Crear etapa, CU08 Crear iteración",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-06",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.5
+                },
+                {
+                  "nombre": "Definición casos de prueba para los CU21 Registrar tiempo manual",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-06",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Ejecución de Casos de prueba de CU07: Crear Etapa / CU08: Crear Iteración",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 93,
+                      "fechaRegistro": "2025-11-07"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.48
+                },
+                {
+                  "nombre": "Revisión Casos de Prueba 07, 08",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-07",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Ejecución de Casos de prueba de CU13: Asignar dependencia / CU14: Modificar estado de tarea",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 165,
+                      "fechaRegistro": "2025-11-07"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.18
+                },
+                {
+                  "nombre": "Revisión Casos de Prueba CU13, CU14",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-07",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Ejecución de Casos de prueba de CU15: Visualizar Tarea / CU16: Comentar Tarea",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 168,
+                      "fechaRegistro": "2025-11-07"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.79
+                },
+                {
+                  "nombre": "Revisión Casos de Prueba CU15, CU16",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-07",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 10,
+                      "fechaRegistro": "2025-11-07"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Ejecución de Casos de prueba de CU21: Registrar tiempo manual",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-04",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 60,
+                      "fechaRegistro": "2025-11-07"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.94
+                },
+                {
+                  "nombre": "Revisión Caso de Prueba CU21",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-07",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Cierre Fase Construcción Iteración 2",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-11-06",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Revisión Cierre de Fase",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-07",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Plan de Iteración 3 Fase Construcción con Estimación y Gestión de Riesgos",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-11-06",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Revisión Plan de Iteración",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-07",
+                  "fechaFin": "2025-11-07",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                }
+              ]
+            },
+            {
+              "numero": 3,
+              "fechaInicio": "2025-11-08",
+              "fechaFin": "2025-11-18",
+              "tareas": [
+                {
+                  "nombre": "Especificación CU22: Ver reporte",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 43,
+                      "fechaRegistro": "2025-11-08"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.55
+                },
+                {
+                  "nombre": "Manual de instalación",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 71,
+                      "fechaRegistro": "2025-11-08"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "contenido": "No planificado",
+                      "fechaComentario": "2025-11-08"
+                    }
+                  ],
+                  "horasEstimadas": 1.27
+                },
+                {
+                  "nombre": "Codificación CU18 - CU19",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-11-10",
+                  "fechaFin": "2025-11-11",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 1693,
+                      "fechaRegistro": "2025-11-11"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 27.14
+                },
+                {
+                  "nombre": "Inicio manual de usuario",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 65,
+                      "fechaRegistro": "2025-11-08"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.8
+                },
+                {
+                  "nombre": "Codificación CU22",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-11",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 1102,
+                      "fechaRegistro": "2025-11-11"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 16.65
+                },
+                {
+                  "nombre": "Codificación CU 05 y 06",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 991,
+                      "fechaRegistro": "2025-11-08"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 17.04
+                },
+                {
+                  "nombre": "Codificación CU 03, 04, 17 y 23",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 1650,
+                      "fechaRegistro": "2025-11-08"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 26.42
+                },
+                {
+                  "nombre": "Especificacion de CUs",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-11",
+                  "fechaFin": "2025-11-11",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 42,
+                      "fechaRegistro": "2025-11-11"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.11
+                },
+                {
+                  "nombre": "Especificacion de CUs",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 85,
+                      "fechaRegistro": "2025-11-08"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.78
+                },
+                {
+                  "nombre": "Ejecución casos de prueba CU05 crear proyecto",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 205,
+                      "fechaRegistro": "2025-11-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.56
+                },
+                {
+                  "nombre": "Ejecución casos de prueba CU03 Asignar Rol",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 88,
+                      "fechaRegistro": "2025-11-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.2
+                },
+                {
+                  "nombre": "Ejecución casos de prueba CU04 Modificar perfil",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 55,
+                      "fechaRegistro": "2025-11-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.09
+                },
+                {
+                  "nombre": "Casos de prueba 3ra tanda",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 445,
+                      "fechaRegistro": "2025-11-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 6.27
+                },
+                {
+                  "nombre": "Revisión cp 18",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Revisión cp 19",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Revisión cp 22",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Revisión cp 23",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Revisión cp 06",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Prototipo pdf exportar info grafico horas x iteracion",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Prototipo pdf exportar info grafico ejecuucion vs estimación",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Prototipo pdf exportar info grafico hotas x categoria",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Prototipo pdf exportar info grafico general (todo)",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Prototipo pdf exportar info excel",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Diseño",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.5
+                },
+                {
+                  "nombre": "Cierre de iteracion",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-11-18",
+                  "fechaFin": "2025-11-18",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 35,
+                      "fechaRegistro": "2025-11-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 0.51
+                },
+                {
+                  "nombre": "Planificacion post cursada",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-11-08",
+                  "fechaFin": "2025-11-08",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "nombre": "Transición",
+          "descripcion": "Despliegue, pruebas integrales, cierre y memoria del proyecto",
+          "estado": "COMPLETADA",
+          "fechaInicio": "2025-11-19",
+          "fechaFin": "2026-12-18",
+          "iteraciones": [
+            {
+              "numero": 0,
+              "fechaInicio": "2025-11-19",
+              "fechaFin": "2025-11-28",
+              "tareas": []
+            },
+            {
+              "numero": 1,
+              "fechaInicio": "2025-12-18",
+              "fechaFin": "2025-12-22",
+              "tareas": [
+                {
+                  "nombre": "Implementación CU02 Exportar Información.",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-12-18",
+                  "fechaFin": "2025-12-21",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 495,
+                      "fechaRegistro": "2025-12-21"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 10.0
+                },
+                {
+                  "nombre": "Revisión de documentos en búsqueda de inconsistencias y errores.",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-12-18",
+                  "fechaFin": "2025-12-19",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 71,
+                      "fechaRegistro": "2025-12-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.42
+                },
+                {
+                  "nombre": "Documentar revisión",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-12-18",
+                  "fechaFin": "2025-12-19",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 104,
+                      "fechaRegistro": "2025-12-19"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.42
+                },
+                {
+                  "nombre": "Corrección de defectos en documentos.",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-12-20",
+                  "fechaFin": "2025-12-21",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 3.5
+                },
+                {
+                  "nombre": "Revisión de correcciones y aprobación de los documentos.",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-12-21",
+                  "fechaFin": "2025-12-21",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Ejecución de casos de prueba para el CU02 Exportar Información.",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-12-21",
+                  "fechaFin": "2025-12-22",
+                  "estado": "Pendiente",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 60,
+                      "fechaRegistro": "2025-12-22"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Funcionalidades extras en el CU22: Ver Reporte",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2025-12-20",
+                  "fechaFin": "2025-12-21",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 40,
+                      "fechaRegistro": "2025-12-21"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 4.0
+                },
+                {
+                  "nombre": "Ejecución de casos de pruebas en funcionalidades extras CU22: Ver reporte",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2025-12-21",
+                  "fechaFin": "2025-12-22",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 3.0
+                },
+                {
+                  "nombre": "Refinar planificación iteracion 2",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-12-22",
+                  "fechaFin": "2025-12-22",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "contenido": "Recordar especificar tareas correspondientes al desarrollo de la memoria",
+                      "fechaComentario": "2025-12-22"
+                    }
+                  ],
+                  "horasEstimadas": 0.42
+                },
+                {
+                  "nombre": "Preparar información y documentación para la memoria",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2025-12-18",
+                  "fechaFin": "2025-12-18",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Memoria del proyecto",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-12-18",
+                  "fechaFin": "2025-12-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 120,
+                      "fechaRegistro": "2025-12-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Casos de Prueba flujo integral",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2025-12-18",
+                  "fechaFin": "2025-12-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 78,
+                      "fechaRegistro": "2025-12-18"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 50,
+                      "fechaRegistro": "2025-12-18"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 59,
+                      "fechaRegistro": "2025-12-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.46
+                }
+              ]
+            },
+            {
+              "numero": 2,
+              "fechaInicio": "2026-01-20",
+              "fechaFin": "2026-02-03",
+              "tareas": [
+                {
+                  "nombre": "Estimación Iteración 2",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2026-01-20",
+                  "fechaFin": "2026-01-21",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Gestión de riesgos",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Análisis",
+                  "fechaCreacion": "2026-01-20",
+                  "fechaFin": "2026-01-21",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Revisar y documentar errores en documentos de la etapa de Elaboración I1",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-01-20",
+                  "fechaFin": "2026-01-20",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 3.0
+                },
+                {
+                  "nombre": "Revisar y documentar errores en documentos de la etapa de Elaboración I2",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-01-20",
+                  "fechaFin": "2026-01-21",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.5
+                },
+                {
+                  "nombre": "Manual de instalación",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-01-20",
+                  "fechaFin": "2026-01-25",
+                  "estado": "Pendiente",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 180,
+                      "fechaRegistro": "2026-01-25"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.38
+                },
+                {
+                  "nombre": "Revisar y documentar errores en documentos de la etapa de Construcción I1",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-01-21",
+                  "fechaFin": "2026-01-21",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Revisar y documentar errores en documentos de la etapa de Construcción I2",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-01-21",
+                  "fechaFin": "2026-01-22",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Revisar y documentar errores en documentos de la etapa de Construcción I3",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-01-22",
+                  "fechaFin": "2026-01-22",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Fraccionar Manual de usuario en funcionalidades",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-01-24",
+                  "fechaFin": "2026-01-24",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Grabar y editar videos faltantes del Manual de usuario",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-01-25",
+                  "fechaFin": "2026-01-26",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 8.0
+                },
+                {
+                  "nombre": "Escribir texto de apoyo para funcionalidades Manual de usuario",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-01-27",
+                  "fechaFin": "2026-01-28",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Revisar texto y contenido audiovisual del Manual de usuario",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-01-29",
+                  "fechaFin": "2026-01-29",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Implementación del Manual de usuario en el sistema Kairos",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2026-02-01",
+                  "fechaFin": "2026-02-03",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Revisión de la implementación del manual de usuario",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-02-03",
+                  "fechaFin": "2026-02-03",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Ejecución casos prueba CU: 10 - 11",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-02-03",
+                  "fechaFin": "2026-02-03",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Revisar documentos y corregir errores encontrados",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-01-21",
+                  "fechaFin": "2026-01-27",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 181,
+                      "fechaRegistro": "2026-01-27"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "contenido": "No planificado",
+                      "fechaComentario": "2026-01-27"
+                    }
+                  ],
+                  "horasEstimadas": 2.38
+                },
+                {
+                  "nombre": "Solicitar de reunión / Presentación de avance",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Actividades Externas",
+                  "fechaCreacion": "2026-01-20",
+                  "fechaFin": "2026-01-20",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                }
+              ]
+            },
+            {
+              "numero": 3,
+              "fechaInicio": "2026-06-03",
+              "fechaFin": "2026-06-18",
+              "tareas": [
+                {
+                  "nombre": "Casos de Prueba flujo integral",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-06-04",
+                  "fechaFin": "2026-06-11",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 78,
+                      "fechaRegistro": "2026-06-04"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 50,
+                      "fechaRegistro": "2026-06-10"
+                    },
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 59,
+                      "fechaRegistro": "2026-06-11"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.62
+                },
+                {
+                  "nombre": "Memoria del proyecto",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-06-10",
+                  "fechaFin": "2026-06-10",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 91,
+                      "fechaRegistro": "2026-06-10"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.36
+                }
+              ]
+            },
+            {
+              "numero": 4,
+              "fechaInicio": "2026-08-05",
+              "fechaFin": "2026-08-18",
+              "tareas": []
+            },
+            {
+              "numero": 5,
+              "fechaInicio": "2026-09-15",
+              "fechaFin": "2026-09-28",
+              "tareas": [
+                {
+                  "nombre": "Memoria del proyecto",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-09-28",
+                  "fechaFin": "2026-09-28",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 93,
+                      "fechaRegistro": "2026-09-28"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.44
+                },
+                {
+                  "nombre": "Estimacion",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-09-15",
+                  "fechaFin": "2026-09-15",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 138,
+                      "fechaRegistro": "2026-09-15"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.02
+                }
+              ]
+            },
+            {
+              "numero": 6,
+              "fechaInicio": "2026-11-05",
+              "fechaFin": "2026-11-18",
+              "tareas": [
+                {
+                  "nombre": "Memoria del proyecto - Etapa Elaboracion",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-11-12",
+                  "fechaFin": "2026-11-12",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 120,
+                      "fechaRegistro": "2026-11-12"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Memoria del proyecto - Sección Planificaciones",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-11-08",
+                  "fechaFin": "2026-11-11",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 100,
+                      "fechaRegistro": "2026-11-11"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Memoria del proyecto",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-11-05",
+                  "fechaFin": "2026-11-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 103,
+                      "fechaRegistro": "2026-11-10"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 65,
+                      "fechaRegistro": "2026-11-11"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 104,
+                      "fechaRegistro": "2026-11-16"
+                    },
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 204,
+                      "fechaRegistro": "2026-11-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 8.13
+                },
+                {
+                  "nombre": "Memoria del proyecto - Sección Métricas",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-11-12",
+                  "fechaFin": "2026-11-17",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "agus0.0maldonado@gmail.com",
+                      "duracionMinutos": 330,
+                      "fechaRegistro": "2026-11-17"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Corrección de incidencias",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2026-11-05",
+                  "fechaFin": "2026-11-11",
+                  "estado": "Completado",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 0.5
+                },
+                {
+                  "nombre": "Corrección de incidencias",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2026-11-05",
+                  "fechaFin": "2026-11-05",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "guilleh114@gmail.com",
+                      "duracionMinutos": 85,
+                      "fechaRegistro": "2026-11-05"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.0
+                },
+                {
+                  "nombre": "Memoria del proyecto - Sección Resumen de etapas: Construcción y Transición",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-11-18",
+                  "fechaFin": "2026-11-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 120,
+                      "fechaRegistro": "2026-11-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 2.3
+                },
+                {
+                  "nombre": "Memoria del Proyecto: conclusión pipi",
+                  "responsableEmail": "agus0.0maldonado@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-11-05",
+                  "fechaFin": "2026-11-05",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Memoria del Proyecto: conclusión gonza",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-11-05",
+                  "fechaFin": "2026-11-05",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Memoria del Proyecto: conclusión vale",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-11-05",
+                  "fechaFin": "2026-11-05",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Memoria del Proyecto: conclusión guille",
+                  "responsableEmail": "guilleh114@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-11-05",
+                  "fechaFin": "2026-11-05",
+                  "estado": "Pendiente",
+                  "tiempos": [],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Memoria del Proyecto: conclusión flor",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-11-18",
+                  "fechaFin": "2026-11-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 35,
+                      "fechaRegistro": "2026-11-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.0
+                },
+                {
+                  "nombre": "Revisión de la memoria",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-11-18",
+                  "fechaFin": "2026-11-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 74,
+                      "fechaRegistro": "2026-11-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.27
+                }
+              ]
+            },
+            {
+              "numero": 99,
+              "fechaInicio": "2026-02-26",
+              "fechaFin": "2026-12-18",
+              "tareas": [
+                {
+                  "nombre": "Revisar documentos y corregir errores encontrados",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-02-26",
+                  "fechaFin": "2026-03-09",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 197,
+                      "fechaRegistro": "2026-02-26"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 28,
+                      "fechaRegistro": "2026-02-27"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 136,
+                      "fechaRegistro": "2026-03-05"
+                    },
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 181,
+                      "fechaRegistro": "2026-03-09"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "contenido": "No planificado",
+                      "fechaComentario": "2026-02-26"
+                    }
+                  ],
+                  "horasEstimadas": 7.09
+                },
+                {
+                  "nombre": "Caso de uso 10: Proponer tarea",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2026-03-10",
+                  "fechaFin": "2026-04-08",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 992,
+                      "fechaRegistro": "2026-04-08"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 14.91
+                },
+                {
+                  "nombre": "Caso de uso 11: Aprobar tarea",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2026-04-08",
+                  "fechaFin": "2026-04-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 525,
+                      "fechaRegistro": "2026-04-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 9.76
+                },
+                {
+                  "nombre": "Agregado al caso de uso 21: Registrar tiempo manual",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2026-04-18",
+                  "fechaFin": "2026-04-18",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 90,
+                      "fechaRegistro": "2026-04-18"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 1.24
+                },
+                {
+                  "nombre": "Pruebas CU10,CU11 Y CU21",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-04-25",
+                  "fechaFin": "2026-04-25",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 90,
+                      "fechaRegistro": "2026-04-25"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "contenido": "No planificado",
+                      "fechaComentario": "2026-04-25"
+                    }
+                  ],
+                  "horasEstimadas": 1.41
+                },
+                {
+                  "nombre": "Pruebas CU10,CU11 Y CU22",
+                  "responsableEmail": "esstefaniamendez@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-05-27",
+                  "fechaFin": "2026-05-27",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "duracionMinutos": 34,
+                      "fechaRegistro": "2026-05-27"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "esstefaniamendez@gmail.com",
+                      "contenido": "No planificado",
+                      "fechaComentario": "2026-05-27"
+                    }
+                  ],
+                  "horasEstimadas": 0.55
+                },
+                {
+                  "nombre": "Casos de Prueba: Integración del Sistema",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Validación y Verificación",
+                  "fechaCreacion": "2026-05-27",
+                  "fechaFin": "2026-05-27",
+                  "estado": "En Progreso",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 101,
+                      "fechaRegistro": "2026-05-27"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "contenido": "No planificado",
+                      "fechaComentario": "2026-05-27"
+                    }
+                  ],
+                  "horasEstimadas": 2.41
+                },
+                {
+                  "nombre": "Manual de usuario dentro del sistema kairos",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2026-03-20",
+                  "fechaFin": "2026-03-21",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 300,
+                      "fechaRegistro": "2026-03-21"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 5.8
+                },
+                {
+                  "nombre": "Manual de usuario web",
+                  "responsableEmail": "centurionvaleria6@gmail.com",
+                  "categoria": "Codificación",
+                  "fechaCreacion": "2026-03-20",
+                  "fechaFin": "2026-03-20",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "centurionvaleria6@gmail.com",
+                      "duracionMinutos": 210,
+                      "fechaRegistro": "2026-03-20"
+                    }
+                  ],
+                  "comentarios": [],
+                  "horasEstimadas": 3.0
+                },
+                {
+                  "nombre": "Memoria del proyecto",
+                  "responsableEmail": "gonzaloalejandrou@gmail.com",
+                  "categoria": "Documentación",
+                  "fechaCreacion": "2026-04-03",
+                  "fechaFin": "2026-04-03",
+                  "estado": "Completado",
+                  "tiempos": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "duracionMinutos": 205,
+                      "fechaRegistro": "2026-04-03"
+                    }
+                  ],
+                  "comentarios": [
+                    {
+                      "usuarioEmail": "gonzaloalejandrou@gmail.com",
+                      "contenido": "No planificado",
+                      "fechaComentario": "2026-04-03"
+                    }
+                  ],
+                  "horasEstimadas": 2.75
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

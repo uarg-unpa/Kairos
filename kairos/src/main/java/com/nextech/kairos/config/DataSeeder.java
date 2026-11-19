@@ -2,12 +2,9 @@ package com.nextech.kairos.config;
 
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -18,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.nextech.kairos.model.Categoria;
 import com.nextech.kairos.model.Comentario;
 import com.nextech.kairos.model.EstadoEtapa;
@@ -45,6 +41,7 @@ import com.nextech.kairos.repository.UsuarioRepository;
 public class DataSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
+    private static final String JSON_PATH = "/data/kairos_nextech_data.json";
 
     private final ProyectoRepository proyectoRepository;
     private final EtapaRepository etapaRepository;
@@ -84,18 +81,12 @@ public class DataSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         if (etapaRepository.count() > 0) {
-            log.info("DataSeeder: datos existentes, verificando MetricFlow SQA...");
-            checkAndSeedMetricFlowIfOldOrMissing();
+            log.info("DataSeeder: ya existen datos cargados en la base de datos.");
             return;
         }
 
-        log.info("DataSeeder: sembrando datos de ejemplo completos del sistema Kairos");
-
         Rol rolUsuarioComun = createOrGetRol("Usuario Común");
-
-        createAllProjects(rolUsuarioComun);
-
-        log.info("DataSeeder: datos de ejemplo creados exitosamente");
+        seedKairosFromJson(rolUsuarioComun);
     }
 
     private Rol createOrGetRol(String nombre) {
@@ -103,325 +94,151 @@ public class DataSeeder implements CommandLineRunner {
                 .orElseGet(() -> rolRepository.save(new Rol(nombre)));
     }
 
-    private void createAllProjects(Rol rolUsuarioComun) {
-        //1: Kairos (NexTech)
-        createKairosProject(rolUsuarioComun);
-        //2: GRCU Manager (4 Bytes)
-        createGRCUManagerProject(rolUsuarioComun);
-
-        //3: MetricFlow SQA (CoDevIT)
-        createMetricFlowProject(rolUsuarioComun);
-
-        //4: Vesta Risk Manager (T-Code)
-        createVestaRiskProject(rolUsuarioComun);
-
-        //5-8:proyectos inventados
-        createInventedProjects(rolUsuarioComun);
-    }
-
-    private void createKairosProject(Rol rolUsuarioComun) {
-        Proyecto proyecto = new Proyecto();
-        proyecto.setNombre("Kairos");
-        proyecto.setEquipo("NexTech");
-        proyecto.setDescripcion("Sistema de planificación de proyectos, registro de tiempos y visualización del avance");
-        proyecto.setEstado("En Progreso");
-        proyecto.setFechaInicio(LocalDate.of(2025, 8, 1));
-        proyecto.setLogo("Kairos Logo.png");
-        proyecto = proyectoRepository.save(proyecto);
-
-        Usuario gonzalo = createUser("Gonzalo Ulloa", "gonzaloalejandrou@gmail.com", rolUsuarioComun);
-        Usuario guillermo = createUser("Guillermo Escalante", "guilleh114@gmail.com", rolUsuarioComun);
-        Usuario valeria = createUser("Valeria Centurión", "centurionvaleria6@gmail.com", rolUsuarioComun);
-        Usuario agustina = createUser("Agustina Maldonado", "agus0.0maldonado@gmail.com", rolUsuarioComun);
-        Usuario florencia = createUser("Florencia Mendez", "esstefaniamendez@gmail.com", rolUsuarioComun);
-
-        createUsuarioProyecto(gonzalo, proyecto, "Líder");
-        createUsuarioProyecto(guillermo, proyecto, "Analista");
-        createUsuarioProyecto(valeria, proyecto, "Programador");
-        createUsuarioProyecto(agustina, proyecto, "Documentador");
-        createUsuarioProyecto(florencia, proyecto, "Gerente de Calidad");
-
-        Set<Categoria> categorias = createCategorias(proyecto);
-
-        createStagesAndIterations(proyecto, categorias, Arrays.asList(gonzalo, guillermo, valeria, agustina, florencia));
-    }
-
-    private void createGRCUManagerProject(Rol rolUsuarioComun) {
-        Proyecto proyecto = new Proyecto();
-        proyecto.setNombre("GRCU Manager");
-        proyecto.setEquipo("4 Bytes");
-        proyecto.setDescripcion("Sistema de gestión de requerimientos y casos de uso");
-        proyecto.setEstado("En Progreso");
-        proyecto.setFechaInicio(LocalDate.of(2025, 8, 1));
-        proyecto = proyectoRepository.save(proyecto);
-
-        Usuario cristian = createUser("Cristian Carranza", "cristian.carranza@gmail.com", rolUsuarioComun);
-        Usuario abril = createUser("Abril Alvarez", "abril.alvarez@gmail.com", rolUsuarioComun);
-        Usuario martina = createUser("Martina Gagna", "martina.gagna@gmail.com", rolUsuarioComun);
-        Usuario nicolas = createUser("Nicolas Butterfield", "nicolas.butterfield@gmail.com", rolUsuarioComun);
-
-        createUsuarioProyecto(cristian, proyecto, "Líder");
-        createUsuarioProyecto(abril, proyecto, "Documentador");
-        createUsuarioProyecto(martina, proyecto, "Gerente de Calidad");
-        createUsuarioProyecto(nicolas, proyecto, "Programador");
-
-        Set<Categoria> categorias = createCategorias(proyecto);
-        createStagesAndIterations(proyecto, categorias, Arrays.asList(cristian, abril, martina, nicolas));
-    }
-
-    private void createMetricFlowProject(Rol rolUsuarioComun) {
-        Proyecto proyecto = new Proyecto();
-        proyecto.setNombre("MetricFlow SQA");
-        proyecto.setEquipo("CoDevIT");
-        proyecto.setDescripcion("Sistema de análisis y gestión de métricas de calidad");
-        proyecto.setEstado("Completado");
-        proyecto.setFechaInicio(LocalDate.of(2025, 8, 22));
-        proyecto.setFechaFin(LocalDate.of(2026, 2, 6));
-        proyecto = proyectoRepository.save(proyecto);
-
-        Usuario ezequiel = createUser("Ezequiel Mansilla", "ezequiel.mansilla@gmail.com", rolUsuarioComun);
-        Usuario fabricio = createUser("Fabricio Nuñez", "fabricio.nunez@gmail.com", rolUsuarioComun);
-        Usuario santiago = createUser("Santiago Pacheco", "santiago.pacheco@gmail.com", rolUsuarioComun);
-        Usuario lorenzo = createUser("Lorenzo Teppa", "lorenzo.teppa@gmail.com", rolUsuarioComun);
-        Usuario malcolm = createUser("Malcolm Salazar", "malcolm.salazar@gmail.com", rolUsuarioComun);
-
-        createUsuarioProyecto(ezequiel, proyecto, "Líder");
-        createUsuarioProyecto(fabricio, proyecto, "Gerente de Calidad");
-        createUsuarioProyecto(santiago, proyecto, "Analista");
-        createUsuarioProyecto(lorenzo, proyecto, "Programador");
-        createUsuarioProyecto(malcolm, proyecto, "Documentador");
-
-        seedMetricFlowFromData(proyecto, Arrays.asList(ezequiel, fabricio, santiago, lorenzo, malcolm));
-    }
-
-    private void checkAndSeedMetricFlowIfOldOrMissing() {
-        Optional<Proyecto> metricOpt = proyectoRepository.findByNombre("MetricFlow SQA");
-        if (metricOpt.isEmpty()) {
-            return;
-        }
-        Proyecto proyecto = metricOpt.get();
-        List<Etapa> etapas = etapaRepository.findByProyecto_IdProyecto(proyecto.getIdProyecto());
-        boolean hasTransicion = etapas.stream().anyMatch(e -> "Transición".equalsIgnoreCase(e.getNombre()));
-        if (hasTransicion) {
-            log.info("DataSeeder: MetricFlow SQA ya cuenta con datos reales de Codevit.");
-            return;
-        }
-
-        log.info("DataSeeder: actualizando MetricFlow SQA con datos reales de Codevit...");
-        for (Etapa e : etapas) {
-            etapaRepository.delete(e);
-        }
-        etapaRepository.flush();
-
-        List<Categoria> viejasCategorias = categoriaRepository.findByProyectoIdProyecto(proyecto.getIdProyecto());
-        categoriaRepository.deleteAll(viejasCategorias);
-        categoriaRepository.flush();
-
-        Usuario ezequiel = usuarioRepository.findByEmail("ezequiel.mansilla@gmail.com").orElse(null);
-        Usuario fabricio = usuarioRepository.findByEmail("fabricio.nunez@gmail.com").orElse(null);
-        Usuario santiago = usuarioRepository.findByEmail("santiago.pacheco@gmail.com").orElse(null);
-        Usuario lorenzo = usuarioRepository.findByEmail("lorenzo.teppa@gmail.com").orElse(null);
-        Usuario malcolm = usuarioRepository.findByEmail("malcolm.salazar@gmail.com").orElse(null);
-
-        List<Usuario> usuarios = new java.util.ArrayList<>();
-        if (ezequiel != null) usuarios.add(ezequiel);
-        if (fabricio != null) usuarios.add(fabricio);
-        if (santiago != null) usuarios.add(santiago);
-        if (lorenzo != null) usuarios.add(lorenzo);
-        if (malcolm != null) usuarios.add(malcolm);
-
-        seedMetricFlowFromData(proyecto, usuarios);
-        if (proyecto.getFechaInicio() == null) {
-            proyecto.setFechaInicio(LocalDate.of(2025, 8, 22));
-        }
-        proyecto.setFechaFin(LocalDate.of(2026, 2, 6));
-        proyecto.setEstado("Completado");
-        proyectoRepository.save(proyecto);
-        log.info("DataSeeder: MetricFlow SQA actualizado exitosamente con datos reales de Codevit.");
-    }
-
-    private void seedMetricFlowFromData(Proyecto proyecto, List<Usuario> usuarios) {
-        try (InputStream is = getClass().getResourceAsStream("/data/metricflow_codevit_data.json")) {
+    private void seedKairosFromJson(Rol rolUsuarioComun) {
+        try (InputStream is = getClass().getResourceAsStream(JSON_PATH)) {
             if (is == null) {
-                log.warn("No se encontró /data/metricflow_codevit_data.json en classpath, usando fallback simulado.");
-                Set<Categoria> categorias = createCategorias(proyecto);
-                createStagesAndIterations(proyecto, categorias, usuarios);
-                return;
+                throw new IllegalStateException("No se encontró el archivo " + JSON_PATH + " en src/main/resources");
             }
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(is);
+            JsonNode proyectosNode = root.get("proyectos");
 
-            Map<String, Usuario> usuarioMap = new HashMap<>();
-            for (Usuario u : usuarios) {
-                usuarioMap.put(u.getEmail(), u);
+            if (proyectosNode == null || !proyectosNode.isArray() || proyectosNode.isEmpty()) {
+                log.warn("DataSeeder: el JSON no contiene proyectos para cargar.");
+                return;
             }
 
-            Map<String, Categoria> categoriaMap = new HashMap<>();
-            JsonNode categoriasNode = root.get("categorias");
-            if (categoriasNode != null && categoriasNode.isArray()) {
-                for (JsonNode catNode : categoriasNode) {
-                    String catNombre = catNode.asText();
-                    Categoria cat = new Categoria();
-                    cat.setNombre(catNombre);
-                    cat.setProyecto(proyecto);
-                    cat = categoriaRepository.save(cat);
-                    categoriaMap.put(catNombre, cat);
+            JsonNode pNode = proyectosNode.get(0);
+
+            Proyecto proyecto = new Proyecto();
+            proyecto.setNombre(pNode.get("nombre").asText());
+            proyecto.setEquipo(pNode.get("equipo").asText());
+            proyecto.setDescripcion(pNode.get("descripcion").asText());
+            proyecto.setEstado(pNode.get("estado").asText());
+            if (pNode.hasNonNull("logo")) {
+                proyecto.setLogo(pNode.get("logo").asText());
+            }
+            proyecto.setFechaInicio(LocalDate.of(2025, 8, 19));
+            proyecto.setFechaFin(LocalDate.of(2026, 12, 18));
+            proyecto = proyectoRepository.save(proyecto);
+
+            Map<String, Usuario> usuarioMap = new HashMap<>();
+            JsonNode usuariosNode = pNode.get("usuarios");
+            if (usuariosNode != null && usuariosNode.isArray()) {
+                for (JsonNode uNode : usuariosNode) {
+                    String nombre = uNode.get("nombre").asText();
+                    String email = uNode.get("email").asText();
+                    String rolProyecto = uNode.get("rolProyecto").asText();
+
+                    Usuario usuario = createUser(nombre, email, rolUsuarioComun);
+                    createUsuarioProyecto(usuario, proyecto, rolProyecto);
+                    usuarioMap.put(email, usuario);
                 }
             }
 
-            Map<String, Iteracion> iteracionMap = new HashMap<>();
-            JsonNode etapasNode = root.get("etapas");
+            Map<String, Categoria> categoriaMap = createCategorias(proyecto);
+
+            int totalTareas = 0;
+            int totalTiempos = 0;
+            int totalComentarios = 0;
+
+            JsonNode etapasNode = pNode.get("etapas");
             if (etapasNode != null && etapasNode.isArray()) {
                 for (JsonNode eNode : etapasNode) {
                     String etapaNombre = eNode.get("nombre").asText();
-                    String etapaDesc = eNode.has("descripcion") ? eNode.get("descripcion").asText() : "";
+                    String etapaDesc = eNode.hasNonNull("descripcion") ? eNode.get("descripcion").asText() : "";
                     EstadoEtapa etapaEstado = EstadoEtapa.valueOf(eNode.get("estado").asText());
-                    LocalDate fechaInicio = LocalDate.parse(eNode.get("fechaInicio").asText());
-                    LocalDate fechaFin = LocalDate.parse(eNode.get("fechaFin").asText());
+                    LocalDate etapaInicio = LocalDate.parse(eNode.get("fechaInicio").asText());
+                    LocalDate etapaFin = LocalDate.parse(eNode.get("fechaFin").asText());
 
-                    Etapa etapa = createEtapa(etapaNombre, etapaDesc, etapaEstado, proyecto, fechaInicio, fechaFin);
+                    Etapa etapa = createEtapa(etapaNombre, etapaDesc, etapaEstado, proyecto, etapaInicio, etapaFin);
 
                     JsonNode itersNode = eNode.get("iteraciones");
                     if (itersNode != null && itersNode.isArray()) {
                         for (JsonNode iterNode : itersNode) {
-                            int iterNum = iterNode.get("numero").asInt();
+                            int numero = iterNode.get("numero").asInt();
                             LocalDate iterInicio = LocalDate.parse(iterNode.get("fechaInicio").asText());
                             LocalDate iterFin = LocalDate.parse(iterNode.get("fechaFin").asText());
 
-                            Iteracion iteracion = createIteracion(iterNum, etapa, iterInicio, iterFin);
-                            if (iterNode.has("descripcion")) {
-                                iteracion.setDescripcion(iterNode.get("descripcion").asText());
+                            Iteracion iteracion = createIteracion(numero, etapa, iterInicio, iterFin);
+                            if (numero == 99) {
+                                iteracion.setDescripcion("Fuera de planificación");
                                 iteracion = iteracionRepository.save(iteracion);
                             }
-                            iteracionMap.put(etapaNombre + "_" + iterNum, iteracion);
-                        }
-                    }
-                }
-            }
 
-            JsonNode tareasNode = root.get("tareas");
-            if (tareasNode != null && tareasNode.isArray()) {
-                for (JsonNode tNode : tareasNode) {
-                    String etapaNombre = tNode.get("etapa").asText();
-                    int iterNum = tNode.get("iteracionNumero").asInt();
-                    Iteracion iteracion = iteracionMap.get(etapaNombre + "_" + iterNum);
+                            JsonNode tareasNode = iterNode.get("tareas");
+                            if (tareasNode != null && tareasNode.isArray()) {
+                                for (JsonNode tNode : tareasNode) {
+                                    String respEmail = tNode.get("responsableEmail").asText();
+                                    Usuario responsable = usuarioMap.get(respEmail);
 
-                    String userEmail = tNode.get("userEmail").asText();
-                    Usuario usuario = usuarioMap.get(userEmail);
+                                    String catNombre = tNode.get("categoria").asText();
+                                    Categoria categoria = categoriaMap.get(catNombre);
 
-                    String catNombre = tNode.get("categoria").asText();
-                    Categoria categoria = categoriaMap.get(catNombre);
+                                    Tarea tarea = new Tarea();
+                                    tarea.setNombre(tNode.get("nombre").asText());
+                                    tarea.setIteracion(iteracion);
+                                    tarea.setUsuario(responsable);
+                                    tarea.setFechaCreacion(LocalDate.parse(tNode.get("fechaCreacion").asText()));
+                                    tarea.setFechaFin(LocalDate.parse(tNode.get("fechaFin").asText()));
+                                    tarea.setHorasEstimadas(tNode.get("horasEstimadas").asDouble());
+                                    tarea.setEstado(tNode.get("estado").asText());
+                                    tarea.setPrioridad("Media");
 
-                    Tarea tarea = new Tarea();
-                    tarea.setNombre(tNode.get("nombre").asText());
-                    if (tNode.has("descripcion")) {
-                        tarea.setDescripcion(tNode.get("descripcion").asText());
-                    }
-                    tarea.setIteracion(iteracion);
-                    tarea.setUsuario(usuario);
-                    tarea.setFechaCreacion(LocalDate.parse(tNode.get("fechaInicio").asText()));
-                    tarea.setFechaFin(LocalDate.parse(tNode.get("fechaFin").asText()));
-                    tarea.setHorasEstimadas(tNode.get("horasEstimadas").asDouble());
-                    tarea.setEstado(tNode.get("estado").asText());
-                    tarea.setPrioridad(tNode.get("prioridad").asText());
+                                    if (categoria != null) {
+                                        Set<Categoria> cats = new HashSet<>();
+                                        cats.add(categoria);
+                                        tarea.setCategorias(cats);
+                                    }
 
-                    if (categoria != null) {
-                        Set<Categoria> cats = new HashSet<>();
-                        cats.add(categoria);
-                        tarea.setCategorias(cats);
-                    }
+                                    tarea = tareaRepository.save(tarea);
+                                    totalTareas++;
 
-                    tarea = tareaRepository.save(tarea);
+                                    JsonNode tiemposNode = tNode.get("tiempos");
+                                    if (tiemposNode != null && tiemposNode.isArray()) {
+                                        for (JsonNode timeNode : tiemposNode) {
+                                            String timeEmail = timeNode.get("usuarioEmail").asText();
+                                            Usuario timeUser = usuarioMap.getOrDefault(timeEmail, responsable);
 
-                    JsonNode tiemposNode = tNode.get("tiempos");
-                    if (tiemposNode != null && tiemposNode.isArray()) {
-                        for (JsonNode timeNode : tiemposNode) {
-                            Tiempo tiempo = new Tiempo();
-                            tiempo.setTarea(tarea);
-                            tiempo.setUsuario(usuario);
-                            tiempo.setDuracion(timeNode.get("duracion").asInt());
-                            tiempo.setFechaRegistro(LocalDate.parse(timeNode.get("fechaRegistro").asText()));
-                            if (timeNode.has("descripcion")) {
-                                String desc = timeNode.get("descripcion").asText();
-                                tiempo.setDescripcion(desc);
-                                if (!desc.startsWith("Registro de tiempo")) {
-                                    Comentario com = new Comentario();
-                                    com.setTarea(tarea);
-                                    com.setUsuario(usuario);
-                                    com.setContenido(desc);
-                                    com.setFechaComentario(tiempo.getFechaRegistro());
-                                    comentarioRepository.save(com);
+                                            Tiempo tiempo = new Tiempo();
+                                            tiempo.setTarea(tarea);
+                                            tiempo.setUsuario(timeUser);
+                                            tiempo.setDuracion(timeNode.get("duracionMinutos").asInt());
+                                            tiempo.setFechaRegistro(LocalDate.parse(timeNode.get("fechaRegistro").asText()));
+                                            tiempoRepository.save(tiempo);
+                                            totalTiempos++;
+                                        }
+                                    }
+
+                                    JsonNode comentariosNode = tNode.get("comentarios");
+                                    if (comentariosNode != null && comentariosNode.isArray()) {
+                                        for (JsonNode comNode : comentariosNode) {
+                                            String comEmail = comNode.get("usuarioEmail").asText();
+                                            Usuario comUser = usuarioMap.getOrDefault(comEmail, responsable);
+
+                                            Comentario comentario = new Comentario();
+                                            comentario.setTarea(tarea);
+                                            comentario.setUsuario(comUser);
+                                            comentario.setContenido(comNode.get("contenido").asText());
+                                            comentario.setFechaComentario(LocalDate.parse(comNode.get("fechaComentario").asText()));
+                                            comentarioRepository.save(comentario);
+                                            totalComentarios++;
+                                        }
+                                    }
                                 }
                             }
-                            tiempoRepository.save(tiempo);
                         }
                     }
                 }
             }
 
-            log.info("DataSeeder: MetricFlow SQA sembrado exitosamente con datos reales de Codevit ({} tareas)",
-                    tareasNode != null ? tareasNode.size() : 0);
+            log.info("DataSeeder: proyecto '{}' cargado ({} tareas, {} registros de tiempo, {} comentarios).",
+                    proyecto.getNombre(), totalTareas, totalTiempos, totalComentarios);
 
         } catch (Exception e) {
-            log.error("Error al sembrar datos reales de MetricFlow SQA desde JSON: {}", e.getMessage(), e);
-            throw new RuntimeException("Error al cargar datos reales de MetricFlow SQA", e);
-        }
-    }
-
-    private void createVestaRiskProject(Rol rolUsuarioComun) {
-        Proyecto proyecto = new Proyecto();
-        proyecto.setNombre("Vesta Risk Manager");
-        proyecto.setEquipo("T-Code");
-        proyecto.setDescripcion("Sistema de gestión y análisis de riesgos");
-        proyecto.setEstado("Completado");
-        proyecto.setFechaInicio(LocalDate.of(2025, 8, 1));
-        proyecto = proyectoRepository.save(proyecto);
-
-        Usuario agustin = createUser("Agustín Collareda", "agustin.collareda@gmail.com", rolUsuarioComun);
-        Usuario hugo = createUser("Hugo Frey", "hugo.frey@gmail.com", rolUsuarioComun);
-        Usuario cinthia = createUser("Cinthia Hernandez", "cinthia.hernandez@gmail.com", rolUsuarioComun);
-
-        createUsuarioProyecto(agustin, proyecto, "Líder");
-        createUsuarioProyecto(hugo, proyecto, "Programador");
-        createUsuarioProyecto(cinthia, proyecto, "Analista");
-
-        Set<Categoria> categorias = createCategorias(proyecto);
-        createStagesAndIterations(proyecto, categorias, Arrays.asList(agustin, hugo, cinthia));
-    }
-
-    private void createInventedProjects(Rol rolUsuarioComun) {
-        String[][] projectsData = {
-            {"DataFlow Pro", "InnovateTech", "Plataforma de flujo de datos en tiempo real"},
-            {"SecureVault", "CyberGuard", "Sistema de gestión de seguridad y criptografía"},
-            {"CloudSync Manager", "SkyTech", "Gestor de sincronización en la nube"},
-            {"Analytics Hub", "DataInsights", "Centro de análisis e inteligencia de datos"}
-        };
-
-        for (String[] data : projectsData) {
-            Proyecto proyecto = new Proyecto();
-            proyecto.setNombre(data[0]);
-            proyecto.setEquipo(data[1]);
-            proyecto.setDescripcion(data[2]);
-            proyecto.setEstado("En Progreso");
-            proyecto.setFechaInicio(LocalDate.of(2025, 8, 1));
-            proyecto = proyectoRepository.save(proyecto);
-
-            int userCount = 4 + (int)(Math.random() * 2);
-            java.util.List<Usuario> usuarios = new java.util.ArrayList<>();
-            for (int i = 0; i < userCount; i++) {
-                Usuario user = createUser("User " + data[1] + " " + (i + 1), 
-                    "user" + i + "@" + data[1].toLowerCase() + ".com", rolUsuarioComun);
-                usuarios.add(user);
-            }
-
-            String[] roles = {"Líder", "Programador", "Analista", "Documentador", "Gerente de Calidad"};
-            for (int i = 0; i < usuarios.size(); i++) {
-                createUsuarioProyecto(usuarios.get(i), proyecto, roles[i % roles.length]);
-            }
-
-            Set<Categoria> categorias = createCategorias(proyecto);
-            createStagesAndIterations(proyecto, categorias, usuarios);
+            log.error("DataSeeder: error al cargar {}: {}", JSON_PATH, e.getMessage(), e);
+            throw new RuntimeException("Error al inicializar los datos del proyecto Kairos", e);
         }
     }
 
@@ -438,53 +255,26 @@ public class DataSeeder implements CommandLineRunner {
         return usuarioProyectoRepository.save(up);
     }
 
-    private Set<Categoria> createCategorias(Proyecto proyecto) {
+    private Map<String, Categoria> createCategorias(Proyecto proyecto) {
         String[] categoriasNombres = {
-            "Análisis", "Diseño", "Codificación", "Validación y Verificación", 
-            "Documentación", "Actividades Externas"
+            "Análisis",
+            "Diseño",
+            "Codificación",
+            "Validación y Verificación",
+            "Documentación",
+            "Actividades Externas"
         };
-        Set<Categoria> categorias = new HashSet<>();
+        Map<String, Categoria> categorias = new HashMap<>();
         for (String nombre : categoriasNombres) {
             Categoria cat = new Categoria();
             cat.setNombre(nombre);
             cat.setProyecto(proyecto);
-            categorias.add(categoriaRepository.save(cat));
+            categorias.put(nombre, categoriaRepository.save(cat));
         }
         return categorias;
     }
 
-    private void createStagesAndIterations(Proyecto proyecto, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
-        Etapa inicio = createEtapa("Inicio", 
-            "Definición de la visión del proyecto y análisis de viabilidad",
-            EstadoEtapa.COMPLETADA, proyecto, LocalDate.of(2025, 8, 1), LocalDate.of(2025, 9, 4));
-        
-        Iteracion inicioIter = createIteracion(1, inicio, LocalDate.of(2025, 8, 1), LocalDate.of(2025, 9, 4));
-        createTareasInicio(inicioIter, categorias, usuarios);
-        Etapa elaboracion = createEtapa("Elaboración",
-            "Análisis detallado de requisitos y diseño de arquitectura",
-            EstadoEtapa.EN_PROGRESO, proyecto, LocalDate.of(2025, 9, 5), LocalDate.of(2025, 10, 10));
-        
-        Iteracion elab1 = createIteracion(1, elaboracion, LocalDate.of(2025, 9, 5), LocalDate.of(2025, 9, 23));
-        createTareasElaboracion1(elab1, categorias, usuarios);
-
-        Iteracion elab2 = createIteracion(2, elaboracion, LocalDate.of(2025, 9, 24), LocalDate.of(2025, 10, 10));
-        createTareasElaboracion2(elab2, categorias, usuarios);
-
-        Etapa construccion = createEtapa("Construcción",
-            "Implementación y pruebas incrementales del producto",
-            EstadoEtapa.PENDIENTE, proyecto, LocalDate.of(2025, 10, 13), LocalDate.of(2025, 11, 18));
-        
-        Iteracion cons1 = createIteracion(1, construccion, LocalDate.of(2025, 10, 13), LocalDate.of(2025, 10, 28));
-        createTareasConstraccion1(cons1, categorias, usuarios);
-
-        Iteracion cons2 = createIteracion(2, construccion, LocalDate.of(2025, 10, 29), LocalDate.of(2025, 11, 7));
-        createTareasConstraccion2(cons2, categorias, usuarios);
-
-        Iteracion cons3 = createIteracion(3, construccion, LocalDate.of(2025, 11, 8), LocalDate.of(2025, 11, 18));
-        createTareasConstraccion3(cons3, categorias, usuarios);
-    }
-
-    private Etapa createEtapa(String nombre, String descripcion, EstadoEtapa estado, 
+    private Etapa createEtapa(String nombre, String descripcion, EstadoEtapa estado,
                               Proyecto proyecto, LocalDate fechaInicio, LocalDate fechaFin) {
         Etapa etapa = new Etapa();
         etapa.setNombre(nombre);
@@ -504,291 +294,5 @@ public class DataSeeder implements CommandLineRunner {
         iteracion.setFechaInicio(fechaInicio);
         iteracion.setFechaFin(fechaFin);
         return iteracionRepository.save(iteracion);
-    }
-
-    private Tarea createTarea(String nombre, Iteracion iteracion, Usuario usuario, 
-                              LocalDate fechaInicio, LocalDate fechaFin, 
-                              Set<Categoria> categorias, Categoria categoriaPrimaria,
-                              double horasEstimadas, String estado) {
-        Tarea tarea = new Tarea();
-        tarea.setNombre(nombre);
-        tarea.setIteracion(iteracion);
-        tarea.setUsuario(usuario);
-        tarea.setFechaCreacion(fechaInicio);
-        tarea.setFechaFin(fechaFin);
-        tarea.setEstado(estado);
-        tarea.setPrioridad("Media");
-        tarea.setHorasEstimadas(horasEstimadas);
-        if (categoriaPrimaria != null) {
-            Set<Categoria> cats = new HashSet<>();
-            cats.add(categoriaPrimaria);
-            tarea.setCategorias(cats);
-        }
-        return tareaRepository.save(tarea);
-    }
-
-    private void createTareasInicio(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
-        java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
-        java.util.List<String> tareasNombres = Arrays.asList(
-            "Entrevista con clientes",
-            "Estándar de documentación",
-            "Resumen de entrevista",
-            "Estudio de factibilidad",
-            "Modelo de Negocio",
-            "Plan de SQA",
-            "Plan de Proyecto",
-            "Plan de Gestión de Configuración",
-            "Propuesta de Desarrollo",
-            "Plan de Iteración E1",
-            "Implementación de UARGFlow"
-        );
-
-        LocalDate inicio = iteracion.getFechaInicio();
-        LocalDate fin = iteracion.getFechaFin();
-
-        for (int i = 0; i < tareasNombres.size(); i++) {
-            Usuario responsable = usuarios.get(i % usuarios.size());
-            Categoria cat = catList.get(i % catList.size());
-            LocalDate tFin = inicio.plusDays(2 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
-
-            Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable, 
-                inicio.plusDays(i), tFin, categorias, cat, 2.0 + (i * 0.5), "Completado");
-            
-            addTimeRecords(tarea, responsable, inicio.plusDays(i), 1 + (i % 3));
-            
-            if (i % 3 == 0) {
-                addCommentToTask(tarea, usuarios.get((i + 1) % usuarios.size()), inicio.plusDays(i));
-            }
-        }
-    }
-
-    private void createTareasElaboracion1(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
-        java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
-        java.util.List<String> tareasNombres = Arrays.asList(
-            "Plan de Estimación",
-            "Estimación 1",
-            "Plan de Gestión de Riesgos",
-            "Identificación de primeros riesgos",
-            "Herramientas y Tecnologías a utilizar",
-            "Especificación de Requerimientos",
-            "Plan de SQA finalizado",
-            "Diagrama de Casos de Uso",
-            "Cierre de iteración E1",
-            "Plan de iteración E2"
-        );
-
-        LocalDate inicio = iteracion.getFechaInicio();
-        LocalDate fin = iteracion.getFechaFin();
-
-        for (int i = 0; i < tareasNombres.size(); i++) {
-            Usuario responsable = usuarios.get(i % usuarios.size());
-            Categoria cat = catList.get(i % catList.size());
-            LocalDate tFin = inicio.plusDays(1 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
-
-            Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable,
-                inicio.plusDays(i), tFin, categorias, cat, 3.0 + (i * 0.8), "Completado");
-            
-            addTimeRecords(tarea, responsable, inicio.plusDays(i), 2 + (i % 2));
-            
-            if (i % 4 == 1) {
-                addCommentToTask(tarea, usuarios.get((i + 2) % usuarios.size()), inicio.plusDays(i));
-            }
-        }
-    }
-
-    private void createTareasElaboracion2(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
-        java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
-        java.util.List<String> tareasNombres = Arrays.asList(
-            "Estimación 2",
-            "Identificación y evaluación de Riesgos",
-            "Modelo de Casos de Uso",
-            "Revisión de Modelo de Casos de Uso",
-            "Primer prototipo funcional",
-            "Modelo de Datos",
-            "Inicio de Modelo de Diseño",
-            "Plan de pruebas",
-            "Pruebas de Implementación de UARGFlow",
-            "Cierre de iteracion E2",
-            "Plan de Iteración C1"
-        );
-
-        LocalDate inicio = iteracion.getFechaInicio();
-        LocalDate fin = iteracion.getFechaFin();
-
-        for (int i = 0; i < tareasNombres.size(); i++) {
-            Usuario responsable = usuarios.get(i % usuarios.size());
-            Categoria cat = catList.get(i % catList.size());
-            LocalDate tFin = inicio.plusDays(1 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
-
-            double horas = "Primer prototipo funcional".equals(tareasNombres.get(i)) ? 8.0 : 3.5 + (i * 0.6);
-            Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable,
-                inicio.plusDays(i), tFin, categorias, cat, horas, "Completado");
-            
-            addTimeRecords(tarea, responsable, inicio.plusDays(i), 2 + (i % 3));
-            
-            if (i % 3 == 2) {
-                addCommentToTask(tarea, usuarios.get((i + 3) % usuarios.size()), inicio.plusDays(i));
-            }
-        }
-    }
-
-    private void createTareasConstraccion1(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
-        java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
-        java.util.List<String> tareasNombres = Arrays.asList(
-            "Estimación 3",
-            "Evaluación de Riesgos",
-            "Modelo Arquitectónico",
-            "Revisión de Modelo Arquitectónico",
-            "Modelo de diseño finalizado",
-            "Revisión de modelo de diseño",
-            "Definición de 1ra tanda de casos de uso",
-            "Especificación de Casos de uso a implementar",
-            "Revisión Técnica de Especificación",
-            "Implementación del modelo de datos en SQL",
-            "Definición de Casos de Prueba",
-            "CU: Crear Proyecto",
-            "CU: Gestionar Usuarios",
-            "CU: Asignar Recursos",
-            "Ejecución de Casos de prueba",
-            "Cierre de iteración C1",
-            "Plan de Iteración C2"
-        );
-
-        LocalDate inicio = iteracion.getFechaInicio();
-        LocalDate fin = iteracion.getFechaFin();
-
-        for (int i = 0; i < tareasNombres.size(); i++) {
-            Usuario responsable = usuarios.get(i % usuarios.size());
-            Categoria cat = catList.get(i % catList.size());
-            LocalDate tFin = inicio.plusDays(1 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
-
-            boolean isCodingTask = tareasNombres.get(i).startsWith("CU:") || 
-                                   tareasNombres.get(i).contains("Implementación");
-            double horas = isCodingTask ? 6.0 + (Math.random() * 4) : 3.0 + (i * 0.5);
-            
-            Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable,
-                inicio.plusDays(i), tFin, categorias, cat, horas, "Completado");
-            
-            addTimeRecords(tarea, responsable, inicio.plusDays(i), isCodingTask ? 3 + (i % 3) : 2);
-            
-            if (i % 3 == 0) {
-                addCommentToTask(tarea, usuarios.get((i + 1) % usuarios.size()), inicio.plusDays(i));
-            }
-        }
-    }
-
-    private void createTareasConstraccion2(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
-        java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
-        java.util.List<String> tareasNombres = Arrays.asList(
-            "Estimación 4",
-            "Evaluación de Riesgos",
-            "Priorización de segunda tanda de CU",
-            "Definición de pruebas para CU",
-            "Especificación de Casos de Uso a implementar",
-            "CU: Reportes Avanzados",
-            "CU: Panel de Control",
-            "CU: Exportar Datos",
-            "CU: Integración API",
-            "Ejecución de Casos de prueba",
-            "Cierre de iteración C2",
-            "Plan de Iteración C3"
-        );
-
-        LocalDate inicio = iteracion.getFechaInicio();
-        LocalDate fin = iteracion.getFechaFin();
-
-        for (int i = 0; i < tareasNombres.size(); i++) {
-            Usuario responsable = usuarios.get(i % usuarios.size());
-            Categoria cat = catList.get(i % catList.size());
-            LocalDate tFin = inicio.plusDays(1 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
-
-            boolean isCodingTask = tareasNombres.get(i).startsWith("CU:");
-            double horas = isCodingTask ? 5.0 + (Math.random() * 5) : 2.5 + (i * 0.6);
-            
-            Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable,
-                inicio.plusDays(i), tFin, categorias, cat, horas, "Completado");
-            
-            addTimeRecords(tarea, responsable, inicio.plusDays(i), isCodingTask ? 2 + (i % 3) : 1 + (i % 2));
-            
-            if (i % 4 == 1) {
-                addCommentToTask(tarea, usuarios.get((i + 2) % usuarios.size()), inicio.plusDays(i));
-            }
-        }
-    }
-
-    private void createTareasConstraccion3(Iteracion iteracion, Set<Categoria> categorias, java.util.List<Usuario> usuarios) {
-        java.util.List<Categoria> catList = new java.util.ArrayList<>(categorias);
-        java.util.List<String> tareasNombres = Arrays.asList(
-            "Estimación 5",
-            "Evaluación de Riesgos",
-            "Definición de casos de uso a implementar",
-            "Definición de casos de prueba para casos de uso",
-            "Especificación de casos de uso a implementar",
-            "CU: Auditoría del Sistema",
-            "CU: Gestión de Permisos",
-            "CU: Búsqueda Avanzada",
-            "CU: Notificaciones en Tiempo Real",
-            "Ejecución de casos de prueba",
-            "Cierre de Iteración C3"
-        );
-
-        LocalDate inicio = iteracion.getFechaInicio();
-        LocalDate fin = iteracion.getFechaFin();
-
-        for (int i = 0; i < tareasNombres.size(); i++) {
-            Usuario responsable = usuarios.get(i % usuarios.size());
-            Categoria cat = catList.get(i % catList.size());
-            LocalDate tFin = inicio.plusDays(1 + i);
-            if (tFin.isAfter(fin)) tFin = fin;
-
-            boolean isCodingTask = tareasNombres.get(i).startsWith("CU:");
-            double horas = isCodingTask ? 4.0 + (Math.random() * 6) : 2.0 + (i * 0.7);
-            
-            Tarea tarea = createTarea(tareasNombres.get(i), iteracion, responsable,
-                inicio.plusDays(i), tFin, categorias, cat, horas, "En Progreso");
-            
-            addTimeRecords(tarea, responsable, inicio.plusDays(i), isCodingTask ? 2 + (i % 3) : 1);
-            
-            if (i % 3 == 1) {
-                addCommentToTask(tarea, usuarios.get((i + 1) % usuarios.size()), inicio.plusDays(i));
-            }
-        }
-    }
-
-    private void addTimeRecords(Tarea tarea, Usuario usuario, LocalDate fechaBase, int numRecords) {
-
-
-        for (int i = 0; i < numRecords; i++) {
-            Tiempo tiempo = new Tiempo();
-            tiempo.setTarea(tarea);
-            tiempo.setUsuario(usuario);
-            tiempo.setDuracion(30 + (int)(Math.random() * 240));
-            tiempo.setFechaRegistro(fechaBase.plusDays(i));
-            tiempoRepository.save(tiempo);
-        }
-    }
-
-    private void addCommentToTask(Tarea tarea, Usuario usuario, LocalDate fechaBase) {
-        java.util.List<String> comentarios = Arrays.asList(
-            "Necesita revisión de especificaciones",
-            "Completado exitosamente",
-            "Requiere ajustes menores",
-            "Bloqueado por otra tarea",
-            "Aprobado por el equipo de QA",
-            "Pendiente de validación",
-            "Documentación faltante"
-        );
-
-        Comentario comentario = new Comentario();
-        comentario.setTarea(tarea);
-        comentario.setUsuario(usuario);
-        comentario.setContenido(comentarios.get((int)(Math.random() * comentarios.size())));
-        comentario.setFechaComentario(fechaBase);
-        comentarioRepository.save(comentario);
     }
 }
