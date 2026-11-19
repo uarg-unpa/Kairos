@@ -75,6 +75,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   filtroTiempo: FiltroTiempo = 'all';
   filtroSemana: number = 0; // 0 = semana actual, -1 = anterior, 1 = siguiente
   semanaActual: { inicio: string; fin: string } = { inicio: '', fin: '' };
+  modoVistaHoras: 'dias' | 'semanas' = 'semanas';
   proyectoId: number | null = null;
   encodedProjectId: string | null = null; //para el html
   detalleGrafico: string | null = null;
@@ -189,7 +190,20 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (offset > 0 && this.nextSemanaDisabled()) return;
     this.filtroSemana += offset;
     this.navegacionManual = true;
+    this.modoVistaHoras = 'dias';
     this.actualizarSemanaActual();
+    this.reloadHorasPorDia();
+  }
+
+  cambiarModoVistaHoras(modo: 'dias' | 'semanas') {
+    if (this.modoVistaHoras === modo) return;
+    this.modoVistaHoras = modo;
+    if (modo === 'dias') {
+      this.navegacionManual = true;
+      this.actualizarSemanaActual();
+    } else {
+      this.navegacionManual = false;
+    }
     this.reloadHorasPorDia();
   }
 
@@ -234,7 +248,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     let fromParam = '';
     let toParam = '';
 
-    if (this.filtroTiempo === 'week' || this.filtroTiempo === 'today' || this.navegacionManual) {
+    if (this.modoVistaHoras === 'dias' || this.filtroTiempo === 'week' || this.filtroTiempo === 'today' || this.navegacionManual) {
       const weekRange = this.computeWeeklyRangeWithOffset(this.filtroSemana);
       fromParam = weekRange.from;
       toParam = weekRange.to;
@@ -266,8 +280,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             false,
             true,
             false,
-            'Horas por dia',
-            'dias de la Semana',
+            this.modoVistaHoras === 'semanas' ? 'Horas por semana' : 'Horas por día',
+            this.modoVistaHoras === 'semanas' ? 'Semanas' : 'Días de la semana',
             'Horas (h)'
           );
         }, 100);
@@ -1167,16 +1181,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // 1. Determinar rango de fechas para decidir si agrupar por SEMANA o por DIA
-    const dates = rows.map(r => new Date(r.fecha).getTime()).filter(t => !isNaN(t));
-    const minTime = Math.min(...dates);
-    const maxTime = Math.max(...dates);
-    const diffDays = (maxTime - minTime) / (1000 * 3600 * 24);
-
-    // Agrupar por semana si el rango es mayor a 14 dias, O si el filtro NO es 'week'/'today' explícitamente
-    // (Aunque si hay pocos datos en 'all' igual podria querer ver dias, pero la regla general pedida es agrupar)
-    // Y SI NO estamos en navegacion manual
-    const isWeekly = !this.navegacionManual && (diffDays > 14 || (this.filtroTiempo !== 'week' && this.filtroTiempo !== 'today'));
+    // 1. Determinar si agrupar por SEMANA o por DIA según la opción seleccionada
+    const isWeekly = this.modoVistaHoras === 'semanas';
 
     const periodMap = new Map<string, number>(); // Key -> Minutos
     const periodLabelMap = new Map<string, string>(); // Key -> Label legible
@@ -1537,7 +1543,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'horasIteracion': return 'Detalle de estimación vs ejecución';
       case 'horasCategoria': return 'Detalle de horas por categoría';
       case 'tareasUsuario': return 'Tareas por usuario';
-      case 'horasDiaTarea': return 'Horas por día (semana actual)';
+      case 'horasDiaTarea': return this.modoVistaHoras === 'semanas' ? 'Horas por semana' : 'Horas por día (semana actual)';
       case 'horasTarea': return 'Horas por tarea';
       default: return '';
     }
@@ -1635,7 +1641,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       'chartHorasIter': 'Estimación vs Ejecución',
       'chartHorasIterDistrib': 'Horas por tarea',
       'chartTareasUser': 'Tareas por usuario',
-      'chartHorasDiaTarea': 'Horas por día',
+      'chartHorasDiaTarea': this.modoVistaHoras === 'semanas' ? 'Horas por semana' : 'Horas por día',
       'chartHorasCategoria': 'Horas por categoría',
       'chartHorasEtapa': 'Horas por etapa'
     };
