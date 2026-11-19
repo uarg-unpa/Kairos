@@ -60,7 +60,7 @@ services:
     depends_on:
       - kairos-backend-demo
     volumes:
-      - ./env.demo.json:/usr/share/nginx/html/assets/env.json:ro
+      - ./env.json:/usr/share/nginx/html/assets/env.json:ro
     ports:
       - "80:80"
     networks:
