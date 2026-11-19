@@ -43,18 +43,18 @@
                     <a class="nav-link" [routerLink]="['/proyecto', proyectoId, 'dashboard']"
                         routerLinkActive="active"><span class="bi bi-graph-up"></span> Reportes</a>
                 </li>
-                <li class="nav-item dropdown" *ngIf="esAdmin() && !esRutaProyecto()">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/usuarios" routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }">
+                        <span class="bi bi-people me-2"></span> Usuarios
+                    </a>
+                </li>
+                <!-- <li class="nav-item dropdown" *ngIf="esAdmin() && !esRutaProyecto()">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
                         <span class="bi bi-shield-lock"></span> Control
                     </a>
                     <ul class="dropdown-menu shadow-sm border-0">
-                        <li>
-                            <a class="dropdown-item" routerLink="/usuarios" routerLinkActive="active"
-                                [routerLinkActiveOptions]="{ exact: true }">
-                                <span class="bi bi-people me-2"></span> Usuarios
-                            </a>
-                        </li>
                         <li>
                             <a class="dropdown-item" routerLink="/roles" routerLinkActive="active"
                                 [routerLinkActiveOptions]="{ exact: true }">
@@ -68,12 +68,12 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
 
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link" routerLink="/ayuda" routerLinkActive="active"
                         [routerLinkActiveOptions]="{ exact: true }"><span class="bi bi-question-lg"></span> Ayuda</a>
-                </li>
+                </li> -->
             </ul>
 
             <ul class="navbar-nav ms-auto">
