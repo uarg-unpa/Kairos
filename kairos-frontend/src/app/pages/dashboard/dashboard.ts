@@ -1243,26 +1243,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       };
     });
 
+   // --- CHART 2: HORAS POR TAREA (TOP 10) ---
+    const tareasOrdenadas = Array.from(totalPorTarea.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
 
-    // --- CHART 2: HORAS POR TAREA (TOP 10 + OTROS) ---
-    const tareasOrdenadas = Array.from(totalPorTarea.entries()).sort((a, b) => b[1] - a[1]);
-
-    let tareasFinales = tareasOrdenadas;
-    let otrosMinutos = 0;
-
-    if (tareasOrdenadas.length > 10) {
-      tareasFinales = tareasOrdenadas.slice(0, 10);
-      const otros = tareasOrdenadas.slice(10);
-      otrosMinutos = otros.reduce((acc, curr) => acc + curr[1], 0);
-    }
-
-    const tareasLabels = tareasFinales.map(entry => entry[0]);
-    const tareasHoras = tareasFinales.map(entry => Math.round(((entry[1] / 60) * 100)) / 100);
-
-    if (otrosMinutos > 0) {
-      tareasLabels.push('Otros');
-      tareasHoras.push(Math.round(((otrosMinutos / 60) * 100)) / 100);
-    }
+    const tareasLabels = tareasOrdenadas.map(entry => entry[0]);
+    const tareasHoras = tareasOrdenadas.map(entry => Math.round(((entry[1] / 60) * 100)) / 100);
 
     this.renderBar(
       'chartHorasIterDistrib',
