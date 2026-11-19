@@ -59,8 +59,8 @@ public class Tarea {
     @NotNull(message = "La fecha de fin es obligatoria")
     private LocalDate fechaFin;
 
-    @Column(length = 15)
-    @Size(max = 50, message = "El nombre de la tarea no puede exceder los 50 caracteres")
+    @Column(length = 255)
+    @Size(max = 255, message = "El nombre de la tarea no puede exceder los 255 caracteres")
     @NotBlank(message = "El nombre de la tarea es obligatorio")
     private String nombre;
 
