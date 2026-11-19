@@ -246,24 +246,40 @@
           <div class="card rounded-2 shadow-sm">
 
             <!-- HEADER -->
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <div class="d-flex align-items-center gap-3">
-                <h5 class="mb-0">Horas por día</h5>
+            <div class="card-header bg-white d-flex flex-column gap-2">
+              <div>
+                <h5 class="mb-0">{{ modoVistaHoras === 'semanas' ? 'Horas por semana' : 'Horas por día' }}</h5>
               </div>
 
-              <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
-                  (click)="mostrarDetalle('horasDiaTarea')" [disabled]="!horasDiaDetalle.length">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-outline-secondary btn-sm" title="Exportar"
-                  (click)="descargarGrafico('chartHorasDiaTarea')">
-                  <i class="bi bi-download"></i>
-                </button>
-                <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
-                  (click)="abrirGrafico('chartHorasDiaTarea')">
-                  <i class="bi bi-fullscreen"></i>
-                </button>
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                <div class="btn-group btn-group-sm" role="group" aria-label="Modo de visualización de horas">
+                  <button type="button" class="btn" [class.btn-primary]="modoVistaHoras === 'semanas'"
+                    [class.btn-outline-primary]="modoVistaHoras !== 'semanas'"
+                    (click)="cambiarModoVistaHoras('semanas')">
+                    Semanas
+                  </button>
+                  <button type="button" class="btn" [class.btn-primary]="modoVistaHoras === 'dias'"
+                    [class.btn-outline-primary]="modoVistaHoras !== 'dias'" (click)="cambiarModoVistaHoras('dias')">
+                    Días
+                  </button>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-outline-primary btn-sm" title="Ver detalles"
+                    (click)="mostrarDetalle('horasDiaTarea')" [disabled]="!horasDiaDetalle.length">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn btn-outline-secondary btn-sm" title="Exportar"
+                    (click)="descargarGrafico('chartHorasDiaTarea')">
+                    <i class="bi bi-download"></i>
+                  </button>
+                  <button class="btn btn-outline-primary btn-sm" title="Ver gráfico ampliado"
+                    (click)="abrirGrafico('chartHorasDiaTarea')">
+                    <i class="bi bi-fullscreen"></i>
+                  </button>
+                </div>
+
               </div>
             </div>
 
@@ -277,28 +293,40 @@
               </div>
               <div class="position-absolute top-50 start-50 translate-middle w-100"
                 *ngIf="!loadingHorasDia && !chartDataDisponibles('chartHorasDiaTarea')">
-                <p class="mb-0 text-muted small">Aún no hay registros semanales de tiempo.</p>
+                <p class="mb-0 text-muted small">{{ modoVistaHoras === 'semanas' ? 'Aún no hay registros semanales de
+                  tiempo.' : 'Aún no hay registros de tiempo en esta semana.' }}</p>
               </div>
             </div>
 
             <!-- FOOTER: FECHA + BOTONES -->
             <div class="card-footer bg-white d-flex justify-content-between align-items-center">
 
-              <!-- FECHA DE LA SEMANA -->
-              <small class="text-black" style="white-space: nowrap;">
-                {{ semanaActual.inicio }} {{ semanaActual.fin }}
-              </small>
-              <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-secondary" title="Semana anterior" (click)="cambiarSemana(-1)"
-                  [disabled]="prevSemanaDisabled()">
-                  <i class="bi bi-chevron-left"></i>
-                </button>
+              <ng-container *ngIf="modoVistaHoras === 'dias'">
+                <!-- FECHA DE LA SEMANA -->
+                <small class="text-black" style="white-space: nowrap;">
+                  Semana: {{ semanaActual.inicio }} {{ semanaActual.fin }}
+                </small>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-outline-secondary" title="Semana anterior" (click)="cambiarSemana(-1)"
+                    [disabled]="prevSemanaDisabled()">
+                    <i class="bi bi-chevron-left"></i>
+                  </button>
 
-                <button class="btn btn-sm btn-outline-secondary" title="Siguiente semana" (click)="cambiarSemana(1)"
-                  [disabled]="nextSemanaDisabled()">
-                  <i class="bi bi-chevron-right"></i>
+                  <button class="btn btn-sm btn-outline-secondary" title="Siguiente semana" (click)="cambiarSemana(1)"
+                    [disabled]="nextSemanaDisabled()">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="modoVistaHoras === 'semanas'">
+                <small class="text-muted">
+                  Vista acumulada por semana
+                </small>
+                <button class="btn btn-sm btn-outline-primary" (click)="cambiarModoVistaHoras('dias')">
+                  <i class="bi bi-calendar-event me-1"></i>Ver por días
                 </button>
-              </div>
+              </ng-container>
 
             </div>
 
@@ -436,8 +464,7 @@
                     </div>
                   </li>
                 </ul>
-                <button *ngIf="tareasNoFinalizadas.length > 10"
-                  class="btn btn-sm btn-outline-secondary mt-2 w-100"
+                <button *ngIf="tareasNoFinalizadas.length > 10" class="btn btn-sm btn-outline-secondary mt-2 w-100"
                   (click)="toggleMostrarTodasNoFinalizadas()">
                   {{ mostrarTodasNoFinalizadas ? 'Mostrar menos' : 'Ver todas (' + tareasNoFinalizadas.length + ')' }}
                 </button>
@@ -558,7 +585,7 @@
               <table class="table table-sm align-middle">
                 <thead>
                   <tr>
-                    <th>Dia</th>
+                    <th>{{ modoVistaHoras === 'semanas' ? 'Semana' : 'Día' }}</th>
                     <th class="text-end">Horas (h)</th>
                     <th class="text-end">Minutos</th>
                   </tr>
