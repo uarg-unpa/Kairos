@@ -17,6 +17,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Profile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +46,7 @@ import com.nextech.kairos.repository.UsuarioRepository;
 
 @Component
 @Order(3)
+@Profile("demo")
 public class DataSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
@@ -199,7 +201,9 @@ public class DataSeeder implements CommandLineRunner {
                                     tarea.setUsuario(responsable);
                                     tarea.setFechaCreacion(LocalDate.parse(tNode.get("fechaCreacion").asText()));
                                     tarea.setFechaFin(LocalDate.parse(tNode.get("fechaFin").asText()));
-                                    tarea.setHorasEstimadas(tNode.hasNonNull("horasEstimadas") ? tNode.get("horasEstimadas").asDouble() : 0.0);
+                                    tarea.setHorasEstimadas(
+                                            tNode.hasNonNull("horasEstimadas") ? tNode.get("horasEstimadas").asDouble()
+                                                    : 0.0);
                                     tarea.setEstado(tNode.get("estado").asText());
                                     tarea.setPrioridad("Media");
                                     if ("Completado".equalsIgnoreCase(tarea.getEstado())) {
@@ -225,7 +229,8 @@ public class DataSeeder implements CommandLineRunner {
                                             tiempo.setTarea(tarea);
                                             tiempo.setUsuario(timeUser);
                                             tiempo.setDuracion(timeNode.get("duracionMinutos").asInt());
-                                            tiempo.setFechaRegistro(LocalDate.parse(timeNode.get("fechaRegistro").asText()));
+                                            tiempo.setFechaRegistro(
+                                                    LocalDate.parse(timeNode.get("fechaRegistro").asText()));
                                             if (timeNode.hasNonNull("descripcion")) {
                                                 tiempo.setDescripcion(timeNode.get("descripcion").asText());
                                             }
@@ -244,7 +249,8 @@ public class DataSeeder implements CommandLineRunner {
                                             comentario.setTarea(tarea);
                                             comentario.setUsuario(comUser);
                                             comentario.setContenido(comNode.get("contenido").asText());
-                                            comentario.setFechaComentario(LocalDate.parse(comNode.get("fechaComentario").asText()));
+                                            comentario.setFechaComentario(
+                                                    LocalDate.parse(comNode.get("fechaComentario").asText()));
                                             comentarioRepository.save(comentario);
                                             totalComentarios++;
                                         }
@@ -256,7 +262,8 @@ public class DataSeeder implements CommandLineRunner {
                 }
             }
 
-            log.info("DataSeeder: proyecto '{}' sembrado exitosamente ({} tareas, {} registros de tiempo, {} comentarios).",
+            log.info(
+                    "DataSeeder: proyecto '{}' sembrado exitosamente ({} tareas, {} registros de tiempo, {} comentarios).",
                     proyecto.getNombre(), totalTareas, totalTiempos, totalComentarios);
 
         } catch (Exception e) {
@@ -349,11 +356,16 @@ public class DataSeeder implements CommandLineRunner {
         Usuario malcolm = usuarioRepository.findByEmail("malcolm.salazar@gmail.com").orElse(null);
 
         List<Usuario> usuarios = new java.util.ArrayList<>();
-        if (ezequiel != null) usuarios.add(ezequiel);
-        if (fabricio != null) usuarios.add(fabricio);
-        if (santiago != null) usuarios.add(santiago);
-        if (lorenzo != null) usuarios.add(lorenzo);
-        if (malcolm != null) usuarios.add(malcolm);
+        if (ezequiel != null)
+            usuarios.add(ezequiel);
+        if (fabricio != null)
+            usuarios.add(fabricio);
+        if (santiago != null)
+            usuarios.add(santiago);
+        if (lorenzo != null)
+            usuarios.add(lorenzo);
+        if (malcolm != null)
+            usuarios.add(malcolm);
 
         seedMetricFlowFromData(proyecto, usuarios);
         if (proyecto.getFechaInicio() == null) {
@@ -497,7 +509,8 @@ public class DataSeeder implements CommandLineRunner {
             user.addRol(rolUsuarioComun);
             return usuarioRepository.save(user);
         }
-        if (user.getRoles() == null || user.getRoles().stream().noneMatch(r -> r.getNombre().equals(rolUsuarioComun.getNombre()))) {
+        if (user.getRoles() == null
+                || user.getRoles().stream().noneMatch(r -> r.getNombre().equals(rolUsuarioComun.getNombre()))) {
             user.addRol(rolUsuarioComun);
             user = usuarioRepository.save(user);
         }
@@ -524,13 +537,12 @@ public class DataSeeder implements CommandLineRunner {
             }
         } else {
             categoriasNombres.addAll(Arrays.asList(
-                "Análisis",
-                "Diseño",
-                "Codificación",
-                "Validación y Verificación",
-                "Documentación",
-                "Actividades Externas"
-            ));
+                    "Análisis",
+                    "Diseño",
+                    "Codificación",
+                    "Validación y Verificación",
+                    "Documentación",
+                    "Actividades Externas"));
         }
 
         Map<String, Categoria> categoriaMap = new HashMap<>();
@@ -544,7 +556,7 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private Etapa createEtapa(String nombre, String descripcion, EstadoEtapa estado,
-                              Proyecto proyecto, LocalDate fechaInicio, LocalDate fechaFin) {
+            Proyecto proyecto, LocalDate fechaInicio, LocalDate fechaFin) {
         Etapa etapa = new Etapa();
         etapa.setNombre(nombre);
         etapa.setDescripcion(descripcion);
