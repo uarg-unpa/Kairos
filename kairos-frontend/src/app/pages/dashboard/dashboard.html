@@ -1,4 +1,4 @@
-﻿<style>
+<style>
   .tooltip-card {
     position: relative;
     overflow: visible;
@@ -429,13 +429,18 @@
               </div>
               <ng-container *ngIf="tareasNoFinalizadas.length; else sinPendientes">
                 <ul class="list-group list-group-flush small">
-                  <li class="list-group-item px-0 py-1" *ngFor="let t of tareasNoFinalizadas">
+                  <li class="list-group-item px-0 py-1" *ngFor="let t of tareasNoFinalizadasVisibles">
                     <div class="d-flex justify-content-between">
                       <span class="me-2">{{ t.nombre || t.titulo || 'Tarea sin nombre' }}</span>
                       <small class="text-muted">Iter {{ t.iteracionId || '-' }}</small>
                     </div>
                   </li>
                 </ul>
+                <button *ngIf="tareasNoFinalizadas.length > 10"
+                  class="btn btn-sm btn-outline-secondary mt-2 w-100"
+                  (click)="toggleMostrarTodasNoFinalizadas()">
+                  {{ mostrarTodasNoFinalizadas ? 'Mostrar menos' : 'Ver todas (' + tareasNoFinalizadas.length + ')' }}
+                </button>
               </ng-container>
               <ng-template #sinPendientes>
                 <small class="text-muted">No hay tareas pendientes fuera de iteraciones activas.</small>

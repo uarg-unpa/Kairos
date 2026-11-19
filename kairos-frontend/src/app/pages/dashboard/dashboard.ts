@@ -99,6 +99,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   horasDiaDetalle: HorasDiaDetalle[] = [];
   horasTareaDetalle: HorasTareaDetalle[] = [];
   tareasNoFinalizadas: any[] = [];
+  mostrarTodasNoFinalizadas = false;
 
   constructor(private alertService: AlertService) { }
 
@@ -913,6 +914,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       const finIter = parseFecha(iter?.fechaFin);
       return !!finIter && finIter < hoy;
     });
+    this.mostrarTodasNoFinalizadas = false;
 
     const estimadas = tareas.map(t => t.horasEstimadas || 0).reduce((a: number, b: number) => a + b, 0);
     const reales = this.totalHoras;
@@ -969,6 +971,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     } catch { }
     this.loadingTareasData = false;
+  }
+
+  get tareasNoFinalizadasVisibles(): any[] {
+    if (this.mostrarTodasNoFinalizadas) return this.tareasNoFinalizadas;
+    return this.tareasNoFinalizadas.slice(0, 10);
+  }
+
+  toggleMostrarTodasNoFinalizadas(): void {
+    this.mostrarTodasNoFinalizadas = !this.mostrarTodasNoFinalizadas;
   }
 
   /* private computeWeeklyRange(): { from: string, to: string } {
