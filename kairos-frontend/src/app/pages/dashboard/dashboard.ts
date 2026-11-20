@@ -734,6 +734,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.filtroSemana = 0;
         this.actualizarSemanaActual();
       }
+    } else if (this.filtroIteracion || this.filtroEtapa) {
+      // Sincronizar semanaBase con la fecha de inicio de la iteración/etapa seleccionada
+      const baseFiltro = this.determinarSemanaBase(iteraciones);
+      if (baseFiltro && (!this.semanaBase || this.semanaBase.getTime() !== baseFiltro.getTime())) {
+        this.semanaBase = baseFiltro;
+      }
+      this.filtroSemana = 0;
+      this.actualizarSemanaActual();
     } else {
       this.semanaBase = null;
       this.filtroSemana = 0;
@@ -1525,12 +1533,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filtroIteracion = null;
     this.filtroSemana = 0;
     this.semanaBase = null;
+    this.navegacionManual = false;
     this.reload(true);
   }
 
   onFiltroIteracionChange() {
     this.filtroSemana = 0;
     this.semanaBase = null;
+    this.navegacionManual = false;
     this.reload(true);
   }
 
