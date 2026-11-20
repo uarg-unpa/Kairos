@@ -45,7 +45,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/usuarios" routerLinkActive="active"
-                        [routerLinkActiveOptions]="{ exact: true }">
+                        [routerLinkActiveOptions]="{ exact: true }" *ngIf="esAdmin()">
                         <span class="bi bi-people me-2"></span> Usuarios
                     </a>
                 </li>
